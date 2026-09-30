@@ -21,7 +21,7 @@ export function ProductVisual({ product, category, className, sizes, priority, s
       layoutId={shared ? `visual-${product.slug}` : undefined}
       className={cn(
         'relative isolate overflow-hidden rounded-[inherit]',
-        dark ? 'bg-[radial-gradient(120%_90%_at_100%_100%,#123524_0%,#05090d_60%)]' : 'bg-[radial-gradient(90%_70%_at_50%_35%,#fff_0%,#f1f5f2_65%,#e6ece8_100%)]',
+        dark ? 'bg-[radial-gradient(120%_90%_at_100%_100%,#10213f_0%,#05090d_60%)]' : 'bg-[radial-gradient(90%_70%_at_50%_35%,#fff_0%,#f1f5f2_65%,#e6ece8_100%)]',
         className,
       )}
     >

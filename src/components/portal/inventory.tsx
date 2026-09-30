@@ -4,32 +4,30 @@ import * as Dialog from '@radix-ui/react-dialog';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'motion/react';
-import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Icon, IconTile } from '@/components/ui/icon';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { assets, type Asset } from '@/data/portal-demo';
+import type { Asset } from '@/data/portal-demo';
 
 const health = {
-  good: { label: 'In spec', tone: 'green' as const },
-  due: { label: 'Calibration due', tone: 'amber' as const },
+  online: { label: 'In spec', tone: 'green' as const },
+  maintenance: { label: 'In service', tone: 'blue' as const },
   attention: { label: 'Needs attention', tone: 'red' as const },
 };
 
-export function Inventory() {
-  const [selected, setSelected] = useState<Asset | null>(null);
+/** Documentation view: every installed system; opening one shows its deep spec sheet. */
+export function Inventory({ assets, onSelect }: { assets: Asset[]; onSelect: (a: Asset) => void }) {
   return (
-    <>
-      <ul className="grid gap-3 md:grid-cols-3">
+    <ul className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {assets.map((a) => (
           <li key={a.id}>
-            <button onClick={() => setSelected(a)} className="group flex h-full w-full flex-col rounded-4xl border border-line bg-paper p-2 text-left transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_30px_60px_-30px_rgb(11_18_32/0.35)]">
+            <button onClick={() => onSelect(a)} className="group flex h-full w-full flex-col rounded-4xl border border-line bg-paper p-2 text-left transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_30px_60px_-30px_rgb(11_18_32/0.35)]">
               <AssetVisual asset={a} className="aspect-[4/3] rounded-[1.6rem]" />
               <div className="p-4">
                 <div className="flex items-center justify-between gap-2">
                   <p className="label">{a.brand}</p>
-                  <Badge tone={health[a.health].tone}>{health[a.health].label}</Badge>
+                  <Badge tone={health[a.status].tone}>{health[a.status].label}</Badge>
                 </div>
                 <p className="mt-2 font-semibold text-ink">{a.name}</p>
                 <p className="text-sm text-ink-3">{a.location} · Next calibration {a.nextCalibration}</p>
@@ -37,9 +35,14 @@ export function Inventory() {
             </button>
           </li>
         ))}
-      </ul>
+    </ul>
+  );
+}
 
-      <Dialog.Root open={Boolean(selected)} onOpenChange={(v) => !v && setSelected(null)}>
+/** Deep spec sheet dialog for an installed system. */
+export function AssetSheet({ asset: selected, onClose }: { asset: Asset | null; onClose: () => void }) {
+  return (
+      <Dialog.Root open={Boolean(selected)} onOpenChange={(v) => !v && onClose()}>
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 z-[60] bg-midnight/50 backdrop-blur-sm data-[state=open]:animate-in" />
           <Dialog.Content aria-describedby={undefined} className="fixed inset-x-3 bottom-3 top-16 z-[70] mx-auto max-w-6xl overflow-hidden rounded-5xl bg-canvas shadow-2xl outline-none md:inset-x-6 md:bottom-6 md:top-24">
@@ -50,7 +53,6 @@ export function Inventory() {
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>
-    </>
   );
 }
 
@@ -77,7 +79,7 @@ function DeepSpecSheet({ asset }: { asset: Asset }) {
           <div>
             <p className="label">{asset.brand} · {asset.id}</p>
             <Dialog.Title className="display mt-3 text-3xl md:text-4xl">{asset.name}</Dialog.Title>
-            <div className="mt-3"><Badge tone={health[asset.health].tone}>{health[asset.health].label}</Badge></div>
+            <div className="mt-3"><Badge tone={health[asset.status].tone}>{health[asset.status].label}</Badge></div>
           </div>
           <dl className="grid grid-cols-2 gap-3 text-sm">
             {[
@@ -173,11 +175,11 @@ function Schematic() {
     <svg viewBox="0 0 360 170" className="mt-6 w-full" role="img" aria-label="Illustrative block diagram of power and signal paths">
       <defs>
         <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-          <path d="M0 0L10 5L0 10z" fill="#6fe3a6" />
+          <path d="M0 0L10 5L0 10z" fill="#93c5fd" />
         </marker>
       </defs>
       {[[100, 40, 130, 40], [220, 40, 250, 40], [295, 60, 295, 110], [250, 130, 220, 130], [130, 130, 100, 130]].map(([x1, y1, x2, y2], i) => (
-        <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#6fe3a6" strokeWidth="1.5" strokeDasharray="4 3" markerEnd="url(#arr)" />
+        <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#93c5fd" strokeWidth="1.5" strokeDasharray="4 3" markerEnd="url(#arr)" />
       ))}
       {boxes.map((b) => (
         <g key={b.label}>

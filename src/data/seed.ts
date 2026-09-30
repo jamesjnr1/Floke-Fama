@@ -323,7 +323,16 @@ export const milestones: Milestone[] = [
 
 export const distributors = ['Mindray', 'Biozek Holland', 'MR Global'];
 
+/** Technology partners (manufacturers Flokefama officially distributes). */
+export const technologyPartners = [
+  { name: 'Mindray', logo: '/images/partners/mindray.png', role: 'Official distributor' },
+  { name: 'Biozek Holland', logo: '/images/partners/biozek.png', role: 'Official distributor' },
+  { name: 'MR Global', logo: null, role: 'Official distributor' },
+];
+
+/** Clientele shown on the current flokefama.com "Our Partners & Clientele" strip. */
 export const clients = [
+  { name: 'The Trust Hospital', logo: '/images/partners/trust-hospital.jpg' },
   { name: 'Korle Bu Teaching Hospital', logo: '/images/partners/korle-bu.png' },
   { name: 'Komfo Anokye Teaching Hospital', logo: '/images/partners/kath.webp' },
   { name: 'University of Ghana Medical Centre', logo: '/images/partners/ugmc.png' },

@@ -9,9 +9,9 @@ import type { Milestone } from '@/lib/types';
 export function TrustBento({ milestones }: { milestones: Milestone[] }) {
   const [feature, ...rest] = milestones;
   return (
-    <section id="trust" className="scroll-mt-20 py-28 md:py-40">
+    <section id="media" className="scroll-mt-28 py-28 md:py-40">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
-        <SectionHeading label="Trust & authority" title={<>Recognised at home. <span className="text-ink-3">Awarded abroad.</span></>} />
+        <SectionHeading label="Media hub · Awards & press" title={<>Recognised at home. <span className="text-ink-3">Awarded abroad.</span></>} />
 
         <div className="mt-16 grid gap-4 md:grid-cols-6 md:grid-rows-[repeat(2,minmax(260px,auto))]">
           {feature && (
@@ -21,7 +21,7 @@ export function TrustBento({ milestones }: { milestones: Milestone[] }) {
               )}
               <div className="absolute inset-0 -z-10 bg-gradient-to-t from-midnight via-midnight/40 to-transparent" />
               <div className="flex h-full flex-col justify-end p-8 md:p-12">
-                <p className="label !text-surgical-300">{feature.kicker}</p>
+                <p className="label !text-neon-300">{feature.kicker}</p>
                 <h3 className="display mt-4 max-w-lg text-4xl text-white md:text-6xl">{feature.title}</h3>
                 <p className="mt-4 max-w-md font-light text-white/70">{feature.body}</p>
               </div>
@@ -50,7 +50,7 @@ export function TrustBento({ milestones }: { milestones: Milestone[] }) {
             </Reveal>
           )}
 
-          <Reveal delay={0.2} className="relative overflow-hidden rounded-5xl bg-surgical-600 p-8 text-white md:col-span-3">
+          <Reveal delay={0.2} className="relative overflow-hidden rounded-5xl bg-neon-600 p-8 text-white md:col-span-3">
             <div className="grid-fade absolute inset-0 opacity-60" />
             <p className="label relative !text-white/60">Official distributor</p>
             <ul className="relative mt-6 space-y-1">

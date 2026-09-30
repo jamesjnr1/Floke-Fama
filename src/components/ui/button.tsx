@@ -4,14 +4,14 @@ import type { ComponentProps } from 'react';
 import { cn } from '@/lib/utils';
 
 export const buttonVariants = cva(
-  'group/btn relative inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full font-medium transition-[transform,background-color,box-shadow,color,border-color] duration-500 ease-out-expo active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50',
+  'group/btn relative inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl font-medium transition-[transform,background-color,box-shadow,color,border-color] duration-500 ease-out-expo active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50',
   {
     variants: {
       variant: {
         primary:
-          'bg-surgical-600 text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.2),0_10px_30px_-10px_rgb(37_120_71/0.7)] hover:bg-surgical-700 hover:-translate-y-0.5',
+          'bg-neon-600 text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.2),0_10px_30px_-10px_rgb(37_99_235/0.7)] hover:bg-neon-700 hover:-translate-y-0.5',
         glow:
-          'bg-gradient-to-br from-surgical-500 to-surgical-700 text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.3),0_0_0_1px_rgb(111_227_166/0.25),0_12px_40px_-8px_rgb(52_199_123/0.55)] hover:-translate-y-0.5',
+          'bg-gradient-to-br from-neon-500 to-neon-700 text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.3),0_0_0_1px_rgb(147_197_253/0.25),0_12px_40px_-8px_rgb(96_165_250/0.55)] hover:-translate-y-0.5',
         glass: 'glass text-white hover:bg-white/10 hover:-translate-y-0.5',
         outline: 'border border-line bg-paper text-ink hover:border-ink/30 hover:-translate-y-0.5',
         ghost: 'text-ink hover:bg-mist',
