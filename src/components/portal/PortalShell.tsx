@@ -27,7 +27,7 @@ function announceDispatch(t: Ticket) {
   if (!t.engineer) return;
   toast(`Biomedical Engineer ${t.engineer.name} has departed ${t.engineer.hub} for your facility.`, {
     description: `${t.id} · ${t.title}${t.engineer.eta ? ` · ETA ${t.engineer.eta}` : ''}`,
-    icon: <Icon name="fi-rr-truck-side" className="text-neon-600" />,
+    icon: <Icon name="fi-rr-truck-side" className="text-brand-600" />,
     duration: 7000,
   });
 }
@@ -88,7 +88,7 @@ export function PortalShell() {
 
         {/* Profile Block */}
         <div className="mt-8 flex items-center gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.03] p-3">
-          <span className="grid size-10 place-items-center rounded-xl bg-neon-600 font-semibold">{demoFacility.initials}</span>
+          <span className="grid size-10 place-items-center rounded-xl bg-brand-600 font-semibold">{demoFacility.initials}</span>
           <span className="min-w-0">
             <span className="block truncate text-sm font-medium">{demoFacility.name}</span>
             <span className="block truncate text-xs text-white/45">{demoFacility.user}</span>
@@ -107,8 +107,8 @@ export function PortalShell() {
                   className={cn('relative flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition', view === n.id ? 'text-white' : 'text-white/55 hover:bg-white/[0.04] hover:text-white')}
                 >
                   {view === n.id && <motion.span layoutId="rail-active" className="absolute inset-0 rounded-xl bg-white/[0.07] ring-1 ring-white/10" />}
-                  {view === n.id && <motion.span layoutId="rail-bar" className="absolute -left-5 top-2 h-6 w-[3px] rounded-r bg-neon-500" />}
-                  <Icon name={n.icon} className={cn('relative', view === n.id && 'text-neon-400')} />
+                  {view === n.id && <motion.span layoutId="rail-bar" className="absolute -left-5 top-2 h-6 w-[3px] rounded-r bg-brand-500" />}
+                  <Icon name={n.icon} className={cn('relative', view === n.id && 'text-brand-400')} />
                   <span className="relative">{n.label}</span>
                 </button>
               </li>
@@ -117,9 +117,9 @@ export function PortalShell() {
         </nav>
 
         <div className="mt-auto space-y-3">
-          <p className="rounded-xl bg-amber-400/10 px-3 py-2 text-xs text-amber-200 ring-1 ring-amber-300/20">Demo data: fictional facility and engineers.</p>
+          <p className="rounded-xl bg-white/[0.04] px-3 py-2 text-xs text-white/60 ring-1 ring-white/10">Demo data: fictional facility and engineers.</p>
           <a href={contact.phoneHref} className="flex items-center gap-2 font-mono text-xs text-white/50 hover:text-white">
-            <Icon name="fi-rr-phone-call" className="text-neon-400" /> {contact.phone}
+            <Icon name="fi-rr-phone-call" className="text-brand-400" /> {contact.phone}
           </a>
           <Link href="/" className="flex items-center gap-2 text-xs text-white/50 hover:text-white">
             <Icon name="fi-rr-arrow-small-left" /> Back to flokefama site
@@ -132,7 +132,7 @@ export function PortalShell() {
         {/* Mobile top bar + nav */}
         <div className="mb-6 flex items-center justify-between lg:hidden">
           <Link href="/" className="flex items-center gap-2"><LogoMark /><span className="font-semibold">Flokefama Care</span></Link>
-          <span className="rounded-md bg-amber-400/10 px-2 py-1 font-mono text-[10px] uppercase tracking-widest text-amber-200">Demo</span>
+          <span className="rounded-md bg-white/[0.06] px-2 py-1 font-mono text-[10px] uppercase tracking-widest text-white/60">Demo</span>
         </div>
         <div className="-mx-1 mb-6 flex gap-1 overflow-x-auto px-1 lg:hidden">
           {nav.map((n) => (
@@ -149,7 +149,7 @@ export function PortalShell() {
             <h1 className="mt-1 text-3xl font-bold tracking-[-0.03em] text-white md:text-4xl">Biomedical Engineer Service Portal</h1>
           </div>
           <div className="flex items-center gap-3">
-            <label className="flex h-11 flex-1 items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 focus-within:border-neon-500 xl:w-72 xl:flex-none">
+            <label className="flex h-11 flex-1 items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 focus-within:border-brand-500 xl:w-72 xl:flex-none">
               <Icon name="fi-rr-search" className="text-white/40" />
               <span className="sr-only">Search systems and tickets</span>
               <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search systems, tickets…" className="w-full bg-transparent text-sm text-white outline-none placeholder:text-white/35" />
@@ -163,7 +163,7 @@ export function PortalShell() {
               className="relative grid size-11 place-items-center rounded-xl border border-white/10 bg-white/[0.04] hover:bg-white/10"
             >
               <Icon name="fi-rr-bell" />
-              {unread && <span className="status-dot absolute right-2.5 top-2.5 !bg-neon-400" aria-hidden />}
+              {unread && <span className="status-dot absolute right-2.5 top-2.5 !bg-brand-400" aria-hidden />}
             </button>
           </div>
         </header>

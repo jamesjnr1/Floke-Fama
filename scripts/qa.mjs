@@ -5,7 +5,7 @@ import { mkdir } from 'node:fs/promises';
 import { chromium } from 'playwright';
 
 const base = process.argv[2] ?? 'http://localhost:3000';
-const pages = ['/', '/products', '/products/mindray-bs-240', '/quote', '/portal', '/offline'];
+const pages = ['/', '/solutions', '/partners', '/impact', '/media', '/products', '/products/mindray-bs-240', '/quote', '/portal', '/offline'];
 const sizes = [[390, 844], [1440, 900]];
 await mkdir('qa', { recursive: true });
 

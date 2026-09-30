@@ -18,7 +18,7 @@ export function Services() {
         <div className="lg:sticky lg:top-32 lg:self-start">
           <p className="label">Lifecycle services</p>
           <h2 className="display mt-5 text-[clamp(2.25rem,1.3rem+3.4vw,4.5rem)]">
-            We don’t just deliver. <span className="text-neon-600">We stay.</span>
+            We don’t just deliver. <span className="text-brand-600">We stay.</span>
           </h2>
           <p className="mt-6 max-w-md text-lg font-light leading-relaxed text-ink-3">
             Every system we supply is backed by biomedical engineers across six branches, from commissioning day to its final service.
@@ -33,7 +33,7 @@ export function Services() {
                   <h3 className="text-xl font-semibold tracking-tight">{s.title}</h3>
                   <p className="mt-1 text-sm font-light text-ink-3">{s.body}</p>
                 </div>
-                <span className="label tabular-nums transition-colors group-hover:text-neon-600">{String(i + 1).padStart(2, '0')}</span>
+                <span className="label tabular-nums transition-colors group-hover:text-brand-600">{String(i + 1).padStart(2, '0')}</span>
               </li>
             </Reveal>
           ))}
