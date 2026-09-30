@@ -21,7 +21,7 @@ export function SiteFooter() {
           <ul className="mt-6 flex gap-2" aria-label="Social media">
             {social.map((s) => (
               <li key={s.label}>
-                <a href={s.href} aria-label={s.label} className="glass grid size-10 place-items-center rounded-full text-white transition hover:bg-neon-600">
+                <a href={s.href} aria-label={s.label} className="glass grid size-10 place-items-center rounded-full text-white transition hover:bg-brand-600">
                   <Icon name={s.icon} />
                 </a>
               </li>
@@ -36,10 +36,10 @@ export function SiteFooter() {
           ))}
         </FooterCol>
         <FooterCol title="Company">
-          <li><Link href="/#impact" className="hover:text-white">Institutional impact</Link></li>
-          <li><Link href="/#partners" className="hover:text-white">Technology partners</Link></li>
-          <li><Link href="/#media" className="hover:text-white">Media hub</Link></li>
-          <li><Link href="/#services" className="hover:text-white">Services</Link></li>
+          <li><Link href="/impact" className="hover:text-white">Institutional impact</Link></li>
+          <li><Link href="/partners" className="hover:text-white">Technology partners</Link></li>
+          <li><Link href="/media" className="hover:text-white">Media hub</Link></li>
+          <li><Link href="/solutions" className="hover:text-white">Solutions &amp; services</Link></li>
           <li><Link href="/portal" className="hover:text-white">Client portal</Link></li>
           <li><Link href="/quote?intent=demo" className="hover:text-white">Book a demonstration</Link></li>
         </FooterCol>

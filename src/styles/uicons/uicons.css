@@ -9,6 +9,7 @@
 .fi-rr-bell::before{content:"\f239"}
 .fi-rr-book-alt::before{content:"\f274"}
 .fi-rr-box-open::before{content:"\f2b3"}
+.fi-rr-bullseye::before{content:"\f309"}
 .fi-rr-calendar::before{content:"\f339"}
 .fi-rr-chart-line-up::before{content:"\f3a5"}
 .fi-rr-check::before{content:"\f3c8"}
@@ -16,6 +17,7 @@
 .fi-rr-cross-small::before{content:"\f4f6"}
 .fi-rr-download::before{content:"\f591"}
 .fi-rr-envelope::before{content:"\f5de"}
+.fi-rr-eye::before{content:"\f5f8"}
 .fi-rr-file-pdf::before{content:"\f66a"}
 .fi-rr-flask-gear::before{content:"\f698"}
 .fi-rr-graduation-cap::before{content:"\f70f"}

@@ -82,7 +82,7 @@ export function Catalog({ products, categories, initialCategory, initialQuery }:
               );
             })}
           </div>
-          <label className="group relative flex h-12 w-full items-center rounded-full border border-line bg-paper pl-12 pr-4 transition focus-within:border-neon-500 focus-within:ring-4 focus-within:ring-neon-100 lg:w-96">
+          <label className="group relative flex h-12 w-full items-center rounded-full border border-line bg-paper pl-12 pr-4 transition focus-within:border-brand-500 focus-within:ring-4 focus-within:ring-brand-100 lg:w-96">
             <Icon name="fi-rr-search" className="absolute left-5 text-ink-3" />
             <span className="sr-only">Search products</span>
             <input
@@ -125,7 +125,7 @@ export function Catalog({ products, categories, initialCategory, initialQuery }:
         <div className="rounded-4xl border border-dashed border-line p-12 text-center">
           <p className="text-lg font-medium text-ink">No matches for “{query}”</p>
           <p className="mt-2 text-sm text-ink-3">Our team sources beyond the catalogue.</p>
-          <Link href={`/quote?need=${encodeURIComponent(query)}`} className="mt-5 inline-flex items-center gap-1 text-sm font-medium text-neon-600">
+          <Link href={`/quote?need=${encodeURIComponent(query)}`} className="mt-5 inline-flex items-center gap-1 text-sm font-medium text-brand-600">
             Ask us to source it <Icon name="fi-rr-arrow-small-right" />
           </Link>
         </div>
@@ -139,7 +139,7 @@ function ProductCard({ product, category, wide }: { product: Product; category?:
     <Link
       href={`/products/${product.slug}`}
       scroll={false}
-      className="group flex h-full flex-col rounded-4xl border border-line bg-paper p-2 transition-all duration-700 ease-out-expo hover:-translate-y-1 hover:border-transparent hover:shadow-[0_30px_60px_-30px_rgb(11_18_32/0.35)]"
+      className="group flex h-full flex-col rounded-4xl border border-line bg-paper p-2 transition-all duration-700 ease-out-expo hover:-translate-y-1 hover:border-transparent hover:shadow-[0_30px_60px_-30px_rgb(11_21_16/0.35)]"
     >
       <ProductVisual product={product} category={category} sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" className={cn('rounded-[1.6rem]', wide ? 'aspect-[16/9] sm:aspect-auto sm:h-72' : 'aspect-[4/3]')} />
       <div className="flex flex-1 items-end justify-between gap-4 px-4 pb-4 pt-5">
@@ -149,7 +149,7 @@ function ProductCard({ product, category, wide }: { product: Product; category?:
           <p className="mt-1 line-clamp-2 text-sm font-light text-ink-3">{product.summary}</p>
           {product.specs[0] && <Badge className="mt-3">{product.specs[0].value}</Badge>}
         </div>
-        <span className="grid size-10 shrink-0 place-items-center rounded-full bg-mist text-ink transition-all duration-500 group-hover:rotate-45 group-hover:bg-neon-600 group-hover:text-white">
+        <span className="grid size-10 shrink-0 place-items-center rounded-full bg-mist text-ink transition-all duration-500 group-hover:rotate-45 group-hover:bg-brand-600 group-hover:text-white">
           <Icon name="fi-rr-arrow-up-right" />
         </span>
       </div>

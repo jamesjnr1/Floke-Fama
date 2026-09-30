@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   robots: allowIndexing ? undefined : { index: false, follow: false },
 };
 
-export const viewport: Viewport = { themeColor: '#0f172a', width: 'device-width', initialScale: 1 };
+export const viewport: Viewport = { themeColor: '#0b1510', width: 'device-width', initialScale: 1 };
 
 const organizationLd = {
   '@context': 'https://schema.org',
@@ -38,7 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en-GH" className={`${GeistSans.variable} ${GeistMono.variable}`}>
       <body className="font-sans">
-        <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-neon-600 focus:px-4 focus:py-2 focus:text-white">
+        <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-brand-600 focus:px-4 focus:py-2 focus:text-white">
           Skip to content
         </a>
         {children}
@@ -46,7 +46,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           position="top-right"
           toastOptions={{
             classNames: {
-              toast: '!rounded-2xl !border !border-line !bg-paper/95 !backdrop-blur-xl !shadow-[0_20px_50px_-20px_rgb(11_18_32/0.35)] !font-sans',
+              toast: '!rounded-2xl !border !border-line !bg-paper/95 !backdrop-blur-xl !shadow-[0_20px_50px_-20px_rgb(11_21_16/0.35)] !font-sans',
               title: '!text-ink !font-medium',
               description: '!text-ink-3',
             },

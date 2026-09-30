@@ -6,8 +6,8 @@ import type { Asset, Ticket } from '@/data/portal-demo';
 import { cn } from '@/lib/utils';
 
 const priorityStyle = {
-  critical: 'bg-signal/15 text-red-300 ring-red-400/30',
-  high: 'bg-amber-400/10 text-amber-300 ring-amber-300/30',
+  critical: 'bg-signal/20 text-white ring-signal/50',
+  high: 'bg-brand-500/15 text-brand-300 ring-brand-400/30',
   routine: 'bg-white/5 text-white/60 ring-white/15',
 };
 
@@ -18,9 +18,9 @@ export function TimelineTracker({ ticket, asset, onAdvance }: { ticket: Ticket; 
     <motion.article
       layoutId="timeline-block"
       transition={{ type: 'spring', bounce: 0.15, duration: 0.6 }}
-      className="relative overflow-hidden rounded-[20px] border border-white/[0.06] bg-[#1e293b] p-6 md:p-8"
+      className="relative overflow-hidden rounded-[20px] border border-white/[0.06] bg-[#17261e] p-6 md:p-8"
     >
-      <div aria-hidden className="absolute -right-20 -top-20 size-64 rounded-full bg-[radial-gradient(circle,rgb(59_130_246/0.18),transparent_65%)]" />
+      <div aria-hidden className="absolute -right-20 -top-20 size-64 rounded-full bg-[radial-gradient(circle,rgb(46_154_91/0.18),transparent_65%)]" />
       <motion.div key={ticket.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="relative">
         <div className="flex flex-wrap items-center gap-2">
           <span className="font-mono text-xs tracking-wider text-white/40">{ticket.id} · {ticket.opened}</span>
@@ -44,20 +44,20 @@ export function TimelineTracker({ ticket, asset, onAdvance }: { ticket: Ticket; 
                   className={cn(
                     'relative z-10 grid size-8 shrink-0 place-items-center rounded-full text-sm',
                     state === 'done' && 'bg-surgical text-white',
-                    state === 'active' && 'bg-neon-500 text-white shadow-[0_0_0_6px_rgb(59_130_246/0.18),0_0_30px_rgb(59_130_246/0.6)]',
+                    state === 'active' && 'bg-brand-500 text-white shadow-[0_0_0_6px_rgb(46_154_91/0.18),0_0_30px_rgb(46_154_91/0.6)]',
                     state === 'pending' && 'border border-white/20 text-white/30',
                   )}
                 >
                   {state === 'done' && <Icon name="fi-rr-check" />}
                   {state === 'active' && <Icon name="fi-rr-clock-three" />}
                   {state === 'pending' && <span className="size-1.5 rounded-full bg-white/30" />}
-                  {state === 'active' && <span aria-hidden className="absolute inset-0 animate-ping rounded-full bg-neon-500/40" />}
+                  {state === 'active' && <span aria-hidden className="absolute inset-0 animate-ping rounded-full bg-brand-500/40" />}
                 </span>
-                <div className={cn('flex-1 rounded-xl px-4 py-2.5', state === 'active' && 'bg-neon-500/10 ring-1 ring-neon-500/30')}>
+                <div className={cn('flex-1 rounded-xl px-4 py-2.5', state === 'active' && 'bg-brand-500/10 ring-1 ring-brand-500/30')}>
                   <p className="flex items-center gap-2 text-sm font-medium text-white">
                     <span className="font-mono text-[11px] text-white/35">{String(i + 1).padStart(2, '0')}</span>
                     {step.label}
-                    {state === 'active' && <span className="font-mono text-[10px] uppercase tracking-widest text-neon-300">Active</span>}
+                    {state === 'active' && <span className="font-mono text-[10px] uppercase tracking-widest text-brand-300">Active</span>}
                   </p>
                   {step.detail && <p className="mt-0.5 text-xs text-white/45">{step.detail}</p>}
                 </div>
@@ -71,7 +71,7 @@ export function TimelineTracker({ ticket, asset, onAdvance }: { ticket: Ticket; 
           <button
             onClick={onAdvance}
             disabled={resolved}
-            className="inline-flex items-center gap-2 rounded-xl bg-neon-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-neon-500 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/40"
+            className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/40"
           >
             {resolved ? 'Resolved' : ticket.current === ticket.steps.length - 1 ? 'Mark resolved' : 'Advance to next step'}
             {!resolved && <Icon name="fi-rr-arrow-small-right" />}

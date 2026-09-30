@@ -32,7 +32,7 @@ Optional integrations are switched on by environment variables. Copy `.env.examp
 
 ```
 src/
-  app/(site)/          Public pages (Navbar + footer): home, products (+ intercepted spec modal), quote, offline
+  app/(site)/          Public pages (Navbar + footer): home, solutions, partners, impact, media, products (+ intercepted spec modal), quote, offline
   app/portal/          Biomedical Engineer Service Portal (own app-shell layout)
   components/          home/, products/, quote/, portal/, layout/, ui/ (Button, Tabs, Badge, Icon), motion/
   data/seed.ts         Content from the current site; fallback when Sanity isn't configured

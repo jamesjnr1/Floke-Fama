@@ -9,9 +9,9 @@ export const buttonVariants = cva(
     variants: {
       variant: {
         primary:
-          'bg-neon-600 text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.2),0_10px_30px_-10px_rgb(37_99_235/0.7)] hover:bg-neon-700 hover:-translate-y-0.5',
+          'bg-brand-600 text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.2),0_10px_30px_-10px_rgb(37_120_71/0.7)] hover:bg-brand-700 hover:-translate-y-0.5',
         glow:
-          'bg-gradient-to-br from-neon-500 to-neon-700 text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.3),0_0_0_1px_rgb(147_197_253/0.25),0_12px_40px_-8px_rgb(96_165_250/0.55)] hover:-translate-y-0.5',
+          'bg-gradient-to-br from-brand-600 to-brand-800 text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.3),0_0_0_1px_rgb(143_209_169/0.25),0_12px_40px_-8px_rgb(82_181_124/0.55)] hover:-translate-y-0.5',
         glass: 'glass text-white hover:bg-white/10 hover:-translate-y-0.5',
         outline: 'border border-line bg-paper text-ink hover:border-ink/30 hover:-translate-y-0.5',
         ghost: 'text-ink hover:bg-mist',

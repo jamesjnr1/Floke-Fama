@@ -63,7 +63,7 @@ export function ProcurementFlow({ options, initial }: { options: Option[]; initi
   if (done) {
     return (
       <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} className="rounded-5xl border border-line bg-paper p-10 text-center md:p-16">
-        <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', delay: 0.15 }} className="mx-auto grid size-20 place-items-center rounded-full bg-neon-600 text-3xl text-white shadow-[0_20px_40px_-15px_rgb(37_99_235/0.8)]">
+        <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', delay: 0.15 }} className="mx-auto grid size-20 place-items-center rounded-full bg-brand-600 text-3xl text-white shadow-[0_20px_40px_-15px_rgb(37_120_71/0.8)]">
           <Icon name="fi-rr-check" />
         </motion.span>
         <h2 className="display mt-8 text-4xl">Request received.</h2>
@@ -90,7 +90,7 @@ export function ProcurementFlow({ options, initial }: { options: Option[]; initi
           void go(step + 1);
         } else void submit(e);
       }}
-      noValidate className="overflow-hidden rounded-5xl border border-line bg-paper shadow-[0_40px_80px_-40px_rgb(11_18_32/0.25)]">
+      noValidate className="overflow-hidden rounded-5xl border border-line bg-paper shadow-[0_40px_80px_-40px_rgb(11_21_16/0.25)]">
       {/* Progress */}
       <div className="border-b border-line p-6 md:px-10">
         <div className="flex items-center justify-between text-sm">
@@ -98,7 +98,7 @@ export function ProcurementFlow({ options, initial }: { options: Option[]; initi
           <p className="label">Step {step + 1} / {steps.length}</p>
         </div>
         <div className="mt-4 h-1 overflow-hidden rounded-full bg-mist" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress} aria-label="Progress">
-          <motion.div className="h-full rounded-full bg-gradient-to-r from-neon-500 to-neon-400" animate={{ width: `${progress}%` }} transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }} />
+          <motion.div className="h-full rounded-full bg-gradient-to-r from-brand-500 to-brand-400" animate={{ width: `${progress}%` }} transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }} />
         </div>
       </div>
 
@@ -144,10 +144,10 @@ export function ProcurementFlow({ options, initial }: { options: Option[]; initi
                         onClick={() => setValue('department', d.id, { shouldValidate: true })}
                         className={cn(
                           'flex flex-col items-start gap-6 rounded-3xl border p-5 text-left transition-all duration-500 ease-out-expo',
-                          active ? 'border-neon-500 bg-neon-50 shadow-[0_0_0_4px_var(--color-neon-100)]' : 'border-line hover:border-ink/20',
+                          active ? 'border-brand-500 bg-brand-50 shadow-[0_0_0_4px_var(--color-brand-100)]' : 'border-line hover:border-ink/20',
                         )}
                       >
-                        <Icon name={d.icon} className={cn('text-2xl', active ? 'text-neon-600' : 'text-ink-3')} />
+                        <Icon name={d.icon} className={cn('text-2xl', active ? 'text-brand-600' : 'text-ink-3')} />
                         <span className="font-medium text-ink">{d.label}</span>
                       </button>
                     );
@@ -174,7 +174,7 @@ export function ProcurementFlow({ options, initial }: { options: Option[]; initi
                             onClick={() => toggle(o.label)}
                             className={cn('inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm transition-colors', active ? 'border-midnight bg-midnight text-white' : 'border-line bg-paper text-ink-2 hover:border-ink/30')}
                           >
-                            {active && <Icon name="fi-rr-check" className="text-neon-300" />}
+                            {active && <Icon name="fi-rr-check" className="text-brand-300" />}
                             {o.label}
                           </motion.button>
                         );
@@ -183,7 +183,7 @@ export function ProcurementFlow({ options, initial }: { options: Option[]; initi
                   </div>
                 ))}
                 <div className="flex gap-2">
-                  <input value={custom} onChange={(e) => setCustom(e.target.value)} placeholder="Something else? e.g. Ultrasound machine" className="h-11 flex-1 rounded-full border border-line bg-canvas px-4 text-sm outline-none focus:border-neon-500" aria-label="Add other equipment" />
+                  <input value={custom} onChange={(e) => setCustom(e.target.value)} placeholder="Something else? e.g. Ultrasound machine" className="h-11 flex-1 rounded-full border border-line bg-canvas px-4 text-sm outline-none focus:border-brand-500" aria-label="Add other equipment" />
                   <Button type="button" variant="outline" size="sm" className="h-11" onClick={() => { if (custom.trim()) { toggle(custom.trim()); setCustom(''); } }}>
                     Add
                   </Button>
@@ -206,9 +206,9 @@ export function ProcurementFlow({ options, initial }: { options: Option[]; initi
                       role="radio"
                       aria-checked={active}
                       onClick={() => setValue('timeline', t.id, { shouldValidate: true })}
-                      className={cn('rounded-3xl border p-6 text-left transition-all duration-500', active ? 'border-neon-500 bg-neon-50 shadow-[0_0_0_4px_var(--color-neon-100)]' : 'border-line hover:border-ink/20')}
+                      className={cn('rounded-3xl border p-6 text-left transition-all duration-500', active ? 'border-brand-500 bg-brand-50 shadow-[0_0_0_4px_var(--color-brand-100)]' : 'border-line hover:border-ink/20')}
                     >
-                      <Icon name="fi-rr-calendar" className={cn('text-xl', active ? 'text-neon-600' : 'text-ink-3')} />
+                      <Icon name="fi-rr-calendar" className={cn('text-xl', active ? 'text-brand-600' : 'text-ink-3')} />
                       <p className="mt-8 text-lg font-semibold text-ink">{t.label}</p>
                       <p className="text-sm text-ink-3">{t.detail}</p>
                     </button>
@@ -270,7 +270,7 @@ export function ProcurementFlow({ options, initial }: { options: Option[]; initi
   );
 }
 
-const inputCls = 'h-12 w-full rounded-2xl border border-line bg-canvas px-4 text-[15px] text-ink outline-none transition focus:border-neon-500 focus:bg-paper focus:ring-4 focus:ring-neon-100';
+const inputCls = 'h-12 w-full rounded-2xl border border-line bg-canvas px-4 text-[15px] text-ink outline-none transition focus:border-brand-500 focus:bg-paper focus:ring-4 focus:ring-brand-100';
 
 function Field({ label, error, className, children }: { label: string; error?: string; className?: string; children: React.ReactNode }) {
   return (
@@ -286,7 +286,7 @@ function FieldError({ message }: { message?: string }) {
   return (
     <AnimatePresence>
       {message && (
-        <motion.span initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} role="alert" className="text-xs font-normal text-red-600">
+        <motion.span initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} role="alert" className="text-xs font-normal text-signal-700">
           {message}
         </motion.span>
       )}

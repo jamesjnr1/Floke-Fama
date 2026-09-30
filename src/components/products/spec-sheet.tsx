@@ -68,7 +68,7 @@ export function SpecTabs({ product }: { product: Product }) {
           {(product.documents.length ? product.documents : [{ title: `${product.name} datasheet`, kind: 'datasheet' as const }]).map((d) => (
             <li key={d.title} className="flex items-center justify-between gap-4 rounded-2xl border border-line bg-paper p-4">
               <span className="flex items-center gap-3">
-                <span className="grid size-10 place-items-center rounded-xl bg-red-50 text-red-600"><Icon name="fi-rr-file-pdf" /></span>
+                <span className="grid size-10 place-items-center rounded-xl bg-signal/10 text-signal-700"><Icon name="fi-rr-file-pdf" /></span>
                 <span>
                   <span className="block text-sm font-medium text-ink">{d.title}</span>
                   <span className="text-xs capitalize text-ink-3">{d.kind} · PDF</span>
