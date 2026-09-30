@@ -32,18 +32,29 @@ Optional integrations are switched on by environment variables. Copy `.env.examp
 
 ```
 src/
-  app/(site)/          Public pages (Navbar + footer): home, solutions, partners, impact, media, products (+ intercepted spec modal), quote, offline
-  app/portal/          Biomedical Engineer Service Portal (own app-shell layout)
-  components/          home/, products/, quote/, portal/, layout/, ui/ (Button, Tabs, Badge, Icon), motion/
+  app/(site)/          Public pages (Navbar + footer): home, solutions, partners, impact, media, products (+ intercepted spec modal), quote, offline,
+                       login, and the client portal /portal
+  app/engineer/        Biomedical Engineer Service Portal /engineer (own app-shell layout, separate from the client portal)
+  middleware.ts        Protects /portal and /engineer (sign-in + role check)
+  components/          home/, products/, quote/, client-portal/, engineer/, auth/, layout/, ui/ (Button, Tabs, Badge, Icon), motion/
   data/seed.ts         Content from the current site; fallback when Sanity isn't configured
-  data/portal-demo.ts  Fictional demo data for the client-portal experience
-  lib/                 data access (Sanity), search (Algolia/local), quote schema (zod), Three.js scene
+  data/*-demo.ts       Fictional demo data for the two portals
+  lib/                 auth/ (sessions, sign-in), data access (Sanity), search (Algolia/local), quote schema (zod), Three.js scene
 studio/                Sanity Studio: schemas + seed importer (installed separately)
 public/                Images, service worker
 flyers/                Social media templates, exports, captions
 docs/                  Audit, roadmap, design system, social playbook, architecture
 prototype/             Earlier static HTML prototype (reference only)
 ```
+
+## Portals
+
+| Portal | URL | Who | Preview demo account |
+|---|---|---|---|
+| Flokefama Care (client) | `/portal` | Hospital and lab staff | `client@demo.flokefama.com` / `FlokeCare-2026` |
+| Biomedical Engineer Service Portal | `/engineer` | Flokefama engineers | `engineer@demo.flokefama.com` / `FlokeEng-2026` |
+
+Both require signing in at `/login`, and each account can only open its own portal. Details and the go-live steps: [architecture → Portal sign-in](docs/05-architecture.md#portal-sign-in).
 
 ## ⚠️ The live site is off-limits
 

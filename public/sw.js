@@ -4,7 +4,9 @@
  * - Static assets and product images: cache-first (hashed filenames never go stale).
  * Bump VERSION to invalidate old caches on deploy.
  */
-const VERSION = 'v1';
+const VERSION = 'v2';
+// Signed-in areas are never cached: private data must not survive sign-out on shared hospital machines.
+const PRIVATE = ['/portal', '/engineer', '/login'];
 const PAGE_CACHE = `pages-${VERSION}`;
 const ASSET_CACHE = `assets-${VERSION}`;
 const PRECACHE = ['/offline', '/products', '/images/logo.png', '/images/favicon.png'];
@@ -25,6 +27,7 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
   if (request.method !== 'GET' || url.origin !== self.location.origin || url.pathname.startsWith('/api/')) return;
+  if (PRIVATE.some((p) => url.pathname === p || url.pathname.startsWith(`${p}/`))) return;
 
   if (request.mode === 'navigate') {
     event.respondWith(

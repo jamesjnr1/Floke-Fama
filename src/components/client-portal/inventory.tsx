@@ -4,30 +4,32 @@ import * as Dialog from '@radix-ui/react-dialog';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'motion/react';
+import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Icon, IconTile } from '@/components/ui/icon';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import type { Asset } from '@/data/portal-demo';
+import { assets, type Asset } from '@/data/client-portal-demo';
 
 const health = {
-  online: { label: 'In spec', tone: 'green' as const },
-  maintenance: { label: 'In service', tone: 'blue' as const },
+  good: { label: 'In spec', tone: 'green' as const },
+  due: { label: 'Calibration due', tone: 'amber' as const },
   attention: { label: 'Needs attention', tone: 'red' as const },
 };
 
-/** Documentation view: every installed system; opening one shows its deep spec sheet. */
-export function Inventory({ assets, onSelect }: { assets: Asset[]; onSelect: (a: Asset) => void }) {
+export function Inventory() {
+  const [selected, setSelected] = useState<Asset | null>(null);
   return (
-    <ul className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+    <>
+      <ul className="grid gap-3 md:grid-cols-3">
         {assets.map((a) => (
           <li key={a.id}>
-            <button onClick={() => onSelect(a)} className="group flex h-full w-full flex-col rounded-4xl border border-line bg-paper p-2 text-left transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_30px_60px_-30px_rgb(11_21_16/0.35)]">
+            <button onClick={() => setSelected(a)} className="group flex h-full w-full flex-col rounded-4xl border border-line bg-paper p-2 text-left transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_30px_60px_-30px_rgb(11_21_16/0.35)]">
               <AssetVisual asset={a} className="aspect-[4/3] rounded-[1.6rem]" />
               <div className="p-4">
                 <div className="flex items-center justify-between gap-2">
                   <p className="label">{a.brand}</p>
-                  <Badge tone={health[a.status].tone}>{health[a.status].label}</Badge>
+                  <Badge tone={health[a.health].tone}>{health[a.health].label}</Badge>
                 </div>
                 <p className="mt-2 font-semibold text-ink">{a.name}</p>
                 <p className="text-sm text-ink-3">{a.location} · Next calibration {a.nextCalibration}</p>
@@ -35,14 +37,9 @@ export function Inventory({ assets, onSelect }: { assets: Asset[]; onSelect: (a:
             </button>
           </li>
         ))}
-    </ul>
-  );
-}
+      </ul>
 
-/** Deep spec sheet dialog for an installed system. */
-export function AssetSheet({ asset: selected, onClose }: { asset: Asset | null; onClose: () => void }) {
-  return (
-      <Dialog.Root open={Boolean(selected)} onOpenChange={(v) => !v && onClose()}>
+      <Dialog.Root open={Boolean(selected)} onOpenChange={(v) => !v && setSelected(null)}>
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 z-[60] bg-midnight/50 backdrop-blur-sm data-[state=open]:animate-in" />
           <Dialog.Content aria-describedby={undefined} className="fixed inset-x-3 bottom-3 top-16 z-[70] mx-auto max-w-6xl overflow-hidden rounded-5xl bg-canvas shadow-2xl outline-none md:inset-x-6 md:bottom-6 md:top-24">
@@ -53,6 +50,7 @@ export function AssetSheet({ asset: selected, onClose }: { asset: Asset | null; 
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>
+    </>
   );
 }
 
@@ -79,7 +77,7 @@ function DeepSpecSheet({ asset }: { asset: Asset }) {
           <div>
             <p className="label">{asset.brand} · {asset.id}</p>
             <Dialog.Title className="display mt-3 text-3xl md:text-4xl">{asset.name}</Dialog.Title>
-            <div className="mt-3"><Badge tone={health[asset.status].tone}>{health[asset.status].label}</Badge></div>
+            <div className="mt-3"><Badge tone={health[asset.health].tone}>{health[asset.health].label}</Badge></div>
           </div>
           <dl className="grid grid-cols-2 gap-3 text-sm">
             {[

@@ -18,6 +18,7 @@
 .fi-rr-download::before{content:"\f591"}
 .fi-rr-envelope::before{content:"\f5de"}
 .fi-rr-eye::before{content:"\f5f8"}
+.fi-rr-eye-crossed::before{content:"\f5f5"}
 .fi-rr-file-pdf::before{content:"\f66a"}
 .fi-rr-flask-gear::before{content:"\f698"}
 .fi-rr-graduation-cap::before{content:"\f70f"}
@@ -32,12 +33,15 @@
 .fi-rr-search::before{content:"\fbba"}
 .fi-rr-settings::before{content:"\fbd2"}
 .fi-rr-shield-check::before{content:"\fbdb"}
+.fi-rr-sign-out-alt::before{content:"\fc0c"}
 .fi-rr-star::before{content:"\fce9"}
 .fi-rr-stethoscope::before{content:"\fcf4"}
 .fi-rr-syringe::before{content:"\fd36"}
+.fi-rr-time-fast::before{content:"\fda4"}
 .fi-rr-tool-box::before{content:"\fdc8"}
 .fi-rr-trophy::before{content:"\fe39"}
 .fi-rr-truck-side::before{content:"\fe4d"}
+.fi-rr-user::before{content:"\fea0"}
 @font-face{font-family:"uicons-brands";src:url("uicons-brands.woff2") format("woff2");font-display:block}
 [class^="fi-brands-"]::before,[class*=" fi-brands-"]::before{font-family:"uicons-brands"!important;font-style:normal;font-weight:normal!important;line-height:1;display:inline-block;vertical-align:-.125em;-webkit-font-smoothing:antialiased}
 .fi-brands-facebook::before{content:"\f14f"}
