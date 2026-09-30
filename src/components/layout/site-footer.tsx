@@ -16,12 +16,12 @@ export function SiteFooter() {
     <footer className="bg-midnight text-white/60">
       <div className="mx-auto grid max-w-[1280px] gap-12 px-5 py-20 md:px-10 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr]">
         <div>
-          <Logo />
+          <Logo tone="dark" />
           <p className="mt-5 max-w-xs text-sm font-light leading-relaxed">Total healthcare solutions for Ghana and West Africa. Saving lives since 2008.</p>
           <ul className="mt-6 flex gap-2" aria-label="Social media">
             {social.map((s) => (
               <li key={s.label}>
-                <a href={s.href} aria-label={s.label} className="glass grid size-10 place-items-center rounded-full text-white transition hover:bg-surgical-600">
+                <a href={s.href} aria-label={s.label} className="glass grid size-10 place-items-center rounded-full text-white transition hover:bg-neon-600">
                   <Icon name={s.icon} />
                 </a>
               </li>
@@ -36,7 +36,9 @@ export function SiteFooter() {
           ))}
         </FooterCol>
         <FooterCol title="Company">
-          <li><Link href="/#trust" className="hover:text-white">About &amp; awards</Link></li>
+          <li><Link href="/#impact" className="hover:text-white">Institutional impact</Link></li>
+          <li><Link href="/#partners" className="hover:text-white">Technology partners</Link></li>
+          <li><Link href="/#media" className="hover:text-white">Media hub</Link></li>
           <li><Link href="/#services" className="hover:text-white">Services</Link></li>
           <li><Link href="/portal" className="hover:text-white">Client portal</Link></li>
           <li><Link href="/quote?intent=demo" className="hover:text-white">Book a demonstration</Link></li>

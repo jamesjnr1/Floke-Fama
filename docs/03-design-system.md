@@ -1,6 +1,26 @@
-# Flokefama Design System (v3, "Medical Clean")
+# Flokefama Design System (v4, "Premium Clinical")
 
-> **v3 update (Next.js platform):** the base palette moved to off-white (`#F7F8F7`), clinical greys and **midnight slate** (`#070C14`), with **surgical green** (`#257847` / `#34C77B` on dark) used only for primary actions and data highlights. Tokens live in `src/app/globals.css` (`@theme`). Type follows the "extreme contrast" rule: massive Poppins 600 titles (up to ~96 px, −0.045em tracking) paired with tiny 11 px uppercase labels at 0.22em tracking (`.label`). The v2 sections below still apply to icons, 3D and motion.
+> **v4 (current):** the tokens below replace earlier versions. They live in `src/app/globals.css` (`@theme`) and mirror the Figma local variables one-to-one. Earlier sections further down are kept for history; where they conflict, **v4 wins**.
+
+## v4 tokens (Figma variables → Tailwind)
+| Figma variable | Value | Tailwind | Use |
+|---|---|---|---|
+| `brand/midnight` | `#0F172A` | `bg-midnight` | Dark canvas (hero, portal, footer) |
+| `brand/neon-blue` | `#3B82F6` | `neon-500` (fills use `neon-600` `#2563EB` for AA contrast with white text) | Primary actions, data highlights, glows |
+| `brand/surgical-green` | `#10B981` | `bg-surgical`, `.status-dot`, `emerald-*` | Pulsating active-machine / status dots, "pass" states |
+| `canvas/clean-white` | `#F8F9FA` | `bg-canvas` | Light solutions catalogue sections |
+
+| Figma text style | Spec | Implementation |
+|---|---|---|
+| `Display/Hero Large` | Geist Sans, 80px, Bold, −3% tracking | `.display` + `text-[clamp(…,5rem)]`, hero slogan uppercase |
+| `Heading/Muted Label` | Geist Mono, 12px, Medium, +15% tracking, uppercase | `.label` |
+
+Fonts load via the `geist` package (`next/font`), self-hosted with no layout shift. Buttons and the header CTA use a 12px radius (`rounded-xl`).
+
+**Component ↔ Figma frame map:** `Navbar.tsx` (Global Header) · `hero.tsx` (Hero Section) · `partners.tsx` (Partners & Clientele) · `BentoGrid.tsx` (Insights Deck) · `portal/PortalShell.tsx` (Portal Shell + Sidebar Rail) · `portal/AssetStatusList.tsx` (System Status Rail) · `portal/TimelineTracker.tsx` (Interactive Timeline Block) · `portal/QuickActions.tsx` (Terminal Button + Radial Efficiency Chart).
+
+**Social flyers** still use the original green brand palette and Poppins. Align them to v4 if Flokefama wants the social channels to match the site.
+
 
 The rules that make the website, flyers and brochures look like one flagship healthcare brand. Every token below is a CSS custom property in `site/assets/css/styles.css`.
 

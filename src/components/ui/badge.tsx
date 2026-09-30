@@ -6,7 +6,7 @@ const badgeVariants = cva('inline-flex items-center gap-1.5 rounded-full px-2.5 
   variants: {
     tone: {
       neutral: 'bg-mist text-ink-2',
-      green: 'bg-surgical-50 text-surgical-700 ring-1 ring-surgical-100',
+      green: 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100',
       amber: 'bg-amber-50 text-amber-800 ring-1 ring-amber-100',
       red: 'bg-red-50 text-red-700 ring-1 ring-red-100',
       blue: 'bg-sky-50 text-sky-800 ring-1 ring-sky-100',

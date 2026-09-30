@@ -2,7 +2,7 @@
 
 The new [flokefama.com](https://flokefama.com): a composable, headless healthcare platform for Flokefama Company Limited, a Ghana Club 100 supplier of medical equipment and diagnostics (founded 2008).
 
-**Stack:** Next.js 15 (App Router) · TypeScript · Tailwind CSS v4 · Radix / shadcn-style UI · Motion (Framer Motion) · Three.js · Sanity · Algolia · HubSpot · Vercel
+**Stack:** Next.js 15 (App Router) · TypeScript · Tailwind CSS v4 · Geist Sans/Mono · Radix / shadcn-style UI · Motion (Framer Motion) · Three.js · Sanity · Algolia · HubSpot · Vercel
 
 → Full architecture: [docs/05-architecture.md](docs/05-architecture.md)
 
@@ -32,7 +32,8 @@ Optional integrations are switched on by environment variables. Copy `.env.examp
 
 ```
 src/
-  app/                 Routes: home, products (+ intercepted spec modal), quote, portal, offline, api/quote
+  app/(site)/          Public pages (Navbar + footer): home, products (+ intercepted spec modal), quote, offline
+  app/portal/          Biomedical Engineer Service Portal (own app-shell layout)
   components/          home/, products/, quote/, portal/, layout/, ui/ (Button, Tabs, Badge, Icon), motion/
   data/seed.ts         Content from the current site; fallback when Sanity isn't configured
   data/portal-demo.ts  Fictional demo data for the client-portal experience
