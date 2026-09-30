@@ -55,7 +55,7 @@ export function Inventory() {
 }
 
 function AssetVisual({ asset, className }: { asset: Asset; className?: string }) {
-  const dark = asset.image?.includes('solution-ivd');
+  const dark = asset.image?.includes('bs-240-stage');
   return (
     <div className={`relative overflow-hidden ${dark ? 'bg-[#05090d]' : 'bg-[radial-gradient(90%_70%_at_50%_35%,#fff,#eef2ef)]'} ${className ?? ''}`}>
       {asset.image ? (

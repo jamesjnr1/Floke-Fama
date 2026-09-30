@@ -27,16 +27,17 @@ Optional integrations are switched on by environment variables. Copy `.env.examp
 | `npm run algolia:sync` | Pushes the catalogue to Algolia |
 | `npm run flyers` | Renders social flyer templates to `flyers/export/` |
 | `npm run images -- photo.jpg 1600` | Converts a photo to optimised WebP |
+| `node scripts/stage-image.mjs` | Rebuilds the BS-240 cut-out for dark sections (feathered edges, logo-green light strip) |
 
 ## What's in the repo
 
 ```
 src/
-  app/(site)/          Public pages (Navbar + footer): home, solutions, partners, impact, media, products (+ intercepted spec modal), quote, offline,
-                       login, and the client portal /portal
+  app/(site)/          Public pages (Navbar + footer), matching the flokefama.com menu: home, about, awards, services,
+                       events, products (shop, + intercepted spec modal), esg, contact, quote, offline, login, client portal /portal
   app/engineer/        Biomedical Engineer Service Portal /engineer (own app-shell layout, separate from the client portal)
   middleware.ts        Protects /portal and /engineer (sign-in + role check)
-  components/          home/, products/, quote/, client-portal/, engineer/, auth/, layout/, ui/ (Button, Tabs, Badge, Icon), motion/
+  components/          home/, contact/, awards/, products/, quote/, client-portal/, engineer/, auth/, layout/, ui/, motion/
   data/seed.ts         Content from the current site; fallback when Sanity isn't configured
   data/*-demo.ts       Fictional demo data for the two portals
   lib/                 auth/ (sessions, sign-in), data access (Sanity), search (Algolia/local), quote schema (zod), Three.js scene
@@ -69,7 +70,8 @@ Both require signing in at `/login`, and each account can only open its own port
 - **No invented facts.** Metrics and milestones come only from Flokefama's published material. Product specs are flagged `specsVerified: false` and show an "indicative" note until checked against manufacturer datasheets.
 - The **Ministry of Health partnership** in the brief is **not shown** until Flokefama confirms it.
 - The **client portal uses clearly labelled demo data** (fictional facility and engineers) until it's connected to a real service backend.
-- Real event photography only.
+- Real event photography only. Awards are shown from photos of the actual awards; testimonials, figures (700+ facilities, 300+ integrations), services and events are taken from the current site.
+- The site never links to the live flokefama.com (the brochure PDF will be added once Flokefama supplies a web-sized copy).
 
 ## Git workflow
 - `main` = approved work, deployed by Vercel to its own `*.vercel.app` address (never the live site). Work on branches, merge by pull request, and let CI pass first.

@@ -15,7 +15,7 @@ export function BentoGrid({ metrics }: { metrics: Metric[] }) {
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal className="flex flex-wrap items-end justify-between gap-6">
           <div>
-            <p className="label">Insights deck</p>
+            <p className="label">The results</p>
             <h2 className="display mt-4 max-w-2xl text-[clamp(2rem,1.2rem+2.8vw,3.75rem)]">Impact you can measure. Technology you can trust.</h2>
           </div>
         </Reveal>
@@ -24,7 +24,7 @@ export function BentoGrid({ metrics }: { metrics: Metric[] }) {
           {/* Card_01_Impact */}
           <Reveal className="lg:col-span-4">
             <article className="relative flex h-full min-h-[440px] flex-col overflow-hidden rounded-3xl border border-line bg-paper p-7">
-              <p className="label">Our institutional impact</p>
+              <p className="label">Our impact</p>
               <dl className="mt-6 grid grid-cols-2 gap-x-4 gap-y-5">
                 {metrics.slice(0, 4).map((m) => (
                   <div key={m.label} className="flex flex-col-reverse">
@@ -36,9 +36,9 @@ export function BentoGrid({ metrics }: { metrics: Metric[] }) {
                 ))}
               </dl>
               <SignalTrace className="mt-auto" />
-              {/* Floating badge. The brief proposes "100+ Hospitals": swap in once Flokefama confirms the figure. */}
+              {/* Floating badge */}
               <span className="absolute bottom-[104px] right-6 inline-flex items-center gap-2 rounded-full border border-line bg-paper/90 px-3 py-1.5 text-xs font-medium text-ink shadow-sm backdrop-blur">
-                <span className="status-dot" aria-hidden /> Ghana Club 100
+                <span className="status-dot" aria-hidden /> No.1 in Healthcare · Ghana Club 100
               </span>
             </article>
           </Reveal>
@@ -55,11 +55,11 @@ export function BentoGrid({ metrics }: { metrics: Metric[] }) {
               <p className="relative mt-2 max-w-[18rem] text-sm text-white/60">Fully automated bench-top clinical chemistry, installed and serviced nationwide.</p>
               <div className="relative mt-auto h-56">
                 <Image
-                  src="/images/solution-ivd.webp"
+                  src="/images/bs-240-stage.webp"
                   alt="Mindray BS-240 chemistry analyser"
                   fill
                   sizes="(min-width: 1024px) 33vw, 100vw"
-                  className="object-contain object-right-bottom mix-blend-lighten transition-transform duration-1000 ease-out-expo group-hover:scale-105"
+                  className="object-contain object-right-bottom transition-transform duration-1000 ease-out-expo group-hover:scale-105"
                 />
               </div>
               <span className="relative mt-4 inline-flex items-center gap-2 text-sm font-medium text-brand-300">
@@ -77,7 +77,7 @@ export function BentoGrid({ metrics }: { metrics: Metric[] }) {
               <MediaThumbnail
                 image="/images/forbes-africa-2026.webp"
                 alt="Forbes Africa, Ghana 2026: Africa Undiscovered edition cover"
-                href="/media"
+                href="/events#news"
                 cta="Read the feature"
                 className="mt-6 flex-1"
               />

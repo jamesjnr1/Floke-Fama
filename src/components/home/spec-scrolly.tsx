@@ -24,8 +24,9 @@ export function SpecScrolly({ product }: { product: Product }) {
   const items = chapters(product);
   const [active, setActive] = useState(0);
   useMotionValueEvent(scrollYProgress, 'change', (v) => setActive(Math.min(items.length - 1, Math.floor(v * items.length))));
-  const scale = useTransform(scrollYProgress, [0, 1], [1.08, 0.94]);
-  const rotate = useTransform(scrollYProgress, [0, 1], [-4, 3]);
+  // Drift, don't rotate: rotation tilts the photo's frame and exposes its edges.
+  const scale = useTransform(scrollYProgress, [0, 1], [1.06, 0.96]);
+  const y = useTransform(scrollYProgress, [0, 1], [30, -30]);
   const glow = useTransform(scrollYProgress, [0, 0.5, 1], [0.3, 0.8, 0.4]);
 
   return (
@@ -65,9 +66,10 @@ export function SpecScrolly({ product }: { product: Product }) {
           </div>
           <div className="relative h-[80vh]">
             <motion.div style={{ opacity: glow }} className="absolute inset-[10%] rounded-full bg-[radial-gradient(circle,rgb(82_181_124/0.35),transparent_65%)] blur-2xl" />
+            <div aria-hidden className="absolute inset-x-[12%] bottom-[18%] h-12 rounded-[100%] bg-black/70 blur-2xl" />
             {product.image && (
-              <motion.div style={{ scale, rotate }} className="absolute inset-0">
-                <Image src={product.image} alt={`${product.brand} ${product.name}`} fill sizes="50vw" className="object-contain mix-blend-lighten [mask-image:linear-gradient(90deg,transparent,#000_30%)]" />
+              <motion.div style={{ scale, y }} className="absolute inset-0">
+                <Image src={product.image} alt={`${product.brand} ${product.name}`} fill sizes="50vw" className="object-contain drop-shadow-[0_40px_60px_rgb(0_0_0/0.55)]" />
               </motion.div>
             )}
           </div>
@@ -80,7 +82,7 @@ export function SpecScrolly({ product }: { product: Product }) {
         <h2 className="display mt-4 text-5xl text-white">{product.name}</h2>
         {product.image && (
           <div className="relative mt-8 aspect-[4/3]">
-            <Image src={product.image} alt="" fill sizes="100vw" className="object-contain mix-blend-lighten" />
+            <Image src={product.image} alt="" fill sizes="100vw" className="object-contain" />
           </div>
         )}
         <dl className="mt-8 divide-y divide-white/10 border-y border-white/10">
