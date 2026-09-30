@@ -1,71 +1,74 @@
-# Flokefama Design System
+# Flokefama Design System (v2, premium)
 
-The rules that make everything (website, flyers, brochures) look like one company. Every token below is already a CSS custom property in `site/assets/css/styles.css`.
+The rules that make the website, flyers and brochures look like one flagship healthcare brand. Every token below is a CSS custom property in `site/assets/css/styles.css`.
 
-## Principles
-1. **Clinical calm.** Lots of white space, few colours, nothing flashing. Healthcare buyers are cautious, and calm reads as competent.
-2. **Green leads, red signals.** Green is the brand. Red (the dot in the logo) is used sparingly: one highlight per screen, never for whole buttons next to green buttons.
-3. **Proof over claims.** Awards, partner logos, real numbers and real photos do the persuading. Adjectives don't.
-4. **One primary action per view.** Usually "Request a quote".
+## Direction
+**Cinematic, clinical, confident.** Deep emerald darkness, light-emitting glass and real-time 3D, balanced with calm white sections for reading. The reference points are flagship pharma and medtech brands (Roche, Siemens Healthineers, Novartis), not a typical local supplier template.
+
+1. **Dark to open, light to read.** Hero, impact, contact and footer are dark "stage" sections. Solutions, services, products and news are light and airy.
+2. **One hero moment.** A real-time 3D molecule with floating two-tone capsules (Three.js). Everywhere else, depth comes from glass, soft shadows and subtle 3D tilt, never clutter.
+3. **Simple content.** Short headlines, one idea per section, one primary action: *Request a quote*.
+4. **Green leads, red signals.** Red (the dot in the logo) appears as tiny accents only: the pulse dot and the oxygen atoms in the 3D molecule.
 
 ## Colour
-
 | Token | Hex | Use |
 |---|---|---|
-| `--green-700` | `#1B5E37` | Hover state for primary buttons, dark text on mint |
-| **`--green-600`** | **`#257847`** | **Brand primary.** Buttons, links, icons |
-| `--green-900` | `#0C2E1C` | Dark sections, footer, flyer backgrounds |
-| `--mint-50` | `#EEF6F1` | Tinted section backgrounds, icon chips |
-| **`--red-500`** | **`#E4283C`** | **Accent only.** Small highlights, badges, the dot |
-| `--ink-900` | `#0F1A14` | Headings |
-| `--ink-600` | `#4A5A51` | Body text (7.5:1 contrast on white) |
-| `--line` | `#E3E9E5` | Borders and dividers |
-| `--surface` | `#F7F9F8` | Alternate section background |
+| `--night` | `#03110A` | Dark stage sections |
+| `--emerald-800` | `#0E3F26` | Deep gradients, icon chip base |
+| **`--emerald-600`** | **`#257847`** | **Brand primary.** Buttons, links, highlights on light |
+| `--emerald-400` | `#3FBF7F` | Glows, gradient midpoint |
+| `--mint-300` | `#7FE0A8` | Accents on dark (eyebrows, icons, stats labels) |
+| `--mint-50` | `#EFF8F3` | Tinted light surfaces |
+| **`--red-500`** | **`#E4283C`** | Accent only |
+| `--ink` / `--ink-2` | `#0B1A12` / `#405048` | Headings / body text on light |
+| Glass | `rgba(255,255,255,.06)` + `.12` border + `backdrop-filter: blur()` | Cards, pills and nav on dark |
 
-Contrast: white on `--green-600` = 5.6:1 ✅ (passes WCAG AA for all text sizes). **Avoid red text on green**, since it fails for colour-blind users.
+Signature gradient text (on dark): `linear-gradient(100deg, #7FE0A8, #3FBF7F, #B9F2D2)`.
 
-## Typography
-- **Headings:** *Manrope* 700/800, tight tracking (-0.02em). Modern and geometric, and it pairs well with the rounded logo type.
-- **Body / UI:** *Inter* 400/500/600 (the site already uses it).
-- Fluid scale (uses `clamp()`, so it adapts on its own between mobile and desktop):
+## Typography: Poppins only
+Self-hosted in `site/assets/fonts/` (weights 300, 400, 500, 600, 700; ~8 KB each).
 
-| Token | Mobile → Desktop | Use |
-|---|---|---|
-| `--fs-display` | 40 → 72 px | Hero headline only |
-| `--fs-h2` | 30 → 48 px | Section titles |
-| `--fs-h3` | 20 → 24 px | Card titles |
-| `--fs-body` | 16 → 18 px | Paragraphs |
-| `--fs-small` | 14 px | Labels, meta |
-| Eyebrow | 13 px, uppercase, 0.12em tracking, green | Small label above section titles |
+| Role | Weight | Size (mobile → desktop) | Tracking |
+|---|---|---|---|
+| Hero display | 600 | 42 → 84 px | -0.04em |
+| Section title (h2) | 600 | 32 → 54 px | -0.025em |
+| Card title (h3) | 600 | 18 → 22 px | -0.015em |
+| Lead / body | **300** / 400 | 17–20 / 16–17 px | 0 |
+| Eyebrow | 500, uppercase | 13 px | 0.16em, with a 24 px gradient rule |
 
-Max line length: **65 characters** (`max-width: 60ch`) for paragraphs.
+Light (300) body copy against heavy (600) headings is what gives Poppins its premium feel. Don't use 700 for headings; it looks generic.
 
-## Spacing & layout
-- 4 px base unit: 4 · 8 · 12 · 16 · 24 · 32 · 48 · 64 · 96 · 128
-- Container: **1200 px** max, 20 px side padding on mobile, 32 px on desktop
-- Section vertical padding: 64 px mobile → 112 px desktop
-- Radius: 10 px (buttons, inputs), 18 px (cards), 28 px (large media)
-- Shadows: one soft shadow only, `0 10px 30px -12px rgba(12,46,28,.18)`
+## Icons: Flaticon UIcons
+- Use the **Regular Rounded** set (`fi-rr-*`) for UI and **Brands** (`fi-brands-*`) for social. Browse at https://www.flaticon.com/uicons.
+- Usage: `<i class="fi-rr-microscope"></i>`
+- After adding or changing icons, run `npm run icons`. It scans the HTML and rebuilds a subset font containing only the icons in use (**~4 KB instead of ~400 KB**). It fails loudly if an icon name doesn't exist.
+- **3D icon chip:** wrap feature icons in `<span class="icon-3d">…</span>` (or `icon-3d icon-3d--sm`). It gives a glossy emerald tile with a top highlight, inner shading and a coloured drop shadow, and it straightens up on hover.
 
-## Components
-- **Buttons:** primary (green fill), secondary (white with a green border), ghost (text + arrow). Height 48 px, so they are easy to tap.
-- **Cards:** white, 1 px `--line` border, 18 px radius, lift 4 px on hover.
-- **Eyebrow + heading + lead:** the standard opening for every section.
-- **Stat:** large Manrope number plus a small label. **Numbers are rendered in the HTML, not animated from 0**, which fixes the "0 +" bug.
-- **Logo wall:** greyscale logos at 60% opacity that turn full colour on hover, in a fixed grid (3 columns on mobile, 7 on desktop).
+## 3D & motion
+| Element | Technique |
+|---|---|
+| Hero molecule + capsules | Three.js (`src/hero3d.js`, built to `site/assets/js/hero3d.js` with `npm run build:3d`). Physical materials with clearcoat, studio environment reflections, cursor parallax |
+| Cards (solutions, products) | CSS `perspective` tilt driven by the cursor plus a moving glare highlight (`data-tilt`) |
+| Product images | "Pedestal" stage: radial light plus a soft floor shadow, so cut-outs feel 3D |
+| Glass cards | Float slowly (7 s loop) |
+| Stats | Count up when visible. **The final number is in the HTML**, so it can never show "0" |
+| Section reveal | Fade and rise with a stagger |
+
+**Performance and accessibility rules:**
+- The 3D scene pauses when it's off-screen or the tab is hidden, caps pixel ratio at 2, and fades in only once it's ready.
+- If WebGL isn't available, a CSS glow orb stays in place, so the hero still looks finished.
+- With `prefers-reduced-motion`, the 3D scene renders a single still frame and all animation is switched off.
+- Tilt runs only for mouse/trackpad users, not on touch screens.
+
+## Layout & shape
+- Container 1240 px, gutter 20 → 40 px, section padding 80 → 144 px.
+- Radius: 12 px (inputs), 20 px (cards), 32 px (large tiles), pills fully round.
+- Buttons are fully rounded, 52 px tall, and the primary one has an emerald gradient with an inner highlight.
 
 ## Imagery
-- Real Flokefama photos first: the head office, engineers installing equipment, the team, award moments.
-- Product shots: **square, pure white background, product centred at ~80% of the frame, WebP, ≤ 120 KB**.
-- No stock photos of Western hospitals, and no images copied from Amazon or Bing.
-- Over photos, use a dark green gradient on **one side only**, so faces stay visible.
-
-## Logo usage
-- Needs a vector (SVG) from the client. The current PNG has a white pill baked in, which is why it looks like a sticker on the green hero.
-- Minimum clear space = the height of the "O" symbol. Minimum width 120 px on screen.
-- On dark backgrounds, use an all-white version (to be produced from the vector).
+- Real Flokefama photography first: events, engineers on site, the head office.
+- Products are shown on the pedestal stage. Supply square PNG/WebP with a white or transparent background.
+- The logo still needs a vector version from the client. The current PNG has a white pill baked in; it works on dark, but an SVG and an all-white version are needed.
 
 ## Voice
-- Confident, precise, warm. "We install, calibrate and maintain." not "We are passionate about delivering innovative solutions."
-- Ghanaian English conventions (organisation, centre, programme).
-- Use numbers only when they are verified.
+Confident, precise, warm. Short sentences. Verified numbers only. Ghanaian/British English spelling.

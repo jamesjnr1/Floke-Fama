@@ -4,5 +4,6 @@ import { chromium } from 'playwright';
 
 export function launch() {
   const executablePath = process.env.CHROMIUM_PATH || undefined;
-  return chromium.launch({ executablePath });
+  // SwiftShader gives headless Chromium a software WebGL context, so the 3D hero renders in QA.
+  return chromium.launch({ executablePath, args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
 }
