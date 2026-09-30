@@ -1,4 +1,4 @@
-import type { AssetStatus } from '@/data/portal-demo';
+import type { AssetStatus } from '@/data/engineer-demo';
 
 export const statusMeta: Record<AssetStatus, { label: string; dot: string; tone: string }> = {
   online: { label: 'Online', dot: 'status-dot', tone: '#3aa867' },

@@ -31,7 +31,7 @@
 Every integration is optional at runtime. With no environment variables the site runs entirely on `src/data/seed.ts`: search runs locally and quote requests are validated and logged. Add keys one at a time as Flokefama's accounts are created (`.env.example`).
 
 ## Route groups
-`src/app/(site)/` holds the public pages and shares the Navbar and footer via `(site)/layout.tsx`. `src/app/portal/` is an application shell with its own layout, with no marketing chrome.
+`src/app/(site)/` holds the public pages and shares the Navbar and footer via `(site)/layout.tsx`. `src/app/engineer/` is an application shell with its own layout, with no marketing chrome. `/login` and the client portal `/portal` live inside `(site)` and keep the Navbar.
 
 ## Routes
 | Route | Rendering | Notes |
@@ -45,11 +45,34 @@ Every integration is optional at runtime. With no environment variables the site
 | `/products/[slug]` | SSG + ISR | Full Deep Spec Sheet page for SEO, with `Product` JSON-LD |
 | `/products/(.)[slug]` | Intercepted (parallel `@modal` slot) | The same spec sheet as an overlay when opened from the catalogue |
 | `/quote` | Dynamic | Multi-step procurement flow (quote or demo), react-hook-form + zod, validated again on the server |
-| `/portal` | Static, own layout | Biomedical Engineer Service Portal (**demo data**): sidebar rail, System Status rail with sparklines, ticket timeline tracker, log-fault terminal, radial uptime, System Pulse and Documentation views with deep spec sheets |
+| `/login` | Dynamic | Sign-in for both portals. Sends each account to its own portal |
+| `/portal` | Dynamic, **sign-in required (client)** | Flokefama Care client portal (**demo data**): facility header with stats, service tickets with engineer dispatch, installed inventory with deep spec sheets |
+| `/engineer` | Dynamic, own layout, **sign-in required (engineer)** | Biomedical Engineer Service Portal (**demo data**, separate from the client portal): sidebar rail, System Status rail with sparklines, ticket timeline tracker, log-fault terminal, radial uptime, System Pulse and Documentation views |
 | `/offline` | Static | Precached; emergency biomedical support contacts |
 | `/sitemap.xml`, `/robots.txt`, `/manifest.webmanifest` | Generated | |
 
 Old WordPress URLs (`/index.php/shop`, `/index.php/product/*`, `/index.php/about-us` → `/impact`, `/index.php/awards` and `/index.php/media-centre` → `/media`, `/index.php/services` → `/solutions`) are 308-redirected in `next.config.ts`.
+
+## Portal sign-in
+Two separate areas, two roles: **client** (hospital staff) → `/portal`, **engineer** (Flokefama biomedical engineers) → `/engineer`. Neither can open the other's area.
+
+| Layer | What it does |
+|---|---|
+| `src/middleware.ts` (edge) | Runs on `/login`, `/portal/*` and `/engineer/*`. No valid session → redirect to `/login?next=…`; wrong role → own portal; signed in on `/login` → own portal. Sets `Cache-Control: private, no-store` |
+| `src/lib/auth/server.ts` | `requireSession(role)` is checked again inside each page, so a page is never rendered without a session even if the middleware is bypassed |
+| `src/lib/auth/session.ts` | Session = signed cookie `ff_session` (HMAC-SHA-256 with `SESSION_SECRET`, 8-hour expiry). `httpOnly`, `SameSite=Lax`, `Secure` in production. Tampered or expired cookies are rejected and cleared |
+| `src/lib/auth/actions.ts` | Server actions `login` / `logout`. One generic error message (never says which of email or password was wrong); `?next=` is honoured only inside the account's own area, so it can't be used as an open redirect |
+| `src/lib/auth/users.ts` | Server-only account lookup. Passwords are stored as hashes and compared in constant time |
+| `public/sw.js` | Never caches `/portal`, `/engineer` or `/login` |
+
+**Preview demo accounts** (fictional data; the login page shows one-click buttons for them):
+
+| Portal | Email | Password |
+|---|---|---|
+| Client | `client@demo.flokefama.com` | `FlokeCare-2026` |
+| Engineer | `engineer@demo.flokefama.com` | `FlokeEng-2026` |
+
+Set `ENABLE_DEMO_ACCOUNTS=false` to switch them off. **Before real hospitals get access:** set a long random `SESSION_SECRET` in Vercel, and replace `users.ts` with a real identity provider (e.g. Auth.js or Clerk with per-facility accounts, password reset and MFA for engineers), connected to the service backend.
 
 ## Deploying to Vercel (preview only, the live site is untouched)
 1. Import the GitHub repo at vercel.com → New Project (framework auto-detected).
@@ -82,5 +105,6 @@ Launch day (only when approved) is a separate, planned task: back up the live si
 | Structured data (MedicalBusiness, Product) + sitemap | ✅ |
 | Lighthouse ≥ 95 performance | ⏳ measure on the Vercel preview (can't be measured reliably locally) |
 | Sanity project, Algolia index, HubSpot form | ⏳ need Flokefama accounts |
-| Client portal authentication + real service backend | ⏳ phase 2 (currently demo data) |
+| Portal sign-in, role separation, protected routes | ✅ preview-grade (signed cookie + demo accounts) |
+| Real identity provider, per-facility accounts, real service backend | ⏳ phase 2 (portals currently use demo data) |
 | Verified specs, metrics, logo SVG, privacy policy | ⏳ client content (see audit §5) |

@@ -18,7 +18,7 @@ const anchors = [
 ];
 
 /** Pages that open on the dark canvas, so the header starts light-on-dark. */
-const darkTop = ['/', '/solutions', '/partners', '/impact', '/media'];
+const darkTop = ['/', '/solutions', '/partners', '/impact', '/media', '/portal', '/login'];
 
 /** A tab stays active on its sub-pages too (e.g. /solutions/...). */
 const isActive = (pathname: string, href: string) => pathname === href || pathname.startsWith(`${href}/`);

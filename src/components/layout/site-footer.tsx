@@ -41,6 +41,7 @@ export function SiteFooter() {
           <li><Link href="/media" className="hover:text-white">Media hub</Link></li>
           <li><Link href="/solutions" className="hover:text-white">Solutions &amp; services</Link></li>
           <li><Link href="/portal" className="hover:text-white">Client portal</Link></li>
+          <li><Link href="/engineer" className="hover:text-white">Engineer sign in</Link></li>
           <li><Link href="/quote?intent=demo" className="hover:text-white">Book a demonstration</Link></li>
         </FooterCol>
         <FooterCol title="Contact">
