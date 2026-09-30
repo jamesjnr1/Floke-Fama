@@ -1,7 +1,7 @@
 // Renders every flyer template in flyers/templates/ to a crisp PNG in flyers/export/.
 // Usage: npm run flyers                 → export all
 //        npm run flyers -- expert-tip   → export templates whose name contains "expert-tip"
-// og-image.html is also copied to site/assets/img/og-image.jpg (the link-preview image).
+// og-image.html is also copied to public/images/og-image.jpg (the link-preview image).
 import { readdir, mkdir } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -22,7 +22,7 @@ for (const file of files) {
   await page.evaluate(() => document.fonts.ready);
   const canvas = page.locator('.canvas');
   await canvas.screenshot({ path: `flyers/export/${name}.png` });
-  if (isOg) await canvas.screenshot({ path: 'site/assets/img/og-image.jpg', type: 'jpeg', quality: 88 });
+  if (isOg) await canvas.screenshot({ path: 'public/images/og-image.jpg', type: 'jpeg', quality: 88 });
   const box = await canvas.boundingBox();
   console.log(`✔ ${name}.png  (${box.width}×${box.height}${isOg ? '' : ' @2x'})`);
   await page.close();

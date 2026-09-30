@@ -13,20 +13,17 @@ Make Flokefama look like the market leader it says it is: a calm, confident, cli
 
 ---
 
-## Technical recommendation
+## Technical decision (updated)
 
-**Recommended: stay on WordPress, but replace Elementor with a lightweight custom block theme.**
+**Chosen: composable (headless) architecture.** Next.js 15 on Vercel, Sanity CMS, Algolia search and HubSpot for leads. See [05-architecture.md](05-architecture.md).
 
-Why:
-- The team already publishes news, products and events in WordPress. Taking that away creates friction and puts your role at risk.
-- WooCommerce (92 products) and The Events Calendar keep working with no data migration.
-- Most of the slowness and the layout bugs (overflow, "0+" counters, blank sections) come from Elementor, UiCore and the widget packs. A hand-built theme removes all of that.
+Why this over staying on WordPress + Elementor:
+- **Speed across West African networks:** static generation plus a global edge CDN, with a service worker for patchy connectivity.
+- **Catalogue scale:** structured product data (specs, compatibility, datasheets) in Sanity, searchable keystroke-by-keystroke with Algolia.
+- **Lead generation:** a purpose-built procurement flow that feeds the CRM directly.
+- **Editing stays easy:** the team edits in Sanity Studio, which is simpler than Elementor and can't break layouts.
 
-**How we get there, in two stages:**
-1. **Design prototype (this repo, `/site`)** — plain HTML/CSS/JS with no build step. You can show it on a laptop or phone, host it on GitHub Pages for review, and iterate quickly on client feedback.
-2. **Production theme (`/wp-theme`, later)** — convert the approved prototype into a WordPress block theme (`theme.json` plus block patterns), so staff edit content with the normal WordPress editor. The prototype's CSS carries straight over.
-
-> Alternative if the client wants a clean break: Astro (static front end) plus headless WordPress or a simple CMS. It's faster and more modern, but it adds hosting and CMS decisions. Only raise it if they ask.
+**Migration notes:** the 92 WooCommerce products are exported and imported into Sanity (`studio/import-seed.ts` shows the shape). Old `/index.php/...` URLs redirect. WordPress can stay online at a subdomain during the transition.
 
 ## Proposed sitemap (simpler than today)
 
@@ -67,9 +64,9 @@ Contact             (branches, map, form, WhatsApp)
 - [ ] Get **written sign-off** on the homepage and the design system before building
 
 ### Phase 2 — Build (weeks 3–5)
-- [ ] Set up a staging site (subdomain such as `staging.flokefama.com`, or a local WordPress install)
-- [ ] Build the block theme: header, footer, patterns, templates for pages, posts, products and archives
-- [ ] WooCommerce: product template, category pages, "Request a quote" flow
+- [x] Next.js platform: home, product universe, deep spec sheets, procurement portal, client-portal demo, offline mode
+- [ ] Connect Vercel (preview URL for the client), then Sanity, Algolia and HubSpot accounts
+- [ ] Import all 92 products with real photography and verified specs
 - [ ] Clean the content: consistent product photos (white background, square, WebP) and real alt text
 - [ ] SEO: meta descriptions, Open Graph images, `Organization` and `LocalBusiness` schema per branch, XML sitemap
 - [ ] Legal pages: Privacy Policy and Terms

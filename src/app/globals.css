@@ -1,0 +1,109 @@
+@import 'tailwindcss';
+
+/* ==========================================================================
+   Flokefama design tokens: "Medical Clean"
+   Off-white canvas, clinical greys, midnight slate, and surgical green as the
+   only accent (primary actions and data highlights).
+   ========================================================================== */
+@theme {
+  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+
+  --color-canvas: #f7f8f7;
+  --color-paper: #ffffff;
+  --color-mist: #eef1ef;
+  --color-line: #e3e7e4;
+  --color-ink: #0b1220;
+  --color-ink-2: #3e4a47;
+  --color-ink-3: #7b8682;
+
+  --color-midnight: #070c14;
+  --color-midnight-2: #0d1520;
+  --color-midnight-3: #152030;
+
+  --color-surgical-700: #1b5e37;
+  --color-surgical-600: #257847;
+  --color-surgical-500: #1f9d57;
+  --color-surgical-400: #34c77b;
+  --color-surgical-300: #6fe3a6;
+  --color-surgical-100: #d8f5e5;
+  --color-surgical-50: #eefaf3;
+
+  --color-signal: #e4283c;
+
+  --radius-4xl: 2rem;
+  --radius-5xl: 2.5rem;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --animate-marquee: marquee 45s linear infinite;
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-canvas text-ink-2 antialiased;
+    font-feature-settings: 'ss01';
+  }
+  h1, h2, h3, h4 {
+    @apply text-ink;
+    text-wrap: balance;
+  }
+  ::selection {
+    @apply bg-surgical-300 text-midnight;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-surgical-500;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* Small, widely tracked uppercase label paired with massive titles */
+  .label {
+    @apply text-[11px] font-medium uppercase tracking-[0.22em] text-ink-3;
+  }
+  .display {
+    @apply font-semibold tracking-[-0.045em] leading-[0.98];
+  }
+  .glass {
+    @apply border border-white/10 bg-white/[0.045] backdrop-blur-xl;
+  }
+  .glass-light {
+    @apply border border-white/60 bg-white/70 backdrop-blur-xl;
+  }
+  .grid-fade {
+    background-image:
+      linear-gradient(rgb(255 255 255 / 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(255 255 255 / 0.04) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse 70% 60% at 65% 40%, #000 15%, transparent 75%);
+  }
+  .grid-fade-light {
+    background-image:
+      linear-gradient(rgb(11 18 32 / 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(11 18 32 / 0.05) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse 60% 60% at 50% 0%, #000 10%, transparent 70%);
+  }
+  .text-gradient {
+    background: linear-gradient(100deg, #6fe3a6 0%, #34c77b 45%, #c9f7de 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
