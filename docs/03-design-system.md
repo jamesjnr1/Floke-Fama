@@ -16,6 +16,8 @@
 
 Hover states always go **darker** (`brand-700`), never lighter, so white text stays AA-compliant.
 
+**Product renders on dark:** use cut-outs with feathered edges (see `scripts/stage-image.mjs`), never a rectangular photo that is rotated or masked on one side only. Coloured light in renders is recoloured to the logo green.
+
 **Verification:** every page is audited in a real browser. A script reads each element's computed colours (text, backgrounds, gradients, borders, shadows, SVG) and fails on any blue or purple hue. Current result: all pages pass.
 
 ## Typography
@@ -25,11 +27,12 @@ Hover states always go **darker** (`brand-700`), never lighter, so white text st
 | Heading/Muted Label | Geist Mono, 12px, Medium, +15% tracking, uppercase | `.label` |
 
 ## Navigation
-- Each tab is its own page: **Solutions** `/solutions` · **Technology Partners** `/partners` · **Institutional Impact** `/impact` · **Media Hub** `/media`.
+- Mirrors the flokefama.com menu, each tab its own page: **Home** · **Company** ▾ (About Us `/about`, Awards `/awards`) · **Products & Services** `/services` · **Events & Activities** `/events` · **Shop** `/products` · **ESG** `/esg` · **Contact** `/contact`. Below 1280 px it collapses into the menu button.
+- Company opens a glass dropdown on hover, click or keyboard (Escape closes).
 - Hover: a soft glass pill **glides** between items (Motion shared `layoutId`), and also follows keyboard focus. No underline.
 - Active page: a quiet persistent pill plus a small brand-green dot, with `aria-current="page"`.
 
-**Component map:** `Navbar.tsx` (Global Header) · `page-hero.tsx` (shared dark page header) · `media/news-grid.tsx` (Newsroom) · `hero.tsx` (Hero Section) · `partners.tsx` (Partners & Clientele) · `BentoGrid.tsx` (Insights Deck) · `client-portal/tickets.tsx` + `inventory.tsx` (Client portal) · `auth/login-form.tsx` (Sign-in card) · `engineer/PortalShell.tsx` (Engineer Portal Shell + Sidebar Rail) · `engineer/AssetStatusList.tsx` (System Status Rail) · `engineer/TimelineTracker.tsx` (Interactive Timeline Block) · `engineer/QuickActions.tsx` (Terminal Button + Radial Efficiency Chart).
+**Component map:** `Navbar.tsx` (Global Header) · `home/testimonials.tsx` · `contact/visit-us.tsx` (head office photo, greyscale live map, directions, branches) · `contact/get-in-touch.tsx` + `contact-form.tsx` · `awards/awards-gallery.tsx` · `page-hero.tsx` (shared dark page header) · `media/news-grid.tsx` (Newsroom) · `hero.tsx` (Hero Section) · `partners.tsx` (Partners & Clientele) · `BentoGrid.tsx` (Insights Deck) · `client-portal/tickets.tsx` + `inventory.tsx` (Client portal) · `auth/login-form.tsx` (Sign-in card) · `engineer/PortalShell.tsx` (Engineer Portal Shell + Sidebar Rail) · `engineer/AssetStatusList.tsx` (System Status Rail) · `engineer/TimelineTracker.tsx` (Interactive Timeline Block) · `engineer/QuickActions.tsx` (Terminal Button + Radial Efficiency Chart).
 
 **Social flyers** already use the brand green and red; their typeface (Poppins) can move to Geist for full consistency.
 

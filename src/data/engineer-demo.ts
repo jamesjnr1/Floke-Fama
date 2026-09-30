@@ -43,7 +43,7 @@ export interface Ticket {
 
 export const assets: Asset[] = [
   {
-    id: 'AS-01', name: 'BS-240 Chemistry Analyser', brand: 'Mindray', productSlug: 'mindray-bs-240', image: '/images/solution-ivd.webp',
+    id: 'AS-01', name: 'BS-240 Chemistry Analyser', brand: 'Mindray', productSlug: 'mindray-bs-240', image: '/images/bs-240-stage.webp',
     serial: 'DEMO-BS240-0917', location: 'Main laboratory', status: 'online', readings: [42, 48, 45, 60, 58, 66, 71, 64, 72, 78],
     installed: '14 Feb 2025', warrantyUntil: '14 Feb 2027', lastCalibration: '02 Jul 2026', nextCalibration: '02 Oct 2026',
     certificates: [

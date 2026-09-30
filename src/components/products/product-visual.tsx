@@ -15,7 +15,7 @@ export function ProductVisual({ product, category, className, sizes, priority, s
   priority?: boolean;
   shared?: boolean;
 }) {
-  const dark = product.image?.includes('solution-ivd');
+  const dark = product.image?.includes('bs-240-stage');
   return (
     <motion.div
       layoutId={shared ? `visual-${product.slug}` : undefined}
