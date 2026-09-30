@@ -36,22 +36,30 @@ Every integration is optional at runtime. With no environment variables the site
 ## Routes
 | Route | Rendering | Notes |
 |---|---|---|
-| `/` | Static + ISR | Hero, Partners & Clientele, pinned BS-240 scrollytelling, product universe, lifecycle services |
-| `/solutions` | Static + ISR | Product categories, lifecycle services, procurement call to action |
-| `/partners` | Static | Technology partners & clientele, what official distribution means |
-| `/impact` | Static + ISR | Insights bento (verified metrics, featured system, Forbes), mission / vision / aim |
-| `/media` | Static + ISR | Awards & press bento, newsroom (Media Centre posts) |
+| `/` | Static + ISR | Hero (“Ghana’s No.1 Healthcare Company.”), Partners & Clientele, pinned BS-240 scrollytelling, product universe, services, testimonials, head office + map + directions, get in touch |
+| `/about` | Static + ISR | Company → About Us: who we are, results, mission / vision / aim, core values, partners & clientele, testimonials |
+| `/awards` | Static | Company → Awards: photographed awards (No.1 in Healthcare, Ghana Club 100, Mindray, EMY Africa) |
+| `/services` | Static + ISR | Products & Services: the six services, product categories, why choose Flokefama |
+| `/events` | Static, daily ISR | Events & Activities: upcoming / past events, Media Centre news |
+| `/esg` | Static | ESG: patient safety, community, education, governance, local industry (from Flokefama’s own published material) |
+| `/contact` | Static | All contact channels, message form, head office photo, live map, directions, branches |
 | `/products` | Dynamic | Category morphing and keystroke search without reloads; state mirrored to the URL |
 | `/products/[slug]` | SSG + ISR | Full Deep Spec Sheet page for SEO, with `Product` JSON-LD |
 | `/products/(.)[slug]` | Intercepted (parallel `@modal` slot) | The same spec sheet as an overlay when opened from the catalogue |
 | `/quote` | Dynamic | Multi-step procurement flow (quote or demo), react-hook-form + zod, validated again on the server |
+| `/api/quote`, `/api/contact` | Dynamic | Validate, then deliver to HubSpot when configured (see “Form delivery”) |
 | `/login` | Dynamic | Sign-in for both portals. Sends each account to its own portal |
 | `/portal` | Dynamic, **sign-in required (client)** | Flokefama Care client portal (**demo data**): facility header with stats, service tickets with engineer dispatch, installed inventory with deep spec sheets |
 | `/engineer` | Dynamic, own layout, **sign-in required (engineer)** | Biomedical Engineer Service Portal (**demo data**, separate from the client portal): sidebar rail, System Status rail with sparklines, ticket timeline tracker, log-fault terminal, radial uptime, System Pulse and Documentation views |
 | `/offline` | Static | Precached; emergency biomedical support contacts |
 | `/sitemap.xml`, `/robots.txt`, `/manifest.webmanifest` | Generated | |
 
-Old WordPress URLs (`/index.php/shop`, `/index.php/product/*`, `/index.php/about-us` → `/impact`, `/index.php/awards` and `/index.php/media-centre` → `/media`, `/index.php/services` → `/solutions`) are 308-redirected in `next.config.ts`.
+The navigation mirrors the menu on flokefama.com: Home · Company (About Us, Awards) · Products & Services · Events & Activities · Shop (`/products`) · ESG · Contact, with **Client Portal** in place of “My Account”.
+
+Old WordPress URLs (`/index.php/shop`, `/index.php/product/*`, `/index.php/about-us`, `/index.php/awards`, `/index.php/services`, `/index.php/esg`, `/index.php/contact`, `/index.php/media-centre`, `/index.php/my-account`) and the earlier preview pages (`/solutions`, `/partners`, `/impact`, `/media`) are 308-redirected in `next.config.ts`.
+
+## Form delivery (no lost enquiries)
+Quote requests and “Get in touch” messages are validated on the server and sent to HubSpot when `HUBSPOT_PORTAL_ID` and `HUBSPOT_FORM_GUID` are set. **Until then, nothing is silently dropped:** the API answers `delivered: false` and the page shows *Send by email* / *Send on WhatsApp* buttons with the full request pre-filled (quotes → sales@, contact messages → sales@, support@ or info@ by topic). Once the CRM is connected, visitors simply see “Request received”.
 
 ## Portal sign-in
 Two separate areas, two roles: **client** (hospital staff) → `/portal`, **engineer** (Flokefama biomedical engineers) → `/engineer`. Neither can open the other's area.

@@ -1,59 +1,78 @@
 import Link from 'next/link';
 import { Logo } from '@/components/layout/logo';
 import { Icon } from '@/components/ui/icon';
-import { branches, categories, contact } from '@/data/seed';
+import { branches, categories, contact, maps } from '@/data/seed';
 
-// TODO: replace with the official profile URLs from Flokefama
-const social = [
-  { label: 'LinkedIn', icon: 'fi-brands-linkedin', href: '#' },
-  { label: 'Facebook', icon: 'fi-brands-facebook', href: '#' },
-  { label: 'Instagram', icon: 'fi-brands-instagram', href: '#' },
-  { label: 'WhatsApp', icon: 'fi-brands-whatsapp', href: contact.whatsapp },
+/** Footer columns follow the current flokefama.com footer: Company, Products & Solutions, Media Centre, Contact. */
+const company = [
+  { href: '/about#who-we-are', label: 'Who we are' },
+  { href: '/about#mission', label: 'Our mission & vision' },
+  { href: '/services#why-choose-us', label: 'Why choose us' },
+  { href: '/awards', label: 'Awards & recognition' },
+  { href: '/esg', label: 'ESG' },
+  { href: '/contact', label: 'Contact us' },
+];
+
+const media = [
+  { href: '/events', label: 'Events & activities' },
+  { href: '/about#testimonials', label: 'Customer stories' },
+  { href: '/events#news', label: 'News' },
 ];
 
 export function SiteFooter() {
   return (
     <footer className="bg-midnight text-white/60">
-      <div className="mx-auto grid max-w-[1280px] gap-12 px-5 py-20 md:px-10 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr]">
+      <div className="mx-auto grid max-w-[1280px] gap-12 px-5 py-20 md:grid-cols-2 md:px-10 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1.2fr]">
         <div>
           <Logo tone="dark" />
-          <p className="mt-5 max-w-xs text-sm font-light leading-relaxed">Total healthcare solutions for Ghana and West Africa. Saving lives since 2008.</p>
-          <ul className="mt-6 flex gap-2" aria-label="Social media">
-            {social.map((s) => (
-              <li key={s.label}>
-                <a href={s.href} aria-label={s.label} className="glass grid size-10 place-items-center rounded-full text-white transition hover:bg-brand-600">
-                  <Icon name={s.icon} />
-                </a>
-              </li>
-            ))}
-          </ul>
+          <p className="mt-5 max-w-xs text-sm font-light leading-relaxed">
+            Revolutionising healthcare practices in Ghana with cutting-edge technologies and solutions that set new standards in medical care and patient safety.
+          </p>
+          <a
+            href={contact.whatsapp}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="glass mt-6 inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm text-white transition hover:bg-brand-600"
+          >
+            <Icon name="fi-brands-whatsapp" /> Chat on WhatsApp
+          </a>
         </div>
-        <FooterCol title="Products">
+        <FooterCol title="Company">
+          {company.map((l) => (
+            <li key={l.href}><Link href={l.href} className="hover:text-white">{l.label}</Link></li>
+          ))}
+        </FooterCol>
+        <FooterCol title="Products & solutions">
           {categories.map((c) => (
             <li key={c.slug}>
               <Link href={`/products?category=${c.slug}`} className="hover:text-white">{c.title}</Link>
             </li>
           ))}
+          <li><Link href="/products" className="font-medium text-brand-300 hover:text-white">Go to shop →</Link></li>
         </FooterCol>
-        <FooterCol title="Company">
-          <li><Link href="/impact" className="hover:text-white">Institutional impact</Link></li>
-          <li><Link href="/partners" className="hover:text-white">Technology partners</Link></li>
-          <li><Link href="/media" className="hover:text-white">Media hub</Link></li>
-          <li><Link href="/solutions" className="hover:text-white">Solutions &amp; services</Link></li>
-          <li><Link href="/portal" className="hover:text-white">Client portal</Link></li>
+        <FooterCol title="Media centre">
+          {media.map((l) => (
+            <li key={l.href}><Link href={l.href} className="hover:text-white">{l.label}</Link></li>
+          ))}
+          <li className="pt-3"><Link href="/portal" className="hover:text-white">Client portal</Link></li>
           <li><Link href="/engineer" className="hover:text-white">Engineer sign in</Link></li>
-          <li><Link href="/quote?intent=demo" className="hover:text-white">Book a demonstration</Link></li>
         </FooterCol>
         <FooterCol title="Contact">
           <li><a href={contact.phoneHref} className="hover:text-white">{contact.phone}</a></li>
+          <li><a href={`mailto:${contact.info}`} className="hover:text-white">{contact.info}</a></li>
           <li><a href={`mailto:${contact.sales}`} className="hover:text-white">{contact.sales}</a></li>
           <li><a href={`mailto:${contact.support}`} className="hover:text-white">{contact.support}</a></li>
+          <li>
+            <a href={maps.directions} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 hover:text-white">
+              <Icon name="fi-rr-marker" className="text-brand-400" /> Santa Maria, Accra: directions
+            </a>
+          </li>
           <li className="pt-2 text-xs leading-relaxed text-white/40">{branches.map((b) => b.name).join(' · ')}</li>
         </FooterCol>
       </div>
       <div className="mx-auto flex max-w-[1280px] flex-wrap justify-between gap-4 border-t border-white/10 px-5 py-6 text-xs md:px-10">
-        <p>© {new Date().getFullYear()} Flokefama Company Limited</p>
-        <p className="text-white/40">Privacy policy &amp; terms: pending from Flokefama</p>
+        <p>© {new Date().getFullYear()} Flokefama Company Limited. All rights reserved.</p>
+        <p className="text-white/40">Saving lives since 2008</p>
       </div>
     </footer>
   );

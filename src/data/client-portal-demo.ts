@@ -96,7 +96,7 @@ export const assets: Asset[] = [
     name: 'BS-240 Chemistry Analyser',
     brand: 'Mindray',
     productSlug: 'mindray-bs-240',
-    image: '/images/solution-ivd.webp',
+    image: '/images/bs-240-stage.webp',
     serial: 'DEMO-BS240-0917',
     location: 'Main laboratory',
     installed: '14 Feb 2025',

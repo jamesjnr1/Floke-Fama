@@ -57,7 +57,7 @@ export const products: Product[] = [
     brand: 'Mindray',
     category: 'in-vitro-diagnostics',
     summary: 'Compact, fully automated clinical chemistry for hospital and private laboratories.',
-    image: '/images/solution-ivd.webp',
+    image: '/images/bs-240-stage.webp',
     highlights: ['Fully automated bench-top chemistry', 'Refrigerated reagent compartment', 'Optional ISE module'],
     specs: [
       { label: 'Throughput', value: 'Up to 200 tests/hour (330 with ISE)' },
@@ -279,11 +279,19 @@ export const products: Product[] = [
   },
 ];
 
+/** "The Results" counters and figures published on flokefama.com (home, about and awards pages). */
 export const metrics: Metric[] = [
-  { label: 'Years in service', value: 18, caption: 'Founded 2008' },
+  { label: 'Hospitals & medical laboratories served', value: 700, suffix: '+', caption: 'And counting' },
+  { label: 'Successful system integrations', value: 300, suffix: '+', caption: 'Installed and commissioned' },
+  { label: 'Years of experience', value: 18, caption: 'Founded 2008' },
   { label: 'Branches nationwide', value: 6, caption: 'Accra to Aflao' },
-  { label: 'Products in catalogue', value: 92, suffix: '+', caption: 'Listed in the online catalogue' },
-  { label: 'Industry awards', value: 5, caption: 'Incl. Mindray Best in IVD' },
+];
+
+/** Secondary figures from the current Awards page. */
+export const companyFigures: Metric[] = [
+  { label: 'Health products', value: 200, suffix: '+' },
+  { label: 'Awards & recognition', value: 5, suffix: '+' },
+  { label: 'Talented team members', value: 40, suffix: '+' },
 ];
 
 export const milestones: Milestone[] = [
@@ -350,6 +358,10 @@ export const branches = [
 ];
 
 export const contact = {
+  address: 'Flokefama Company Limited, Santa Maria, Accra, Ghana',
+  /** Head office coordinates, from the map on the current Contact page. */
+  lat: 5.5966475,
+  lng: -0.2732217,
   phone: '+233 53 339 2863',
   phoneHref: 'tel:+233533392863',
   whatsapp: 'https://wa.me/233533392863',
@@ -357,6 +369,117 @@ export const contact = {
   sales: 'sales@flokefama.com',
   support: 'support@flokefama.com',
 };
+
+export const maps = {
+  embed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3970.621062634358!2d-0.27322170000000003!3d5.5966475!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xfdf996210a66e9f%3A0xcc9653b8022f3b8d!2sFlokefama%20Company%20Limited!5e0!3m2!1sen!2sgh!4v1700000000000!5m2!1sen!2sgh',
+  directions: `https://www.google.com/maps/dir/?api=1&destination=${contact.lat},${contact.lng}&travelmode=driving`,
+  open: `https://www.google.com/maps/search/?api=1&query=${contact.lat},${contact.lng}`,
+};
+
+/** Testimonials, verbatim from the current home and About pages. */
+export const testimonials = [
+  {
+    quote: 'Flokefama has been our go-to supplier for medical equipment, and they never disappoint. Their products are top-notch, and their customer service is exceptional. Highly recommended!',
+    name: 'Dr. Kwame Asante',
+    role: 'Medical Director, Lifecare Hospital',
+  },
+  {
+    quote: 'We urgently needed diagnostic tools for our clinic, and Flokefama delivered right on time. Their team provided excellent after-sales support, ensuring everything was set up correctly.',
+    name: 'Patricia Osei',
+    role: 'Clinic Administrator',
+  },
+  {
+    quote: 'Flokefama has been instrumental in equipping our laboratory with state-of-the-art devices. Their expertise and product recommendations have improved our efficiency significantly.',
+    name: 'Dr. Nana Kusi',
+    role: 'Lab Scientist',
+  },
+];
+
+/** Core values, from the current About page. */
+export const coreValues = [
+  { title: 'Honesty', icon: 'fi-rr-shield-check', text: 'Transparent and truthful in all business dealings, with clear communication and realistic expectations. We build trust by consistently delivering what we promise.' },
+  { title: 'Integrity', icon: 'fi-rr-badge-check', text: 'Strong ethical standards and consistent quality and service: prompt delivery, met deadlines and a swift response to customer needs.' },
+  { title: 'Innovation', icon: 'fi-rr-bulb', text: 'Continuously embracing new ideas, technologies and solutions to enhance efficiency and meet evolving needs, with cutting-edge solutions and exceptional support.' },
+  { title: 'Respect', icon: 'fi-rr-users', text: 'Valuing people through professionalism, inclusivity and strong relationships, treating every client, partner and team member with care and attentiveness.' },
+] as const;
+
+/** Services, as listed on the current Services and About pages. */
+export const serviceList = [
+  { icon: 'fi-rr-box-open', title: 'Medical equipment sales', body: 'A wide range of high-quality medical equipment for the diverse needs of hospitals, clinics and laboratories.' },
+  { icon: 'fi-rr-settings', title: 'Installation & commissioning', body: 'Proper installation and setup for the efficiency and longevity of every system.' },
+  { icon: 'fi-rr-shield-check', title: 'Technical support & maintenance', body: 'Regular maintenance for continuous, uninterrupted operation and minimal downtime.' },
+  { icon: 'fi-rr-chart-line-up', title: 'Calibration services', body: 'Precise calibration for accuracy and reliability, because accuracy is critical in diagnostics and treatment.' },
+  { icon: 'fi-rr-tool-box', title: 'Repairs & spare parts supply', body: 'Efficient repairs and genuine parts that minimise disruption to healthcare delivery.' },
+  { icon: 'fi-rr-graduation-cap', title: 'Training & capacity building', body: 'Programmes and ongoing support that empower professionals to operate equipment effectively.' },
+] as const;
+
+/** "Why choose Flokefama?", from the current Services page. */
+export const whyChoose = [
+  { icon: 'fi-rr-link-alt', title: 'End-to-end solutions', body: 'From procurement and installation to training and maintenance.' },
+  { icon: 'fi-rr-globe', title: 'Globally recognised brands', body: 'Official distributor of Mindray, Biozek Holland and MR Global.' },
+  { icon: 'fi-rr-headset', title: 'Reliable after-sales support', body: 'Rapid response service when it matters most.' },
+  { icon: 'fi-rr-marker', title: 'Nationwide reach', body: 'Six branches, from Accra and Kumasi to Aflao and Techiman.' },
+] as const;
+
+/** Awards shown on the current Awards page (photos of the actual awards) and in the Media Centre. */
+export const awards = [
+  {
+    id: 'gc100-healthcare',
+    title: 'No.1 company in the Healthcare sector',
+    body: 'Ranked 1st in the Healthcare sector at the 21st edition of the Ghana Club 100 Awards, Ghana Investment Promotion Centre.',
+    year: '2024',
+    image: '/images/awards/ghana-club-100-healthcare.webp',
+    alt: 'Ghana Investment Promotion Centre certificate ranking Flokefama 1st in the Healthcare sector, Ghana Club 100',
+  },
+  {
+    id: 'gc100',
+    title: 'Ghana Club 100',
+    body: 'Ranked No. 49 among Ghana’s top companies, 21st edition of the Ghana Club 100.',
+    year: '2024',
+    image: '/images/awards/ghana-club-100-trophy.webp',
+    alt: 'Ghana Club 100 21st edition trophy awarded to Flokefama Company Limited',
+  },
+  {
+    id: 'mindray-2024',
+    title: 'Mindray Market Breakthrough Award',
+    body: 'Presented by Shenzhen Mindray Bio-Medical Electronics to Flokefama Company Limited.',
+    year: '2024',
+    image: '/images/awards/mindray-breakthrough-2024.webp',
+    alt: 'Mindray 2024 Market Breakthrough Award trophy',
+  },
+  {
+    id: 'emy-2024',
+    title: 'Man of the Year, Health',
+    body: 'Conferred on Emmanuel Teye Kwabena Kenney at the 9th annual EMY Africa Awards, Accra, 24 November 2024.',
+    year: '2024',
+    image: '/images/awards/emy-africa-2024.webp',
+    alt: 'EMY Africa Awards certificate: Man of the Year, Health',
+  },
+  {
+    id: 'mindray-ivd-2026',
+    title: 'Breakthrough Award & Best in IVD',
+    body: 'Mindray Central Africa Region awards, JW Marriott, Nairobi.',
+    year: '2026',
+    image: '/images/mindray-award.webp',
+    alt: 'The Flokefama team receiving the Mindray IVD awards on stage in Nairobi',
+  },
+];
+
+/** Events & Activities (the current site lists past events only). */
+export const events = [
+  {
+    id: 'floke-praise-2025',
+    title: 'Floke Praise 2025: Celebrating 17 Years of Saving Lives!',
+    date: '2025-10-18',
+    day: '18',
+    month: 'Oct',
+    year: '2025',
+    time: '3:00 pm – 7:00 pm',
+    venue: 'Flokefama Company Limited, 2 Regy St., Accra',
+    body: 'An evening of gratitude, worship and celebration as Flokefama Company Ltd marked 17 years of saving lives and serving.',
+    price: 'Free',
+  },
+];
 
 /** Company statements, verbatim in substance from the current "About us" page. */
 export const purpose = [

@@ -1,0 +1,66 @@
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { FinalCta } from '@/components/home/final-cta';
+import { ProductUniverse } from '@/components/home/product-universe';
+import { Services } from '@/components/home/services';
+import { PageHero } from '@/components/layout/page-hero';
+import { Reveal } from '@/components/motion/reveal';
+import { Button } from '@/components/ui/button';
+import { Icon, IconTile } from '@/components/ui/icon';
+import { whyChoose } from '@/data/seed';
+import { getCategories, getProducts } from '@/lib/data';
+
+export const revalidate = 600;
+
+export const metadata: Metadata = {
+  title: 'Products & Services',
+  description: 'Medical equipment sales, installation, maintenance, calibration, repairs and training, from the official distributor of Mindray, Biozek Holland and MR Global.',
+  alternates: { canonical: '/services' },
+};
+
+export default async function ServicesPage() {
+  const [categories, products] = await Promise.all([getCategories(), getProducts()]);
+  return (
+    <>
+      <PageHero
+        label="Products & services"
+        title={<>Beyond supply: <span className="text-gradient">end-to-end solutions</span></>}
+        lead="We go beyond supplying medical equipment. From procurement and installation to training and maintenance, our services ensure efficiency, reliability and long-term value for healthcare facilities."
+      >
+        <div className="flex flex-wrap gap-3">
+          <Button asChild variant="glow" size="lg">
+            <Link href="/products">Go to shop <Icon name="fi-rr-arrow-small-right" /></Link>
+          </Button>
+          <Button asChild variant="glass" size="lg">
+            <Link href="/quote">Request a quote</Link>
+          </Button>
+        </div>
+      </PageHero>
+      <Services />
+      <ProductUniverse categories={categories} products={products} />
+
+      <section id="why-choose-us" className="scroll-mt-28 border-t border-line bg-paper py-24 md:py-32">
+        <div className="mx-auto max-w-[1280px] px-5 md:px-10">
+          <Reveal>
+            <p className="label">Why choose Flokefama?</p>
+            <h2 className="display mt-4 max-w-3xl text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">
+              The official distributor of <span className="text-brand-600">Mindray, Biozek Holland and MR Global.</span>
+            </h2>
+          </Reveal>
+          <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {whyChoose.map((w, i) => (
+              <li key={w.title}>
+                <Reveal delay={i * 0.06} className="h-full rounded-3xl border border-line bg-canvas p-7">
+                  <IconTile name={w.icon} />
+                  <h3 className="mt-8 text-xl font-bold tracking-[-0.02em]">{w.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-ink-3">{w.body}</p>
+                </Reveal>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+      <FinalCta />
+    </>
+  );
+}
