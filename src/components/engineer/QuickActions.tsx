@@ -3,7 +3,7 @@
 import * as Dialog from '@radix-ui/react-dialog';
 import { motion, useReducedMotion } from 'motion/react';
 import { useState } from 'react';
-import type { Asset, Ticket } from '@/data/portal-demo';
+import type { Asset, Ticket } from '@/data/engineer-demo';
 import { cn } from '@/lib/utils';
 
 /** Primary Terminal Button (dashed) + log-fault dialog. */

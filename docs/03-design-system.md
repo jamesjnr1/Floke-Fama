@@ -29,7 +29,7 @@ Hover states always go **darker** (`brand-700`), never lighter, so white text st
 - Hover: a soft glass pill **glides** between items (Motion shared `layoutId`), and also follows keyboard focus. No underline.
 - Active page: a quiet persistent pill plus a small brand-green dot, with `aria-current="page"`.
 
-**Component map:** `Navbar.tsx` (Global Header) · `page-hero.tsx` (shared dark page header) · `media/news-grid.tsx` (Newsroom) · `hero.tsx` (Hero Section) · `partners.tsx` (Partners & Clientele) · `BentoGrid.tsx` (Insights Deck) · `portal/PortalShell.tsx` (Portal Shell + Sidebar Rail) · `portal/AssetStatusList.tsx` (System Status Rail) · `portal/TimelineTracker.tsx` (Interactive Timeline Block) · `portal/QuickActions.tsx` (Terminal Button + Radial Efficiency Chart).
+**Component map:** `Navbar.tsx` (Global Header) · `page-hero.tsx` (shared dark page header) · `media/news-grid.tsx` (Newsroom) · `hero.tsx` (Hero Section) · `partners.tsx` (Partners & Clientele) · `BentoGrid.tsx` (Insights Deck) · `client-portal/tickets.tsx` + `inventory.tsx` (Client portal) · `auth/login-form.tsx` (Sign-in card) · `engineer/PortalShell.tsx` (Engineer Portal Shell + Sidebar Rail) · `engineer/AssetStatusList.tsx` (System Status Rail) · `engineer/TimelineTracker.tsx` (Interactive Timeline Block) · `engineer/QuickActions.tsx` (Terminal Button + Radial Efficiency Chart).
 
 **Social flyers** already use the brand green and red; their typeface (Poppins) can move to Geist for full consistency.
 
