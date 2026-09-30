@@ -6,10 +6,10 @@ import { extname } from 'node:path';
 import { launch } from './browser.mjs';
 
 const defaults = [
-  ['site/assets/img/head-office.jpg', 1100],
-  ['site/assets/img/solution-ivd.png', 900],
-  ['site/assets/img/solution-invivo.png', 900],
-  ['site/assets/img/solution-consumables.png', 900],
+  ['public/images/head-office.jpg', 1100],
+  ['public/images/solution-ivd.png', 900],
+  ['public/images/solution-invivo.png', 900],
+  ['public/images/solution-consumables.png', 900],
 ];
 const args = process.argv.slice(2);
 const jobs = args.length ? [[args[0], Number(args[1] || 1600), Number(args[2] || 0.82)]] : defaults.map(([f, w]) => [f, w, 0.82]);

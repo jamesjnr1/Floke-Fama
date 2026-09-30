@@ -1,10 +1,10 @@
 /* Flokefama flyer system: shared styles for every social template.
    Canvas sizes: .feed = 1080×1350 (IG/FB/LinkedIn portrait), .story = 1080×1920, .og = 1200×630 */
-@font-face { font-family: "Poppins"; src: url("../../site/assets/fonts/poppins-300.woff2") format("woff2"); font-weight: 300; }
-@font-face { font-family: "Poppins"; src: url("../../site/assets/fonts/poppins-400.woff2") format("woff2"); font-weight: 400; }
-@font-face { font-family: "Poppins"; src: url("../../site/assets/fonts/poppins-500.woff2") format("woff2"); font-weight: 500; }
-@font-face { font-family: "Poppins"; src: url("../../site/assets/fonts/poppins-600.woff2") format("woff2"); font-weight: 600; }
-@font-face { font-family: "Poppins"; src: url("../../site/assets/fonts/poppins-700.woff2") format("woff2"); font-weight: 700; }
+@font-face { font-family: "Poppins"; src: url("../../src/fonts/poppins-300.woff2") format("woff2"); font-weight: 300; }
+@font-face { font-family: "Poppins"; src: url("../../src/fonts/poppins-400.woff2") format("woff2"); font-weight: 400; }
+@font-face { font-family: "Poppins"; src: url("../../src/fonts/poppins-500.woff2") format("woff2"); font-weight: 500; }
+@font-face { font-family: "Poppins"; src: url("../../src/fonts/poppins-600.woff2") format("woff2"); font-weight: 600; }
+@font-face { font-family: "Poppins"; src: url("../../src/fonts/poppins-700.woff2") format("woff2"); font-weight: 700; }
 
 :root {
   --green-900: #0C2E1C; --green-800: #134A2C; --green-600: #257847; --mint-100: #DCEFE3; --mint-50: #EEF6F1;

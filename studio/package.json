@@ -1,0 +1,19 @@
+{
+  "name": "flokefama-studio",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Sanity Studio for Flokefama: where the team edits products, specs, metrics and milestones",
+  "scripts": {
+    "dev": "sanity dev",
+    "build": "sanity build",
+    "deploy": "sanity deploy",
+    "import-seed": "sanity exec ./import-seed.ts --with-user-token"
+  },
+  "dependencies": {
+    "@sanity/vision": "^6",
+    "react": "^19",
+    "react-dom": "^19",
+    "sanity": "^6",
+    "styled-components": "^6"
+  }
+}

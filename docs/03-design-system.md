@@ -1,4 +1,6 @@
-# Flokefama Design System (v2, premium)
+# Flokefama Design System (v3, "Medical Clean")
+
+> **v3 update (Next.js platform):** the base palette moved to off-white (`#F7F8F7`), clinical greys and **midnight slate** (`#070C14`), with **surgical green** (`#257847` / `#34C77B` on dark) used only for primary actions and data highlights. Tokens live in `src/app/globals.css` (`@theme`). Type follows the "extreme contrast" rule: massive Poppins 600 titles (up to ~96 px, −0.045em tracking) paired with tiny 11 px uppercase labels at 0.22em tracking (`.label`). The v2 sections below still apply to icons, 3D and motion.
 
 The rules that make the website, flyers and brochures look like one flagship healthcare brand. Every token below is a CSS custom property in `site/assets/css/styles.css`.
 
