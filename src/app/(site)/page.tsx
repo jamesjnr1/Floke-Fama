@@ -1,5 +1,7 @@
+import { BentoGrid } from '@/components/home/BentoGrid';
 import { FinalCta } from '@/components/home/final-cta';
 import { Hero } from '@/components/home/hero';
+import { Partners } from '@/components/home/partners';
 import { PortalTeaser } from '@/components/home/portal-teaser';
 import { ProductUniverse } from '@/components/home/product-universe';
 import { Services } from '@/components/home/services';
@@ -15,11 +17,13 @@ export default async function HomePage() {
 
   return (
     <>
-      <Hero metrics={metrics} />
-      <TrustBento milestones={milestones} />
+      <Hero />
+      <Partners />
+      <BentoGrid metrics={metrics} />
       {flagship && <SpecScrolly product={flagship} />}
       <ProductUniverse categories={categories} products={products} />
       <Services />
+      <TrustBento milestones={milestones} />
       <PortalTeaser />
       <FinalCta />
     </>

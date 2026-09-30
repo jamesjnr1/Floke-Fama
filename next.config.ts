@@ -37,8 +37,8 @@ const nextConfig: NextConfig = {
       { source: '/index.php/product-category/:slug', destination: '/products', permanent: true },
       { source: '/index.php/contact', destination: '/quote', permanent: true },
       { source: '/index.php/services', destination: '/#services', permanent: true },
-      { source: '/index.php/about-us', destination: '/#trust', permanent: true },
-      { source: '/index.php/awards', destination: '/#trust', permanent: true },
+      { source: '/index.php/about-us', destination: '/#impact', permanent: true },
+      { source: '/index.php/awards', destination: '/#media', permanent: true },
     ];
   },
 };

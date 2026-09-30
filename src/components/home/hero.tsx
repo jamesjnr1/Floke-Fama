@@ -1,84 +1,72 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { MetricsTracker } from '@/components/home/metrics-tracker';
-import { MoleculeCanvas } from '@/components/home/molecule-canvas';
+import { NetworkCanvas } from '@/components/home/network-canvas';
 import { Reveal } from '@/components/motion/reveal';
-import { Button } from '@/components/ui/button';
-import { Icon } from '@/components/ui/icon';
-import { clients, distributors } from '@/data/seed';
-import type { Metric } from '@/lib/types';
 
-export function Hero({ metrics }: { metrics: Metric[] }) {
+/**
+ * Hero Section: dark canvas, 12-column grid.
+ * Left (span 7): display slogan, muted subline, bracketed outline action.
+ * Right (span 5): Mindray analyser spotlight over a wireframe network.
+ */
+export function Hero() {
   return (
-    <section className="relative isolate overflow-hidden bg-midnight pt-20 text-white/70">
-      {/* Ambient layers */}
-      <div className="grid-fade absolute inset-0 -z-10" />
-      <div className="absolute -right-40 -top-40 -z-10 size-[720px] rounded-full bg-[radial-gradient(circle,rgb(31_157_87/0.35),transparent_65%)] blur-2xl" />
-      <div className="absolute -bottom-60 -left-40 -z-10 size-[560px] rounded-full bg-[radial-gradient(circle,rgb(21_32_48/0.9),transparent_70%)]" />
+    <section className="relative isolate overflow-hidden bg-midnight text-white">
+      {/* Background: glow, light beam, wireframe network */}
+      <div aria-hidden className="absolute inset-0 -z-10">
+        <div className="absolute -right-40 -top-56 size-[860px] rounded-full bg-[radial-gradient(circle,rgb(59_130_246/0.28),transparent_62%)]" />
+        <div className="absolute -bottom-72 -left-40 size-[640px] rounded-full bg-[radial-gradient(circle,rgb(30_42_69/0.9),transparent_70%)]" />
+        <div className="absolute -top-20 right-[12%] h-[140%] w-40 rotate-[28deg] bg-gradient-to-b from-neon-300/25 via-neon-400/5 to-transparent blur-2xl" />
+        <NetworkCanvas className="absolute inset-0 [mask-image:linear-gradient(90deg,transparent_0%,rgb(0_0_0/0.35)_38%,#000_62%)]" />
+        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-midnight to-transparent" />
+      </div>
 
-      <div className="mx-auto grid min-h-[calc(100svh-5rem)] max-w-[1280px] items-center gap-14 px-5 pb-16 pt-10 md:px-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-10">
-        <div>
+      <div className="mx-auto grid min-h-[100svh] max-w-[1280px] grid-cols-1 items-center gap-12 px-5 pb-20 pt-36 md:px-16 lg:grid-cols-12 lg:gap-8 lg:pb-[120px] lg:pt-[168px]">
+        {/* Column Left (span 7): vertical, gap 24px */}
+        <div className="flex flex-col gap-6 lg:col-span-7">
           <Reveal>
-            <p className="glass inline-flex items-center gap-2.5 rounded-full py-1.5 pl-2 pr-4 text-xs text-white">
-              <span className="relative flex size-2 items-center justify-center"><span className="size-2 rounded-full bg-signal" /></span>
-              Ghana Club 100 · Saving lives since 2008
+            <p className="label flex items-center gap-3 !text-neon-300">
+              <span className="status-dot" aria-hidden /> Ghana Club 100 · Est. 2008
             </p>
           </Reveal>
-          <Reveal delay={0.08}>
-            <h1 className="display mt-8 text-[clamp(2.9rem,1.3rem+5vw,5.6rem)] text-white">
-              The backbone of West African <span className="text-gradient">diagnostics.</span>
+          <Reveal delay={0.06}>
+            <h1 className="display text-[clamp(2.6rem,1.1rem+4.6vw,5rem)] uppercase leading-[0.95] text-white">
+              Engineering trust, <span className="text-gradient">delivering precision</span>
             </h1>
           </Reveal>
-          <Reveal delay={0.16}>
-            <p className="mt-7 max-w-xl text-lg font-light leading-relaxed md:text-xl">
-              World-class laboratory and medical technology, supplied, installed and supported by engineers who stay with you for the life of every system.
-            </p>
+          <Reveal delay={0.14}>
+            <p className="max-w-xl text-lg leading-relaxed text-white/60 md:text-xl">Flokefama: the backbone of diagnostic excellence in West Africa.</p>
           </Reveal>
-          <Reveal delay={0.24} className="mt-10 flex flex-wrap gap-3">
-            <Button asChild variant="glow" size="lg">
-              <Link href="/quote">
-                Request a quote <Icon name="fi-rr-arrow-small-right" className="transition-transform group-hover/btn:translate-x-1" />
+          <Reveal delay={0.22} className="pt-2">
+            {/* Action Button: outline, neon-blue border, two destinations inside one bracketed control */}
+            <div className="flex w-full flex-col rounded-xl border sm:inline-flex sm:w-auto sm:flex-row sm:items-center border-neon-500 bg-neon-500/10 text-sm font-medium shadow-[0_0_40px_-12px_rgb(59_130_246/0.8)] backdrop-blur md:text-[15px]">
+              <span aria-hidden className="hidden pl-4 font-mono text-neon-300 sm:inline">[</span>
+              <Link href="/products" className="rounded-lg px-4 py-3.5 text-white transition hover:bg-neon-500/20 sm:px-3">
+                Explore Our Integrated Solutions
               </Link>
-            </Button>
-            <Button asChild variant="glass" size="lg">
-              <Link href="/quote?intent=demo">Schedule a demonstration</Link>
-            </Button>
-          </Reveal>
-          <Reveal delay={0.32}>
-            <div className="mt-14 border-t border-white/10 pt-6">
-              <p className="label !text-white/35">Official distributor</p>
-              <ul className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2 text-lg font-semibold tracking-tight text-white/85">
-                {distributors.map((d, i) => (
-                  <li key={d} className="flex items-center gap-6">
-                    {i > 0 && <span className="size-1 rounded-full bg-surgical-300/60" aria-hidden />}
-                    {d}
-                  </li>
-                ))}
-              </ul>
+              <span aria-hidden className="hidden font-mono text-neon-300/60 sm:inline">|</span>
+              <Link href="/quote?docs=1" className="group rounded-lg border-t border-neon-500/30 px-4 py-3.5 text-white transition hover:bg-neon-500/20 sm:border-0 sm:px-3">
+                Request Technical Data <span aria-hidden className="inline-block transition-transform duration-500 group-hover:translate-x-1">→</span>
+              </Link>
+              <span aria-hidden className="hidden pr-4 font-mono text-neon-300 sm:inline">]</span>
             </div>
           </Reveal>
         </div>
 
-        <div className="relative isolate mt-24 lg:mt-32">
-          <MoleculeCanvas className="absolute -right-10 -top-44 -z-10 size-[380px] sm:size-[460px] lg:-right-24 lg:-top-64 lg:size-[600px]" />
-          <MetricsTracker metrics={metrics} />
-        </div>
-      </div>
-
-      {/* Client marquee */}
-      <div className="relative border-t border-white/10 py-5 [mask-image:linear-gradient(90deg,transparent,#000_10%,#000_90%,transparent)]">
-        <div className="flex w-max animate-marquee hover:[animation-play-state:paused]">
-          {[0, 1].map((copy) => (
-            <ul key={copy} className="flex gap-14 pr-14" aria-hidden={copy === 1}>
-              {clients.map((c) => (
-                <li key={c.name} className="flex items-center gap-3 whitespace-nowrap text-sm text-white/55">
-                  <Image src={c.logo} alt={copy === 0 ? c.name : ''} width={40} height={40} className="size-10 rounded-full bg-white object-contain p-1" />
-                  {c.name}
-                </li>
-              ))}
-            </ul>
-          ))}
-        </div>
+        {/* Column Right (span 5): clipped, centred spotlight */}
+        <Reveal delay={0.2} y={40} className="relative lg:col-span-5">
+          <div className="relative mx-auto aspect-square w-full max-w-[520px] overflow-hidden">
+            <div aria-hidden className="absolute inset-[12%] rounded-full bg-[radial-gradient(circle,rgb(59_130_246/0.35),transparent_68%)] blur-xl" />
+            <Image
+              src="/images/solution-ivd.webp"
+              alt="Mindray BS-240 chemistry analyser"
+              fill
+              priority
+              sizes="(min-width: 1024px) 40vw, 90vw"
+              className="object-contain object-center mix-blend-lighten [mask-image:radial-gradient(ellipse_58%_52%_at_58%_52%,#000_38%,transparent_72%)]"
+            />
+            <p className="label absolute bottom-4 right-4 !text-white/40">mindray</p>
+          </div>
+        </Reveal>
       </div>
     </section>
   );
