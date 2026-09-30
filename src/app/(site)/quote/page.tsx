@@ -29,11 +29,11 @@ export default async function QuotePage({ searchParams }: { searchParams: Promis
               ['fi-rr-settings', 'Installation, training and calibration included in proposals'],
               ['fi-rr-marker', 'Six branches for fast on-site support'],
             ].map(([icon, text]) => (
-              <li key={text} className="flex items-center gap-3 text-ink-2"><Icon name={icon} className="text-neon-600" /> {text}</li>
+              <li key={text} className="flex items-center gap-3 text-ink-2"><Icon name={icon} className="text-brand-600" /> {text}</li>
             ))}
           </ul>
           <a href={contact.phoneHref} className="mt-10 inline-flex items-center gap-2 text-sm font-medium text-ink">
-            <Icon name="fi-rr-phone-call" className="text-neon-600" /> Prefer to talk? {contact.phone}
+            <Icon name="fi-rr-phone-call" className="text-brand-600" /> Prefer to talk? {contact.phone}
           </a>
         </aside>
         <ProcurementFlow options={options} initial={{ intent: intent === 'demo' ? 'demo' : 'quote', equipment: preselected }} />

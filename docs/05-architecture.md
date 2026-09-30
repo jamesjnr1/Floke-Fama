@@ -36,7 +36,11 @@ Every integration is optional at runtime. With no environment variables the site
 ## Routes
 | Route | Rendering | Notes |
 |---|---|---|
-| `/` | Static + ISR | Dark-canvas hero, Partners & Clientele, Insights Deck bento, pinned BS-240 scrollytelling, product universe, services, Media Hub, portal teaser |
+| `/` | Static + ISR | Hero, Partners & Clientele, pinned BS-240 scrollytelling, product universe, lifecycle services |
+| `/solutions` | Static + ISR | Product categories, lifecycle services, procurement call to action |
+| `/partners` | Static | Technology partners & clientele, what official distribution means |
+| `/impact` | Static + ISR | Insights bento (verified metrics, featured system, Forbes), mission / vision / aim |
+| `/media` | Static + ISR | Awards & press bento, newsroom (Media Centre posts) |
 | `/products` | Dynamic | Category morphing and keystroke search without reloads; state mirrored to the URL |
 | `/products/[slug]` | SSG + ISR | Full Deep Spec Sheet page for SEO, with `Product` JSON-LD |
 | `/products/(.)[slug]` | Intercepted (parallel `@modal` slot) | The same spec sheet as an overlay when opened from the catalogue |
@@ -45,7 +49,7 @@ Every integration is optional at runtime. With no environment variables the site
 | `/offline` | Static | Precached; emergency biomedical support contacts |
 | `/sitemap.xml`, `/robots.txt`, `/manifest.webmanifest` | Generated | |
 
-Old WordPress URLs (`/index.php/shop`, `/index.php/product/*` and so on) are 308-redirected in `next.config.ts`.
+Old WordPress URLs (`/index.php/shop`, `/index.php/product/*`, `/index.php/about-us` → `/impact`, `/index.php/awards` and `/index.php/media-centre` → `/media`, `/index.php/services` → `/solutions`) are 308-redirected in `next.config.ts`.
 
 ## Deploying to Vercel (preview only, the live site is untouched)
 1. Import the GitHub repo at vercel.com → New Project (framework auto-detected).

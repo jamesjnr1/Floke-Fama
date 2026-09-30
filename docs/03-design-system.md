@@ -1,25 +1,37 @@
-# Flokefama Design System (v4, "Premium Clinical")
+# Flokefama Design System (v5, company colours)
 
-> **v4 (current):** the tokens below replace earlier versions. They live in `src/app/globals.css` (`@theme`) and mirror the Figma local variables one-to-one. Earlier sections further down are kept for history; where they conflict, **v4 wins**.
+> **Rule: company colours only.** Every accent comes from the Flokefama logo: **green** (disc) and **red** (dot), on neutral backgrounds. No other hues. Where older sections below conflict, **v5 wins**. The only exceptions are photography and partner logos, which are shown exactly as the manufacturers and hospitals publish them.
 
-## v4 tokens (Figma variables → Tailwind)
-| Figma variable | Value | Tailwind | Use |
-|---|---|---|---|
-| `brand/midnight` | `#0F172A` | `bg-midnight` | Dark canvas (hero, portal, footer) |
-| `brand/neon-blue` | `#3B82F6` | `neon-500` (fills use `neon-600` `#2563EB` for AA contrast with white text) | Primary actions, data highlights, glows |
-| `brand/surgical-green` | `#10B981` | `bg-surgical`, `.status-dot`, `emerald-*` | Pulsating active-machine / status dots, "pass" states |
-| `canvas/clean-white` | `#F8F9FA` | `bg-canvas` | Light solutions catalogue sections |
-
-| Figma text style | Spec | Implementation |
+## Colour tokens (`src/app/globals.css` → `@theme`)
+| Token | Value | Use |
 |---|---|---|
-| `Display/Hero Large` | Geist Sans, 80px, Bold, −3% tracking | `.display` + `text-[clamp(…,5rem)]`, hero slogan uppercase |
-| `Heading/Muted Label` | Geist Mono, 12px, Medium, +15% tracking, uppercase | `.label` |
+| `brand-600` | **`#257847`** (logo green) | Primary buttons, links, active states. 5.6:1 with white text (AA) |
+| `brand-50 … brand-800` | `#EEF7F1` → `#134228` | Tints and shades of the logo green: surfaces, glows, gradients, hovers |
+| `signal` | **`#E4283C`** (logo red) | Sparingly: critical priority, "needs attention", error states |
+| `signal-700` | `#B41D2E` | Logo red darkened for AA text on light backgrounds |
+| `surgical` | `#3AA867` | Live status dots (brand green lifted for visibility on dark) |
+| `midnight` | `#0B1510` | Dark canvas: a rich black with a hint of the logo green |
+| `canvas` / `paper` | `#F8F9FA` / `#FFFFFF` | Light sections |
+| `ink`, `ink-2`, `ink-3`, `line`, `mist` | neutral greys | Text and borders |
 
-Fonts load via the `geist` package (`next/font`), self-hosted with no layout shift. Buttons and the header CTA use a 12px radius (`rounded-xl`).
+Hover states always go **darker** (`brand-700`), never lighter, so white text stays AA-compliant.
 
-**Component ↔ Figma frame map:** `Navbar.tsx` (Global Header) · `hero.tsx` (Hero Section) · `partners.tsx` (Partners & Clientele) · `BentoGrid.tsx` (Insights Deck) · `portal/PortalShell.tsx` (Portal Shell + Sidebar Rail) · `portal/AssetStatusList.tsx` (System Status Rail) · `portal/TimelineTracker.tsx` (Interactive Timeline Block) · `portal/QuickActions.tsx` (Terminal Button + Radial Efficiency Chart).
+**Verification:** every page is audited in a real browser. A script reads each element's computed colours (text, backgrounds, gradients, borders, shadows, SVG) and fails on any blue or purple hue. Current result: all pages pass.
 
-**Social flyers** still use the original green brand palette and Poppins. Align them to v4 if Flokefama wants the social channels to match the site.
+## Typography
+| Style | Spec | Implementation |
+|---|---|---|
+| Display/Hero Large | Geist Sans, Bold, −3% tracking, uppercase for page slogans | `.display` |
+| Heading/Muted Label | Geist Mono, 12px, Medium, +15% tracking, uppercase | `.label` |
+
+## Navigation
+- Each tab is its own page: **Solutions** `/solutions` · **Technology Partners** `/partners` · **Institutional Impact** `/impact` · **Media Hub** `/media`.
+- Hover: a soft glass pill **glides** between items (Motion shared `layoutId`), and also follows keyboard focus. No underline.
+- Active page: a quiet persistent pill plus a small brand-green dot, with `aria-current="page"`.
+
+**Component map:** `Navbar.tsx` (Global Header) · `page-hero.tsx` (shared dark page header) · `media/news-grid.tsx` (Newsroom) · `hero.tsx` (Hero Section) · `partners.tsx` (Partners & Clientele) · `BentoGrid.tsx` (Insights Deck) · `portal/PortalShell.tsx` (Portal Shell + Sidebar Rail) · `portal/AssetStatusList.tsx` (System Status Rail) · `portal/TimelineTracker.tsx` (Interactive Timeline Block) · `portal/QuickActions.tsx` (Terminal Button + Radial Efficiency Chart).
+
+**Social flyers** already use the brand green and red; their typeface (Poppins) can move to Geist for full consistency.
 
 
 The rules that make the website, flyers and brochures look like one flagship healthcare brand. Every token below is a CSS custom property in `site/assets/css/styles.css`.

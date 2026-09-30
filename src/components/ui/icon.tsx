@@ -19,14 +19,14 @@ export function IconTile({ name, className, size = 'md' }: { name: string; class
     <span
       className={cn(
         'relative grid shrink-0 place-items-center text-white',
-        'bg-[linear-gradient(150deg,#60a5fa_0%,#2563eb_55%,#1e3a8a_100%)]',
-        'shadow-[inset_0_2px_1px_rgb(255_255_255/0.45),inset_0_-6px_12px_rgb(15_23_42/0.35),0_14px_24px_-10px_rgb(37_99_235/0.7)]',
+        'bg-[linear-gradient(150deg,#52b57c_0%,#257847_55%,#134228_100%)]',
+        'shadow-[inset_0_2px_1px_rgb(255_255_255/0.45),inset_0_-6px_12px_rgb(11_21_16/0.35),0_14px_24px_-10px_rgb(37_120_71/0.7)]',
         'before:pointer-events-none before:absolute before:inset-x-1.5 before:top-1 before:h-[45%] before:rounded-t-[inherit] before:bg-gradient-to-b before:from-white/40 before:to-transparent',
         sizes[size],
         className,
       )}
     >
-      <Icon name={name} className="relative drop-shadow-[0_2px_2px_rgb(15_23_42/0.35)]" />
+      <Icon name={name} className="relative drop-shadow-[0_2px_2px_rgb(11_21_16/0.35)]" />
     </span>
   );
 }

@@ -1,11 +1,11 @@
 @import 'tailwindcss';
 
 /* ==========================================================================
-   Flokefama tokens: "Premium Clinical"
-   brand/midnight    #0F172A  deep slate base
-   brand/neon-blue   #3B82F6  electric accent (primary actions, data highlights)
-   brand/surgical    #10B981  pulsating active-machine / status dots (= emerald-500)
-   canvas/clean-white #F8F9FA light-mode solutions catalogue
+   Flokefama tokens: company colours only
+   Brand green  #257847  (logo disc) · primary actions, highlights, links
+   Brand red    #E4283C  (logo dot)  · sparing signal: alerts, critical states
+   Neutrals     rich green-black #0B1510 canvas, clean white #F8F9FA, greys
+   Status dots  #3AA867  brand green, lifted for visibility on dark
    ========================================================================== */
 @theme {
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
@@ -13,27 +13,29 @@
 
   --color-canvas: #f8f9fa;
   --color-paper: #ffffff;
-  --color-mist: #eef1f4;
-  --color-line: #e2e6ea;
-  --color-ink: #0f172a;
-  --color-ink-2: #3b4658;
-  --color-ink-3: #717c8d;
+  --color-mist: #eef2ef;
+  --color-line: #e1e7e3;
+  --color-ink: #0b1510;
+  --color-ink-2: #3d4843;
+  --color-ink-3: #6f7a74;
 
-  --color-midnight: #0f172a;
-  --color-midnight-2: #16213a;
-  --color-midnight-3: #1e2a45;
+  --color-midnight: #0b1510;
+  --color-midnight-2: #111d17;
+  --color-midnight-3: #17261e;
 
-  /* Electric accent scale (500 = brand neon-blue). Buttons use 600 for AA contrast with white text. */
-  --color-neon-50: #eff6ff;
-  --color-neon-100: #dbeafe;
-  --color-neon-300: #93c5fd;
-  --color-neon-400: #60a5fa;
-  --color-neon-500: #3b82f6;
-  --color-neon-600: #2563eb;
-  --color-neon-700: #1d4ed8;
+  /* Brand green scale from the logo (600 = logo green, 5.6:1 with white text). */
+  --color-brand-50: #eef7f1;
+  --color-brand-100: #d5ecdd;
+  --color-brand-300: #8fd1a9;
+  --color-brand-400: #52b57c;
+  --color-brand-500: #2e9a5b;
+  --color-brand-600: #257847;
+  --color-brand-700: #1b5e37;
+  --color-brand-800: #134228;
 
-  --color-surgical: #10b981;
+  --color-surgical: #3aa867;
   --color-signal: #e4283c;
+  --color-signal-700: #b41d2e; /* logo red, darkened for AA text on light backgrounds */
 
   --radius-4xl: 2rem;
   --radius-5xl: 2.5rem;
@@ -48,8 +50,8 @@
   }
   --animate-status-pulse: status-pulse 2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
   @keyframes status-pulse {
-    0% { box-shadow: 0 0 0 0 rgb(16 185 129 / 0.55); }
-    100% { box-shadow: 0 0 0 8px rgb(16 185 129 / 0); }
+    0% { box-shadow: 0 0 0 0 rgb(58 168 103 / 0.55); }
+    100% { box-shadow: 0 0 0 8px rgb(58 168 103 / 0); }
   }
 }
 
@@ -66,10 +68,10 @@
     text-wrap: balance;
   }
   ::selection {
-    @apply bg-neon-300 text-midnight;
+    @apply bg-brand-300 text-midnight;
   }
   :focus-visible {
-    @apply outline-2 outline-offset-2 outline-neon-500;
+    @apply outline-2 outline-offset-2 outline-brand-500;
   }
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
@@ -109,13 +111,13 @@
   }
   .grid-fade-light {
     background-image:
-      linear-gradient(rgb(11 18 32 / 0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgb(11 18 32 / 0.05) 1px, transparent 1px);
+      linear-gradient(rgb(11 21 16 / 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(11 21 16 / 0.05) 1px, transparent 1px);
     background-size: 56px 56px;
     mask-image: radial-gradient(ellipse 60% 60% at 50% 0%, #000 10%, transparent 70%);
   }
   .text-gradient {
-    background: linear-gradient(100deg, #93c5fd 0%, #3b82f6 45%, #dbeafe 100%);
+    background: linear-gradient(100deg, #8fd1a9 0%, #2e9a5b 45%, #d5ecdd 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;

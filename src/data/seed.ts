@@ -357,3 +357,59 @@ export const contact = {
   sales: 'sales@flokefama.com',
   support: 'support@flokefama.com',
 };
+
+/** Company statements, verbatim in substance from the current "About us" page. */
+export const purpose = [
+  { label: 'Mission', icon: 'fi-rr-bullseye', text: 'To provide world-class medical solutions to all medical facilities and laboratories in the West African sub-region.' },
+  { label: 'Vision', icon: 'fi-rr-eye', text: 'To build a localised industrial complex that produces medical equipment and reagents locally, and to be listed on the Ghana Stock Exchange by 2030.' },
+  { label: 'Aim', icon: 'fi-rr-flask-gear', text: 'To establish a production plant in Ghana for reagents and hospital disposables, boosting the economy and creating meaningful, well-paying jobs.' },
+] as const;
+
+/** Media Centre posts published on flokefama.com (titles, dates and summaries as published). */
+export const news = [
+  {
+    id: 'quality-verification',
+    date: '3 August 2026',
+    kind: 'Insight',
+    title: 'Quality verification: the cornerstone of healthcare excellence in Ghana',
+    summary: 'Analysers, reagents and IVD kits directly inform clinical decisions. Why verifying quality before delivery protects patients.',
+  },
+  {
+    id: 'forbes-africa',
+    date: '31 July 2026',
+    kind: 'Press',
+    title: 'Flokefama featured in Forbes Africa: driving healthcare excellence across Ghana',
+    summary: 'Featured in the June/July 2026 “Ghana: Africa Undiscovered” edition of Forbes Africa, in collaboration with Penresa.',
+    image: '/images/forbes-africa-2026.webp',
+  },
+  {
+    id: 'mindray-ivd-awards',
+    date: '1 April 2026',
+    kind: 'Award',
+    title: 'A milestone for Ghana: Flokefama sweeps prestigious Mindray IVD awards',
+    summary: 'The Breakthrough Award and Best in In-Vitro Diagnostics at the Mindray Central Africa Region ceremony, JW Marriott, Nairobi.',
+    image: '/images/mindray-award.webp',
+  },
+  {
+    id: 'university-of-ghana',
+    date: '18 March 2026',
+    kind: 'Partnership',
+    title: 'Partnering with the University of Ghana to shape the next generation of biomedical engineers',
+    summary: 'Featured in the University of Ghana School of Engineering newsletter.',
+  },
+  {
+    id: 'zodf-ramadan',
+    date: '18 March 2026',
+    kind: 'Community',
+    title: 'Flokefama supports the ZODF Ramadan distribution programme',
+    summary: 'Supporting the ZODF Ramadan distribution programme in the community.',
+  },
+  {
+    id: 'quality-is-tested',
+    date: '17 February 2026',
+    kind: 'Insight',
+    title: 'Quality is tested',
+    summary: 'From the Flokefama Media Centre.',
+  },
+];
+

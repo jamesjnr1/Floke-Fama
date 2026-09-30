@@ -37,7 +37,7 @@ export function mountNetwork(container: HTMLElement, onReady?: () => void): () =
   const positions: Vector3[] = Array.from({ length: NODES }, () => new Vector3(rand() * 10 - 1.5, (rand() - 0.5) * 9, (rand() - 0.5) * 6));
 
   const ico = new EdgesGeometry(new IcosahedronGeometry(1, 0));
-  const nodeMat = new LineBasicMaterial({ color: 0x5b8def, transparent: true, opacity: 0.42 });
+  const nodeMat = new LineBasicMaterial({ color: 0x3f9e66, transparent: true, opacity: 0.42 });
   const nodes = positions.map((p) => {
     const m = new LineSegments(ico, nodeMat);
     m.position.copy(p);
@@ -49,7 +49,7 @@ export function mountNetwork(container: HTMLElement, onReady?: () => void): () =
 
   // Vertex dots
   const dotGeo = new BufferGeometry().setFromPoints(positions);
-  const dotMat = new PointsMaterial({ color: 0x93c5fd, size: 0.07, transparent: true, opacity: 0.9, blending: AdditiveBlending, depthWrite: false });
+  const dotMat = new PointsMaterial({ color: 0x8fd1a9, size: 0.07, transparent: true, opacity: 0.9, blending: AdditiveBlending, depthWrite: false });
   world.add(new Points(dotGeo, dotMat));
 
   // Connections, fading with distance
@@ -61,7 +61,7 @@ export function mountNetwork(container: HTMLElement, onReady?: () => void): () =
       if (d > LINK_DISTANCE) continue;
       const a = 1 - d / LINK_DISTANCE;
       linkPos.push(...positions[i].toArray(), ...positions[j].toArray());
-      linkCol.push(0.36 * a, 0.55 * a, 0.94 * a, 0.36 * a, 0.55 * a, 0.94 * a);
+      linkCol.push(0.25 * a, 0.62 * a, 0.4 * a, 0.25 * a, 0.62 * a, 0.4 * a); // brand green, fading with distance
     }
   }
   const linkGeo = new BufferGeometry();

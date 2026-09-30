@@ -22,7 +22,7 @@ export function Inventory({ assets, onSelect }: { assets: Asset[]; onSelect: (a:
     <ul className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {assets.map((a) => (
           <li key={a.id}>
-            <button onClick={() => onSelect(a)} className="group flex h-full w-full flex-col rounded-4xl border border-line bg-paper p-2 text-left transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_30px_60px_-30px_rgb(11_18_32/0.35)]">
+            <button onClick={() => onSelect(a)} className="group flex h-full w-full flex-col rounded-4xl border border-line bg-paper p-2 text-left transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_30px_60px_-30px_rgb(11_21_16/0.35)]">
               <AssetVisual asset={a} className="aspect-[4/3] rounded-[1.6rem]" />
               <div className="p-4">
                 <div className="flex items-center justify-between gap-2">
@@ -175,11 +175,11 @@ function Schematic() {
     <svg viewBox="0 0 360 170" className="mt-6 w-full" role="img" aria-label="Illustrative block diagram of power and signal paths">
       <defs>
         <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-          <path d="M0 0L10 5L0 10z" fill="#93c5fd" />
+          <path d="M0 0L10 5L0 10z" fill="#8fd1a9" />
         </marker>
       </defs>
       {[[100, 40, 130, 40], [220, 40, 250, 40], [295, 60, 295, 110], [250, 130, 220, 130], [130, 130, 100, 130]].map(([x1, y1, x2, y2], i) => (
-        <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#93c5fd" strokeWidth="1.5" strokeDasharray="4 3" markerEnd="url(#arr)" />
+        <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#8fd1a9" strokeWidth="1.5" strokeDasharray="4 3" markerEnd="url(#arr)" />
       ))}
       {boxes.map((b) => (
         <g key={b.label}>
