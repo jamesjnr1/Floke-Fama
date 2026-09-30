@@ -5,15 +5,16 @@ import { LayoutGroup, motion } from 'motion/react';
 import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { LogoMark } from '@/components/layout/logo';
-import { AssetStatusList } from '@/components/portal/AssetStatusList';
-import { AssetSheet, Inventory } from '@/components/portal/inventory';
-import { LogFaultButton, RadialUptime } from '@/components/portal/QuickActions';
-import { Sparkline } from '@/components/portal/Sparkline';
-import { statusMeta } from '@/components/portal/status';
-import { TimelineTracker } from '@/components/portal/TimelineTracker';
+import { AssetStatusList } from '@/components/engineer/AssetStatusList';
+import { AssetSheet, Inventory } from '@/components/engineer/inventory';
+import { LogFaultButton, RadialUptime } from '@/components/engineer/QuickActions';
+import { Sparkline } from '@/components/engineer/Sparkline';
+import { statusMeta } from '@/components/engineer/status';
+import { TimelineTracker } from '@/components/engineer/TimelineTracker';
 import { Icon } from '@/components/ui/icon';
-import { assets, demoFacility, demoUptime, tickets as seedTickets, type Asset, type Ticket } from '@/data/portal-demo';
+import { assets, demoUptime, tickets as seedTickets, type Asset, type Ticket } from '@/data/engineer-demo';
 import { contact } from '@/data/seed';
+import { logout } from '@/lib/auth/actions';
 import { cn } from '@/lib/utils';
 
 type View = 'tracker' | 'pulse' | 'docs';
@@ -33,7 +34,8 @@ function announceDispatch(t: Ticket) {
 }
 
 /** Portal Shell: fixed sidebar rail + dashboard workspace on the midnight canvas. */
-export function PortalShell() {
+export function PortalShell({ user }: { user: { name: string; email: string } }) {
+  const initials = user.name.split(/\s+/).map((w) => w[0]).slice(0, 2).join('').toUpperCase();
   const [view, setView] = useState<View>('tracker');
   const [tickets, setTickets] = useState(seedTickets);
   const [selectedId, setSelectedId] = useState(seedTickets[0].id);
@@ -88,10 +90,10 @@ export function PortalShell() {
 
         {/* Profile Block */}
         <div className="mt-8 flex items-center gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.03] p-3">
-          <span className="grid size-10 place-items-center rounded-xl bg-brand-600 font-semibold">{demoFacility.initials}</span>
+          <span className="grid size-10 place-items-center rounded-xl bg-brand-600 font-semibold">{initials}</span>
           <span className="min-w-0">
-            <span className="block truncate text-sm font-medium">{demoFacility.name}</span>
-            <span className="block truncate text-xs text-white/45">{demoFacility.user}</span>
+            <span className="block truncate text-sm font-medium">{user.name}</span>
+            <span className="block truncate text-xs text-white/45">Biomedical engineer</span>
           </span>
         </div>
 
@@ -124,6 +126,11 @@ export function PortalShell() {
           <Link href="/" className="flex items-center gap-2 text-xs text-white/50 hover:text-white">
             <Icon name="fi-rr-arrow-small-left" /> Back to flokefama site
           </Link>
+          <form action={logout}>
+            <button type="submit" className="flex items-center gap-2 text-xs text-white/50 hover:text-white">
+              <Icon name="fi-rr-sign-out-alt" /> Sign out
+            </button>
+          </form>
         </div>
       </aside>
 
@@ -131,7 +138,7 @@ export function PortalShell() {
       <main id="main" className="min-w-0 flex-1 p-4 md:p-8 xl:p-10">
         {/* Mobile top bar + nav */}
         <div className="mb-6 flex items-center justify-between lg:hidden">
-          <Link href="/" className="flex items-center gap-2"><LogoMark /><span className="font-semibold">Flokefama Care</span></Link>
+          <Link href="/" className="flex items-center gap-2"><LogoMark /><span className="font-semibold">Service Portal</span></Link>
           <span className="rounded-md bg-white/[0.06] px-2 py-1 font-mono text-[10px] uppercase tracking-widest text-white/60">Demo</span>
         </div>
         <div className="-mx-1 mb-6 flex gap-1 overflow-x-auto px-1 lg:hidden">

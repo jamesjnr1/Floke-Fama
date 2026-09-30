@@ -40,7 +40,6 @@ export interface Ticket {
   current: number;
 }
 
-export const demoFacility = { name: 'Demo Regional Hospital', user: 'Lab Administrator', initials: 'DR' };
 
 export const assets: Asset[] = [
   {

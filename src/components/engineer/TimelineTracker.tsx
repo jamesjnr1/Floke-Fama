@@ -2,7 +2,7 @@
 
 import { motion } from 'motion/react';
 import { Icon } from '@/components/ui/icon';
-import type { Asset, Ticket } from '@/data/portal-demo';
+import type { Asset, Ticket } from '@/data/engineer-demo';
 import { cn } from '@/lib/utils';
 
 const priorityStyle = {

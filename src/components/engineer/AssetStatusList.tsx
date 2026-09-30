@@ -1,8 +1,8 @@
 'use client';
 
-import { Sparkline } from '@/components/portal/Sparkline';
-import { statusMeta } from '@/components/portal/status';
-import type { Asset } from '@/data/portal-demo';
+import { Sparkline } from '@/components/engineer/Sparkline';
+import { statusMeta } from '@/components/engineer/status';
+import type { Asset } from '@/data/engineer-demo';
 
 /** System Status Rail: every installed system with a live status dot and a mini sparkline. */
 export function AssetStatusList({ assets, onSelect }: { assets: Asset[]; onSelect: (a: Asset) => void }) {
