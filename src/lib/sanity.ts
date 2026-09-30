@@ -1,8 +1,8 @@
 import 'server-only';
 import { createClient, type SanityClient } from '@sanity/client';
 
-const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
-const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET ?? 'production';
+const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID?.trim();
+const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET?.trim() || 'production';
 
 /** Null when Sanity is not configured, so callers fall back to seed data. */
 export const sanity: SanityClient | null = projectId
@@ -11,7 +11,7 @@ export const sanity: SanityClient | null = projectId
       dataset,
       apiVersion: '2025-01-01',
       useCdn: true,
-      token: process.env.SANITY_API_READ_TOKEN,
+      token: process.env.SANITY_API_READ_TOKEN?.trim() || undefined,
       perspective: 'published',
     })
   : null;

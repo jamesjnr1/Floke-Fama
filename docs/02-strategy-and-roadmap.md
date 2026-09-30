@@ -71,7 +71,7 @@ Contact             (branches, map, form, WhatsApp)
 - [ ] SEO: meta descriptions, Open Graph images, `Organization` and `LocalBusiness` schema per branch, XML sitemap
 - [ ] Legal pages: Privacy Policy and Terms
 
-### Phase 3 — QA & launch (week 6)
+### Phase 3 — QA & launch (week 6, only with Flokefama's written approval; until then the live site is not touched)
 - [ ] Test at 360 / 390 / 768 / 1024 / 1440 px in Chrome, Safari and Firefox, plus a real Android phone (most visitors in Ghana)
 - [ ] Lighthouse targets: **Performance ≥ 90 mobile, Accessibility ≥ 95, SEO 100**
 - [ ] Check that no page scrolls horizontally, there are no `#` links, and there are no placeholder numbers

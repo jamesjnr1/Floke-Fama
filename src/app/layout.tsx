@@ -5,7 +5,7 @@ import { SiteFooter } from '@/components/layout/site-footer';
 import { SiteHeader } from '@/components/layout/site-header';
 import { ServiceWorkerRegister } from '@/components/layout/sw-register';
 import { contact } from '@/data/seed';
-import { siteUrl } from '@/lib/utils';
+import { allowIndexing, siteUrl } from '@/lib/utils';
 import '@/styles/uicons/uicons.css';
 import './globals.css';
 
@@ -29,6 +29,7 @@ export const metadata: Metadata = {
   openGraph: { type: 'website', siteName: 'Flokefama', images: ['/images/og-image.jpg'] },
   twitter: { card: 'summary_large_image' },
   icons: { icon: '/images/favicon.png' },
+  robots: allowIndexing ? undefined : { index: false, follow: false },
 };
 
 export const viewport: Viewport = { themeColor: '#070c14', width: 'device-width', initialScale: 1 };
