@@ -8,6 +8,12 @@ const securityHeaders = [
   { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
 ];
 
+// Pre-launch safety: every response carries noindex until the launch switch is set
+// (see allowIndexing in src/lib/utils.ts). Covers images and PDFs, not just pages.
+if (process.env.NEXT_PUBLIC_ALLOW_INDEXING !== 'true') {
+  securityHeaders.push({ key: 'X-Robots-Tag', value: 'noindex, nofollow' });
+}
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,

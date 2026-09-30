@@ -44,11 +44,23 @@ Every integration is optional at runtime. With no environment variables the site
 
 Old WordPress URLs (`/index.php/shop`, `/index.php/product/*` and so on) are 308-redirected in `next.config.ts`.
 
-## Deploying to Vercel
+## Deploying to Vercel (preview only, the live site is untouched)
 1. Import the GitHub repo at vercel.com → New Project (framework auto-detected).
-2. Add the environment variables from `.env.example` that are ready.
-3. Every PR gets a preview URL, and `main` deploys to production.
-4. Point `flokefama.com` DNS to Vercel **after** the client signs off on content.
+2. Add only the integration keys that are ready. **Leave `NEXT_PUBLIC_SITE_URL` and `NEXT_PUBLIC_ALLOW_INDEXING` unset.**
+3. Every PR gets a preview URL, and `main` deploys to the project's own `*.vercel.app` address.
+4. The site is automatically hidden from search engines (see "Pre-launch protection").
+
+**Never, without Flokefama's written approval:** add the flokefama.com domain in Vercel, change DNS, or make any change to the live WordPress site.
+
+## Pre-launch protection
+| Layer | Behaviour until `NEXT_PUBLIC_ALLOW_INDEXING=true` |
+|---|---|
+| `robots.txt` | `Disallow: /` for all crawlers |
+| `<meta name="robots">` | `noindex, nofollow` on every page |
+| `X-Robots-Tag` header | `noindex, nofollow` on every response, including images |
+| Canonical / sitemap / JSON-LD | Use this deployment's own URL (never the live domain) |
+
+Launch day (only when approved) is a separate, planned task: back up the live site, set the two variables, add the domain, then switch DNS.
 
 ## Production checklist
 | Item | Status |
@@ -59,6 +71,7 @@ Old WordPress URLs (`/index.php/shop`, `/index.php/product/*` and so on) are 308
 | Keyboard and screen-reader support via Radix (dialogs, tabs), skip link, focus rings, reduced motion | ✅ baseline; a full WCAG 2.1 AA audit with axe and a manual screen-reader pass is still to do |
 | Offline page + service worker | ✅ |
 | Security headers (HSTS, nosniff, frame, referrer, permissions) | ✅ |
+| Pre-launch noindex protection; no references to the live domain | ✅ |
 | Structured data (MedicalBusiness, Product) + sitemap | ✅ |
 | Lighthouse ≥ 95 performance | ⏳ measure on the Vercel preview (can't be measured reliably locally) |
 | Sanity project, Algolia index, HubSpot form | ⏳ need Flokefama accounts |

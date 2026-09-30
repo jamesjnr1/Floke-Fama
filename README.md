@@ -44,6 +44,15 @@ docs/                  Audit, roadmap, design system, social playbook, architect
 prototype/             Earlier static HTML prototype (reference only)
 ```
 
+## ⚠️ The live site is off-limits
+
+**This project never touches the live flokefama.com.** The current WordPress site stays exactly as it is until Flokefama explicitly approves a launch.
+
+- **No changes** to the live site's WordPress admin, hosting, plugins, content or DNS.
+- The live site is only ever **read** (audit, copying public content and images).
+- The new site runs on its **own Vercel address**. It never defaults to the live domain, and it is hidden from search engines (robots.txt, `noindex` meta and `X-Robots-Tag`) so it can't compete with the live site in Google.
+- **Do not** set `NEXT_PUBLIC_SITE_URL` to flokefama.com, set `NEXT_PUBLIC_ALLOW_INDEXING=true`, or add the flokefama.com domain in Vercel, until the launch is approved in writing.
+
 ## Content rules (non-negotiable)
 - **No invented facts.** Metrics and milestones come only from Flokefama's published material. Product specs are flagged `specsVerified: false` and show an "indicative" note until checked against manufacturer datasheets.
 - The **Ministry of Health partnership** in the brief is **not shown** until Flokefama confirms it.
@@ -51,5 +60,5 @@ prototype/             Earlier static HTML prototype (reference only)
 - Real event photography only.
 
 ## Git workflow
-- `main` = production (Vercel deploys it). Work on branches, merge by pull request, and let CI pass first.
+- `main` = approved work, deployed by Vercel to its own `*.vercel.app` address (never the live site). Work on branches, merge by pull request, and let CI pass first.
 - Branch names: `feature/*`, `fix/*`, `content/*`, `flyers/yyyy-mm`.

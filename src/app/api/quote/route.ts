@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { quoteSchema } from '@/lib/quote-schema';
+import { siteUrl } from '@/lib/utils';
 
 /**
  * Receives procurement requests, validates them server-side and forwards them to HubSpot
@@ -26,8 +27,8 @@ export async function POST(request: Request) {
 }
 
 async function forwardToCrm(data: Record<string, unknown> & { reference: string; equipment: string[] }) {
-  const portalId = process.env.HUBSPOT_PORTAL_ID;
-  const formGuid = process.env.HUBSPOT_FORM_GUID;
+  const portalId = process.env.HUBSPOT_PORTAL_ID?.trim();
+  const formGuid = process.env.HUBSPOT_FORM_GUID?.trim();
   if (!portalId || !formGuid) {
     console.info('[quote] HubSpot not configured; request logged only', { reference: data.reference, facility: data.facility });
     return;
@@ -54,7 +55,7 @@ async function forwardToCrm(data: Record<string, unknown> & { reference: string;
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       fields: Object.entries(fields).filter(([, v]) => v).map(([name, value]) => ({ name, value: String(value) })),
-      context: { pageUri: `${process.env.NEXT_PUBLIC_SITE_URL ?? ''}/quote`, pageName: 'Procurement portal' },
+      context: { pageUri: `${siteUrl}/quote`, pageName: 'Procurement portal' },
     }),
   });
   if (!res.ok) throw new Error(`HubSpot responded ${res.status}`);
