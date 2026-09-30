@@ -12,31 +12,46 @@ docs/
   02-strategy-and-roadmap.md  Tech decision, new sitemap, phased plan, working agreement
   03-design-system.md         Colours, type, spacing, components, imagery, voice
   04-social-media-playbook.md Channels, content pillars, flyer rules, posting workflow
-site/                         Homepage prototype (plain HTML/CSS/JS, no build step)
+site/                         Homepage prototype (static HTML/CSS/JS, opens straight from disk)
   index.html
-  assets/{css,js,img,fonts}
+  assets/{css,js,img,fonts,vendor}
+src/hero3d.js                 Source of the Three.js 3D hero (bundled into site/assets/js/)
 flyers/
   templates/                  Editable HTML flyer templates + shared flyer.css
   export/                     Rendered PNGs, ready to post
   captions.md                 Caption drafts per flyer
-scripts/                      Image optimiser, flyer exporter, responsive QA
+scripts/                      Icon subsetter, image optimiser, flyer exporter, responsive QA
 .github/workflows/pages.yml   Publishes /site to GitHub Pages for review links
 ```
 
 ## Quick start
 
-Requires Node 18+.
+Requires Node 18+ and Python 3 (for icon subsetting: `pip install fonttools brotli`).
 
 ```bash
-npm install                  # installs Playwright (headless Chromium for the scripts)
+npm install                  # Three.js, esbuild, Flaticon UIcons, Playwright
 npx playwright install chromium   # first time only, if you don't have the browser yet
 
 npm run dev                  # preview the prototype at http://localhost:5173
+npm run build                # rebuild icons + 3D bundle (run after editing src/ or icons)
+npm run icons                # rebuild the Flaticon subset after adding/removing fi-* icons
+npm run build:3d             # rebuild site/assets/js/hero3d.js from src/hero3d.js
 npm run qa                   # screenshots at 360→1440 px in qa/, fails on overflow/broken images
 npm run flyers               # renders every flyer template to flyers/export/*.png (2x)
 npm run flyers -- expert-tip # render just one
 npm run images -- path/to/photo.jpg 1600   # convert a photo to optimised WebP
 ```
+
+## Tech at a glance
+
+| | |
+|---|---|
+| Font | **Poppins**, self-hosted |
+| Icons | **Flaticon UIcons** (Regular Rounded + Brands), subset to ~4 KB |
+| 3D | **Three.js** hero scene, ~140 KB gzipped, with a CSS fallback if WebGL is unavailable |
+| JS | No framework. `main.js` (~4 KB) handles the menu, tilt, reveal and counters |
+
+See [docs/03-design-system.md](docs/03-design-system.md) for the full visual system.
 
 ## Making a new flyer
 
