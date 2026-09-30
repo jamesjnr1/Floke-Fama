@@ -15,12 +15,12 @@ export default function OfflinePage() {
           Your connection dropped. Pages you’ve already opened, including product spec sheets, remain available. For urgent equipment faults, contact our biomedical support team directly.
         </p>
         <div className="mt-10 grid gap-3 sm:grid-cols-2">
-          <a href={contact.phoneHref} className="flex items-center gap-4 rounded-3xl bg-neon-600 p-6 text-white">
+          <a href={contact.phoneHref} className="flex items-center gap-4 rounded-3xl bg-brand-600 p-6 text-white">
             <Icon name="fi-rr-phone-call" className="text-2xl" />
             <span><span className="block text-xs text-white/70">Emergency biomedical support</span><span className="text-lg font-semibold">{contact.phone}</span></span>
           </a>
           <a href={`mailto:${contact.support}`} className="flex items-center gap-4 rounded-3xl border border-line bg-paper p-6">
-            <Icon name="fi-rr-envelope" className="text-2xl text-neon-600" />
+            <Icon name="fi-rr-envelope" className="text-2xl text-brand-600" />
             <span><span className="block text-xs text-ink-3">Support desk</span><span className="font-semibold text-ink">{contact.support}</span></span>
           </a>
         </div>

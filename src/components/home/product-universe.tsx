@@ -24,9 +24,9 @@ export function ProductUniverse({ categories, products }: { categories: Category
             <Reveal key={c.slug} delay={i * 0.06} className={cn(i < 2 ? 'lg:col-span-3' : 'lg:col-span-2')}>
               <Link
                 href={`/products?category=${c.slug}`}
-                className="group relative flex h-full min-h-[240px] flex-col justify-between overflow-hidden rounded-4xl border border-line bg-paper p-7 transition-all duration-700 ease-out-expo hover:-translate-y-1 hover:border-transparent hover:shadow-[0_30px_60px_-30px_rgb(11_18_32/0.35)]"
+                className="group relative flex h-full min-h-[240px] flex-col justify-between overflow-hidden rounded-4xl border border-line bg-paper p-7 transition-all duration-700 ease-out-expo hover:-translate-y-1 hover:border-transparent hover:shadow-[0_30px_60px_-30px_rgb(11_21_16/0.35)]"
               >
-                <Icon name={c.icon} className="pointer-events-none absolute -bottom-10 -right-6 text-[11rem] text-neon-600/[0.06] transition-transform duration-1000 ease-out-expo group-hover:-rotate-6 group-hover:scale-110" />
+                <Icon name={c.icon} className="pointer-events-none absolute -bottom-10 -right-6 text-[11rem] text-brand-600/[0.06] transition-transform duration-1000 ease-out-expo group-hover:-rotate-6 group-hover:scale-110" />
                 <div className="flex items-start justify-between">
                   <IconTile name={c.icon} />
                   <span className="label">{String(count(c.slug)).padStart(2, '0')} lines</span>
@@ -34,7 +34,7 @@ export function ProductUniverse({ categories, products }: { categories: Category
                 <div className="relative">
                   <h3 className="text-2xl font-semibold tracking-tight">{c.title}</h3>
                   <p className="mt-2 max-w-sm text-sm font-light text-ink-3">{c.description}</p>
-                  <span className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-neon-600">
+                  <span className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-brand-600">
                     Explore <Icon name="fi-rr-arrow-small-right" className="transition-transform group-hover:translate-x-1" />
                   </span>
                 </div>

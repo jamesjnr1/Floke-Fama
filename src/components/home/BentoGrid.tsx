@@ -11,7 +11,7 @@ import type { Metric } from '@/lib/types';
  */
 export function BentoGrid({ metrics }: { metrics: Metric[] }) {
   return (
-    <section id="impact" className="scroll-mt-28 bg-canvas py-24 md:py-32">
+    <section className="bg-canvas py-20 md:py-28">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal className="flex flex-wrap items-end justify-between gap-6">
           <div>
@@ -49,8 +49,8 @@ export function BentoGrid({ metrics }: { metrics: Metric[] }) {
               href="/products/mindray-bs-240"
               className="group relative flex h-full min-h-[440px] flex-col overflow-hidden rounded-3xl border border-midnight bg-midnight p-7 text-white"
             >
-              <div aria-hidden className="absolute -right-24 -top-24 size-80 rounded-full bg-[radial-gradient(circle,rgb(59_130_246/0.35),transparent_65%)]" />
-              <p className="label relative !text-neon-300">Featured system</p>
+              <div aria-hidden className="absolute -right-24 -top-24 size-80 rounded-full bg-[radial-gradient(circle,rgb(46_154_91/0.35),transparent_65%)]" />
+              <p className="label relative !text-brand-300">Featured system</p>
               <h3 className="relative mt-3 text-3xl font-bold tracking-[-0.03em] text-white">Mindray BS-240</h3>
               <p className="relative mt-2 max-w-[18rem] text-sm text-white/60">Fully automated bench-top clinical chemistry, installed and serviced nationwide.</p>
               <div className="relative mt-auto h-56">
@@ -62,7 +62,7 @@ export function BentoGrid({ metrics }: { metrics: Metric[] }) {
                   className="object-contain object-right-bottom mix-blend-lighten transition-transform duration-1000 ease-out-expo group-hover:scale-105"
                 />
               </div>
-              <span className="relative mt-4 inline-flex items-center gap-2 text-sm font-medium text-neon-300">
+              <span className="relative mt-4 inline-flex items-center gap-2 text-sm font-medium text-brand-300">
                 Open deep spec sheet <Icon name="fi-rr-arrow-small-right" className="transition-transform group-hover:translate-x-1" />
               </span>
             </Link>
@@ -77,7 +77,7 @@ export function BentoGrid({ metrics }: { metrics: Metric[] }) {
               <MediaThumbnail
                 image="/images/forbes-africa-2026.webp"
                 alt="Forbes Africa, Ghana 2026: Africa Undiscovered edition cover"
-                href="/#media"
+                href="/media"
                 cta="Read the feature"
                 className="mt-6 flex-1"
               />
@@ -112,14 +112,14 @@ function SignalTrace({ className }: { className?: string }) {
     <svg viewBox="0 0 320 100" className={`w-full ${className ?? ''}`} aria-hidden>
       <defs>
         <linearGradient id="trace" x1="0" x2="1">
-          <stop offset="0" stopColor="#3b82f6" stopOpacity="0.1" />
-          <stop offset="0.5" stopColor="#3b82f6" />
-          <stop offset="1" stopColor="#10b981" />
+          <stop offset="0" stopColor="#2e9a5b" stopOpacity="0.1" />
+          <stop offset="0.5" stopColor="#2e9a5b" />
+          <stop offset="1" stopColor="#3aa867" />
         </linearGradient>
       </defs>
-      {[20, 40, 60, 80].map((y) => <line key={y} x1="0" x2="320" y1={y} y2={y} stroke="#e2e6ea" strokeDasharray="2 4" />)}
+      {[20, 40, 60, 80].map((y) => <line key={y} x1="0" x2="320" y1={y} y2={y} stroke="#e1e7e3" strokeDasharray="2 4" />)}
       <path d={d} fill="none" stroke="url(#trace)" strokeWidth="2.2" strokeLinejoin="round" strokeLinecap="round" />
-      <circle cx="320" cy="60" r="4" fill="#10b981" />
+      <circle cx="320" cy="60" r="4" fill="#3aa867" />
     </svg>
   );
 }

@@ -36,9 +36,11 @@ const nextConfig: NextConfig = {
       { source: '/index.php/product/:slug', destination: '/products', permanent: true },
       { source: '/index.php/product-category/:slug', destination: '/products', permanent: true },
       { source: '/index.php/contact', destination: '/quote', permanent: true },
-      { source: '/index.php/services', destination: '/#services', permanent: true },
-      { source: '/index.php/about-us', destination: '/#impact', permanent: true },
-      { source: '/index.php/awards', destination: '/#media', permanent: true },
+      { source: '/index.php/services', destination: '/solutions', permanent: true },
+      { source: '/index.php/about-us', destination: '/impact', permanent: true },
+      { source: '/index.php/awards', destination: '/media', permanent: true },
+      { source: '/index.php/media-centre', destination: '/media', permanent: true },
+      { source: '/events', destination: '/media', permanent: true },
     ];
   },
 };
