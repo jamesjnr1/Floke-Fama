@@ -7,9 +7,9 @@ import { algoliasearch } from 'algoliasearch';
 import { createClient } from '@sanity/client';
 import { products as seedProducts } from '../src/data/seed.ts';
 
-const appId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID;
-const adminKey = process.env.ALGOLIA_ADMIN_KEY;
-const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? 'products';
+const appId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID?.trim();
+const adminKey = process.env.ALGOLIA_ADMIN_KEY?.trim();
+const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX?.trim() || 'products';
 if (!appId || !adminKey) {
   console.error('Set NEXT_PUBLIC_ALGOLIA_APP_ID and ALGOLIA_ADMIN_KEY first (see .env.example).');
   process.exit(1);
@@ -18,9 +18,9 @@ if (!appId || !adminKey) {
 type Record = { slug: string; name: string; brand: string; category: string; summary: string; tags: string[]; specs: { label: string; value: string }[]; featured?: boolean };
 
 async function loadProducts(): Promise<Record[]> {
-  const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
+  const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID?.trim();
   if (!projectId) return seedProducts;
-  const sanity = createClient({ projectId, dataset: process.env.NEXT_PUBLIC_SANITY_DATASET ?? 'production', apiVersion: '2025-01-01', useCdn: false });
+  const sanity = createClient({ projectId, dataset: process.env.NEXT_PUBLIC_SANITY_DATASET?.trim() || 'production', apiVersion: '2025-01-01', useCdn: false });
   return sanity.fetch(`*[_type == "product"]{ "slug": slug.current, name, brand, "category": category->slug.current, summary, tags, specs, featured }`);
 }
 

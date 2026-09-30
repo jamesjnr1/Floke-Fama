@@ -9,9 +9,9 @@ export interface SearchHit {
   slug: string;
 }
 
-const appId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID;
-const apiKey = process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_KEY;
-const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? 'products';
+const appId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID?.trim();
+const apiKey = process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_KEY?.trim();
+const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX?.trim() || 'products';
 
 export const searchProvider = appId && apiKey ? 'algolia' : 'local';
 
