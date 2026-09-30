@@ -1,33 +1,38 @@
 @import 'tailwindcss';
 
 /* ==========================================================================
-   Flokefama design tokens: "Medical Clean"
-   Off-white canvas, clinical greys, midnight slate, and surgical green as the
-   only accent (primary actions and data highlights).
+   Flokefama tokens: "Premium Clinical"
+   brand/midnight    #0F172A  deep slate base
+   brand/neon-blue   #3B82F6  electric accent (primary actions, data highlights)
+   brand/surgical    #10B981  pulsating active-machine / status dots (= emerald-500)
+   canvas/clean-white #F8F9FA light-mode solutions catalogue
    ========================================================================== */
 @theme {
-  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
 
-  --color-canvas: #f7f8f7;
+  --color-canvas: #f8f9fa;
   --color-paper: #ffffff;
-  --color-mist: #eef1ef;
-  --color-line: #e3e7e4;
-  --color-ink: #0b1220;
-  --color-ink-2: #3e4a47;
-  --color-ink-3: #7b8682;
+  --color-mist: #eef1f4;
+  --color-line: #e2e6ea;
+  --color-ink: #0f172a;
+  --color-ink-2: #3b4658;
+  --color-ink-3: #717c8d;
 
-  --color-midnight: #070c14;
-  --color-midnight-2: #0d1520;
-  --color-midnight-3: #152030;
+  --color-midnight: #0f172a;
+  --color-midnight-2: #16213a;
+  --color-midnight-3: #1e2a45;
 
-  --color-surgical-700: #1b5e37;
-  --color-surgical-600: #257847;
-  --color-surgical-500: #1f9d57;
-  --color-surgical-400: #34c77b;
-  --color-surgical-300: #6fe3a6;
-  --color-surgical-100: #d8f5e5;
-  --color-surgical-50: #eefaf3;
+  /* Electric accent scale (500 = brand neon-blue). Buttons use 600 for AA contrast with white text. */
+  --color-neon-50: #eff6ff;
+  --color-neon-100: #dbeafe;
+  --color-neon-300: #93c5fd;
+  --color-neon-400: #60a5fa;
+  --color-neon-500: #3b82f6;
+  --color-neon-600: #2563eb;
+  --color-neon-700: #1d4ed8;
 
+  --color-surgical: #10b981;
   --color-signal: #e4283c;
 
   --radius-4xl: 2rem;
@@ -41,6 +46,11 @@
       transform: translateX(-50%);
     }
   }
+  --animate-status-pulse: status-pulse 2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  @keyframes status-pulse {
+    0% { box-shadow: 0 0 0 0 rgb(16 185 129 / 0.55); }
+    100% { box-shadow: 0 0 0 8px rgb(16 185 129 / 0); }
+  }
 }
 
 @layer base {
@@ -50,17 +60,16 @@
   }
   body {
     @apply bg-canvas text-ink-2 antialiased;
-    font-feature-settings: 'ss01';
   }
   h1, h2, h3, h4 {
     @apply text-ink;
     text-wrap: balance;
   }
   ::selection {
-    @apply bg-surgical-300 text-midnight;
+    @apply bg-neon-300 text-midnight;
   }
   :focus-visible {
-    @apply outline-2 outline-offset-2 outline-surgical-500;
+    @apply outline-2 outline-offset-2 outline-neon-500;
   }
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
@@ -73,12 +82,17 @@
 }
 
 @layer components {
-  /* Small, widely tracked uppercase label paired with massive titles */
+  /* Heading/Muted Label: Geist Mono, 12px, medium, +15% tracking, uppercase */
   .label {
-    @apply text-[11px] font-medium uppercase tracking-[0.22em] text-ink-3;
+    @apply font-mono text-[12px] font-medium uppercase tracking-[0.15em] text-ink-3;
   }
+  /* Display/Hero Large: Geist Sans bold, -3% tracking */
   .display {
-    @apply font-semibold tracking-[-0.045em] leading-[0.98];
+    @apply font-bold tracking-[-0.03em] leading-[0.98];
+  }
+  /* Surgical-green pulsating status dot */
+  .status-dot {
+    @apply inline-block size-2 shrink-0 rounded-full bg-surgical animate-status-pulse;
   }
   .glass {
     @apply border border-white/10 bg-white/[0.045] backdrop-blur-xl;
@@ -101,7 +115,7 @@
     mask-image: radial-gradient(ellipse 60% 60% at 50% 0%, #000 10%, transparent 70%);
   }
   .text-gradient {
-    background: linear-gradient(100deg, #6fe3a6 0%, #34c77b 45%, #c9f7de 100%);
+    background: linear-gradient(100deg, #93c5fd 0%, #3b82f6 45%, #dbeafe 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;

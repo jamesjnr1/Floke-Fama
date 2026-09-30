@@ -10,9 +10,9 @@ export function PortalTeaser() {
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal className="relative isolate grid overflow-hidden rounded-5xl bg-midnight p-8 text-white md:p-14 lg:grid-cols-2 lg:gap-16">
           <div className="grid-fade absolute inset-0 -z-10" />
-          <div className="absolute -right-32 -top-32 -z-10 size-[520px] rounded-full bg-[radial-gradient(circle,rgb(31_157_87/0.35),transparent_65%)]" />
+          <div className="absolute -right-32 -top-32 -z-10 size-[520px] rounded-full bg-[radial-gradient(circle,rgb(59_130_246/0.35),transparent_65%)]" />
           <div className="self-center">
-            <p className="label !text-surgical-300">Flokefama Care · Client portal</p>
+            <p className="label !text-neon-300">Flokefama Care · Client portal</p>
             <h2 className="display mt-5 text-[clamp(2.25rem,1.3rem+3vw,4rem)] text-white">Every service call. Tracked in real time.</h2>
             <p className="mt-6 max-w-md font-light text-white/60">
               Log faults, follow your engineer from our hub to your facility, and keep manuals, schematics and calibration certificates for every installed system in one place.

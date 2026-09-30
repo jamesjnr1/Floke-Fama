@@ -18,27 +18,30 @@
 | Frontend | **Next.js 15.5** App Router, React 19, TypeScript (strict) | `src/app` |
 | Styling | **Tailwind CSS v4** (CSS-first tokens) + shadcn-style components on **Radix** primitives | `src/app/globals.css`, `src/components/ui` |
 | Motion | **Motion** (Framer Motion's current package, `motion/react`) | throughout, e.g. `layoutId` morphs |
-| 3D | Three.js hero scene, lazy chunk, pauses off-screen | `src/lib/three/molecule-scene.ts` |
+| 3D | Three.js wireframe-polyhedra network behind the hero, lazy chunk, pauses off-screen | `src/lib/three/network-scene.ts` |
 | CMS | **Sanity** (headless), falls back to seed data when not configured | `src/lib/sanity.ts`, `src/lib/data.ts`, `studio/` |
 | Search | **Algolia** (lite client), falls back to a local scorer | `src/lib/search.ts`, `scripts/algolia-sync.ts` |
 | Leads | Validated route handler → **HubSpot** Forms API | `src/app/api/quote/route.ts` |
 | Toasts | **Sonner**, clinical styling | `src/app/layout.tsx` |
 | Offline | Hand-written service worker + `/offline` emergency page | `public/sw.js`, `src/app/offline` |
 | Hosting | **Vercel** (global CDN, preview deploy per PR) | CI: `.github/workflows/ci.yml` |
-| Fonts / icons | Poppins via `next/font/local`; Flaticon UIcons subset (~6 KB) | `src/fonts`, `src/styles/uicons` |
+| Fonts / icons | Geist Sans + Geist Mono (`geist` package, `next/font`); Flaticon UIcons subset (~6 KB) | `src/app/layout.tsx`, `src/styles/uicons` |
 
 ## Design principle: works with zero config
 Every integration is optional at runtime. With no environment variables the site runs entirely on `src/data/seed.ts`: search runs locally and quote requests are validated and logged. Add keys one at a time as Flokefama's accounts are created (`.env.example`).
 
+## Route groups
+`src/app/(site)/` holds the public pages and shares the Navbar and footer via `(site)/layout.tsx`. `src/app/portal/` is an application shell with its own layout, with no marketing chrome.
+
 ## Routes
 | Route | Rendering | Notes |
 |---|---|---|
-| `/` | Static + ISR | Institutional hero with the Enterprise Metrics Tracker, Trust bento, pinned BS-240 scrollytelling, product universe, services, portal teaser |
+| `/` | Static + ISR | Dark-canvas hero, Partners & Clientele, Insights Deck bento, pinned BS-240 scrollytelling, product universe, services, Media Hub, portal teaser |
 | `/products` | Dynamic | Category morphing and keystroke search without reloads; state mirrored to the URL |
 | `/products/[slug]` | SSG + ISR | Full Deep Spec Sheet page for SEO, with `Product` JSON-LD |
 | `/products/(.)[slug]` | Intercepted (parallel `@modal` slot) | The same spec sheet as an overlay when opened from the catalogue |
 | `/quote` | Dynamic | Multi-step procurement flow (quote or demo), react-hook-form + zod, validated again on the server |
-| `/portal` | Static | Flokefama Care client portal (**demo data**): tickets morph via `layoutId`, dispatch toasts, inventory with manuals, schematics and calibration history |
+| `/portal` | Static, own layout | Biomedical Engineer Service Portal (**demo data**): sidebar rail, System Status rail with sparklines, ticket timeline tracker, log-fault terminal, radial uptime, System Pulse and Documentation views with deep spec sheets |
 | `/offline` | Static | Precached; emergency biomedical support contacts |
 | `/sitemap.xml`, `/robots.txt`, `/manifest.webmanifest` | Generated | |
 
