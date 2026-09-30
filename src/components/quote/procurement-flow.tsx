@@ -8,6 +8,8 @@ import { useForm, type FieldPath } from 'react-hook-form';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
+import { contact } from '@/data/seed';
+import { composeLinks } from '@/lib/compose';
 import { departments, quoteSchema, timelines, type QuoteInput } from '@/lib/quote-schema';
 import { cn } from '@/lib/utils';
 
@@ -25,7 +27,7 @@ export function ProcurementFlow({ options, initial }: { options: Option[]; initi
   const [step, setStep] = useState(0);
   const [dir, setDir] = useState(1);
   const [custom, setCustom] = useState('');
-  const [done, setDone] = useState<string | null>(null);
+  const [done, setDone] = useState<{ reference: string; delivered: boolean; data: QuoteInput } | null>(null);
 
   const form = useForm<QuoteInput>({
     resolver: zodResolver(quoteSchema),
@@ -51,29 +53,62 @@ export function ProcurementFlow({ options, initial }: { options: Option[]; initi
 
   const submit = handleSubmit(async (data) => {
     const res = await fetch('/api/quote', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
-    const json = (await res.json().catch(() => ({}))) as { reference?: string; error?: string };
+    const json = (await res.json().catch(() => ({}))) as { reference?: string; delivered?: boolean; error?: string };
     if (!res.ok || !json.reference) {
-      toast.error('We couldn’t send your request', { description: json.error ?? 'Please try again, or call +233 53 339 2863.' });
+      toast.error('We couldn’t send your request', { description: json.error ?? `Please try again, or call ${contact.phone}.` });
       return;
     }
-    setDone(json.reference);
-    toast.success(data.intent === 'demo' ? 'Demonstration request received' : 'Quote request received', { description: `Reference ${json.reference}. A specialist will contact you shortly.` });
+    setDone({ reference: json.reference, delivered: json.delivered === true, data });
+    if (json.delivered) toast.success(data.intent === 'demo' ? 'Demonstration request received' : 'Quote request received', { description: `Reference ${json.reference}. A specialist will contact you shortly.` });
   });
 
   if (done) {
+    const { reference, delivered, data } = done;
+    const label = data.intent === 'demo' ? 'Demonstration request' : 'Quote request';
+    const send = composeLinks({
+      to: contact.sales,
+      subject: `${label} ${reference}: ${data.facility}`,
+      body: [
+        `Reference: ${reference}`,
+        `Department: ${departments.find((d) => d.id === data.department)?.label ?? data.department}`,
+        `Equipment: ${data.equipment.join(', ')}`,
+        `Timeline: ${timelines.find((t) => t.id === data.timeline)?.label ?? data.timeline}`,
+        data.notes ? `Notes: ${data.notes}` : null,
+        '',
+        `${data.name}${data.role ? `, ${data.role}` : ''}`,
+        data.facility,
+        `${data.phone} · ${data.email}`,
+      ].filter((l) => l !== null).join('\n'),
+    });
     return (
       <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} className="rounded-5xl border border-line bg-paper p-10 text-center md:p-16">
         <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', delay: 0.15 }} className="mx-auto grid size-20 place-items-center rounded-full bg-brand-600 text-3xl text-white shadow-[0_20px_40px_-15px_rgb(37_120_71/0.8)]">
-          <Icon name="fi-rr-check" />
+          <Icon name={delivered ? 'fi-rr-check' : 'fi-rr-paper-plane'} />
         </motion.span>
-        <h2 className="display mt-8 text-4xl">Request received.</h2>
-        <p className="mx-auto mt-4 max-w-md font-light text-ink-3">
-          Your reference is <strong className="font-semibold text-ink">{done}</strong>. A Flokefama specialist will contact you within one business day.
-        </p>
-        <div className="mt-8 flex flex-wrap justify-center gap-3">
-          <Button asChild variant="outline"><Link href="/products">Back to catalogue</Link></Button>
-          <Button asChild><Link href="/">Home</Link></Button>
-        </div>
+        {delivered ? (
+          <>
+            <h2 className="display mt-8 text-4xl">Request received.</h2>
+            <p className="mx-auto mt-4 max-w-md font-light text-ink-3">
+              Your reference is <strong className="font-semibold text-ink">{reference}</strong>. A Flokefama specialist will contact you within one business day.
+            </p>
+            <div className="mt-8 flex flex-wrap justify-center gap-3">
+              <Button asChild variant="outline"><Link href="/products">Back to shop</Link></Button>
+              <Button asChild><Link href="/">Home</Link></Button>
+            </div>
+          </>
+        ) : (
+          <>
+            <h2 className="display mt-8 text-4xl">One last step.</h2>
+            <p className="mx-auto mt-4 max-w-md font-light text-ink-3">
+              Your request <strong className="font-semibold text-ink">{reference}</strong> is ready. Send it to our sales team by email or WhatsApp. Everything is filled in for you.
+            </p>
+            <div className="mt-8 flex flex-wrap justify-center gap-3">
+              <Button asChild size="lg"><a href={send.email}><Icon name="fi-rr-envelope" /> Send by email</a></Button>
+              <Button asChild size="lg" variant="outline"><a href={send.whatsapp} target="_blank" rel="noopener noreferrer"><Icon name="fi-brands-whatsapp" /> Send on WhatsApp</a></Button>
+            </div>
+            <p className="mt-6 text-sm text-ink-3">Or call us on <a href={contact.phoneHref} className="font-medium text-brand-700 hover:underline">{contact.phone}</a></p>
+          </>
+        )}
       </motion.div>
     );
   }
