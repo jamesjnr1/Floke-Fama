@@ -1,21 +1,20 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { LoginForm } from '@/components/auth/login-form';
+import { AccessPanel } from '@/components/auth/access-panel';
 import { Logo } from '@/components/layout/logo';
 import { Icon } from '@/components/ui/icon';
 import { safeNext } from '@/lib/auth/session';
 import { demoAccountsEnabled, demoCredentials } from '@/lib/auth/users';
-import { contact } from '@/data/seed';
 
-export const metadata: Metadata = { title: 'Sign in', robots: { index: false } };
+export const metadata: Metadata = { title: 'Portal access', robots: { index: false } };
 
 /**
  * Portal access: a split screen outside the marketing chrome. The head office on the left,
- * a quiet light sign-in panel on the right. On phones the photo becomes a short banner.
+ * a quiet light panel on the right with Sign in and Register tabs. On phones the photo becomes a short banner.
  */
-export default async function LoginPage({ searchParams }: { searchParams: Promise<{ next?: string; signedout?: string }> }) {
-  const { next, signedout } = await searchParams;
+export default async function LoginPage({ searchParams }: { searchParams: Promise<{ next?: string; signedout?: string; mode?: string }> }) {
+  const { next, signedout, mode } = await searchParams;
   const toEngineer = next?.startsWith('/engineer');
 
   return (
@@ -55,23 +54,13 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
 
         <div className="mx-auto flex w-full max-w-[420px] flex-1 flex-col justify-center py-8">
           <Logo tone="light" className="hidden lg:flex" />
-          <h2 className="text-[32px] lg:mt-10 font-semibold leading-tight tracking-[-0.02em] text-ink">Welcome back</h2>
-          <p className="mt-2 text-[15px] text-ink-3">
-            {toEngineer ? 'Sign in to the engineer service portal.' : 'Sign in to your Flokefama client portal.'}
-          </p>
-
-          <LoginForm
+          <AccessPanel
             next={safeNext(next) ?? undefined}
             demo={demoAccountsEnabled ? demoCredentials : []}
             notice={signedout ? 'You’ve been signed out.' : undefined}
+            engineer={Boolean(toEngineer)}
+            initialMode={mode === 'register' ? 'register' : 'signin'}
           />
-
-          <p className="mt-8 text-center text-sm text-ink-3">
-            No account yet?{' '}
-            <a href={`mailto:${contact.support}`} className="font-medium text-brand-700 underline-offset-4 hover:underline">Contact support</a>
-            {' '}or call{' '}
-            <a href={contact.phoneHref} className="font-medium text-brand-700 underline-offset-4 hover:underline whitespace-nowrap">{contact.phone}</a>
-          </p>
         </div>
       </section>
     </main>

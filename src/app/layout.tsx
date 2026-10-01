@@ -23,6 +23,14 @@ const poppins = localFont({
   display: 'swap',
 });
 
+/** Righteous (SIL OFL, self-hosted): the logo wordmark only, matching the lettering of the original Flokefama logo. */
+const righteous = localFont({
+  src: '../fonts/righteous-400.woff2',
+  weight: '400',
+  variable: '--font-righteous',
+  display: 'swap',
+});
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: { default: 'Flokefama | Medical Equipment & Diagnostics in Ghana', template: '%s | Flokefama' },
@@ -50,7 +58,7 @@ const organizationLd = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en-GH" className={`${poppins.variable} ${GeistSans.variable}`} suppressHydrationWarning>
+    <html lang="en-GH" className={`${poppins.variable} ${GeistSans.variable} ${righteous.variable}`} suppressHydrationWarning>
       <head>
         {/* Apply saved accessibility preferences before first paint */}
         <script dangerouslySetInnerHTML={{ __html: a11yBootScript }} />
