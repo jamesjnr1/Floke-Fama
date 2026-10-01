@@ -1,5 +1,5 @@
-import Image from 'next/image';
 import Link from 'next/link';
+import { HeroGlobe } from '@/components/home/hero-globe';
 import { NetworkCanvas } from '@/components/home/network-canvas';
 import { Reveal } from '@/components/motion/reveal';
 
@@ -7,7 +7,7 @@ import { Reveal } from '@/components/motion/reveal';
  * Hero Section: dark canvas, 12-column grid.
  * Left (span 7): the company line from flokefama.com, muted subline, bracketed actions
  * (Explore Solutions → shop, Contact Us → contact, as on the current site).
- * Right (span 5): Mindray analyser spotlight over a wireframe network.
+ * Right (span 5): 3D network globe with the published figures, over a faint wireframe network.
  */
 export function Hero() {
   return (
@@ -17,7 +17,7 @@ export function Hero() {
         <div className="absolute -right-40 -top-56 size-[860px] rounded-full bg-[radial-gradient(circle,rgb(46_154_91/0.28),transparent_62%)]" />
         <div className="absolute -bottom-72 -left-40 size-[640px] rounded-full bg-[radial-gradient(circle,rgb(23_38_30/0.9),transparent_70%)]" />
         <div className="absolute -top-20 right-[12%] h-[140%] w-40 rotate-[28deg] bg-gradient-to-b from-brand-300/25 via-brand-400/5 to-transparent blur-2xl" />
-        <NetworkCanvas className="absolute inset-0 [mask-image:linear-gradient(90deg,transparent_0%,rgb(0_0_0/0.35)_38%,#000_62%)]" />
+        <NetworkCanvas className="absolute inset-0 opacity-40 [mask-image:linear-gradient(90deg,transparent_0%,rgb(0_0_0/0.35)_38%,#000_62%)]" />
         <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-midnight to-transparent" />
       </div>
 
@@ -53,20 +53,9 @@ export function Hero() {
           </Reveal>
         </div>
 
-        {/* Column Right (span 5): the analyser on a lit stage. The image is pre-feathered, so no hard edges. */}
+        {/* Column Right (span 5): the 3D network globe */}
         <Reveal delay={0.2} y={40} className="relative lg:col-span-5">
-          <div className="relative mx-auto aspect-square w-full max-w-[520px]">
-            <div aria-hidden className="absolute inset-[14%] rounded-full bg-[radial-gradient(circle,rgb(46_154_91/0.4),transparent_68%)] blur-2xl" />
-            <div aria-hidden className="absolute inset-x-[16%] bottom-[16%] h-10 rounded-[100%] bg-black/60 blur-2xl" />
-            <Image
-              src="/images/bs-240-stage.webp"
-              alt="Mindray BS-240 chemistry analyser"
-              fill
-              priority
-              sizes="(min-width: 1024px) 40vw, 90vw"
-              className="object-contain object-center drop-shadow-[0_30px_60px_rgb(0_0_0/0.6)]"
-            />
-          </div>
+          <HeroGlobe />
         </Reveal>
       </div>
     </section>

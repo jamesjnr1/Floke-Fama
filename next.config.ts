@@ -44,6 +44,7 @@ const nextConfig: NextConfig = {
       { source: '/index.php/media-centre', destination: '/events#news', permanent: true },
       { source: '/index.php/my-account/:path*', destination: '/portal', permanent: true },
       { source: '/shop', destination: '/products', permanent: true },
+      { source: '/products/mindray-bs-240', destination: '/products?category=in-vitro-diagnostics', permanent: true },
       // Earlier preview URLs
       { source: '/solutions', destination: '/services', permanent: true },
       { source: '/partners', destination: '/about#partners', permanent: true },

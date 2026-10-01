@@ -84,7 +84,7 @@ export function ContactForm() {
         <input name="email" type="email" autoComplete="email" placeholder="you@hospital.org" aria-invalid={!!errors.email} className={field} />
       </Field>
       <Field label="Message" error={errors.message}>
-        <textarea name="message" rows={4} placeholder="How can we help your facility?" aria-invalid={!!errors.message} className={cn(field, 'h-auto resize-none py-3')} />
+        <textarea name="message" rows={3} placeholder="How can we help your facility?" aria-invalid={!!errors.message} className={cn(field, 'h-auto resize-none py-3')} />
       </Field>
       <input name="website" tabIndex={-1} autoComplete="off" aria-hidden className="hidden" />
       <button
