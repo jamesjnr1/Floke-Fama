@@ -23,11 +23,11 @@ export function Hero() {
         <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-midnight to-transparent" />
       </div>
 
-      <div className="mx-auto grid lg:min-h-[100svh] max-w-[1280px] grid-cols-1 items-center gap-8 px-5 pb-12 pt-28 md:gap-12 md:px-16 md:pb-20 md:pt-36 lg:grid-cols-12 lg:gap-8 lg:pb-[120px] lg:pt-[168px]">
+      <div className="mx-auto grid lg:min-h-[100svh] max-w-[1280px] grid-cols-1 items-center gap-8 px-5 pb-12 pt-28 md:gap-12 md:px-10 md:pb-20 md:pt-36 lg:grid-cols-12 lg:gap-16 lg:pb-[120px] lg:pt-[168px]">
         {/* Column Left (span 7): vertical, gap 24px */}
         <div className="flex flex-col gap-6 lg:col-span-7">
           <Reveal delay={0.06}>
-            <h1 className="display text-[clamp(3rem,1.1rem+5.2vw,6.25rem)] uppercase leading-[0.92] text-white">
+            <h1 className="display text-[clamp(42px,16px+4.2vw,84px)] uppercase leading-[0.95] text-white">
               Ghana’s No.1 <span className="text-gradient">Healthcare Company.</span>
             </h1>
           </Reveal>

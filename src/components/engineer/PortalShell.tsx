@@ -13,6 +13,7 @@ import { Overview } from '@/components/engineer/Overview';
 import { SystemsView } from '@/components/engineer/SystemsView';
 import { TicketsView } from '@/components/engineer/TicketsView';
 import { LogoMark } from '@/components/layout/logo';
+import { useAccessibility } from '@/components/layout/accessibility';
 import { Icon } from '@/components/ui/icon';
 import { contact } from '@/data/seed';
 import { logout } from '@/lib/auth/actions';
@@ -32,6 +33,7 @@ const nav: { id: View; label: string; icon: string }[] = [
 export function PortalShell({ user }: { user: { name: string; email: string } }) {
   const me = user.name;
   const initials = me.split(/\s+/).map((w) => w[0]).slice(0, 2).join('').toUpperCase();
+  const a11y = useAccessibility();
   const { state, dispatch: rawDispatch, ready, reset } = useEngineerStore(me);
   const [view, setView] = useState<View>('overview');
   const [ticketId, setTicketId] = useState<string | null>(null);
@@ -158,6 +160,7 @@ export function PortalShell({ user }: { user: { name: string; email: string } })
               Reset demo data
             </button>
           </div>
+          <button onClick={a11y.open} className="flex items-center gap-2 text-xs text-white/55 hover:text-white"><Icon name="fi-rr-universal-access" className="text-brand-300" /> Accessibility</button>
           <a href={contact.phoneHref} className="flex items-center gap-2 font-mono text-xs text-white/50 hover:text-white">
             <Icon name="fi-rr-phone-call" className="text-brand-400" /> {contact.phone}
           </a>
@@ -179,6 +182,7 @@ export function PortalShell({ user }: { user: { name: string; email: string } })
           <Link href="/" className="flex items-center gap-2"><LogoMark /><span className="font-semibold">Service Portal</span></Link>
           <div className="flex items-center gap-2">
             <button onClick={() => setFault({ open: true })} className="grid size-10 place-items-center rounded-xl bg-brand-600" aria-label="Log equipment fault"><Icon name="fi-rr-plus" /></button>
+            <button onClick={a11y.open} className="grid size-10 place-items-center rounded-xl border border-white/10" aria-label="Accessibility options"><Icon name="fi-rr-universal-access" /></button>
             <form action={logout}>
               <button type="submit" className="grid size-10 place-items-center rounded-xl border border-white/10" aria-label="Sign out"><Icon name="fi-rr-sign-out-alt" /></button>
             </form>
