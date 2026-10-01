@@ -7,7 +7,7 @@
  */
 import { prefersReducedMotion } from '@/lib/a11y';
 import {
-  AdditiveBlending, BufferAttribute, BufferGeometry, CanvasTexture, CapsuleGeometry, Color, Group, Line, LineBasicMaterial, Mesh,
+  AdditiveBlending, BufferAttribute, BufferGeometry, CanvasTexture, CapsuleGeometry, Color, Group, Line, LineBasicMaterial, LineSegments, Mesh,
   MeshBasicMaterial,
   PerspectiveCamera, Points, PointsMaterial, Scene, Sprite, SpriteMaterial, Vector3, WebGLRenderer,
 } from 'three';
@@ -91,6 +91,27 @@ export function mountCapsule(container: HTMLElement, onReady?: () => void): () =
   const dotMat = new PointsMaterial({ vertexColors: true, size: 0.04, transparent: true, opacity: 0.9, depthWrite: false });
   capsule.add(new Points(dotGeo, dotMat));
   disposables.push(dotGeo, dotMat);
+  // Mesh connections: each dot joined to its nearest neighbours, so the capsule reads as a network
+  const LINK = STEP * 1.45;
+  const links: number[] = [];
+  const linkCol: number[] = [];
+  for (let i = 0; i < count; i++) {
+    for (let j = i + 1; j < count; j++) {
+      const dx = pos[i * 3] - pos[j * 3];
+      const dy = pos[i * 3 + 1] - pos[j * 3 + 1];
+      if (Math.abs(dy) > LINK) continue;
+      const dz = pos[i * 3 + 2] - pos[j * 3 + 2];
+      if (dx * dx + dy * dy + dz * dz > LINK * LINK) continue;
+      links.push(pos[i * 3], pos[i * 3 + 1], pos[i * 3 + 2], pos[j * 3], pos[j * 3 + 1], pos[j * 3 + 2]);
+      linkCol.push(col[i * 3], col[i * 3 + 1], col[i * 3 + 2], col[j * 3], col[j * 3 + 1], col[j * 3 + 2]);
+    }
+  }
+  const linkGeo = new BufferGeometry();
+  linkGeo.setAttribute('position', new BufferAttribute(new Float32Array(links), 3));
+  linkGeo.setAttribute('color', new BufferAttribute(new Float32Array(linkCol), 3));
+  const linkMat = new LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.32, depthWrite: false });
+  capsule.add(new LineSegments(linkGeo, linkMat));
+  disposables.push(linkGeo, linkMat);
   // Invisible inner capsule: writes depth only, so dots on the far side are hidden and the form reads as solid
   const occGeo = new CapsuleGeometry(R * 0.97, H * 2, 12, 32);
   const occMat = new MeshBasicMaterial({ colorWrite: false });
