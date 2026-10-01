@@ -15,7 +15,7 @@ const layout = [
 /** The actual awards, photographed: the No.1 healthcare ranking leads. */
 export function AwardsGallery() {
   return (
-    <section className="bg-canvas py-24 md:py-32">
+    <section className="bg-canvas pb-4 pt-24 md:pt-32">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal>
           <p className="label">Awards &amp; recognition</p>
@@ -47,6 +47,12 @@ export function AwardsGallery() {
             );
           })}
         </ul>
+        <Reveal>
+          <p className="mx-auto mt-16 max-w-3xl text-center text-xl font-light leading-relaxed text-ink-3 md:text-2xl">
+            Every accolade is a testament to the <span className="font-medium text-ink">hard work of our team</span>, the{' '}
+            <span className="font-medium text-ink">quality of our solutions</span> and our <span className="font-medium text-brand-700">impact on healthcare across Ghana and West Africa</span>.
+          </p>
+        </Reveal>
       </div>
     </section>
   );

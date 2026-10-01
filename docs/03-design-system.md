@@ -14,6 +14,8 @@
 | `canvas` / `paper` | `#F8F9FA` / `#FFFFFF` | Light sections |
 | `ink`, `ink-2`, `ink-3`, `line`, `mist` | neutral greys | Text and borders |
 
+**Section rhythm:** pages alternate dark (`midnight`), light (`canvas`/`paper`) and **brand green** (a deep `brand-700 → brand-800` gradient, used for Core values and ESG “Made in Ghana”), so no page is a run of dark sections.
+
 Hover states always go **darker** (`brand-700`), never lighter, so white text stays AA-compliant.
 
 **Hero 3D:** a dotted globe with the head office as a pulsing logo-red node and green arcs carrying light pulses out to facilities; glass read-outs show the published figures. Pauses off-screen; a still frame with reduced motion.

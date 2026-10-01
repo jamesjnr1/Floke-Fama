@@ -83,13 +83,14 @@ export default async function AboutPage() {
       </section>
 
       {/* Core values */}
-      <section id="values" className="scroll-mt-28 relative isolate overflow-hidden bg-midnight py-24 text-white md:py-32">
-        <div aria-hidden className="absolute -right-40 -top-40 -z-10 size-[600px] rounded-full bg-[radial-gradient(circle,rgb(46_154_91/0.25),transparent_65%)]" />
+      <section id="values" className="scroll-mt-28 relative isolate overflow-hidden bg-[linear-gradient(160deg,#1b5e37_0%,#134228_55%,#0e3320_100%)] py-24 text-white md:py-32">
+        <div aria-hidden className="absolute -right-40 -top-40 -z-10 size-[640px] rounded-full bg-[radial-gradient(circle,rgb(143_209_169/0.18),transparent_65%)]" />
+        <div aria-hidden className="grid-fade absolute inset-0 -z-10 opacity-30" />
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
           <Reveal>
-            <p className="label !text-brand-300">Our core values</p>
+            <p className="label !text-brand-100">Our core values</p>
             <h2 className="display mt-4 max-w-3xl text-[clamp(2rem,1.2rem+2.8vw,3.5rem)] text-white">The principles that define who we are.</h2>
-            <p className="mt-4 max-w-xl font-light leading-relaxed text-white/55">Our success is built on four values that guide how we work and the impact we make in healthcare.</p>
+            <p className="mt-4 max-w-xl font-light leading-relaxed text-white/70">Our success is built on four values that guide how we work and the impact we make in healthcare.</p>
           </Reveal>
           <CoreValues />
         </div>
