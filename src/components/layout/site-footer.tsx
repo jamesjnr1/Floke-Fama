@@ -1,9 +1,10 @@
 import Link from 'next/link';
+import { GetInTouch } from '@/components/contact/get-in-touch';
 import { Logo } from '@/components/layout/logo';
 import { Icon } from '@/components/ui/icon';
-import { branches, categories, contact, maps } from '@/data/seed';
+import { branches, categories, maps } from '@/data/seed';
 
-/** Footer columns follow the current flokefama.com footer: Company, Products & Solutions, Media Centre, Contact. */
+/** Footer: "Get in touch" first, then the columns of the current flokefama.com footer. */
 const company = [
   { href: '/about#who-we-are', label: 'Who we are' },
   { href: '/about#mission', label: 'Our mission & vision' },
@@ -22,20 +23,13 @@ const media = [
 export function SiteFooter() {
   return (
     <footer className="bg-midnight text-white/60">
+      <GetInTouch />
       <div className="mx-auto grid max-w-[1280px] gap-12 px-5 py-20 md:grid-cols-2 md:px-10 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1.2fr]">
         <div>
           <Logo tone="dark" />
           <p className="mt-5 max-w-xs text-sm font-light leading-relaxed">
             Revolutionising healthcare practices in Ghana with cutting-edge technologies and solutions that set new standards in medical care and patient safety.
           </p>
-          <a
-            href={contact.whatsapp}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="glass mt-6 inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm text-white transition hover:bg-brand-600"
-          >
-            <Icon name="fi-brands-whatsapp" /> Chat on WhatsApp
-          </a>
         </div>
         <FooterCol title="Company">
           {company.map((l) => (
@@ -57,17 +51,13 @@ export function SiteFooter() {
           <li className="pt-3"><Link href="/portal" className="hover:text-white">Client portal</Link></li>
           <li><Link href="/engineer" className="hover:text-white">Engineer sign in</Link></li>
         </FooterCol>
-        <FooterCol title="Contact">
-          <li><a href={contact.phoneHref} className="hover:text-white">{contact.phone}</a></li>
-          <li><a href={`mailto:${contact.info}`} className="hover:text-white">{contact.info}</a></li>
-          <li><a href={`mailto:${contact.sales}`} className="hover:text-white">{contact.sales}</a></li>
-          <li><a href={`mailto:${contact.support}`} className="hover:text-white">{contact.support}</a></li>
+        <FooterCol title="Visit us">
           <li>
-            <a href={maps.directions} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 hover:text-white">
-              <Icon name="fi-rr-marker" className="text-brand-400" /> Santa Maria, Accra: directions
+            <a href={maps.directions} target="_blank" rel="noopener noreferrer" className="inline-flex items-start gap-2 hover:text-white">
+              <Icon name="fi-rr-marker" className="mt-0.5 text-brand-400" /> <span>Head office, Santa Maria, Accra<span className="block text-xs text-brand-300">Get directions →</span></span>
             </a>
           </li>
-          <li className="pt-2 text-xs leading-relaxed text-white/40">{branches.map((b) => b.name).join(' · ')}</li>
+          <li className="text-xs leading-relaxed text-white/40">Branches: {branches.filter((b) => b.name !== 'Santa Maria').map((b) => b.name).join(' · ')}</li>
         </FooterCol>
       </div>
       <div className="mx-auto flex max-w-[1280px] flex-wrap justify-between gap-4 border-t border-white/10 px-5 py-6 text-xs md:px-10">
