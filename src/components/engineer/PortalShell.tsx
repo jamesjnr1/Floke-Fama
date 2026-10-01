@@ -8,7 +8,7 @@ import { CalibrationView } from '@/components/engineer/CalibrationView';
 import { CommandPalette, type Command } from '@/components/engineer/CommandPalette';
 import { CalibrationDialog, LogFaultDialog, ResolveDialog } from '@/components/engineer/dialogs';
 import { AssetSheet, Inventory } from '@/components/engineer/inventory';
-import { Notifications } from '@/components/engineer/Notifications';
+import { Notifications } from '@/components/service/Notifications';
 import { Overview } from '@/components/engineer/Overview';
 import { SystemsView } from '@/components/engineer/SystemsView';
 import { TicketsView } from '@/components/engineer/TicketsView';
@@ -16,7 +16,7 @@ import { LogoMark } from '@/components/layout/logo';
 import { Icon } from '@/components/ui/icon';
 import { contact } from '@/data/seed';
 import { logout } from '@/lib/auth/actions';
-import { daysUntil, isOpen, nextTicketId, useEngineerStore, type Action, type Asset, type Notification, type Ticket } from '@/lib/engineer/store';
+import { daysUntil, isOpen, nextTicketId, useEngineerStore, type Action, type Asset, type Notification, type Ticket } from '@/lib/service/store';
 import { cn } from '@/lib/utils';
 
 type View = 'overview' | 'tickets' | 'systems' | 'calibration' | 'docs';
@@ -144,7 +144,7 @@ export function PortalShell({ user }: { user: { name: string; email: string } })
 
         <div className="mt-auto space-y-3">
           <div className="rounded-xl bg-white/[0.04] px-3 py-2 text-xs text-white/60 ring-1 ring-white/10">
-            Demo data: fictional facilities. Your changes are saved in this browser.
+            Demo data: fictional facilities. Requests from the client portal appear here; changes are saved in this browser.
             <button
               onClick={() => {
                 if (confirm('Reset the demo data? Your changes in this browser will be cleared.')) {
@@ -203,7 +203,7 @@ export function PortalShell({ user }: { user: { name: string; email: string } })
               <span className="flex-1">Search systems, tickets…</span>
               <kbd className="hidden rounded-md border border-white/10 px-1.5 py-0.5 font-mono text-[10px] sm:inline">⌘K</kbd>
             </button>
-            <Notifications items={state.notifications} onRead={(id) => rawDispatch({ type: 'read', id })} onReadAll={() => rawDispatch({ type: 'readAll' })} onOpen={onNotification} />
+            <Notifications items={state.notifications.filter((n) => n.audience === 'engineer')} onRead={(id) => rawDispatch({ type: 'read', id })} onReadAll={() => rawDispatch({ type: 'readAll', audience: 'engineer' })} onOpen={onNotification} />
           </div>
         </header>
 

@@ -144,7 +144,7 @@ function ProductCard({ product, category, wide }: { product: Product; category?:
       <ProductVisual product={product} category={category} sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" className={cn('rounded-[1.1rem] sm:rounded-[1.6rem]', wide ? 'aspect-[16/9] sm:aspect-auto sm:h-72' : 'aspect-square sm:aspect-[4/3]')} />
       <div className="flex flex-1 items-end justify-between gap-4 px-2.5 pb-3 pt-3 sm:px-4 sm:pb-4 sm:pt-5">
         <div>
-          <p className="label">{product.brand}</p>
+          <p className="label flex items-center gap-2">{product.brand}{product.newArrival && <span className="rounded-full bg-brand-600 px-2 py-0.5 text-[10px] font-medium normal-case tracking-normal text-white">New</span>}</p>
           <h2 className="mt-1 text-sm font-semibold leading-snug tracking-tight text-ink sm:mt-1.5 sm:text-lg">{product.name}</h2>
           <p className="mt-1 line-clamp-2 hidden text-sm font-light text-ink-3 sm:block">{product.summary}</p>
           {product.specs[0] && <Badge className="mt-3 hidden sm:inline-flex">{product.specs[0].value}</Badge>}

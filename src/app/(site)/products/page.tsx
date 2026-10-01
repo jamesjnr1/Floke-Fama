@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Catalog } from '@/components/products/catalog';
+import { NewArrivals } from '@/components/products/new-arrivals';
 import { getCategories, getProducts } from '@/lib/data';
 
 export const metadata: Metadata = {
@@ -24,6 +25,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
         </div>
       </section>
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
+        <NewArrivals products={products} categories={categories} />
         <Catalog products={products} categories={categories} initialCategory={initialCategory} initialQuery={q ?? ''} />
       </div>
     </div>

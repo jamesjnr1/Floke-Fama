@@ -95,7 +95,7 @@
   }
   /* Phones: a stack of cards becomes one horizontal swipe row (saves scrolling). md+: the element's own grid. */
   .swipe-row {
-    @apply -mx-5 flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-2 md:mx-0 md:grid md:overflow-visible md:px-0 md:pb-0;
+    @apply -mx-5 flex snap-x snap-mandatory scroll-px-5 gap-3 overflow-x-auto px-5 pb-2 md:mx-0 md:grid md:scroll-px-0 md:overflow-visible md:px-0 md:pb-0;
     scrollbar-width: none;
   }
   .swipe-row::-webkit-scrollbar {
