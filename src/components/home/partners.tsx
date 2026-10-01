@@ -84,29 +84,21 @@ export function Partners({ heading = true }: { heading?: boolean }) {
 
         {/* The results: one balanced band (figures from the current homepage) */}
         <Reveal delay={0.1}>
-          <div className="relative isolate mt-10 overflow-hidden rounded-4xl bg-midnight text-white">
-            <div aria-hidden className="absolute -left-24 -top-32 -z-10 size-[420px] rounded-full bg-[radial-gradient(circle,rgb(46_154_91/0.28),transparent_65%)]" />
-            <div aria-hidden className="absolute -bottom-40 right-0 -z-10 size-[420px] rounded-full bg-[radial-gradient(circle,rgb(46_154_91/0.16),transparent_65%)]" />
-            <div className="grid divide-y divide-white/10 md:grid-cols-3 md:divide-x md:divide-y-0">
+          <div className="relative isolate mt-10 overflow-hidden rounded-4xl bg-[#00703A] text-white">
+            <div className="grid divide-y divide-white/20 md:grid-cols-3 md:divide-x md:divide-y-0">
               {metrics.slice(0, 2).map((m, i) => (
                 <div key={m.label} className="flex flex-col gap-5 p-7 md:p-10">
-                  <span aria-hidden className="grid size-12 place-items-center rounded-full bg-brand-600 text-[22px] text-white shadow-[0_10px_24px_-12px_rgb(46_154_91/0.9)]">
-                    <Icon name={i === 0 ? 'fi-rr-hospitals' : 'fi-rr-plug-connection'} />
-                  </span>
                   <p className="text-[clamp(2.75rem,2rem+2.4vw,4rem)] font-bold leading-none tracking-[-0.04em]">
                     <CountUp value={m.value} suffix={m.suffix} />
                   </p>
-                  <p className="max-w-[16rem] text-[15px] leading-snug text-white/65">{i === 0 ? 'Hospitals and medical laboratories served, and counting' : 'Successful system integrations'}</p>
+                  <p className="max-w-[16rem] text-[15px] leading-snug text-white/80">{i === 0 ? 'Hospitals and medical laboratories served, and counting' : 'Successful system integrations'}</p>
                 </div>
               ))}
               <div className="flex flex-col gap-5 p-7 md:p-10">
-                <span aria-hidden className="grid size-12 place-items-center rounded-full bg-brand-600 text-[22px] text-white shadow-[0_10px_24px_-12px_rgb(46_154_91/0.9)]">
-                  <Icon name="fi-rr-award" />
-                </span>
-                <p className="text-[clamp(1.75rem,1.4rem+1.2vw,2.5rem)] font-bold leading-[1.05] tracking-[-0.03em]">Ghana Club 100</p>
-                <p className="text-[15px] leading-snug text-white/65">
+                <p className="flex min-h-[clamp(2.75rem,2rem+2.4vw,4rem)] items-end text-[clamp(1.75rem,1.4rem+1.2vw,2.5rem)] font-bold leading-[1.05] tracking-[-0.03em]">Ghana Club 100</p>
+                <p className="text-[15px] leading-snug text-white/80">
                   Trusted badges &amp; associations: CEO’s Summit, partnerships and more.
-                  <Link href="/awards" className="mt-3 flex items-center gap-1 font-medium text-brand-300 transition hover:text-white">View our awards <Icon name="fi-rr-arrow-small-right" /></Link>
+                  <Link href="/awards" className="mt-3 flex items-center gap-1 font-medium text-white transition hover:text-white/80">View our awards <Icon name="fi-rr-arrow-small-right" /></Link>
                 </p>
               </div>
             </div>
