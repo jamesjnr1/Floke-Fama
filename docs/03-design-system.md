@@ -16,6 +16,8 @@
 
 **Mobile:** sections use tighter vertical padding on phones, and stacks of cards (awards, impact stories, news, ESG, mission, why-choose, categories) become a horizontal swipe row (`.swipe-row` in `globals.css`); the catalogue is two columns; the footer is compact.
 
+**Accessibility panel:** a floating button (bottom left, every public page; in the portals it is in the sidebar/header) opens text size (Standard / Large / Larger), high contrast, reduce motion (also stops the 3D scenes and Motion animations), underline links and a readable system font. Preferences are saved on the visitor’s device and applied before first paint (`src/lib/a11y.ts`, rules at the end of `globals.css`). With larger text or the readable font, the header uses the menu button below 1536 px so nothing overflows.
+
 **Section rhythm:** pages alternate dark (`midnight`), light (`canvas`/`paper`) and **brand green** (a deep `brand-700 → brand-800` gradient, used for Core values and ESG “Made in Ghana”), so no page is a run of dark sections.
 
 Hover states always go **darker** (`brand-700`), never lighter, so white text stays AA-compliant.

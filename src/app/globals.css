@@ -135,3 +135,43 @@
     color: transparent;
   }
 }
+
+/* ---------- Accessibility preferences (see src/components/layout/accessibility.tsx) ---------- */
+html[data-text='large'] { font-size: 112.5%; }
+html[data-text='larger'] { font-size: 125%; }
+html:is([data-text='large'], [data-text='larger']) :is(h1, h2, h3, p) { overflow-wrap: break-word; }
+
+html[data-contrast='high'] {
+  --color-ink-2: #0b1510;
+  --color-ink-3: #27312c;
+  --color-line: #8d9992;
+}
+html[data-contrast='high'] [class*='text-white/'] { color: #fff !important; }
+html[data-contrast='high'] [class*='border-white/'] { border-color: rgb(255 255 255 / 0.5) !important; }
+html[data-contrast='high'] ::placeholder { color: currentColor !important; opacity: 0.7; }
+html[data-contrast='high'] :focus-visible { outline: 3px solid #e4283c !important; outline-offset: 2px; }
+
+html[data-motion='reduce'] *,
+html[data-motion='reduce'] *::before,
+html[data-motion='reduce'] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+html[data-links='underline'] a { text-decoration: underline !important; text-underline-offset: 3px; }
+
+html[data-font='readable'] {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+  --font-mono: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+}
+html[data-font='readable'] body { letter-spacing: 0.012em; word-spacing: 0.08em; }
+html[data-font='readable'] .display { letter-spacing: 0; }
+
+/* With larger text or the readable font, the desktop menu needs more room: use the menu button below 1536px. */
+@media (max-width: 1535px) {
+  html:is([data-text='large'], [data-text='larger'], [data-font='readable']) header nav[aria-label='Primary'] { display: none !important; }
+  html:is([data-text='large'], [data-text='larger'], [data-font='readable']) header button[aria-controls='mobile-nav'] { display: block !important; }
+  html:is([data-text='large'], [data-text='larger'], [data-font='readable']) #mobile-nav { display: flex !important; }
+}

@@ -42,6 +42,7 @@
 .fi-rr-microscope::before{content:"\f945"}
 .fi-rr-navigation::before{content:"\f99d"}
 .fi-rr-paper-plane::before{content:"\f9f7"}
+.fi-rr-pause::before{content:"\fa0c"}
 .fi-rr-phone-call::before{content:"\fa61"}
 .fi-rr-plus::before{content:"\faac"}
 .fi-rr-search::before{content:"\fbba"}
@@ -52,10 +53,12 @@
 .fi-rr-star::before{content:"\fce9"}
 .fi-rr-stethoscope::before{content:"\fcf4"}
 .fi-rr-syringe::before{content:"\fd36"}
+.fi-rr-text::before{content:"\fd85"}
 .fi-rr-time-fast::before{content:"\fda4"}
 .fi-rr-tool-box::before{content:"\fdc8"}
 .fi-rr-trophy::before{content:"\fe39"}
 .fi-rr-truck-side::before{content:"\fe4d"}
+.fi-rr-universal-access::before{content:"\fe6e"}
 .fi-rr-user::before{content:"\fea0"}
 .fi-rr-user-add::before{content:"\fe7a"}
 .fi-rr-wrench-simple::before{content:"\ff25"}
