@@ -12,7 +12,7 @@ export function ProductUniverse({ categories }: { categories: Category[]; produc
       <div className="grid-fade-light absolute inset-x-0 top-0 h-[600px]" />
       <div className="relative mx-auto max-w-[1280px] px-5 md:px-10">
         <div className="flex flex-wrap items-end justify-between gap-8">
-          <SectionHeading label="The product universe" title={<>Every department. <span className="text-ink-3">One catalogue.</span></>} lead="From flagship analysers to the cuvettes that keep them running. Search, filter and compare in real time." />
+          <SectionHeading label="The product universe" title={<>Every department. <span className="text-brand-600">One catalogue.</span></>} lead="From flagship analysers to the cuvettes that keep them running. Search, filter and compare in real time." />
           <Button asChild variant="dark" size="lg">
             <Link href="/products">Browse the catalogue <Icon name="fi-rr-arrow-small-right" /></Link>
           </Button>
