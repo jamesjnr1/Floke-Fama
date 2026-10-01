@@ -59,7 +59,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
       {/* Header */}
       <header className="relative isolate overflow-hidden bg-canvas pb-12 pt-32 md:pb-16 md:pt-40">
         <div aria-hidden className="grid-fade-light absolute inset-0 -z-10" />
-        <div className="mx-auto max-w-[1080px] px-5">
+        <div className="mx-auto max-w-[1200px] px-5">
           <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm text-ink-3">
             <Link href="/events" className="hover:text-ink">Events &amp; Activities</Link>
             <Icon name="fi-rr-angle-small-right" />
@@ -85,7 +85,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
       {/* Cover: framed over a soft, blurred copy of itself so posters and photos both sit well */}
       {a.image && (
         <div className="bg-canvas">
-          <div className="mx-auto max-w-[1180px] px-5">
+          <div className="mx-auto max-w-[1200px] px-5">
             <figure className="relative isolate overflow-hidden rounded-5xl border border-line bg-midnight shadow-[0_40px_80px_-50px_rgb(11_21_16/0.6)]">
               <Image src={a.image.src} alt="" fill aria-hidden sizes="100vw" className="-z-10 scale-110 object-cover opacity-50 blur-2xl" />
               <div className="relative mx-auto aspect-[16/9] max-h-[640px] w-full">
@@ -98,7 +98,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
 
       {/* Body */}
       <article className="bg-canvas pb-20 pt-14 md:pb-28 md:pt-20">
-        <div className="mx-auto grid max-w-[1080px] gap-12 px-5 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-16">
+        <div className="mx-auto grid max-w-[1200px] gap-12 px-5 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-14">
           <aside className="hidden lg:block">
             <div className="sticky top-32 space-y-8">
               {toc.length > 1 && (
@@ -119,7 +119,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
               </div>
             </div>
           </aside>
-          <div className="min-w-0 max-w-[700px] rounded-4xl bg-paper p-6 shadow-[0_30px_60px_-50px_rgb(11_21_16/0.4)] ring-1 ring-line md:p-12">
+          <div className="-mx-5 min-w-0 bg-paper px-5 py-8 shadow sm:mx-0 sm:rounded-4xl-[0_30px_60px_-50px_rgb(11_21_16/0.4)] ring-1 ring-line sm:p-10 md:px-16 md:py-14">
             <ArticleBody blocks={a.blocks} />
           </div>
         </div>
@@ -127,7 +127,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
 
       {/* Closing call to action */}
       <section className="bg-canvas pb-16">
-        <div className="mx-auto max-w-[1080px] px-5">
+        <div className="mx-auto max-w-[1200px] px-5">
           <div className="relative isolate flex flex-col items-start justify-between gap-6 overflow-hidden rounded-4xl bg-midnight p-8 text-white md:flex-row md:items-center md:p-12">
             <div aria-hidden className="absolute -right-20 -top-24 -z-10 size-80 rounded-full bg-[radial-gradient(circle,rgb(46_154_91/0.35),transparent_65%)]" />
             <div>
@@ -144,7 +144,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
 
       {/* More from the Media Centre */}
       <section className="border-t border-line bg-paper py-16 md:py-24">
-        <div className="mx-auto max-w-[1080px] px-5">
+        <div className="mx-auto max-w-[1200px] px-5">
           <div className="flex items-end justify-between gap-4">
             <h2 className="text-2xl font-bold tracking-[-0.02em] text-ink md:text-3xl">More from the Media Centre</h2>
             <Link href="/events#news" className="hidden shrink-0 items-center gap-1 text-sm font-medium text-brand-700 sm:inline-flex">All news <Icon name="fi-rr-arrow-small-right" /></Link>
