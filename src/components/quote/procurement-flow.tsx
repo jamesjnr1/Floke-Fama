@@ -82,7 +82,7 @@ export function ProcurementFlow({ options, initial }: { options: Option[]; initi
     });
     return (
       <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} className="rounded-5xl border border-line bg-paper p-10 text-center md:p-16">
-        <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', delay: 0.15 }} className="mx-auto grid size-20 place-items-center rounded-full bg-brand-600 text-3xl text-white shadow-[0_20px_40px_-15px_rgb(0_112_58/0.8)]">
+        <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', delay: 0.15 }} className="mx-auto grid size-20 place-items-center rounded-full bg-brand-600 text-3xl text-white shadow-[0_20px_40px_-15px_rgb(37_120_71/0.8)]">
           <Icon name={delivered ? 'fi-rr-check' : 'fi-rr-paper-plane'} />
         </motion.span>
         {delivered ? (
@@ -125,7 +125,7 @@ export function ProcurementFlow({ options, initial }: { options: Option[]; initi
           void go(step + 1);
         } else void submit(e);
       }}
-      noValidate className="overflow-hidden rounded-5xl border border-line bg-paper shadow-[0_40px_80px_-40px_rgb(0_40_21/0.25)]">
+      noValidate className="overflow-hidden rounded-5xl border border-line bg-paper shadow-[0_40px_80px_-40px_rgb(11_21_16/0.25)]">
       {/* Progress */}
       <div className="border-b border-line p-6 md:px-10">
         <div className="flex items-center justify-between text-sm">

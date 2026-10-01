@@ -37,7 +37,7 @@ export function Overview({ name, assets, tickets, onOpenTicket, onOpenAsset, onR
   return (
     <div className="space-y-6">
       {/* Greeting + primary action */}
-      <div className="flex flex-col justify-between gap-4 rounded-3xl bg-[linear-gradient(135deg,#005e31,#004d28)] p-6 text-white md:flex-row md:items-center md:p-8">
+      <div className="flex flex-col justify-between gap-4 rounded-3xl bg-[linear-gradient(135deg,#1b5e37,#134228)] p-6 text-white md:flex-row md:items-center md:p-8">
         <div>
           <p className="text-sm text-white/70">{hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'}, {name}</p>
           <p className="mt-1 text-2xl font-semibold tracking-[-0.02em] md:text-3xl">
@@ -57,7 +57,7 @@ export function Overview({ name, assets, tickets, onOpenTicket, onOpenAsset, onR
       <ul className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         {kpis.map((k) => (
           <li key={k.label} className="min-w-0">
-            <button onClick={() => onGo(k.go)} className="flex h-full w-full flex-col rounded-3xl border border-line bg-paper p-5 text-left transition hover:border-ink/20 hover:shadow-[0_20px_40px_-30px_rgb(0_40_21/0.4)]">
+            <button onClick={() => onGo(k.go)} className="flex h-full w-full flex-col rounded-3xl border border-line bg-paper p-5 text-left transition hover:border-ink/20 hover:shadow-[0_20px_40px_-30px_rgb(11_21_16/0.4)]">
               <span className="grid size-9 place-items-center rounded-xl bg-brand-50 text-brand-700"><Icon name={k.icon} /></span>
               <span className="mt-5 text-3xl font-semibold tracking-[-0.03em] text-ink">{k.value}</span>
               <span className="mt-1 text-sm text-ink-3">{k.label}</span>

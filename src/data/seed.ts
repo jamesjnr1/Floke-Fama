@@ -9,6 +9,7 @@
  *    "Systems deployed" are wanted for the hero tracker but have no verified source yet.
  *  - A Ministry of Health partnership was proposed for the trust section; it is NOT shown until confirmed.
  */
+import { catalogue } from '@/data/catalogue';
 import type { Category, Metric, Milestone, Product } from '@/lib/types';
 
 export const categories: Category[] = [
@@ -49,271 +50,31 @@ export const categories: Category[] = [
   },
 ];
 
-const datasheet = (name: string) => [{ title: `${name} datasheet`, kind: 'datasheet' as const }];
+/** The company brochure from flokefama.com (FlokeBroucher.pdf), re-saved at web size. */
+export const brochureUrl = '/brochure/flokefama-brochure.pdf';
 
-export const products: Product[] = [
-  {
-    slug: 'mindray-semi-auto-chemistry',
-    name: 'Semi-Automated Chemistry Analyser',
-    brand: 'Mindray',
-    category: 'in-vitro-diagnostics',
-    summary: 'Semi-automated clinical chemistry analyser for laboratories that want Mindray accuracy with manual sample handling.',
-    highlights: ['Semi-automated clinical chemistry', 'Mindray reagents and controls', 'Installed and calibrated by Flokefama'],
-    specs: [{ label: 'Format', value: 'Semi-automated' }],
-    specsVerified: false,
-    compatibility: [
-      { item: 'Mindray original reagents', status: 'validated' },
-      { item: 'Third-party reagents', status: 'consult', note: 'Speak to our applications team' },
-    ],
-    documents: datasheet('Semi-automated chemistry analyser'),
-    tags: ['biochemistry', 'chemistry analyser', 'clinical chemistry', 'semi-automated'],
-    featured: true,
-  },
-  {
-    slug: 'mindray-bc-5150',
-    name: 'BC-5150 Haematology Analyser',
-    brand: 'Mindray',
-    category: 'in-vitro-diagnostics',
-    summary: '5-part differential haematology analyser for busy hospital laboratories.',
-    highlights: ['5-part differential', 'Compact footprint', 'Low reagent consumption'],
-    specs: [
-      { label: 'Differential', value: '5-part' },
-      { label: 'Throughput', value: 'Up to 60 samples/hour' },
-      { label: 'Format', value: 'Bench-top' },
-    ],
-    specsVerified: false,
-    compatibility: [
-      { item: 'Mindray haematology reagents', status: 'validated' },
-      { item: 'Third-party reagents', status: 'consult' },
-    ],
-    documents: datasheet('BC-5150'),
-    tags: ['haematology', 'cbc', 'blood count', '5-part'],
-    featured: true,
-  },
-  {
-    slug: 'mindray-bc-3000plus',
-    name: 'BC-3000Plus Haematology Analyser',
-    brand: 'Mindray',
-    category: 'in-vitro-diagnostics',
-    summary: 'Dependable 3-part differential haematology for clinics and district hospitals.',
-    highlights: ['3-part differential', 'Simple operation', 'Proven reliability'],
-    specs: [
-      { label: 'Differential', value: '3-part' },
-      { label: 'Format', value: 'Bench-top' },
-    ],
-    specsVerified: false,
-    documents: datasheet('BC-3000Plus'),
-    tags: ['haematology', 'cbc', '3-part'],
-  },
-  {
-    slug: 'mindray-bc-30s',
-    name: 'BC-30s Haematology Analyser',
-    brand: 'Mindray',
-    category: 'in-vitro-diagnostics',
-    summary: 'Compact Mindray haematology analyser for clinics and hospital laboratories.',
-    highlights: ['Complete blood count', 'Compact bench-top unit', 'Mindray reagents'],
-    specs: [{ label: 'Format', value: 'Bench-top' }],
-    specsVerified: false,
-    documents: datasheet('BC-30s'),
-    tags: ['haematology', 'cbc'],
-  },
-  {
-    slug: 'mindray-bc-20s',
-    name: 'BC-20s Haematology Analyser',
-    brand: 'Mindray',
-    category: 'in-vitro-diagnostics',
-    summary: 'Entry-level Mindray haematology analyser for smaller laboratories.',
-    highlights: ['Complete blood count', 'Simple operation', 'Mindray reagents'],
-    specs: [{ label: 'Format', value: 'Bench-top' }],
-    specsVerified: false,
-    documents: datasheet('BC-20s'),
-    tags: ['haematology', 'cbc'],
-  },
-  {
-    slug: 'olympus-cx23',
-    name: 'CX23 Clinical Microscope',
-    brand: 'Olympus',
-    category: 'laboratory',
-    summary: 'Sharp, bright optics in an ergonomic frame built for long laboratory shifts.',
-    image: '/images/products/olympus-cx23.webp',
-    highlights: ['LED illumination', 'Ergonomic, low-position controls', 'Durable for daily routine use'],
-    specs: [
-      { label: 'Illumination', value: 'LED' },
-      { label: 'Objectives', value: '4×, 10×, 40×, 100×' },
-      { label: 'Head', value: 'Binocular' },
-    ],
-    specsVerified: false,
-    documents: datasheet('CX23'),
-    tags: ['microscope', 'microscopy', 'olympus'],
-    featured: true,
-    newArrival: true,
-  },
-  {
-    slug: 'quantum-analyser',
-    name: 'Quantum Health Analyser',
-    brand: 'Flokefama Select',
-    category: 'in-vitro-diagnostics',
-    summary: 'Portable wellness screening analyser for outreach and health checks.',
-    image: '/images/products/quantum-analyser.webp',
-    highlights: ['Portable carry case', 'Fast screening workflow'],
-    specs: [{ label: 'Form factor', value: 'Portable case' }],
-    specsVerified: false,
-    documents: [],
-    tags: ['screening', 'portable', 'wellness'],
-    newArrival: true,
-  },
-  {
-    slug: 'cpap-machine',
-    name: 'CPAP Machine',
-    brand: 'Flokefama Select',
-    category: 'critical-care',
-    summary: 'Continuous positive airway pressure support for respiratory care.',
-    image: '/images/products/cpap.jpg',
-    highlights: ['Quiet operation', 'Humidifier compatible'],
-    specs: [{ label: 'Therapy', value: 'CPAP' }],
-    specsVerified: false,
-    documents: [],
-    tags: ['respiratory', 'cpap', 'ventilation', 'sleep apnoea'],
-    featured: true,
-    newArrival: true,
-  },
-  {
-    slug: 'aed-defibrillator',
-    name: 'Automated External Defibrillator',
-    brand: 'Flokefama Select',
-    category: 'critical-care',
-    summary: 'Guided, fast-response defibrillation for emergency and ward teams.',
-    highlights: ['Voice-guided operation', 'Rapid deployment'],
-    specs: [{ label: 'Type', value: 'AED' }],
-    specsVerified: false,
-    documents: [],
-    tags: ['defibrillator', 'aed', 'cardiac', 'emergency'],
-  },
-  {
-    slug: 'ctg-machine',
-    name: 'Cardiotocography (CTG) Monitor',
-    brand: 'Flokefama Select',
-    category: 'critical-care',
-    summary: 'Foetal heart rate and uterine activity monitoring for maternity units.',
-    highlights: ['Maternal & foetal monitoring', 'Integrated printer'],
-    specs: [{ label: 'Application', value: 'Obstetrics' }],
-    specsVerified: false,
-    documents: [],
-    tags: ['ctg', 'maternity', 'foetal monitor', 'obstetrics'],
-  },
-  {
-    slug: 'patient-monitor',
-    name: 'Multi-parameter Patient Monitor',
-    brand: 'Flokefama Select',
-    category: 'critical-care',
-    summary: 'Continuous vital-sign monitoring for wards, recovery and ICU.',
-    highlights: ['ECG, SpO₂, NIBP, temperature', 'Clear high-contrast display'],
-    specs: [{ label: 'Parameters', value: 'ECG, SpO₂, NIBP, Temp' }],
-    specsVerified: false,
-    documents: [],
-    tags: ['patient monitor', 'vital signs', 'icu'],
-  },
-  {
-    slug: 'electronic-scale-height-fat',
-    name: 'Smart Body Composition Scale',
-    brand: 'Flokefama Select',
-    category: 'hospital-equipment',
-    summary: 'Electronic scale with height rod and body-fat analysis for clinics.',
-    image: '/images/products/scale.jpg',
-    highlights: ['Height and weight in one station', 'Body-fat analysis'],
-    specs: [{ label: 'Measures', value: 'Weight, height, body fat' }],
-    specsVerified: false,
-    documents: [],
-    tags: ['scale', 'bmi', 'anthropometry'],
-    newArrival: true,
-  },
-  {
-    slug: 'autoclave-range',
-    name: 'Autoclave Sterilisers',
-    brand: 'Flokefama Select',
-    category: 'hospital-equipment',
-    summary: 'Steam sterilisation in five capacities, from clinic to central sterile department.',
-    highlights: ['Five chamber sizes', 'Reliable steam sterilisation'],
-    specs: [{ label: 'Capacities', value: '24 L, 35 L, 50 L, 75 L, 100 L' }],
-    specsVerified: true,
-    documents: [],
-    tags: ['autoclave', 'sterilisation', 'cssd'],
-  },
-  {
-    slug: 'suction-machine',
-    name: 'Medical Suction Machine',
-    brand: 'Flokefama Select',
-    category: 'hospital-equipment',
-    summary: 'Powerful, portable suction for theatres, wards and emergency care.',
-    highlights: ['Portable', 'Adjustable vacuum'],
-    specs: [{ label: 'Type', value: 'Electric suction' }],
-    specsVerified: false,
-    documents: [],
-    tags: ['suction', 'aspirator', 'theatre'],
-  },
-  {
-    slug: 'laboratory-centrifuge',
-    name: 'Laboratory Centrifuge',
-    brand: 'Flokefama Select',
-    category: 'laboratory',
-    summary: 'Routine sample separation for clinical laboratories.',
-    highlights: ['Quiet, balanced operation', 'Safety lid lock'],
-    specs: [{ label: 'Application', value: 'Routine clinical separation' }],
-    specsVerified: false,
-    documents: [],
-    tags: ['centrifuge', 'sample prep'],
-  },
-  {
-    slug: 'chemistry-reagents',
-    name: 'Chemistry Reagents & Controls',
-    brand: 'Mindray',
-    category: 'consumables',
-    summary: 'Original reagents, calibrators and controls for Mindray chemistry systems.',
-    highlights: ['Matched to Mindray analysers', 'Reliable nationwide supply'],
-    specs: [{ label: 'System', value: 'Mindray chemistry analysers' }],
-    specsVerified: false,
-    documents: [],
-    tags: ['reagents', 'controls', 'calibrators'],
-  },
-  {
-    slug: 'bs-230-cuvettes',
-    name: 'Chemistry Cuvettes (BS-230)',
-    brand: 'Mindray',
-    category: 'consumables',
-    summary: 'Reaction cuvettes for the Mindray BS-230 chemistry analyser.',
-    highlights: ['OEM quality', 'Stocked for fast delivery'],
-    specs: [{ label: 'Compatible with', value: 'Mindray BS-230' }],
-    specsVerified: true,
-    documents: [],
-    tags: ['cuvettes', 'consumables'],
-  },
-  {
-    slug: 'baby-cot',
-    name: 'Hospital Baby Cot',
-    brand: 'Flokefama Select',
-    category: 'hospital-equipment',
-    summary: 'Easy-clean neonatal cot for maternity and paediatric wards.',
-    highlights: ['Easy-clean surfaces', 'Stable, mobile base'],
-    specs: [{ label: 'Ward', value: 'Maternity / paediatric' }],
-    specsVerified: false,
-    documents: [],
-    tags: ['cot', 'neonatal', 'furniture'],
-  },
-];
+/** The full catalogue from the current flokefama.com shop (src/data/catalogue.ts, generated by the import). */
+export const products: Product[] = catalogue;
 
-/** "The Results" counters and figures published on flokefama.com (home, about and awards pages). */
+/** "The Results" counters and figures, as published on flokefama.com (home, contact and awards pages). */
 export const metrics: Metric[] = [
-  { label: 'Hospitals & medical laboratories served', value: 700, suffix: '+', caption: 'And counting' },
-  { label: 'Successful system integrations', value: 300, suffix: '+', caption: 'Installed and commissioned' },
-  { label: 'Years of experience', value: 18, caption: 'Founded 2008' },
-  { label: 'Branches nationwide', value: 6, caption: 'Accra to Aflao' },
+  { label: 'Hospitals, medical laboratories served and counting', value: 700, suffix: '+' },
+  { label: 'Successful system integrations', value: 300, suffix: '+' },
+  { label: 'Branches', value: 6, caption: 'Santa Maria, Korle-bu, Okaishie, Kumasi, Aflao, Techiman' },
+  { label: 'Talented team members', value: 40 },
+]
+
+/** Figures shown with “Industry Experience” on the current About page. */
+export const experienceFigures: Metric[] = [
+  { label: 'Years of Experience', value: 17 },
+  { label: 'Satisfied Clients', value: 56 },
 ];
 
 /** Secondary figures from the current Awards page. */
 export const companyFigures: Metric[] = [
-  { label: 'Health products', value: 200, suffix: '+' },
-  { label: 'Awards & recognition', value: 5, suffix: '+' },
-  { label: 'Talented team members', value: 40, suffix: '+' },
+  { label: 'Health Products', value: 200 },
+  { label: 'Awards', value: 5 },
+  { label: 'Talented Team Members', value: 40 },
 ];
 
 export const milestones: Milestone[] = [
@@ -371,13 +132,13 @@ export const clients = [
 ];
 
 export const branches = [
-  { name: 'Santa Maria', detail: 'Head office, Accra' },
-  { name: 'Korle-Bu', detail: 'Opposite Korle Bu Teaching Hospital' },
+  { name: 'Santa Maria', detail: 'Flokefama Company Ltd. Head Office' },
+  { name: 'Korle-bu', detail: 'Opposite Main Korle-bu Teaching Hospital' },
   { name: 'Okaishie', detail: 'Adepa Building, Ground Floor' },
   { name: 'Kumasi', detail: 'Kwadaso Estate' },
-  { name: 'Aflao', detail: '200 m from Makavo Junction' },
+  { name: 'Aflao', detail: '200 metres From Makavo Junction' },
   { name: 'Techiman', detail: 'Near Melcom Techiman' },
-];
+]
 
 export const contact = {
   address: 'Flokefama Company Limited, Santa Maria, Accra, Ghana',
@@ -419,28 +180,38 @@ export const testimonials = [
 
 /** Core values, from the current About page. */
 export const coreValues = [
-  { title: 'Honesty', icon: 'fi-rr-handshake', line: 'We deliver what we promise.', text: 'Transparent and truthful in all business dealings, with clear communication and realistic expectations. We build trust by consistently delivering what we promise.' },
-  { title: 'Integrity', icon: 'fi-rr-balance-scale-left', line: 'The same standard, every time.', text: 'Strong ethical standards and consistent quality and service: prompt delivery, met deadlines and a swift response to customer needs.' },
-  { title: 'Innovation', icon: 'fi-rr-lightbulb-on', line: 'Better ways to deliver care.', text: 'Continuously embracing new ideas, technologies and solutions to enhance efficiency and meet evolving needs, with cutting-edge solutions and exceptional support.' },
-  { title: 'Respect', icon: 'fi-rr-hands-heart', line: 'Every person, treated with care.', text: 'Valuing people through professionalism, inclusivity and strong relationships, treating every client, partner and team member with care and attentiveness.' },
+  { title: 'Honesty', icon: 'fi-rr-handshake', text: 'Being transparent and truthful in all business dealings, ensuring clear communication and setting realistic expectations. We build trust through reliability, consistently delivering what we promise.' },
+  { title: 'Integrity', icon: 'fi-rr-balance-scale-left', text: 'Upholding strong ethical standards and maintaining consistency in quality and service. We demonstrate timeliness by ensuring prompt delivery, meeting deadlines, and responding swiftly to customer needs.' },
+  { title: 'Innovation', icon: 'fi-rr-lightbulb-on', text: 'Continuously improving and embracing new ideas, technologies, and solutions to enhance efficiency and meet evolving needs. Our commitment to innovation drives unmatched customer service, providing clients with cutting-edge solutions and exceptional support.' },
+  { title: 'Respect', icon: 'fi-rr-hands-heart', text: 'Valuing people by fostering professionalism, inclusivity, and strong relationships. We uphold unmatched customer service by treating every client, partner, and team member with care, attentiveness, and responsiveness.' },
 ] as const;
 
 /** Services, as listed on the current Services and About pages. */
 export const serviceList = [
-  { icon: 'fi-rr-box-open', title: 'Medical equipment sales', body: 'A wide range of high-quality medical equipment for the diverse needs of hospitals, clinics and laboratories.' },
-  { icon: 'fi-rr-settings', title: 'Installation & commissioning', body: 'Proper installation and setup for the efficiency and longevity of every system.' },
-  { icon: 'fi-rr-shield-check', title: 'Technical support & maintenance', body: 'Regular maintenance for continuous, uninterrupted operation and minimal downtime.' },
-  { icon: 'fi-rr-chart-line-up', title: 'Calibration services', body: 'Precise calibration for accuracy and reliability, because accuracy is critical in diagnostics and treatment.' },
-  { icon: 'fi-rr-tool-box', title: 'Repairs & spare parts supply', body: 'Efficient repairs and genuine parts that minimise disruption to healthcare delivery.' },
-  { icon: 'fi-rr-graduation-cap', title: 'Training & capacity building', body: 'Programmes and ongoing support that empower professionals to operate equipment effectively.' },
+  { icon: 'fi-rr-box-open', title: 'Medical Equipment Sales', body: 'We supply a wide range of high-quality medical equipment to meet the diverse needs of hospitals, clinics, and laboratories.' },
+  { icon: 'fi-rr-settings', title: 'Equipment Installation & Commissioning', body: 'Ensuring proper installation and setup is crucial for the efficiency and longevity of medical equipment. Seamless setup and optimal functionality.' },
+  { icon: 'fi-rr-shield-check', title: 'Technical Support & Equipment Maintenance', body: 'To ensure continuous, uninterrupted operation: regular maintenance to keep equipment in peak condition, minimizing downtime.' },
+  { icon: 'fi-rr-chart-line-up', title: 'Calibration Services', body: 'Accuracy is critical in medical diagnostics and treatment. Precise calibration for accuracy and reliability.' },
+  { icon: 'fi-rr-tool-box', title: 'Equipment Repairs & Spare Parts Supply', body: 'Medical equipment is a major investment, and breakdowns can significantly impact healthcare delivery. Efficient repair services to minimize operational disruptions.' },
+  { icon: 'fi-rr-graduation-cap', title: 'Training & Capacity Building', body: 'We believe in empowering healthcare professionals with the knowledge and skills they need to operate medical equipment effectively. Comprehensive programs and ongoing support to optimize equipment utilization.' },
+] as const;
+
+/** "Our Services" on the current About page: the six services in one line each. */
+export const servicesInBrief = [
+  { title: 'Medical Equipment Sales', text: 'Providing top-of-the-line medical equipment to meet diverse healthcare needs.' },
+  { title: 'Equipment Installation', text: 'Ensuring seamless setup and optimal functionality.' },
+  { title: 'Equipment Maintenance', text: 'Regular maintenance to keep equipment in peak condition, minimizing downtime.' },
+  { title: 'Equipment Repairs', text: 'Efficient repair services to minimize operational disruptions.' },
+  { title: 'Calibration Services', text: 'Precise calibration for accuracy and reliability.' },
+  { title: 'Training and Support', text: 'Comprehensive programs and ongoing support to optimize equipment utilization.' },
 ] as const;
 
 /** "Why choose Flokefama?", from the current Services page. */
 export const whyChoose = [
   { icon: 'fi-rr-link-alt', title: 'End-to-end solutions', body: 'From procurement and installation to training and maintenance.' },
-  { icon: 'fi-rr-globe', title: 'Globally recognised brands', body: 'Official distributor of Mindray, Biozek Holland and MR Global.' },
-  { icon: 'fi-rr-headset', title: 'Reliable after-sales support', body: 'Rapid response service when it matters most.' },
-  { icon: 'fi-rr-marker', title: 'Nationwide reach', body: 'Six branches, from Accra and Kumasi to Aflao and Techiman.' },
+  { icon: 'fi-rr-globe', title: 'High-quality, globally recognized medical brands', body: 'We are the Official distributor of Mindray, Biozek Holland, and MR Global.' },
+  { icon: 'fi-rr-headset', title: 'Reliable after-sales support', body: 'Reliable after-sales support and rapid response service.' },
+  { icon: 'fi-rr-marker', title: 'Nationwide reach', body: 'Branches in Santa Maria, Korle-bu, Okaishie, Kumasi, Aflao and Techiman.' },
 ] as const;
 
 /** Awards shown on the current Awards page (photos of the actual awards) and in the Media Centre. */
@@ -491,14 +262,18 @@ export const awards = [
 export const events = [
   {
     id: 'floke-praise-2025',
-    title: 'Floke Praise 2025: Celebrating 17 Years of Saving Lives!',
+    title: 'Floke Praise 2025 – Celebrating 17 Years of Saving Lives!',
     date: '2025-10-18',
     day: '18',
     month: 'Oct',
     year: '2025',
     time: '3:00 pm – 7:00 pm',
     venue: 'Flokefama Company Limited, 2 Regy St., Accra',
-    body: 'An evening of gratitude, worship and celebration as Flokefama Company Ltd marked 17 years of saving lives and serving.',
+    body: 'Join us for an evening of gratitude, worship, and celebration as Flokefama Company Ltd marks 17 years of saving lives and serving communities with excellence in healthcare.',
+    more: [
+      'This year’s edition, themed “Celebrating 17 Years of Saving Lives,” brings together the entire Flokefama family, partners, and friends to lift our voices in thanksgiving for how far we’ve come — and to rededicate ourselves to our purpose of service, compassion, and innovation in healthcare.',
+      'Expect an atmosphere filled with praise, joy, and inspiration as we host two of Ghana’s most anointed gospel ministers — Uncle Ato and MOG Music — leading us in spirit-filled worship.',
+    ],
     price: 'Free',
     /** The event flyer, from the current site's Events page. */
     image: '/images/event-floke-praise-2025.webp',
@@ -508,56 +283,9 @@ export const events = [
 
 /** Company statements, verbatim in substance from the current "About us" page. */
 export const purpose = [
-  { label: 'Mission', icon: 'fi-rr-bullseye', text: 'To provide world-class medical solutions to all medical facilities and laboratories in the West African sub-region.' },
-  { label: 'Vision', icon: 'fi-rr-eye', text: 'To build a localised industrial complex that produces medical equipment and reagents locally, and to be listed on the Ghana Stock Exchange by 2030.' },
-  { label: 'Aim', icon: 'fi-rr-flask-gear', text: 'To establish a production plant in Ghana for reagents and hospital disposables, boosting the economy and creating meaningful, well-paying jobs.' },
+  { label: 'Mission', icon: 'fi-rr-bullseye', text: 'To provide world class medical solutions to all medical facilities and laboratories in the West African sub region.' },
+  { label: 'Vision', icon: 'fi-rr-eye', text: 'To have a localized industrial complex which produces all medical equipment and reagents locally and to be listed on the Ghana Stock Exchange by 2030.' },
+  { label: 'Aim', icon: 'fi-rr-flask-gear', text: 'To have a production plant in Ghana to produce our reagents and some of our hospital disposables locally to boost the economy and create meaningful well paying jobs.' },
 ] as const;
 
-/** Media Centre posts published on flokefama.com (titles, dates and summaries as published). */
-export const news = [
-  {
-    id: 'quality-verification',
-    date: '3 August 2026',
-    kind: 'Insight',
-    title: 'Quality verification: the cornerstone of healthcare excellence in Ghana',
-    summary: 'Analysers, reagents and IVD kits directly inform clinical decisions. Why verifying quality before delivery protects patients.',
-  },
-  {
-    id: 'forbes-africa',
-    date: '31 July 2026',
-    kind: 'Press',
-    title: 'Flokefama featured in Forbes Africa: driving healthcare excellence across Ghana',
-    summary: 'Featured in the June/July 2026 “Ghana: Africa Undiscovered” edition of Forbes Africa, in collaboration with Penresa.',
-    image: '/images/forbes-africa-2026.webp',
-  },
-  {
-    id: 'mindray-ivd-awards',
-    date: '1 April 2026',
-    kind: 'Award',
-    title: 'A milestone for Ghana: Flokefama sweeps prestigious Mindray IVD awards',
-    summary: 'The Breakthrough Award and Best in In-Vitro Diagnostics at the Mindray Central Africa Region ceremony, JW Marriott, Nairobi.',
-    image: '/images/mindray-award.webp',
-  },
-  {
-    id: 'university-of-ghana',
-    date: '18 March 2026',
-    kind: 'Partnership',
-    title: 'Partnering with the University of Ghana to shape the next generation of biomedical engineers',
-    summary: 'Featured in the University of Ghana School of Engineering newsletter.',
-  },
-  {
-    id: 'zodf-ramadan',
-    date: '18 March 2026',
-    kind: 'Community',
-    title: 'Flokefama supports the ZODF Ramadan distribution programme',
-    summary: 'Supporting the ZODF Ramadan distribution programme in the community.',
-  },
-  {
-    id: 'quality-is-tested',
-    date: '17 February 2026',
-    kind: 'Insight',
-    title: 'Quality is tested',
-    summary: 'From the Flokefama Media Centre.',
-  },
-];
 

@@ -44,7 +44,7 @@ export function Impact({ metrics }: { metrics: Metric[] }) {
   return (
     <section id="impact" className="scroll-mt-28 relative isolate overflow-hidden bg-midnight py-24 text-white md:py-32">
       <div aria-hidden className="absolute inset-0 -z-10">
-        <div className="absolute -right-40 -top-40 size-[700px] rounded-full bg-[radial-gradient(circle,rgb(25_133_82/0.25),transparent_65%)]" />
+        <div className="absolute -right-40 -top-40 size-[700px] rounded-full bg-[radial-gradient(circle,rgb(46_154_91/0.25),transparent_65%)]" />
         <div className="grid-fade absolute inset-0 opacity-40" />
       </div>
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">

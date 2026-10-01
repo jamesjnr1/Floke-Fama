@@ -51,7 +51,7 @@ export function Notifications({ items, onRead, onReadAll, onOpen, tone = 'dark' 
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 4 }}
             transition={{ duration: 0.18 }}
-            className="absolute right-0 top-full z-50 mt-2 w-[min(380px,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-white/10 bg-[#004726] shadow-2xl"
+            className="absolute right-0 top-full z-50 mt-2 w-[min(380px,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-white/10 bg-[#111d17] shadow-2xl"
           >
             <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
               <p className="text-sm font-semibold text-white">Notifications</p>

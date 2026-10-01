@@ -33,7 +33,13 @@ const nextConfig: NextConfig = {
     // Preserve SEO equity from the old WordPress URLs
     return [
       { source: '/index.php/shop', destination: '/products', permanent: true },
-      { source: '/index.php/product/:slug', destination: '/products', permanent: true },
+      // Product pages keep the same slugs as the current shop
+      { source: '/index.php/product/:slug', destination: '/products/:slug', permanent: true },
+      // News, blog and press posts: /index.php/2026/08/03/<slug>/ → /news/<slug>
+      { source: '/index.php/:y(\\d{4})/:m(\\d{2})/:d(\\d{2})/:slug', destination: '/news/:slug', permanent: true },
+      { source: '/index.php/category/:cat', destination: '/events#news', permanent: true },
+      { source: '/index.php/careers', destination: '/contact', permanent: true },
+      { source: '/event/:slug', destination: '/events', permanent: true },
       { source: '/index.php/product-category/:slug', destination: '/products', permanent: true },
       { source: '/index.php/contact', destination: '/contact', permanent: true },
       { source: '/index.php/contact-us', destination: '/contact', permanent: true },
