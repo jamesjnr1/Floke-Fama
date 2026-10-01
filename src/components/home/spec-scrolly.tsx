@@ -96,7 +96,7 @@ export function SpecScrolly() {
       {/* Mobile / tablet */}
       <div className="px-5 py-14 md:px-10 lg:hidden">
         <p className="label !text-brand-300">In-vitro diagnostics · Official Mindray distributor</p>
-        <h2 className="display mt-4 text-5xl text-white">Diagnostics you can trust.</h2>
+        <h2 className="display mt-4 text-[clamp(34px,10vw,48px)] text-white [overflow-wrap:anywhere]">Diagnostics you can trust.</h2>
         <div className="relative mt-6 aspect-[16/10]">
           <Image src="/images/bs-240-stage.webp" alt="" fill sizes="100vw" className="object-contain" />
         </div>
