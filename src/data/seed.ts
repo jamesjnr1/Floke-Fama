@@ -500,6 +500,9 @@ export const events = [
     venue: 'Flokefama Company Limited, 2 Regy St., Accra',
     body: 'An evening of gratitude, worship and celebration as Flokefama Company Ltd marked 17 years of saving lives and serving.',
     price: 'Free',
+    /** The event flyer, from the current site's Events page. */
+    image: '/images/event-floke-praise-2025.webp',
+    alt: 'Floke Praise 2025 flyer: celebrating 17 years of saving lives, 18 October, 3:00 pm to 7:00 pm, Flokefama head office, Santa Maria, with guest artists Uncle Ato and MOG',
   },
 ];
 

@@ -40,7 +40,7 @@ Every integration is optional at runtime. With no environment variables the site
 | `/about` | Static + ISR | Company → About Us: who we are, impact (figures + sourced stories), mission / vision / aim, core values |
 | `/awards` | Static | Company → Awards: photographed awards, closing statement |
 | `/services` | Static | Products & Services: the service lifecycle, why choose Flokefama (products live in the Shop) |
-| `/events` | Static, daily ISR | Events & Activities: upcoming / past events, Media Centre news |
+| `/events` | Static, daily ISR | Events & Activities: upcoming / past events (an optional `image` per event in `seed.ts`, e.g. the Floke Praise 2025 flyer from the current site, shown uncropped at 16:9 beside the details), Media Centre news |
 | `/esg` | Static | ESG: patient safety, community, education, governance, local industry (from Flokefama’s own published material) |
 | `/contact` | Static | Contact details, simple message form, head office photo, live map, directions, branches |
 | `/products` | Dynamic | Shop: **New arrivals** strip (products flagged `newArrival`, as on the current homepage), then category morphing and keystroke search without reloads; state mirrored to the URL |
