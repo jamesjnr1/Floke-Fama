@@ -35,12 +35,14 @@
 .fi-rr-hands-heart::before{content:"\f770"}
 .fi-rr-handshake::before{content:"\f779"}
 .fi-rr-headset::before{content:"\f794"}
+.fi-rr-heart::before{content:"\f7a0"}
 .fi-rr-heart-rate::before{content:"\f79d"}
 .fi-rr-hospital::before{content:"\f7c5"}
 .fi-rr-info::before{content:"\f80b"}
 .fi-rr-lightbulb-on::before{content:"\f8ac"}
 .fi-rr-link-alt::before{content:"\f8b5"}
 .fi-rr-marker::before{content:"\f8fd"}
+.fi-rr-microphone::before{content:"\f944"}
 .fi-rr-microscope::before{content:"\f945"}
 .fi-rr-navigation::before{content:"\f99d"}
 .fi-rr-paper-plane::before{content:"\f9f7"}
