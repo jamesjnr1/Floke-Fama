@@ -7,8 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: 'Medical equipment, diagnostics and biomedical support across Ghana.',
     start_url: '/',
     display: 'standalone',
-    background_color: '#f6faf7',
-    theme_color: '#003d20',
+    background_color: '#f7f8f7',
+    theme_color: '#0b1510',
     icons: [{ src: '/images/favicon.png', sizes: '60x60', type: 'image/png' }],
   };
 }

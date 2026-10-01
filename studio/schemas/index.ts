@@ -38,6 +38,10 @@ export const product = defineType({
     defineField({ name: 'image', type: 'image', group: 'main', description: 'Square, white or transparent background, product centred' }),
     defineField({ name: 'featured', type: 'boolean', group: 'main', initialValue: false }),
     defineField({ name: 'newArrival', title: 'New arrival', type: 'boolean', group: 'main', initialValue: false, description: 'Show in “New arrivals” on the Shop' }),
+    defineField({ name: 'types', title: 'Listed under', type: 'array', of: [{ type: 'string' }], group: 'main', description: 'Original shop categories from flokefama.com, e.g. “Hematology Analyzers”' }),
+    defineField({ name: 'description', type: 'array', of: [{ type: 'text' }], group: 'main', description: 'Description paragraphs' }),
+    defineField({ name: 'highlightsSource', title: 'Highlights source', type: 'string', group: 'main', options: { list: ['brochure'] } }),
+    defineField({ name: 'source', title: 'Path on the old site', type: 'string', group: 'main', description: 'Used to redirect old links' }),
     defineField({ name: 'highlights', type: 'array', of: [{ type: 'string' }], group: 'main', validation: (r) => r.max(4) }),
     defineField({ name: 'tags', title: 'Search keywords', type: 'array', of: [{ type: 'string' }], options: { layout: 'tags' }, group: 'main' }),
     defineField({

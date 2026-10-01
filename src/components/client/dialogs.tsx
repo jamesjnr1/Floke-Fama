@@ -156,7 +156,7 @@ export function EquipmentSheet({ asset, tickets, onClose, onRequest, onOpenTicke
       {asset && (
         <div className="space-y-8">
           <div className="grid gap-4 sm:grid-cols-[180px_1fr]">
-            <div className="relative grid aspect-square place-items-center overflow-hidden rounded-2xl bg-[radial-gradient(90%_70%_at_50%_35%,#fff,#eaf3ee)]">
+            <div className="relative grid aspect-square place-items-center overflow-hidden rounded-2xl bg-[radial-gradient(90%_70%_at_50%_35%,#fff,#eef2ef)]">
               {asset.image ? <Image src={asset.image} alt="" fill sizes="180px" className="object-contain p-5 mix-blend-multiply" /> : <IconTile name="fi-rr-microscope" size="lg" />}
             </div>
             <dl className="grid grid-cols-2 gap-3 text-sm">

@@ -26,7 +26,7 @@ export function SiteFooter() {
         <div className="col-span-2 md:col-span-1">
           <Logo tone="dark" />
           <p className="mt-5 max-w-xs text-sm font-light leading-relaxed">
-            Revolutionising healthcare practices in Ghana with cutting-edge technologies and solutions that set new standards in medical care and patient safety.
+            Revolutionizing healthcare practices in Ghana by introducing cutting-edge technologies and solutions that set new standards in medical care and patient safety.
           </p>
         </div>
         <FooterCol title="Company">
@@ -40,7 +40,7 @@ export function SiteFooter() {
               <Link href={`/products?category=${c.slug}`} className="hover:text-white">{c.title}</Link>
             </li>
           ))}
-          <li><Link href="/products" className="font-medium text-brand-300 hover:text-white">Go to shop →</Link></li>
+          <li><Link href="/products" className="font-medium text-brand-300 hover:text-white">Go to Shop →</Link></li>
         </FooterCol>
         <FooterCol title="Media centre">
           {media.map((l) => (

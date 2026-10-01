@@ -34,7 +34,7 @@ export const metadata: Metadata = {
   robots: allowIndexing ? undefined : { index: false, follow: false },
 };
 
-export const viewport: Viewport = { themeColor: '#003d20', width: 'device-width', initialScale: 1 };
+export const viewport: Viewport = { themeColor: '#0b1510', width: 'device-width', initialScale: 1 };
 
 const organizationLd = {
   '@context': 'https://schema.org',
@@ -64,7 +64,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           position="top-right"
           toastOptions={{
             classNames: {
-              toast: '!rounded-2xl !border !border-line !bg-paper/95 !backdrop-blur-xl !shadow-[0_20px_50px_-20px_rgb(0_40_21/0.35)] !font-sans',
+              toast: '!rounded-2xl !border !border-line !bg-paper/95 !backdrop-blur-xl !shadow-[0_20px_50px_-20px_rgb(11_21_16/0.35)] !font-sans',
               title: '!text-ink !font-medium',
               description: '!text-ink-3',
             },

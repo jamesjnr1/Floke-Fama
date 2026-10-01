@@ -72,7 +72,7 @@ export interface Actor { name: string; role: Audience; facility?: string }
 export const DEMO_ENGINEER = 'Kwame Boateng';
 export const CLIENT_FACILITY = 'Demo Regional Hospital';
 
-const VERSION = 4;
+const VERSION = 5;
 const KEY = 'ff-service-desk';
 
 export const statusSteps: { status: TicketStatus; label: string }[] = [
@@ -138,7 +138,7 @@ export function createSeed(now = new Date()): ServiceState {
   const at = (days: number, h = 9, m = 0) => { const d = addDays(now, days); d.setHours(h, m, 0, 0); return iso(d); };
   const assets: Asset[] = [
     {
-      id: 'AS-01', name: 'Semi-Auto Chemistry Analyser', brand: 'Mindray', productSlug: 'mindray-semi-auto-chemistry', serial: 'DEMO-SCA-0917',
+      id: 'AS-01', name: 'Semi-Auto Chemistry Analyser', brand: 'Mindray', productSlug: 'semi-automated-chemistry-analysermindray', serial: 'DEMO-SCA-0917',
       facility: 'Demo Regional Hospital', location: 'Main laboratory', readings: [42, 48, 45, 60, 58, 66, 71, 64, 72, 78],
       installed: at(-590), warrantyUntil: at(140), lastCalibration: at(-87), nextCalibration: at(3), intervalMonths: 3,
       certificates: [
@@ -147,31 +147,31 @@ export function createSeed(now = new Date()): ServiceState {
       ],
     },
     {
-      id: 'AS-02', name: 'BC-5150 Haematology Analyser', brand: 'Mindray', productSlug: 'mindray-bc-5150', serial: 'DEMO-BC5150-0442',
+      id: 'AS-02', name: 'BC-5150 Haematology Analyser', brand: 'Mindray', productSlug: 'auto-heamatology-analyzer-bc5150', serial: 'DEMO-BC5150-0442',
       facility: 'Demo Regional Hospital', location: 'Main laboratory', readings: [70, 66, 72, 61, 40, 38, 52, 35, 30, 33],
       installed: at(-830), warrantyUntil: at(-100), lastCalibration: at(-51), nextCalibration: at(41), intervalMonths: 3,
       certificates: [{ id: 'CAL-0447', date: at(-51), result: 'Pass', engineer: DEMO_ENGINEER }],
     },
     {
-      id: 'AS-03', name: 'BC-30s Haematology Analyser', brand: 'Mindray', productSlug: 'mindray-bc-30s', serial: 'DEMO-BC30-2210',
+      id: 'AS-03', name: 'BC-30s Haematology Analyser', brand: 'Mindray', productSlug: 'haematology-analyzer-bc30s', serial: 'DEMO-BC30-2210',
       facility: 'Demo Polyclinic', location: 'Laboratory', readings: [55, 58, 52, 50, 49, 20, 18, 22, 25, 24],
       installed: at(-330), warrantyUntil: at(400), lastCalibration: at(-100), nextCalibration: at(-8), intervalMonths: 3,
       certificates: [{ id: 'CAL-0398', date: at(-100), result: 'Pass', engineer: 'Yaw Owusu' }],
     },
     {
-      id: 'AS-04', name: 'CX23 Clinical Microscope', brand: 'Olympus', productSlug: 'olympus-cx23', image: '/images/products/olympus-cx23.webp', serial: 'DEMO-CX23-1180',
+      id: 'AS-04', name: 'CX23 Clinical Microscope', brand: 'Olympus', productSlug: 'microscope-olympus-cx23', image: '/images/products/microscope-olympus-cx23.webp', serial: 'DEMO-CX23-1180',
       facility: 'Demo Regional Hospital', location: 'Microbiology', readings: [30, 34, 33, 38, 36, 40, 39, 42, 41, 44],
       installed: at(-575), warrantyUntil: at(150), lastCalibration: at(-75), nextCalibration: at(107), intervalMonths: 6,
       certificates: [{ id: 'SRV-0420', date: at(-75), result: 'Pass', engineer: 'Yaw Owusu' }],
     },
     {
-      id: 'AS-05', name: 'Autoclave Steriliser 50 L', brand: 'Flokefama', productSlug: 'autoclave-range', serial: 'DEMO-AC50-0078',
+      id: 'AS-05', name: 'Autoclave Steriliser 50 L', brand: 'Flokefama', productSlug: 'autoclave-machine-50l', serial: 'DEMO-AC50-0078',
       facility: 'Demo Teaching Hospital', location: 'CSSD', readings: [60, 62, 61, 63, 60, 64, 65, 63, 66, 67],
       installed: at(-990), warrantyUntil: at(-260), lastCalibration: at(-17), nextCalibration: at(165), intervalMonths: 6,
       certificates: [{ id: 'VAL-0451', date: at(-17), result: 'Pass', engineer: 'Yaw Owusu' }],
     },
     {
-      id: 'AS-06', name: 'Cardiotocography (CTG) Monitor', brand: 'Flokefama', productSlug: 'ctg-machine', serial: 'DEMO-CTG-3301',
+      id: 'AS-06', name: 'Cardiotocography (CTG) Monitor', brand: 'Flokefama', productSlug: 'cardiotocography-machine-ctg', serial: 'DEMO-CTG-3301',
       facility: 'Demo Teaching Hospital', location: 'Maternity', readings: [48, 50, 47, 52, 51, 49, 53, 52, 54, 55],
       installed: at(-210), warrantyUntil: at(520), lastCalibration: at(-170), nextCalibration: at(12), intervalMonths: 6,
       certificates: [{ id: 'SRV-0377', date: at(-170), result: 'Pass', engineer: DEMO_ENGINEER }],

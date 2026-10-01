@@ -1,7 +1,8 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import { Reveal } from '@/components/motion/reveal';
 import { Icon } from '@/components/ui/icon';
-import { clients, technologyPartners } from '@/data/seed';
+import { clients, metrics, technologyPartners } from '@/data/seed';
 
 /**
  * Optical sizing: every logo gets the same visual area, so a wide wordmark and a round
@@ -26,8 +27,8 @@ export function Partners({ heading = true }: { heading?: boolean }) {
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         {heading && (
           <Reveal className="mb-8 flex flex-col items-center text-center md:mb-14">
-            <p className="label">Our partners &amp; clientele</p>
-            <h2 className="display mt-4 max-w-3xl text-[clamp(1.9rem,1.2rem+2.4vw,3.25rem)]">Trusted by Ghana’s leading hospitals and global manufacturers.</h2>
+            <p className="label">Trusted</p>
+            <h2 className="display mt-4 max-w-3xl text-[clamp(1.9rem,1.2rem+2.4vw,3.25rem)]">Our Partners &amp; Clientele</h2>
           </Reveal>
         )}
 
@@ -36,7 +37,7 @@ export function Partners({ heading = true }: { heading?: boolean }) {
           <div className="grid overflow-hidden rounded-4xl border border-line bg-paper lg:grid-cols-[0.8fr_2fr]">
             <div className="flex flex-col justify-center gap-3 border-b border-line p-5 lg:border-b-0 lg:border-r lg:p-9">
               <p className="label flex items-center gap-2"><Icon name="fi-rr-badge-check" className="text-brand-600" /> Official distributor</p>
-              <p className="text-lg font-semibold leading-snug tracking-[-0.01em] text-ink">Genuine equipment, original reagents and manufacturer-backed support.</p>
+              <p className="text-lg font-semibold leading-snug tracking-[-0.01em] text-ink">We are the Official distributor of Mindray, Biozek Holland, and MR Global.</p>
             </div>
             <ul className="grid grid-cols-3 divide-x divide-line">
               {technologyPartners.map((p) => {
@@ -68,7 +69,7 @@ export function Partners({ heading = true }: { heading?: boolean }) {
               return (
                 <li
                   key={c.name}
-                  className="group flex flex-col items-center justify-between gap-2 rounded-2xl border border-line bg-paper px-2 pb-3 pt-4 text-center transition sm:gap-4 sm:rounded-3xl sm:px-4 sm:pb-5 sm:pt-7 duration-500 ease-out-expo hover:-translate-y-1 hover:shadow-[0_24px_48px_-28px_rgb(0_40_21/0.4)]"
+                  className="group flex flex-col items-center justify-between gap-2 rounded-2xl border border-line bg-paper px-2 pb-3 pt-4 text-center transition sm:gap-4 sm:rounded-3xl sm:px-4 sm:pb-5 sm:pt-7 duration-500 ease-out-expo hover:-translate-y-1 hover:shadow-[0_24px_48px_-28px_rgb(11_21_16/0.4)]"
                 >
                   <span className="flex h-12 items-center justify-center sm:h-20">
                     <Image src={c.logo} alt="" width={box.width} height={box.height} style={{ width: box.width, height: box.height }} className="max-h-11 max-w-full object-contain sm:max-h-none" />
@@ -78,6 +79,25 @@ export function Partners({ heading = true }: { heading?: boolean }) {
               );
             })}
           </ul>
+        </Reveal>
+
+        {/* "The Results", as on the current homepage */}
+        <Reveal delay={0.1}>
+          <div className="mt-10 grid gap-3 sm:grid-cols-3">
+            {metrics.slice(0, 2).map((m) => (
+              <div key={m.label} className="rounded-3xl border border-line bg-paper p-6">
+                <p className="label">The results</p>
+                <p className="mt-3 text-4xl font-bold tracking-[-0.03em] text-brand-600">{m.value}{m.suffix}</p>
+                <p className="mt-1 text-sm font-medium uppercase tracking-[0.04em] text-ink-2">{m.label}</p>
+              </div>
+            ))}
+            <div className="rounded-3xl border border-line bg-paper p-6">
+              <p className="label">Trusted</p>
+              <p className="mt-3 text-xl font-bold uppercase tracking-[0.02em] text-ink">Badges &amp; associations</p>
+              <p className="mt-1 text-sm font-medium uppercase tracking-[0.04em] text-ink-2">Ghana Club 100, CEO’s Summit, partnerships etc.</p>
+              <Link href="/awards" className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-brand-700">View Our Awards <Icon name="fi-rr-arrow-small-right" /></Link>
+            </div>
+          </div>
         </Reveal>
       </div>
     </section>

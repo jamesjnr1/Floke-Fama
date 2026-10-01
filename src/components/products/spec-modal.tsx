@@ -32,7 +32,7 @@ export function SpecModal({ product, category }: { product: Product; category?: 
             >
               <SpecHeader product={product} categoryTitle={category?.title} />
               <SpecActions product={product} />
-              <SpecTabs product={product} />
+              <SpecTabs product={product} categoryTitle={category?.title} />
             </motion.div>
           </div>
           <Dialog.Close className="glass-light absolute right-4 top-4 grid size-11 place-items-center rounded-full text-ink shadow-sm transition hover:bg-white" aria-label="Close">
