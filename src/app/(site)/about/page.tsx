@@ -58,6 +58,29 @@ export default async function AboutPage() {
         </div>
       </section>
 
+      {/* Leadership: portrait from the current site's media library; facts from its Media Centre */}
+      <section id="ceo" className="scroll-mt-28 border-t border-line bg-paper py-14 md:py-24">
+        <div className="mx-auto grid max-w-[1280px] items-center gap-10 px-5 md:px-10 lg:grid-cols-12 lg:gap-16">
+          <Reveal className="lg:col-span-5">
+            <figure className="relative mx-auto aspect-[4/5] max-w-md overflow-hidden rounded-5xl bg-[#e9e6e3] lg:max-w-none">
+              <Image src="/images/ceo-emmanuel-kenney.webp" alt="Mr. Emmanuel Kenney, Chief Executive Officer of Flokefama" fill sizes="(min-width: 1024px) 40vw, 100vw" className="object-cover object-top" />
+            </figure>
+          </Reveal>
+          <Reveal delay={0.08} className="lg:col-span-7">
+            <p className="label">Leadership</p>
+            <h2 className="display mt-4 text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">Meet our CEO</h2>
+            <p className="mt-6 text-xl font-semibold text-ink">Mr. Emmanuel Kenney</p>
+            <p className="mt-1 text-[15px] text-brand-700">Chief Executive Officer, Flokefama Company Limited</p>
+            <p className="mt-6 max-w-xl text-lg font-light leading-relaxed text-ink-3">
+              Mr. Kenney leads Flokefama, a Ghana Club 100 company delivering world-class healthcare equipment across Ghana and West Africa since 2008. He is a strong advocate of industry-academic partnerships that produce “industry-ready” engineers capable of transforming Ghana’s healthcare landscape.
+            </p>
+            <Link href="/news/flokefama-partners-with-university-of-ghana-to-shape-the-next-generation-of-biomedical-engineers" className="mt-8 inline-flex items-center gap-1.5 font-medium text-brand-700 transition hover:text-brand-600">
+              Read: Flokefama partners with the University of Ghana <Icon name="fi-rr-arrow-small-right" />
+            </Link>
+          </Reveal>
+        </div>
+      </section>
+
       {/* Industry experience and services (content from the current About page) */}
       <section id="experience" className="scroll-mt-28 border-t border-line bg-canvas py-14 md:py-32">
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
