@@ -15,7 +15,7 @@ const chips = [
 ];
 
 /** The 3D network globe, with floating glass read-outs of the published figures. */
-export function HeroGlobe({ visual = 'globe' }: { visual?: 'globe' | 'capsule' }) {
+export function HeroGlobe({ visual = 'globe', figures = true }: { visual?: 'globe' | 'capsule'; figures?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
   const [ready, setReady] = useState(false);
   const reduce = useReducedMotion();
@@ -43,7 +43,7 @@ export function HeroGlobe({ visual = 'globe' }: { visual?: 'globe' | 'capsule' }
       {/* Glow + CSS fallback sphere (visible until WebGL is ready, or if it isn't available) */}
       <div aria-hidden className="absolute inset-[12%] rounded-full bg-[radial-gradient(circle_at_40%_35%,rgb(82_181_124/0.35),rgb(19_66_40/0.25)_45%,transparent_70%)] blur-xl" />
       <div ref={ref} aria-hidden className={cn('absolute inset-0 transition-opacity duration-[1600ms]', ready ? 'opacity-100' : 'opacity-0')} />
-      {chips.map((c, i) => ({ ...c, className: (chipPlaces[visual] ?? chipPlaces.globe)[i] })).map((c, i) => (
+      {figures && chips.map((c, i) => ({ ...c, className: (chipPlaces[visual] ?? chipPlaces.globe)[i] })).map((c, i) => (
         <motion.div
           key={c.label}
           initial={{ opacity: 0, y: 12 }}
