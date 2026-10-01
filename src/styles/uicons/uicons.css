@@ -2,6 +2,7 @@
 @font-face{font-family:"uicons-regular-rounded";src:url("uicons-rr.woff2") format("woff2");font-display:block}
 [class^="fi-rr-"]::before,[class*=" fi-rr-"]::before{font-family:"uicons-regular-rounded"!important;font-style:normal;font-weight:normal!important;line-height:1;display:inline-block;vertical-align:-.125em;-webkit-font-smoothing:antialiased}
 .fi-rr-angle-small-down::before{content:"\f153"}
+.fi-rr-apps::before{content:"\f16c"}
 .fi-rr-arrow-small-left::before{content:"\f19d"}
 .fi-rr-arrow-small-right::before{content:"\f19e"}
 .fi-rr-arrow-up-right::before{content:"\f1b4"}
@@ -18,6 +19,7 @@
 .fi-rr-check::before{content:"\f3c8"}
 .fi-rr-clock::before{content:"\f45a"}
 .fi-rr-clock-three::before{content:"\f453"}
+.fi-rr-comment::before{content:"\f4b8"}
 .fi-rr-cross-small::before{content:"\f4f6"}
 .fi-rr-download::before{content:"\f591"}
 .fi-rr-envelope::before{content:"\f5de"}
@@ -41,6 +43,7 @@
 .fi-rr-navigation::before{content:"\f99d"}
 .fi-rr-paper-plane::before{content:"\f9f7"}
 .fi-rr-phone-call::before{content:"\fa61"}
+.fi-rr-plus::before{content:"\faac"}
 .fi-rr-search::before{content:"\fbba"}
 .fi-rr-settings::before{content:"\fbd2"}
 .fi-rr-shield-check::before{content:"\fbdb"}
@@ -54,6 +57,7 @@
 .fi-rr-trophy::before{content:"\fe39"}
 .fi-rr-truck-side::before{content:"\fe4d"}
 .fi-rr-user::before{content:"\fea0"}
+.fi-rr-user-add::before{content:"\fe7a"}
 @font-face{font-family:"uicons-brands";src:url("uicons-brands.woff2") format("woff2");font-display:block}
 [class^="fi-brands-"]::before,[class*=" fi-brands-"]::before{font-family:"uicons-brands"!important;font-style:normal;font-weight:normal!important;line-height:1;display:inline-block;vertical-align:-.125em;-webkit-font-smoothing:antialiased}
 .fi-brands-whatsapp::before{content:"\f1d2"}

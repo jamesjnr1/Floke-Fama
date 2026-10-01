@@ -1,125 +1,163 @@
 'use client';
 
 import Link from 'next/link';
-import { LayoutGroup, motion } from 'motion/react';
-import { useEffect, useMemo, useState } from 'react';
+import { motion } from 'motion/react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
-import { LogoMark } from '@/components/layout/logo';
-import { AssetStatusList } from '@/components/engineer/AssetStatusList';
+import { CalibrationView } from '@/components/engineer/CalibrationView';
+import { CommandPalette, type Command } from '@/components/engineer/CommandPalette';
+import { CalibrationDialog, LogFaultDialog, ResolveDialog } from '@/components/engineer/dialogs';
 import { AssetSheet, Inventory } from '@/components/engineer/inventory';
-import { LogFaultButton, RadialUptime } from '@/components/engineer/QuickActions';
-import { Sparkline } from '@/components/engineer/Sparkline';
-import { statusMeta } from '@/components/engineer/status';
-import { TimelineTracker } from '@/components/engineer/TimelineTracker';
+import { Notifications } from '@/components/engineer/Notifications';
+import { Overview } from '@/components/engineer/Overview';
+import { SystemsView } from '@/components/engineer/SystemsView';
+import { TicketsView } from '@/components/engineer/TicketsView';
+import { LogoMark } from '@/components/layout/logo';
 import { Icon } from '@/components/ui/icon';
-import { assets, demoUptime, tickets as seedTickets, type Asset, type Ticket } from '@/data/engineer-demo';
 import { contact } from '@/data/seed';
 import { logout } from '@/lib/auth/actions';
+import { daysUntil, isOpen, nextTicketId, useEngineerStore, type Action, type Asset, type Notification, type Ticket } from '@/lib/engineer/store';
 import { cn } from '@/lib/utils';
 
-type View = 'tracker' | 'pulse' | 'docs';
+type View = 'overview' | 'tickets' | 'systems' | 'calibration' | 'docs';
 const nav: { id: View; label: string; icon: string }[] = [
-  { id: 'tracker', label: 'Service Tracker', icon: 'fi-rr-headset' },
-  { id: 'pulse', label: 'System Pulse', icon: 'fi-rr-heart-rate' },
+  { id: 'overview', label: 'Overview', icon: 'fi-rr-apps' },
+  { id: 'tickets', label: 'Service Tickets', icon: 'fi-rr-headset' },
+  { id: 'systems', label: 'System Pulse', icon: 'fi-rr-heart-rate' },
+  { id: 'calibration', label: 'Calibration', icon: 'fi-rr-chart-line-up' },
   { id: 'docs', label: 'Documentation', icon: 'fi-rr-book-alt' },
 ];
 
-function announceDispatch(t: Ticket) {
-  if (!t.engineer) return;
-  toast(`Biomedical Engineer ${t.engineer.name} has departed ${t.engineer.hub} for your facility.`, {
-    description: `${t.id} · ${t.title}${t.engineer.eta ? ` · ETA ${t.engineer.eta}` : ''}`,
-    icon: <Icon name="fi-rr-truck-side" className="text-brand-600" />,
-    duration: 7000,
-  });
-}
-
-/** Portal Shell: fixed sidebar rail + dashboard workspace on the midnight canvas. */
+/** Biomedical Engineer Service Portal: sidebar rail + workspace, backed by the persisted portal store. */
 export function PortalShell({ user }: { user: { name: string; email: string } }) {
-  const initials = user.name.split(/\s+/).map((w) => w[0]).slice(0, 2).join('').toUpperCase();
-  const [view, setView] = useState<View>('tracker');
-  const [tickets, setTickets] = useState(seedTickets);
-  const [selectedId, setSelectedId] = useState(seedTickets[0].id);
-  const [query, setQuery] = useState('');
-  const [sheet, setSheet] = useState<Asset | null>(null);
-  const [unread, setUnread] = useState(true);
+  const me = user.name;
+  const initials = me.split(/\s+/).map((w) => w[0]).slice(0, 2).join('').toUpperCase();
+  const { state, dispatch: rawDispatch, ready, reset } = useEngineerStore(me);
+  const [view, setView] = useState<View>('overview');
+  const [ticketId, setTicketId] = useState<string | null>(null);
+  const [sheetId, setSheetId] = useState<string | null>(null);
+  const [fault, setFault] = useState<{ open: boolean; assetId?: string }>({ open: false });
+  const [resolving, setResolving] = useState<Ticket | null>(null);
+  const [calibrating, setCalibrating] = useState<Asset | null>(null);
+  const [palette, setPalette] = useState(false);
 
-  // Demo: the coordinator dispatches an engineer shortly after sign-in.
+  /** Every action confirms itself with a toast. */
+  const dispatch = useCallback(
+    (a: Action) => {
+      rawDispatch(a);
+      const msg: Partial<Record<Action['type'], string>> = {
+        assign: 'Assigned to you',
+        travel: 'You’re en route. The facility has been notified.',
+        arrive: 'Marked on site',
+        note: 'Note added',
+        part: 'Part recorded',
+      };
+      if ('id' in a && msg[a.type]) toast.success(msg[a.type]!, { description: a.id });
+    },
+    [rawDispatch],
+  );
+
+  const openTicket = useCallback((id: string) => {
+    setSheetId(null);
+    setTicketId(id);
+    setView('tickets');
+  }, []);
+  const openAsset = useCallback((id: string) => setSheetId(id), []);
+  const sheet = state.assets.find((a) => a.id === sheetId) ?? null;
+
+  // ⌘K / Ctrl+K, or "/" when not typing, opens search
   useEffect(() => {
-    const id = setTimeout(() => announceDispatch(seedTickets[1]), 2200);
-    return () => clearTimeout(id);
+    const onKey = (e: KeyboardEvent) => {
+      const typing = /input|textarea|select/i.test((e.target as HTMLElement)?.tagName ?? '');
+      if ((e.key === 'k' && (e.metaKey || e.ctrlKey)) || (e.key === '/' && !typing)) {
+        e.preventDefault();
+        setPalette(true);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
   }, []);
 
-  const q = query.trim().toLowerCase();
-  const visibleAssets = useMemo(() => assets.filter((a) => !q || `${a.name} ${a.location} ${a.brand}`.toLowerCase().includes(q)), [q]);
-  const visibleTickets = tickets.filter((t) => !q || `${t.id} ${t.title}`.toLowerCase().includes(q));
-  const selected = tickets.find((t) => t.id === selectedId) ?? tickets[0];
-
-  /** Coordinator demo: complete the active step. Completing "Engineer assigned" dispatches someone. */
-  const advance = (t: Ticket) => {
-    if (t.current >= t.steps.length) return;
-    const next: Ticket = { ...t, current: t.current + 1 };
-    if (t.current === 1) {
-      const engineer = t.engineer ?? { name: 'Ama K.', hub: 'Korle-Bu branch', eta: '30 mins' };
-      next.engineer = engineer;
-      next.steps = t.steps.map((s, i) => (i === 1 ? { ...s, detail: `${engineer.name} · ${engineer.hub}` } : s));
-      announceDispatch(next);
-    } else if (next.current >= t.steps.length) {
-      next.engineer = t.engineer && { ...t.engineer, eta: undefined };
-      toast.success(`${t.id} resolved`, { description: 'Service report and calibration record added to Documentation.' });
-    } else if (next.engineer) {
-      next.engineer = { ...next.engineer, eta: 'On site' };
-    }
-    setTickets((all) => all.map((x) => (x.id === t.id ? next : x)));
+  const counts = {
+    tickets: state.tickets.filter((t) => isOpen(t) && (t.status === 'new' || t.engineer === me)).length,
+    calibration: state.assets.filter((a) => daysUntil(a.nextCalibration) < 0).length,
   };
 
-  const create = (t: Ticket) => {
-    setTickets((all) => [t, ...all]);
-    setSelectedId(t.id);
-    toast.success(`${t.id} logged`, { description: 'A coordinator will assign the nearest engineer.' });
+  const actions: Command[] = useMemo(
+    () => [
+      { id: 'a-fault', label: 'Log new equipment fault', icon: 'fi-rr-plus', group: 'Actions', run: () => setFault({ open: true }) },
+      ...nav.map((n) => ({ id: `a-${n.id}`, label: `Go to ${n.label}`, icon: n.icon, group: 'Actions' as const, run: () => setView(n.id) })),
+    ],
+    [],
+  );
+
+  const onNotification = (n: Notification) => {
+    if (n.ticketId) openTicket(n.ticketId);
+    else if (n.assetId) openAsset(n.assetId);
   };
 
   return (
     <div className="flex min-h-svh bg-midnight text-white">
-      {/* Sidebar Rail (260px) */}
+      {/* Sidebar Rail */}
       <aside className="sticky top-0 hidden h-svh w-[260px] shrink-0 flex-col border-r border-white/10 p-5 lg:flex">
         <Link href="/" className="flex items-center gap-2">
           <LogoMark />
           <span className="text-lg font-semibold tracking-[-0.02em]">Flokefama</span>
-          <span className="ml-auto rounded-md bg-white/5 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-widest text-white/40">Care</span>
+          <span className="ml-auto rounded-md bg-white/5 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-widest text-white/40">Service</span>
         </Link>
 
-        {/* Profile Block */}
         <div className="mt-8 flex items-center gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.03] p-3">
           <span className="grid size-10 place-items-center rounded-xl bg-brand-600 font-semibold">{initials}</span>
           <span className="min-w-0">
-            <span className="block truncate text-sm font-medium">{user.name}</span>
+            <span className="block truncate text-sm font-medium">{me}</span>
             <span className="block truncate text-xs text-white/45">Biomedical engineer</span>
           </span>
         </div>
 
-        {/* Nav Stack */}
         <nav aria-label="Portal" className="mt-8">
           <p className="font-mono text-[11px] uppercase tracking-widest text-white/35">Workspace</p>
           <ul className="mt-3 space-y-1">
-            {nav.map((n) => (
-              <li key={n.id}>
-                <button
-                  onClick={() => setView(n.id)}
-                  aria-current={view === n.id ? 'page' : undefined}
-                  className={cn('relative flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition', view === n.id ? 'text-white' : 'text-white/55 hover:bg-white/[0.04] hover:text-white')}
-                >
-                  {view === n.id && <motion.span layoutId="rail-active" className="absolute inset-0 rounded-xl bg-white/[0.07] ring-1 ring-white/10" />}
-                  {view === n.id && <motion.span layoutId="rail-bar" className="absolute -left-5 top-2 h-6 w-[3px] rounded-r bg-brand-500" />}
-                  <Icon name={n.icon} className={cn('relative', view === n.id && 'text-brand-400')} />
-                  <span className="relative">{n.label}</span>
-                </button>
-              </li>
-            ))}
+            {nav.map((n) => {
+              const badge = n.id === 'tickets' ? counts.tickets : n.id === 'calibration' ? counts.calibration : 0;
+              return (
+                <li key={n.id}>
+                  <button
+                    onClick={() => setView(n.id)}
+                    aria-current={view === n.id ? 'page' : undefined}
+                    className={cn('relative flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition', view === n.id ? 'text-white' : 'text-white/55 hover:bg-white/[0.04] hover:text-white')}
+                  >
+                    {view === n.id && <motion.span layoutId="rail-active" className="absolute inset-0 rounded-xl bg-white/[0.07] ring-1 ring-white/10" />}
+                    {view === n.id && <motion.span layoutId="rail-bar" className="absolute -left-5 top-2 h-6 w-[3px] rounded-r bg-brand-500" />}
+                    <Icon name={n.icon} className={cn('relative', view === n.id && 'text-brand-400')} />
+                    <span className="relative flex-1 text-left">{n.label}</span>
+                    {badge > 0 && <span className={cn('relative rounded-full px-1.5 font-mono text-[10px]', n.id === 'calibration' ? 'bg-signal/20 text-white' : 'bg-white/10 text-white/80')}>{badge}</span>}
+                  </button>
+                </li>
+              );
+            })}
           </ul>
         </nav>
 
+        <button onClick={() => setFault({ open: true })} className="mt-6 rounded-2xl border border-dashed border-brand-400/50 px-4 py-4 font-mono text-xs text-brand-300 transition hover:border-brand-400 hover:bg-brand-700/10">
+          [ <span className="text-white">+ Log equipment fault</span> ]
+        </button>
+
         <div className="mt-auto space-y-3">
-          <p className="rounded-xl bg-white/[0.04] px-3 py-2 text-xs text-white/60 ring-1 ring-white/10">Demo data: fictional facility and engineers.</p>
+          <div className="rounded-xl bg-white/[0.04] px-3 py-2 text-xs text-white/60 ring-1 ring-white/10">
+            Demo data: fictional facilities. Your changes are saved in this browser.
+            <button
+              onClick={() => {
+                if (confirm('Reset the demo data? Your changes in this browser will be cleared.')) {
+                  reset();
+                  setTicketId(null);
+                  toast('Demo data reset');
+                }
+              }}
+              className="mt-1 block text-brand-300 hover:text-white"
+            >
+              Reset demo data
+            </button>
+          </div>
           <a href={contact.phoneHref} className="flex items-center gap-2 font-mono text-xs text-white/50 hover:text-white">
             <Icon name="fi-rr-phone-call" className="text-brand-400" /> {contact.phone}
           </a>
@@ -134,111 +172,119 @@ export function PortalShell({ user }: { user: { name: string; email: string } })
         </div>
       </aside>
 
-      {/* Dashboard Workspace */}
+      {/* Workspace */}
       <main id="main" className="min-w-0 flex-1 p-4 md:p-8 xl:p-10">
         {/* Mobile top bar + nav */}
-        <div className="mb-6 flex items-center justify-between lg:hidden">
+        <div className="mb-5 flex items-center justify-between lg:hidden">
           <Link href="/" className="flex items-center gap-2"><LogoMark /><span className="font-semibold">Service Portal</span></Link>
-          <span className="rounded-md bg-white/[0.06] px-2 py-1 font-mono text-[10px] uppercase tracking-widest text-white/60">Demo</span>
+          <div className="flex items-center gap-2">
+            <button onClick={() => setFault({ open: true })} className="grid size-10 place-items-center rounded-xl bg-brand-600" aria-label="Log equipment fault"><Icon name="fi-rr-plus" /></button>
+            <form action={logout}>
+              <button type="submit" className="grid size-10 place-items-center rounded-xl border border-white/10" aria-label="Sign out"><Icon name="fi-rr-sign-out-alt" /></button>
+            </form>
+          </div>
         </div>
         <div className="-mx-1 mb-6 flex gap-1 overflow-x-auto px-1 lg:hidden">
           {nav.map((n) => (
-            <button key={n.id} onClick={() => setView(n.id)} className={cn('shrink-0 rounded-xl px-3 py-2 text-sm', view === n.id ? 'bg-white/10 text-white' : 'text-white/55')}>
+            <button key={n.id} onClick={() => setView(n.id)} aria-current={view === n.id ? 'page' : undefined} className={cn('shrink-0 rounded-xl px-3 py-2 text-sm', view === n.id ? 'bg-white/10 text-white' : 'text-white/55')}>
               {n.label}
             </button>
           ))}
         </div>
 
-        {/* Portal Header */}
         <header className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
           <div>
             <p className="font-mono text-[11px] uppercase tracking-widest text-white/40">{nav.find((n) => n.id === view)?.label}</p>
             <h1 className="mt-1 text-3xl font-bold tracking-[-0.03em] text-white md:text-4xl">Biomedical Engineer Service Portal</h1>
           </div>
           <div className="flex items-center gap-3">
-            <label className="flex h-11 flex-1 items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 focus-within:border-brand-500 xl:w-72 xl:flex-none">
-              <Icon name="fi-rr-search" className="text-white/40" />
-              <span className="sr-only">Search systems and tickets</span>
-              <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search systems, tickets…" className="w-full bg-transparent text-sm text-white outline-none placeholder:text-white/35" />
-            </label>
-            <button
-              aria-label={unread ? 'Notifications (1 unread)' : 'Notifications'}
-              onClick={() => {
-                setUnread(false);
-                announceDispatch(tickets.find((t) => t.engineer?.eta && t.engineer.eta !== 'On site') ?? seedTickets[1]);
-              }}
-              className="relative grid size-11 place-items-center rounded-xl border border-white/10 bg-white/[0.04] hover:bg-white/10"
-            >
-              <Icon name="fi-rr-bell" />
-              {unread && <span className="status-dot absolute right-2.5 top-2.5 !bg-brand-400" aria-hidden />}
+            <button onClick={() => setPalette(true)} className="flex h-11 flex-1 items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 text-left text-sm text-white/40 transition hover:border-white/20 xl:w-72 xl:flex-none">
+              <Icon name="fi-rr-search" />
+              <span className="flex-1">Search systems, tickets…</span>
+              <kbd className="hidden rounded-md border border-white/10 px-1.5 py-0.5 font-mono text-[10px] sm:inline">⌘K</kbd>
             </button>
+            <Notifications items={state.notifications} onRead={(id) => rawDispatch({ type: 'read', id })} onReadAll={() => rawDispatch({ type: 'readAll' })} onOpen={onNotification} />
           </div>
         </header>
 
-        {view === 'tracker' && (
-          <LayoutGroup>
-            {/* 3-Column Command Matrix */}
-            <div className="mt-8 grid gap-8 xl:grid-cols-[320px_minmax(0,1fr)_340px]">
-              <section aria-labelledby="status-h" className="min-w-0 xl:max-h-[calc(100svh-170px)] xl:overflow-y-auto">
-                <h2 id="status-h" className="mb-4 font-mono text-[11px] uppercase tracking-widest text-white/40">System status</h2>
-                <AssetStatusList assets={visibleAssets} onSelect={setSheet} />
-              </section>
-
-              <section aria-labelledby="tickets-h" className="min-w-0">
-                <h2 id="tickets-h" className="mb-4 font-mono text-[11px] uppercase tracking-widest text-white/40">Active service tickets</h2>
-                <div className="-mx-1 mb-4 flex gap-2 overflow-x-auto px-1 pb-1">
-                  {visibleTickets.map((t) => (
-                    <button
-                      key={t.id}
-                      onClick={() => setSelectedId(t.id)}
-                      className={cn('relative shrink-0 rounded-xl px-3.5 py-2 text-left text-xs transition', selected?.id === t.id ? 'text-white' : 'text-white/50 hover:text-white')}
-                    >
-                      {selected?.id === t.id && <motion.span layoutId="ticket-pill" className="absolute inset-0 rounded-xl bg-white/[0.08] ring-1 ring-white/15" />}
-                      <span className="relative font-mono">{t.id}</span>
-                      <span className="relative ml-2 hidden sm:inline">{t.title.split(':')[0]}</span>
-                    </button>
-                  ))}
-                </div>
-                {selected && <TimelineTracker ticket={selected} asset={assets.find((a) => a.id === selected.assetId)} onAdvance={() => advance(selected)} />}
-              </section>
-
-              <section aria-label="Quick actions" className="min-w-0 space-y-4">
-                <h2 className="mb-4 font-mono text-[11px] uppercase tracking-widest text-white/40">Quick actions</h2>
-                <LogFaultButton assets={assets} onCreate={create} />
-                <RadialUptime value={demoUptime} label="Installed fleet · last 30 days (demo)" />
-              </section>
-            </div>
-          </LayoutGroup>
-        )}
-
-        {view === 'pulse' && (
-          <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {visibleAssets.map((a) => {
-              const s = statusMeta[a.status];
-              return (
-                <button key={a.id} onClick={() => setSheet(a)} className="rounded-2xl border border-white/[0.06] bg-white/[0.03] p-5 text-left transition hover:border-white/15">
-                  <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest text-white/45"><span className={s.dot} /> {s.label}</span>
-                    <span className="font-mono text-[11px] text-white/35">{a.id}</span>
-                  </div>
-                  <p className="mt-4 text-lg font-semibold">{a.name}</p>
-                  <p className="text-sm text-white/45">{a.location}</p>
-                  <Sparkline values={a.readings} tone={s.tone} className="mt-5 h-16 w-full" />
-                  <p className="mt-3 text-xs text-white/40">Next calibration {a.nextCalibration}</p>
-                </button>
-              );
-            })}
+        {!ready ? (
+          <div className="mt-8 grid gap-3 sm:grid-cols-2 xl:grid-cols-4" aria-busy="true">
+            {[0, 1, 2, 3].map((i) => <div key={i} className="h-36 animate-pulse rounded-[20px] bg-white/[0.04]" />)}
           </div>
-        )}
-
-        {view === 'docs' && (
-          <div className="mt-8">
-            <Inventory assets={visibleAssets} onSelect={setSheet} />
-          </div>
+        ) : (
+          <>
+            {view === 'overview' && <Overview state={state} me={me} onOpenTicket={openTicket} onOpenAsset={openAsset} onGo={setView} />}
+            {view === 'tickets' && (
+              <TicketsView
+                state={state}
+                me={me}
+                selectedId={ticketId}
+                onSelect={setTicketId}
+                dispatch={dispatch}
+                onResolve={setResolving}
+                onOpenAsset={openAsset}
+                onLogFault={() => setFault({ open: true })}
+              />
+            )}
+            {view === 'systems' && <SystemsView state={state} onOpenAsset={openAsset} />}
+            {view === 'calibration' && <CalibrationView state={state} onRecord={setCalibrating} onOpenAsset={openAsset} />}
+            {view === 'docs' && (
+              <div className="mt-8">
+                <Inventory assets={state.assets} tickets={state.tickets} onSelect={(a) => openAsset(a.id)} />
+              </div>
+            )}
+          </>
         )}
       </main>
 
-      <AssetSheet asset={sheet} onClose={() => setSheet(null)} />
+      <AssetSheet
+        asset={sheet}
+        tickets={state.tickets}
+        onClose={() => setSheetId(null)}
+        onLogFault={(assetId) => {
+          setSheetId(null);
+          setFault({ open: true, assetId });
+        }}
+        onRecord={(a) => {
+          setSheetId(null);
+          setCalibrating(a);
+        }}
+        onOpenTicket={openTicket}
+      />
+      <LogFaultDialog
+        open={fault.open}
+        onOpenChange={(open) => setFault((f) => ({ ...f, open }))}
+        assets={state.assets}
+        defaultAssetId={fault.assetId}
+        onSubmit={(v) => {
+          const id = nextTicketId(state);
+          rawDispatch({ type: 'create', ticket: { assetId: v.assetId, description: v.description, priority: v.priority }, assignToMe: v.assignToMe });
+          toast.success(`${id} logged`, { description: v.assignToMe ? 'Assigned to you and added to your queue.' : 'Added to the unassigned queue.' });
+          setTicketId(id);
+          setView('tickets');
+        }}
+      />
+      <ResolveDialog
+        ticket={resolving}
+        onOpenChange={(v) => !v && setResolving(null)}
+        onSubmit={({ summary, calibrated }) => {
+          if (!resolving) return;
+          rawDispatch({ type: 'resolve', id: resolving.id, summary, calibrated });
+          toast.success(`${resolving.id} resolved`, { description: calibrated ? 'Service report sent and calibration certificate issued.' : 'Service report sent to the facility.' });
+          setResolving(null);
+        }}
+      />
+      <CalibrationDialog
+        asset={calibrating}
+        onOpenChange={(v) => !v && setCalibrating(null)}
+        onSubmit={({ result, notes }) => {
+          if (!calibrating) return;
+          rawDispatch({ type: 'calibrate', assetId: calibrating.id, result, notes });
+          toast.success('Certificate issued', { description: `${calibrating.name} · next due in ${calibrating.intervalMonths} months` });
+          setCalibrating(null);
+        }}
+      />
+      <CommandPalette open={palette} onOpenChange={setPalette} state={state} actions={actions} onOpenTicket={openTicket} onOpenAsset={openAsset} />
     </div>
   );
 }

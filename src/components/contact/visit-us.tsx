@@ -5,7 +5,7 @@ import { Icon } from '@/components/ui/icon';
 import { branches, contact, maps } from '@/data/seed';
 
 /** Head office photo, live map and one-tap directions, plus the branch network. */
-export function VisitUs({ id = 'visit' }: { id?: string }) {
+export function VisitUs({ id = 'visit', photo = true }: { id?: string; photo?: boolean }) {
   return (
     <section id={id} className="scroll-mt-28 bg-paper py-24 md:py-32">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
@@ -19,6 +19,7 @@ export function VisitUs({ id = 'visit' }: { id?: string }) {
 
         <div className="mt-12 grid gap-4 lg:grid-cols-12">
           {/* The building */}
+          {photo && (
           <Reveal className="lg:col-span-5">
             <figure className="group relative isolate h-full min-h-[440px] overflow-hidden rounded-5xl bg-midnight">
               <Image
@@ -36,9 +37,10 @@ export function VisitUs({ id = 'visit' }: { id?: string }) {
               </figcaption>
             </figure>
           </Reveal>
+          )}
 
           {/* The map + directions */}
-          <Reveal delay={0.08} className="lg:col-span-7">
+          <Reveal delay={0.08} className={photo ? 'lg:col-span-7' : 'lg:col-span-12'}>
             <div className="flex h-full flex-col overflow-hidden rounded-5xl border border-line bg-canvas">
               <div className="relative min-h-[320px] flex-1 overflow-hidden">
                 {/* Shown while the map loads (or if it can't): a quiet grid with the head-office pin */}
