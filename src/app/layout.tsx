@@ -2,7 +2,9 @@ import type { Metadata, Viewport } from 'next';
 import { GeistSans } from 'geist/font/sans';
 import localFont from 'next/font/local';
 import { Toaster } from 'sonner';
+import { AccessibilityProvider } from '@/components/layout/accessibility';
 import { ServiceWorkerRegister } from '@/components/layout/sw-register';
+import { a11yBootScript } from '@/lib/a11y';
 import { contact } from '@/data/seed';
 import { allowIndexing, siteUrl } from '@/lib/utils';
 import '@/styles/uicons/uicons.css';
@@ -48,12 +50,16 @@ const organizationLd = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en-GH" className={`${poppins.variable} ${GeistSans.variable}`}>
+    <html lang="en-GH" className={`${poppins.variable} ${GeistSans.variable}`} suppressHydrationWarning>
+      <head>
+        {/* Apply saved accessibility preferences before first paint */}
+        <script dangerouslySetInnerHTML={{ __html: a11yBootScript }} />
+      </head>
       <body className="font-sans">
         <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-brand-600 focus:px-4 focus:py-2 focus:text-white">
           Skip to content
         </a>
-        {children}
+        <AccessibilityProvider>{children}</AccessibilityProvider>
         <Toaster
           position="top-right"
           toastOptions={{

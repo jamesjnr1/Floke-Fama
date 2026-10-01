@@ -5,6 +5,7 @@
  * Lines and points only (no lights or textures), so it stays cheap on mid-range phones.
  * Loaded lazily in its own chunk. Returns a cleanup function that disposes everything.
  */
+import { prefersReducedMotion } from '@/lib/a11y';
 import {
   AdditiveBlending, BufferAttribute, BufferGeometry, CanvasTexture, Color, EdgesGeometry, Group, IcosahedronGeometry,
   Line, LineBasicMaterial, LineSegments, PerspectiveCamera, Points, PointsMaterial, QuadraticBezierCurve3, Scene,
@@ -34,7 +35,7 @@ function glowTexture(inner: string) {
 }
 
 export function mountGlobe(container: HTMLElement, onReady?: () => void): () => void {
-  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const reduceMotion = prefersReducedMotion();
   let renderer: WebGLRenderer;
   try {
     renderer = new WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'low-power' });
@@ -207,22 +208,24 @@ export function mountGlobe(container: HTMLElement, onReady?: () => void): () => 
   };
   const io = new IntersectionObserver(([e]) => {
     visible = e.isIntersecting;
-    if (!reduceMotion) setRunning(visible && !document.hidden);
+    if (!prefersReducedMotion()) setRunning(visible && !document.hidden);
   });
   const onVisibility = () => {
-    if (!reduceMotion) setRunning(visible && !document.hidden);
+    if (!prefersReducedMotion()) setRunning(visible && !document.hidden);
   };
+  // React live to the site's “Reduce motion” accessibility switch
+  const motionWatch = new MutationObserver(() => setRunning(!prefersReducedMotion() && visible && !document.hidden));
+  motionWatch.observe(document.documentElement, { attributes: true, attributeFilter: ['data-motion'] });
 
   if (reduceMotion) render(4);
-  else {
-    io.observe(container);
-    document.addEventListener('visibilitychange', onVisibility);
-    loop();
-  }
+  else loop();
+  io.observe(container);
+  document.addEventListener('visibilitychange', onVisibility);
   onReady?.();
 
   return () => {
     setRunning(false);
+    motionWatch.disconnect();
     io.disconnect();
     ro.disconnect();
     window.removeEventListener('pointermove', onPointer);

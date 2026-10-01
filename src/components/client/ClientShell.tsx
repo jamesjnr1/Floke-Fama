@@ -11,6 +11,7 @@ import { Overview } from '@/components/client/Overview';
 import { RequestsView } from '@/components/client/RequestsView';
 import { LogoMark } from '@/components/layout/logo';
 import { Notifications } from '@/components/service/Notifications';
+import { useAccessibility } from '@/components/layout/accessibility';
 import { Icon } from '@/components/ui/icon';
 import { contact } from '@/data/seed';
 import { logout } from '@/lib/auth/actions';
@@ -29,6 +30,7 @@ const nav: { id: View; label: string; icon: string }[] = [
 export function ClientShell({ user }: { user: { name: string; email: string; facility?: string } }) {
   const facility = user.facility ?? CLIENT_FACILITY;
   const actor = useMemo(() => ({ name: user.name, role: 'client' as const, facility }), [user.name, facility]);
+  const a11y = useAccessibility();
   const { state, dispatch: rawDispatch, ready, reset } = useServiceStore(actor);
   const [view, setView] = useState<View>('overview');
   const [ticketId, setTicketId] = useState<string | null>(null);
@@ -107,6 +109,7 @@ export function ClientShell({ user }: { user: { name: string; email: string; fac
               Reset demo data
             </button>
           </div>
+          <button onClick={a11y.open} className="flex items-center gap-2 text-xs text-white/55 hover:text-white"><Icon name="fi-rr-universal-access" className="text-brand-300" /> Accessibility</button>
           <a href={contact.phoneHref} className="flex items-center gap-2 text-white/55 hover:text-white"><Icon name="fi-rr-phone-call" className="text-brand-300" /> {contact.phone}</a>
           <Link href="/" className="flex items-center gap-2 text-white/55 hover:text-white"><Icon name="fi-rr-arrow-small-left" /> Back to flokefama site</Link>
           <form action={logout}>
@@ -127,6 +130,7 @@ export function ClientShell({ user }: { user: { name: string; email: string; fac
             <Icon name="fi-rr-wrench-simple" /> Request service
           </button>
           <Notifications tone="light" items={notifications} onRead={(id) => rawDispatch({ type: 'read', id })} onReadAll={() => rawDispatch({ type: 'readAll', audience: 'client' })} onOpen={onNotification} />
+          <button onClick={a11y.open} aria-label="Accessibility options" className="grid size-11 place-items-center rounded-xl border border-line bg-paper text-ink lg:hidden"><Icon name="fi-rr-universal-access" /></button>
           <form action={logout} className="lg:hidden">
             <button type="submit" aria-label="Sign out" className="grid size-11 place-items-center rounded-xl border border-line bg-paper text-ink"><Icon name="fi-rr-sign-out-alt" /></button>
           </form>

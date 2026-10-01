@@ -60,7 +60,7 @@ export function Partners({ heading = true }: { heading?: boolean }) {
           <div className="mt-6 flex items-center gap-4">
             <p className="label shrink-0">Trusted by</p>
             <span className="h-px flex-1 bg-line" aria-hidden />
-            <p className="shrink-0 text-xs text-ink-3">700+ hospitals &amp; laboratories, including</p>
+            <p className="min-w-0 text-right text-xs text-ink-3">700+ hospitals &amp; laboratories, including</p>
           </div>
           <ul className="mt-5 grid grid-cols-3 gap-2 sm:gap-3 lg:grid-cols-6">
             {clients.map((c) => {
