@@ -76,12 +76,11 @@ function EventList({ items }: { items: typeof events }) {
               )}
               <div className="p-6 md:p-8">
                 <div className="flex items-start justify-between gap-4">
-                  <div className="grid size-20 shrink-0 place-items-center rounded-3xl bg-midnight text-center text-white">
-                    <div>
-                      <p className="font-mono text-[11px] uppercase tracking-widest text-brand-300">{e.month}</p>
-                      <p className="text-3xl font-bold leading-none tracking-[-0.03em]">{e.day}</p>
-                      <p className="mt-1 font-mono text-[11px] text-white/50">{e.year}</p>
-                    </div>
+                  {/* Calendar page: logo-green month band, the day large on white */}
+                  <div className="w-20 shrink-0 overflow-hidden rounded-2xl border border-line bg-paper text-center shadow-[0_10px_24px_-16px_rgb(0_40_21/0.35)]" aria-label={`${e.day} ${e.month} ${e.year}`}>
+                    <p className="bg-brand-600 py-1.5 font-mono text-[11px] font-medium uppercase tracking-[0.2em] text-white">{e.month}</p>
+                    <p className="pt-2.5 text-[34px] font-bold leading-none tracking-[-0.03em] text-ink">{e.day}</p>
+                    <p className="pb-2.5 pt-1 font-mono text-[11px] text-ink-3">{e.year}</p>
                   </div>
                   <span className="rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-700">{e.price}</span>
                 </div>
