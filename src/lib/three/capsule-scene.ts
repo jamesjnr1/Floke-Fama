@@ -1,8 +1,7 @@
 /**
- * Hero centrepiece: a capsule drawn in dots (one half bright green, the other white), turning
+ * Hero centrepiece: a capsule drawn in dots (one half brand green, the other mint), turning
  * slowly inside two orbit rings that carry light pulses out to facility nodes, a picture of
- * the medicines and equipment Flokefama distributes. A band of light sweeps along the capsule,
- * and a single red node on its seam echoes the logo's dot.
+ * the medicines and equipment Flokefama distributes. A single red node echoes the logo's dot.
  * Lines and points only (no lights or textures), so it stays cheap on mid-range phones.
  * Loaded lazily in its own chunk. Returns a cleanup function that disposes everything.
  */
@@ -16,8 +15,7 @@ import {
 const R = 1.05; // capsule radius
 const H = 1.15; // half-length of the straight section
 const STEP = 0.115; // dot spacing
-const GREEN_BRIGHT = new Color('#7ee0a6'); // vivid enough to read on the green hero
-const WHITE = new Color('#f4fff8');
+const GREEN_BRIGHT = new Color('#8fd1a9'); // light enough to read on the green hero
 const MINT = new Color('#e6f6ec');
 const RED = new Color('#e4283c');
 
@@ -82,15 +80,15 @@ export function mountCapsule(container: HTMLElement, onReady?: () => void): () =
   const pos = capsulePoints();
   const count = pos.length / 3;
   const col = new Float32Array(count * 3);
-  const half = (i: number) => (pos[i * 3 + 1] > 0 ? GREEN_BRIGHT : WHITE);
   for (let i = 0; i < count; i++) {
-    const c = half(i);
+    const y = pos[i * 3 + 1];
+    const c = y > 0 ? GREEN_BRIGHT : MINT;
     col.set([c.r, c.g, c.b], i * 3);
   }
   const dotGeo = new BufferGeometry();
   dotGeo.setAttribute('position', new BufferAttribute(pos, 3));
   dotGeo.setAttribute('color', new BufferAttribute(col, 3));
-  const dotMat = new PointsMaterial({ vertexColors: true, size: 0.055, transparent: true, opacity: 1, depthWrite: false });
+  const dotMat = new PointsMaterial({ vertexColors: true, size: 0.04, transparent: true, opacity: 0.9, depthWrite: false });
   capsule.add(new Points(dotGeo, dotMat));
   disposables.push(dotGeo, dotMat);
   // Invisible inner capsule: writes depth only, so dots on the far side are hidden and the form reads as solid
@@ -102,7 +100,7 @@ export function mountCapsule(container: HTMLElement, onReady?: () => void): () =
   disposables.push(occGeo, occMat);
 
   // 2. Faint outline: profile lines around the body and the seam
-  const lineMat = new LineBasicMaterial({ color: MINT, transparent: true, opacity: 0.16, depthWrite: false });
+  const lineMat = new LineBasicMaterial({ color: MINT, transparent: true, opacity: 0.1, depthWrite: false });
   disposables.push(lineMat);
   // Half silhouette from the bottom pole, up the side, to the top pole
   const profile: Vector3[] = [];
@@ -119,7 +117,7 @@ export function mountCapsule(container: HTMLElement, onReady?: () => void): () =
     const a = (k / 96) * Math.PI * 2;
     return new Vector3(Math.cos(a) * R * 1.02, 0, Math.sin(a) * R * 1.02);
   }));
-  const seamMat = new LineBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.9, depthWrite: false });
+  const seamMat = new LineBasicMaterial({ color: MINT, transparent: true, opacity: 0.45, depthWrite: false });
   capsule.add(new Line(seamGeo, seamMat));
   disposables.push(seamGeo, seamMat);
 
@@ -128,15 +126,15 @@ export function mountCapsule(container: HTMLElement, onReady?: () => void): () =
   const redMat = new SpriteMaterial({ map: redTex, transparent: true, blending: AdditiveBlending, depthWrite: false });
   const red = new Sprite(redMat);
   const redCoreGeo = new BufferGeometry().setFromPoints([new Vector3()]);
-  const redCoreMat = new PointsMaterial({ color: RED, size: 0.16, transparent: true, depthWrite: false });
+  const redCoreMat = new PointsMaterial({ color: RED, size: 0.12, transparent: true, depthWrite: false });
   const redCore = new Points(redCoreGeo, redCoreMat);
   disposables.push(redTex, redMat, redCoreGeo, redCoreMat);
 
   // 4. Two orbit rings with facility nodes and light pulses travelling round them
-  const ringMat = new LineBasicMaterial({ color: MINT, transparent: true, opacity: 0.45, depthWrite: false });
-  const nodeMat = new PointsMaterial({ color: MINT, size: 0.11, transparent: true, opacity: 0.95, blending: AdditiveBlending, depthWrite: false });
+  const ringMat = new LineBasicMaterial({ color: MINT, transparent: true, opacity: 0.3, depthWrite: false });
+  const nodeMat = new PointsMaterial({ color: MINT, size: 0.09, transparent: true, opacity: 0.95, blending: AdditiveBlending, depthWrite: false });
   const pulseTex = glowTexture('rgba(190,240,210,1)');
-  const pulseMat = new PointsMaterial({ map: pulseTex, size: 0.3, transparent: true, blending: AdditiveBlending, depthWrite: false });
+  const pulseMat = new PointsMaterial({ map: pulseTex, size: 0.24, transparent: true, blending: AdditiveBlending, depthWrite: false });
   disposables.push(ringMat, nodeMat, pulseTex, pulseMat);
   const PULSES = 3;
   const rings = [
@@ -194,18 +192,7 @@ export function mountCapsule(container: HTMLElement, onReady?: () => void): () =
       }
       r.pulseGeo.attributes.position.needsUpdate = true;
     });
-    red.scale.setScalar(0.6 + 0.22 * Math.sin(t * 3));
-    // A band of light sweeps from one end of the capsule to the other
-    const span = H + R;
-    const band = -span + (((t * 0.35) % 1.4) / 1.4) * (span * 2 + 1.2);
-    for (let i = 0; i < count; i++) {
-      const c = half(i);
-      const glow = Math.exp(-((pos[i * 3 + 1] - band) ** 2) / 0.06);
-      col[i * 3] = c.r + (1 - c.r) * glow;
-      col[i * 3 + 1] = c.g + (1 - c.g) * glow;
-      col[i * 3 + 2] = c.b + (1 - c.b) * glow;
-    }
-    dotGeo.attributes.color.needsUpdate = true;
+    red.scale.setScalar(0.45 + 0.2 * Math.sin(t * 3));
     renderer.render(scene, camera);
   };
 
