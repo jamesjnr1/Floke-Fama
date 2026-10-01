@@ -27,7 +27,7 @@ export function Hero() {
         {/* Column Left (span 7): vertical, gap 24px */}
         <div className="flex flex-col gap-6 lg:col-span-7">
           <Reveal delay={0.06}>
-            <h1 className="display text-[clamp(2.6rem,1.1rem+4.6vw,5rem)] uppercase leading-[0.95] text-white">
+            <h1 className="display text-[clamp(3rem,1.1rem+5.2vw,6.25rem)] uppercase leading-[0.92] text-white">
               Ghana’s No.1 <span className="text-gradient">Healthcare Company.</span>
             </h1>
           </Reveal>
