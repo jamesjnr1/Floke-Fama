@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { GetInTouch } from '@/components/contact/get-in-touch';
+import { HideOn } from '@/components/layout/hide-on';
 import { Logo } from '@/components/layout/logo';
 import { Icon } from '@/components/ui/icon';
 import { branches, categories, maps } from '@/data/seed';
@@ -23,7 +24,10 @@ const media = [
 export function SiteFooter() {
   return (
     <footer className="bg-midnight text-white/60">
-      <GetInTouch />
+      {/* The Contact page has its own, fuller version */}
+      <HideOn paths={['/contact']}>
+        <GetInTouch />
+      </HideOn>
       <div className="mx-auto grid max-w-[1280px] gap-12 px-5 py-20 md:grid-cols-2 md:px-10 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1.2fr]">
         <div>
           <Logo tone="dark" />
