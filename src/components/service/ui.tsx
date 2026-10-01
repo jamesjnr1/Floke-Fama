@@ -53,7 +53,7 @@ export function PortalDialog({ open, onOpenChange, title, description, children 
         <Dialog.Overlay className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm" />
         <Dialog.Content
           aria-describedby={description ? undefined : undefined}
-          className="fixed left-1/2 top-1/2 z-[70] max-h-[calc(100svh-2rem)] w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-3xl border border-white/10 bg-[#004726] p-6 text-white shadow-2xl outline-none md:p-8"
+          className="fixed left-1/2 top-1/2 z-[70] max-h-[calc(100svh-2rem)] w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-3xl border border-white/10 bg-[#111d17] p-6 text-white shadow-2xl outline-none md:p-8"
         >
           <Dialog.Title className="text-2xl font-bold tracking-[-0.02em] text-white">{title}</Dialog.Title>
           {description ? <Dialog.Description className="mt-1 text-sm text-white/50">{description}</Dialog.Description> : null}

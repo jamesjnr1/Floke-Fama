@@ -14,7 +14,7 @@ export default function AwardsPage() {
       <PageHero
         label="Awards"
         title={<>Recognitions that <span className="text-gradient">reflect our impact</span></>}
-        lead="Our commitment to excellence, innovation and service has earned the trust of countless healthcare institutions, and prestigious awards and honours along the way."
+        lead="At Flokefama Limited, our journey has been marked by a steadfast commitment to excellence, innovation, and service in the healthcare industry. Over the years, our dedication has not only earned the trust of countless healthcare institutions but has also been recognized through prestigious awards and honors."
       />
       <AwardsGallery />
     </>

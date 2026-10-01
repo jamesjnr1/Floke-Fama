@@ -73,7 +73,7 @@ export function Navbar() {
           'mx-auto flex h-[72px] max-w-[1280px] items-center 2xl:max-w-[1400px] justify-between gap-6 rounded-2xl border px-4 transition-[background-color,border-color,box-shadow] duration-500 md:px-6',
           dark
             ? cn('border-white/10 backdrop-blur-xl', solid ? 'bg-midnight/90 shadow-[0_20px_50px_-20px_rgb(0_0_0/0.6)]' : 'bg-white/[0.04]')
-            : cn('border-line backdrop-blur-xl', scrolled ? 'bg-paper/90 shadow-[0_20px_50px_-30px_rgb(0_40_21/0.35)]' : 'bg-paper/70'),
+            : cn('border-line backdrop-blur-xl', scrolled ? 'bg-paper/90 shadow-[0_20px_50px_-30px_rgb(11_21_16/0.35)]' : 'bg-paper/70'),
         )}
       >
         <Logo tone={dark ? 'dark' : 'light'} />
@@ -187,7 +187,7 @@ export function Navbar() {
           {/* CTA Button: padding 12px 24px, brand green, radius 12px */}
           <Link
             href="/portal"
-            className="group hidden items-center gap-2 whitespace-nowrap rounded-xl bg-brand-600 px-4 py-3 text-[13px] font-medium text-white 2xl:px-6 2xl:text-sm shadow-[0_0_0_1px_rgb(128_196_160/0.25),0_10px_30px_-10px_rgb(25_133_82/0.8)] transition hover:bg-brand-700 sm:inline-flex"
+            className="group hidden items-center gap-2 whitespace-nowrap rounded-xl bg-brand-600 px-4 py-3 text-[13px] font-medium text-white 2xl:px-6 2xl:text-sm shadow-[0_0_0_1px_rgb(143_209_169/0.25),0_10px_30px_-10px_rgb(46_154_91/0.8)] transition hover:bg-brand-700 sm:inline-flex"
           >
             <span className="hidden 2xl:inline">Client Portal Access</span><span className="2xl:hidden">Client Portal</span> <span aria-hidden className="transition-transform duration-500 group-hover:translate-x-1">→</span>
           </Link>

@@ -11,3 +11,4 @@ qa/
 *.log
 studio/node_modules/
 studio/dist/
+scripts/content-import/.cache/

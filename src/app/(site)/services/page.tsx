@@ -18,12 +18,12 @@ export default function ServicesPage() {
     <>
       <PageHero
         label="Products & services"
-        title={<>Beyond supply: <span className="text-gradient">end-to-end solutions</span></>}
-        lead="We go beyond supplying medical equipment. From procurement and installation to training and maintenance, our services ensure efficiency, reliability and long-term value for healthcare facilities."
+        title={<>We go beyond just supplying <span className="text-gradient">medical equipment</span></>}
+        lead="At Flokefama Limited, we offer a comprehensive range of services designed to ensure efficiency, reliability, and long-term value for healthcare facilities. Our expert team provides end-to-end solutions, from procurement and installation to training and maintenance, ensuring that our clients get the most out of their investment."
       >
         <div className="flex flex-wrap gap-3">
           <Button asChild variant="glow" size="lg">
-            <Link href="/products">Go to shop <Icon name="fi-rr-arrow-small-right" /></Link>
+            <Link href="/products">Go to Shop <Icon name="fi-rr-arrow-small-right" /></Link>
           </Button>
           <Button asChild variant="glass" size="lg">
             <Link href="/quote">Request a quote</Link>
@@ -37,7 +37,7 @@ export default function ServicesPage() {
           <Reveal>
             <p className="label">Why choose Flokefama?</p>
             <h2 className="display mt-4 max-w-3xl text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">
-              The official distributor of <span className="text-brand-600">Mindray, Biozek Holland and MR Global.</span>
+              We are the Official distributor of <span className="text-brand-600">Mindray, Biozek Holland, and MR Global.</span>
             </h2>
           </Reveal>
           <ul className="swipe-row mt-10 gap-4 md:mt-12 md:grid-cols-2 lg:grid-cols-4">

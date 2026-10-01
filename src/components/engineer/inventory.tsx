@@ -25,7 +25,7 @@ export function Inventory({ assets, tickets, onSelect }: { assets: Asset[]; tick
         const h = health[assetStatus(a, tickets)];
         return (
           <li key={a.id}>
-            <button onClick={() => onSelect(a)} className="group flex h-full w-full flex-col rounded-4xl border border-line bg-paper p-2 text-left transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_30px_60px_-30px_rgb(0_40_21/0.35)]">
+            <button onClick={() => onSelect(a)} className="group flex h-full w-full flex-col rounded-4xl border border-line bg-paper p-2 text-left transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_30px_60px_-30px_rgb(11_21_16/0.35)]">
               <AssetVisual asset={a} className="aspect-[4/3] rounded-[1.6rem]" />
               <div className="p-4">
                 <div className="flex items-center justify-between gap-2">
@@ -69,7 +69,7 @@ export function AssetSheet({ asset, tickets, onClose, onLogFault, onRecord, onOp
 
 function AssetVisual({ asset, className }: { asset: Asset; className?: string }) {
   return (
-    <div className={`relative overflow-hidden bg-[radial-gradient(90%_70%_at_50%_35%,#fff,#eaf3ee)] ${className ?? ''}`}>
+    <div className={`relative overflow-hidden bg-[radial-gradient(90%_70%_at_50%_35%,#fff,#eef2ef)] ${className ?? ''}`}>
       {asset.image ? (
         <Image src={asset.image} alt="" fill sizes="(min-width: 768px) 33vw, 100vw" className="object-contain p-[12%] mix-blend-multiply" />
       ) : (

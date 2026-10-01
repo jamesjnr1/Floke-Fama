@@ -73,8 +73,8 @@ export default function EsgPage() {
       </section>
 
       {/* Local industry: the long-term commitment */}
-      <section className="relative isolate overflow-hidden bg-[linear-gradient(160deg,#005e31_0%,#004d28_55%,#003d20_100%)] py-24 text-white md:py-32">
-        <div aria-hidden className="absolute -right-40 -top-40 -z-10 size-[640px] rounded-full bg-[radial-gradient(circle,rgb(128_196_160/0.18),transparent_65%)]" />
+      <section className="relative isolate overflow-hidden bg-[linear-gradient(160deg,#1b5e37_0%,#134228_55%,#0e3320_100%)] py-24 text-white md:py-32">
+        <div aria-hidden className="absolute -right-40 -top-40 -z-10 size-[640px] rounded-full bg-[radial-gradient(circle,rgb(143_209_169/0.18),transparent_65%)]" />
         <div className="mx-auto grid max-w-[1280px] items-start gap-12 px-5 md:px-10 lg:grid-cols-[0.8fr_1.2fr]">
           <Reveal>
             <p className="label !text-brand-100">Economic · Local industry</p>

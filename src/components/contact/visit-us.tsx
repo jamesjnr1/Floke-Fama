@@ -12,8 +12,8 @@ export function VisitUs({ id = 'visit', photo = true }: { id?: string; photo?: b
         <Reveal className="flex flex-wrap items-end justify-between gap-6">
           <div>
             <p className="label">Flokefama location</p>
-            <h2 className="display mt-4 text-[clamp(2rem,1.2rem+2.8vw,3.75rem)]">Find us here.</h2>
-            <p className="mt-4 max-w-xl text-lg font-light leading-relaxed text-ink-3">Visit the Flokefama Company Limited head office in Santa Maria, Accra, or any of our branches nationwide.</p>
+            <h2 className="display mt-4 text-[clamp(2rem,1.2rem+2.8vw,3.75rem)]">Find Us Here!</h2>
+            <p className="mt-4 max-w-xl text-lg font-light leading-relaxed text-ink-3">Visit Flokefama Company Limited Head Office using the interactive map below.</p>
           </div>
         </Reveal>
 
@@ -44,8 +44,8 @@ export function VisitUs({ id = 'visit', photo = true }: { id?: string; photo?: b
             <div className="flex h-full flex-col overflow-hidden rounded-5xl border border-line bg-canvas">
               <div className="relative min-h-[260px] flex-1 overflow-hidden md:min-h-[320px]">
                 {/* Shown while the map loads (or if it can't): a quiet grid with the head-office pin */}
-                <div aria-hidden className="absolute inset-0 grid place-items-center bg-canvas [background-image:linear-gradient(rgb(0_40_21/0.05)_1px,transparent_1px),linear-gradient(90deg,rgb(0_40_21/0.05)_1px,transparent_1px)] [background-size:32px_32px]">
-                  <span className="relative grid size-14 place-items-center rounded-full bg-brand-600 text-xl text-white shadow-[0_0_0_10px_rgb(0_112_58/0.12)]"><Icon name="fi-rr-marker" /></span>
+                <div aria-hidden className="absolute inset-0 grid place-items-center bg-canvas [background-image:linear-gradient(rgb(11_21_16/0.05)_1px,transparent_1px),linear-gradient(90deg,rgb(11_21_16/0.05)_1px,transparent_1px)] [background-size:32px_32px]">
+                  <span className="relative grid size-14 place-items-center rounded-full bg-brand-600 text-xl text-white shadow-[0_0_0_10px_rgb(37_120_71/0.12)]"><Icon name="fi-rr-marker" /></span>
                 </div>
                 <iframe
                   src={maps.embed}

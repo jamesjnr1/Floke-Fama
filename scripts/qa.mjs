@@ -6,7 +6,7 @@ import { mkdir } from 'node:fs/promises';
 import { chromium } from 'playwright';
 
 const base = process.argv[2] ?? 'http://localhost:3000';
-const pages = ['/', '/about', '/awards', '/services', '/events', '/esg', '/contact', '/products', '/products/mindray-bc-5150', '/quote', '/login', '/offline'];
+const pages = ['/', '/about', '/awards', '/services', '/events', '/esg', '/contact', '/products', '/products/auto-heamatology-analyzer-bc5150', '/news/quality-is-tested', '/quote', '/login', '/offline'];
 // Protected pages are checked signed in with the preview demo accounts (ENABLE_DEMO_ACCOUNTS must not be "false").
 const protectedPages = { '/portal': ['client@demo.flokefama.com', 'FlokeCare-2026'], '/engineer': ['engineer@demo.flokefama.com', 'FlokeEng-2026'] };
 const sizes = [[390, 844], [1440, 900], [1600, 900]];

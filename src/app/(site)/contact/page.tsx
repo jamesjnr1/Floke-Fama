@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 /** Every channel on the current Contact page. */
 const details = [
-  { icon: 'fi-rr-phone-call', label: 'Call centre', value: contact.phone, href: contact.phoneHref },
+  { icon: 'fi-rr-phone-call', label: 'Call Center', value: contact.phone, href: contact.phoneHref },
   { icon: 'fi-brands-whatsapp', label: 'WhatsApp', value: contact.phone, href: contact.whatsapp, external: true },
   { icon: 'fi-rr-shopping-cart', label: 'Sales & quotes', value: contact.sales, href: `mailto:${contact.sales}` },
   { icon: 'fi-rr-settings', label: 'Service & support', value: contact.support, href: `mailto:${contact.support}` },
@@ -29,6 +29,7 @@ export default function ContactPage() {
         <div className="mx-auto grid max-w-[1280px] gap-12 px-5 md:px-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
           <div>
             <h2 className="text-2xl font-bold tracking-[-0.02em] text-ink">Talk to us</h2>
+            <p className="mt-1 text-ink-3">We are committed to providing top-quality medical solutions and outstanding customer service.</p>
             <ul className="mt-6 divide-y divide-line border-y border-line">
               {details.map((d) => (
                 <li key={d.label}>

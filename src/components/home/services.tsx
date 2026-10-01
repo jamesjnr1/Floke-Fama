@@ -38,11 +38,11 @@ export function Services() {
           <div className="max-w-2xl">
             <p className="label">Our services</p>
             <h2 className="display mt-5 text-[clamp(2.25rem,1.3rem+3.4vw,4.5rem)]">
-              We don’t just deliver. <span className="text-brand-600">We stay.</span>
+              End-to-end healthcare solutions, <span className="text-brand-600">tailored to you.</span>
             </h2>
           </div>
           <p className="max-w-sm font-light leading-relaxed text-ink-3">
-            End-to-end solutions, from procurement and installation to training and maintenance, so every client gets the most out of their investment.
+            We provide end-to-end healthcare solutions, tailored to hospitals, labs, and organizations.
           </p>
         </Reveal>
 
@@ -74,7 +74,7 @@ export function Services() {
                       <span
                         className={cn(
                           'relative grid size-12 place-items-center rounded-full border font-mono text-sm transition-all duration-500',
-                          on ? 'scale-110 border-brand-600 bg-brand-600 text-white shadow-[0_0_0_8px_rgb(0_112_58/0.12)]' : done ? 'border-brand-500 bg-paper text-brand-700' : 'border-line bg-paper text-ink-3 group-hover:border-ink/30',
+                          on ? 'scale-110 border-brand-600 bg-brand-600 text-white shadow-[0_0_0_8px_rgb(37_120_71/0.12)]' : done ? 'border-brand-500 bg-paper text-brand-700' : 'border-line bg-paper text-ink-3 group-hover:border-ink/30',
                           'group-focus-visible:ring-4 group-focus-visible:ring-brand-500/30',
                         )}
                       >
@@ -88,8 +88,8 @@ export function Services() {
             </ol>
           </div>
 
-          <div id="service-panel" role="tabpanel" className="relative mt-12 overflow-hidden rounded-5xl bg-brand-800 bg-[linear-gradient(120deg,#00592e_0%,#00421f_70%)] text-white">
-            <div aria-hidden className="absolute -right-24 -top-24 size-[420px] rounded-full bg-[radial-gradient(circle,rgb(63_160_109/0.22),transparent_65%)]" />
+          <div id="service-panel" role="tabpanel" className="relative mt-12 overflow-hidden rounded-5xl bg-brand-800 bg-[linear-gradient(120deg,#18512f_0%,#0f3520_70%)] text-white">
+            <div aria-hidden className="absolute -right-24 -top-24 size-[420px] rounded-full bg-[radial-gradient(circle,rgb(82_181_124/0.22),transparent_65%)]" />
             <AnimatePresence mode="wait">
               <motion.div
                 key={active}

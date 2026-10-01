@@ -52,7 +52,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           <div className="min-w-0 space-y-10">
             <SpecHeader product={product} categoryTitle={category?.title} />
             <SpecActions product={product} />
-            <SpecTabs product={product} />
+            <SpecTabs product={product} categoryTitle={category?.title} />
           </div>
         </div>
       </div>

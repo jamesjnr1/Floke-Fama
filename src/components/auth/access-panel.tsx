@@ -46,7 +46,7 @@ export function AccessPanel({ next, demo, notice, engineer, initialMode }: {
                 onClick={() => setMode(m)}
                 className={cn('relative h-10 rounded-lg text-sm font-medium transition-colors', mode === m ? 'text-ink' : 'text-ink-3 hover:text-ink')}
               >
-                {mode === m && <motion.span layoutId="access-tab" className="absolute inset-0 rounded-lg bg-paper shadow-[0_1px_3px_rgb(0_40_21/0.12)]" transition={{ type: 'spring', bounce: 0.15, duration: 0.45 }} />}
+                {mode === m && <motion.span layoutId="access-tab" className="absolute inset-0 rounded-lg bg-paper shadow-[0_1px_3px_rgb(11_21_16/0.12)]" transition={{ type: 'spring', bounce: 0.15, duration: 0.45 }} />}
                 <span className="relative">{m === 'signin' ? 'Sign in' : 'Register'}</span>
               </button>
             ))}

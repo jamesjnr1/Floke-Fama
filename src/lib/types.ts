@@ -33,7 +33,13 @@ export interface Product {
   category: string;
   summary: string;
   image?: string;
+  /** The original shop categories the product is listed under on flokefama.com (e.g. "Hematology Analyzers"). */
+  types?: string[];
+  /** Product description paragraphs, as published on flokefama.com. */
+  description?: string[];
   highlights: string[];
+  /** Where the highlights come from: 'brochure' = the Flokefama brochure. */
+  highlightsSource?: 'brochure';
   specs: Spec[];
   /** Spec values in the seed are indicative until checked against the manufacturer datasheet. */
   specsVerified: boolean;
@@ -43,6 +49,8 @@ export interface Product {
   featured?: boolean;
   /** Shown in “New arrivals” on the Shop (as on the current flokefama.com homepage). */
   newArrival?: boolean;
+  /** The product's path on the current flokefama.com (used to redirect old links). */
+  source?: string;
 }
 
 export interface Metric {

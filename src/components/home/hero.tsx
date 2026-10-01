@@ -14,7 +14,7 @@ import { Icon } from '@/components/ui/icon';
  */
 export function Hero() {
   return (
-    <section className="relative isolate overflow-hidden bg-brand-800 bg-[radial-gradient(120%_90%_at_78%_18%,#00592e_0%,#004d28_52%,#00321a_100%)] text-white">
+    <section className="relative isolate overflow-hidden bg-brand-800 bg-[radial-gradient(120%_90%_at_78%_18%,#1f6b3e_0%,#134228_52%,#0d301d_100%)] text-white">
       {/* Background: head office photo (pre-tinted green, faint), glow, light beam, wireframe network */}
       <div aria-hidden className="absolute inset-0 -z-10">
         <Image
@@ -25,9 +25,9 @@ export function Hero() {
           sizes="100vw"
           className="object-cover object-[50%_52%] opacity-30"
         />
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgb(0_50_26/0.85)_0%,rgb(0_50_26/0.55)_45%,rgb(0_50_26/0.15)_80%)]" />
-        <div className="absolute -right-40 -top-56 size-[860px] rounded-full bg-[radial-gradient(circle,rgb(63_160_109/0.3),transparent_62%)]" />
-        <div className="absolute -bottom-72 -left-40 size-[640px] rounded-full bg-[radial-gradient(circle,rgb(0_40_21/0.8),transparent_70%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgb(13_48_29/0.85)_0%,rgb(13_48_29/0.55)_45%,rgb(13_48_29/0.15)_80%)]" />
+        <div className="absolute -right-40 -top-56 size-[860px] rounded-full bg-[radial-gradient(circle,rgb(82_181_124/0.3),transparent_62%)]" />
+        <div className="absolute -bottom-72 -left-40 size-[640px] rounded-full bg-[radial-gradient(circle,rgb(10_38_22/0.8),transparent_70%)]" />
         <div className="absolute -top-20 right-[12%] h-[140%] w-40 rotate-[28deg] bg-gradient-to-b from-brand-300/25 via-brand-400/5 to-transparent blur-2xl" />
         <NetworkCanvas className="absolute inset-0 opacity-25 [mask-image:linear-gradient(90deg,transparent_0%,rgb(0_0_0/0.35)_38%,#000_62%)]" />
       </div>
@@ -37,7 +37,7 @@ export function Hero() {
         <div className="flex flex-col gap-6 lg:col-span-7">
           <Reveal delay={0.06}>
             <h1 className="display text-[clamp(42px,16px+4.2vw,84px)] uppercase leading-[0.95] text-white">
-              Ghana’s No.1 <span className="bg-[linear-gradient(100deg,#80c4a0_0%,#cce9d9_55%,#ffffff_100%)] bg-clip-text text-transparent">Healthcare Company.</span>
+              Ghana’s No.1 <span className="bg-[linear-gradient(100deg,#8fd1a9_0%,#d5ecdd_55%,#ffffff_100%)] bg-clip-text text-transparent">Healthcare Company.</span>
             </h1>
           </Reveal>
           <Reveal delay={0.14}>

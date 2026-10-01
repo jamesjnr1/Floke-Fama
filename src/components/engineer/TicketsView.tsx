@@ -142,8 +142,8 @@ function TicketDetail({ ticket: t, state, me, dispatch, onResolve, onOpenAsset }
   const [qty, setQty] = useState(1);
 
   return (
-    <div className="relative overflow-hidden rounded-[20px] border border-white/[0.06] bg-[#00522c] p-6 md:p-8">
-      <div aria-hidden className="absolute -right-20 -top-20 size-64 rounded-full bg-[radial-gradient(circle,rgb(25_133_82/0.18),transparent_65%)]" />
+    <div className="relative overflow-hidden rounded-[20px] border border-white/[0.06] bg-[#17261e] p-6 md:p-8">
+      <div aria-hidden className="absolute -right-20 -top-20 size-64 rounded-full bg-[radial-gradient(circle,rgb(46_154_91/0.18),transparent_65%)]" />
       <div className="relative">
         <div className="flex flex-wrap items-center gap-2">
           <span className="font-mono text-xs tracking-wider text-white/40">{t.id} · Opened {fmtTime(t.openedAt)}</span>
@@ -171,7 +171,7 @@ function TicketDetail({ ticket: t, state, me, dispatch, onResolve, onOpenAsset }
             const st = i < idx || t.status === 'resolved' ? 'done' : i === idx ? 'active' : 'pending';
             return (
               <li key={s.status} className="min-w-0">
-                <span className={cn('block h-1.5 rounded-full', st === 'done' ? 'bg-surgical' : st === 'active' ? 'bg-brand-400 shadow-[0_0_12px_rgb(63_160_109/0.7)]' : 'bg-white/10')} />
+                <span className={cn('block h-1.5 rounded-full', st === 'done' ? 'bg-surgical' : st === 'active' ? 'bg-brand-400 shadow-[0_0_12px_rgb(82_181_124/0.7)]' : 'bg-white/10')} />
                 <span className={cn('mt-2 block truncate text-[11px]', st === 'pending' ? 'text-white/35' : 'text-white/80')}>{s.label}</span>
               </li>
             );

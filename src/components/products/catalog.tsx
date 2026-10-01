@@ -14,14 +14,17 @@ import { cn } from '@/lib/utils';
  * Interactive B2B catalogue: category switching and keystroke search morph the grid in place
  * (no reloads). State is mirrored to the URL so every view is shareable.
  */
-export function Catalog({ products, categories, initialCategory, initialQuery }: {
+export function Catalog({ products, categories, initialCategory, initialQuery, initialType = null }: {
   products: Product[];
   categories: Category[];
   initialCategory: string | null;
   initialQuery: string;
+  /** One of the original flokefama.com shop categories ("Hematology Analyzers"), from ?type= */
+  initialType?: string | null;
 }) {
   const [category, setCategory] = useState<string | null>(initialCategory);
   const [query, setQuery] = useState(initialQuery);
+  const [type, setType] = useState<string | null>(initialType);
   const [remote, setRemote] = useState<string[] | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const bySlug = useMemo(() => new Map(products.map((p) => [p.slug, p])), [products]);
@@ -30,7 +33,7 @@ export function Catalog({ products, categories, initialCategory, initialQuery }:
   // Local search is synchronous; Algolia results arrive asynchronously.
   const localResults = useMemo(() => localSearch(query || ' ', category, products), [query, category, products]);
   const visibleSlugs = searchProvider === 'algolia' && query.trim() ? remote ?? [] : query.trim() ? localResults : products.filter((p) => !category || p.category === category).map((p) => p.slug);
-  const visible = visibleSlugs.map((s) => bySlug.get(s)).filter((p): p is Product => Boolean(p));
+  const visible = visibleSlugs.map((s) => bySlug.get(s)).filter((p): p is Product => Boolean(p) && (!type || Boolean(p?.types?.includes(type))));
 
   useEffect(() => {
     if (searchProvider !== 'algolia' || !query.trim()) return;
@@ -43,9 +46,10 @@ export function Catalog({ products, categories, initialCategory, initialQuery }:
     const params = new URLSearchParams();
     if (category) params.set('category', category);
     if (query.trim()) params.set('q', query.trim());
+    if (type) params.set('type', type);
     const next = `/products${params.size ? `?${params}` : ''}`;
     if (next !== `${location.pathname}${location.search}`) window.history.replaceState(null, '', next);
-  }, [category, query]);
+  }, [category, query, type]);
 
   // "/" or ⌘K focuses search
   useEffect(() => {
@@ -99,7 +103,14 @@ export function Catalog({ products, categories, initialCategory, initialQuery }:
       </div>
 
       <div className="flex items-center justify-between py-6 text-sm text-ink-3" aria-live="polite">
-        <p><span className="font-medium text-ink">{visible.length}</span> {visible.length === 1 ? 'product' : 'products'}{category ? ` in ${catBySlug.get(category)?.title}` : ''}</p>
+        <p className="flex flex-wrap items-center gap-2">
+          <span><span className="font-medium text-ink">{visible.length}</span> {visible.length === 1 ? 'product' : 'products'}{category ? ` in ${catBySlug.get(category)?.title}` : ''}</span>
+          {type && (
+            <button type="button" onClick={() => setType(null)} className="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-700 ring-1 ring-brand-100 hover:bg-brand-100" aria-label={`Remove filter: ${type}`}>
+              {type} <Icon name="fi-rr-cross-small" />
+            </button>
+          )}
+        </p>
         <p className="hidden text-xs sm:block">{searchProvider === 'algolia' ? 'Search by Algolia' : 'Instant search'}</p>
       </div>
 
@@ -139,7 +150,7 @@ function ProductCard({ product, category, wide }: { product: Product; category?:
     <Link
       href={`/products/${product.slug}`}
       scroll={false}
-      className="group flex h-full flex-col rounded-3xl border border-line bg-paper p-1.5 transition-all sm:rounded-4xl sm:p-2 duration-700 ease-out-expo hover:-translate-y-1 hover:border-transparent hover:shadow-[0_30px_60px_-30px_rgb(0_40_21/0.35)]"
+      className="group flex h-full flex-col rounded-3xl border border-line bg-paper p-1.5 transition-all sm:rounded-4xl sm:p-2 duration-700 ease-out-expo hover:-translate-y-1 hover:border-transparent hover:shadow-[0_30px_60px_-30px_rgb(11_21_16/0.35)]"
     >
       <ProductVisual product={product} category={category} sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" className={cn('rounded-[1.1rem] sm:rounded-[1.6rem]', wide ? 'aspect-[16/9] sm:aspect-auto sm:h-72' : 'aspect-square sm:aspect-[4/3]')} />
       <div className="flex flex-1 items-end justify-between gap-4 px-2.5 pb-3 pt-3 sm:px-4 sm:pb-4 sm:pt-5">
@@ -147,7 +158,7 @@ function ProductCard({ product, category, wide }: { product: Product; category?:
           <p className="label flex items-center gap-2">{product.brand}{product.newArrival && <span className="rounded-full bg-brand-600 px-2 py-0.5 text-[10px] font-medium normal-case tracking-normal text-white">New</span>}</p>
           <h2 className="mt-1 text-sm font-semibold leading-snug tracking-tight text-ink sm:mt-1.5 sm:text-lg">{product.name}</h2>
           <p className="mt-1 line-clamp-2 hidden text-sm font-light text-ink-3 sm:block">{product.summary}</p>
-          {product.specs[0] && <Badge className="mt-3 hidden sm:inline-flex">{product.specs[0].value}</Badge>}
+          {product.types?.[0] && <Badge className="mt-3 hidden sm:inline-flex">{product.types[0]}</Badge>}
         </div>
         <span className="hidden size-10 shrink-0 place-items-center rounded-full bg-mist text-ink transition-all sm:grid duration-500 group-hover:rotate-45 group-hover:bg-brand-600 group-hover:text-white">
           <Icon name="fi-rr-arrow-up-right" />
