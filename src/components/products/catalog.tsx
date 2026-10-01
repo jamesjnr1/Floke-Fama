@@ -103,7 +103,7 @@ export function Catalog({ products, categories, initialCategory, initialQuery }:
         <p className="hidden text-xs sm:block">{searchProvider === 'algolia' ? 'Search by Algolia' : 'Instant search'}</p>
       </div>
 
-      <motion.ul layout className="grid gap-4 pb-24 sm:grid-cols-2 lg:grid-cols-3">
+      <motion.ul layout className="grid grid-cols-2 gap-3 pb-16 sm:gap-4 sm:pb-24 lg:grid-cols-3">
         <AnimatePresence mode="popLayout">
           {visible.map((p, i) => (
             <motion.li
@@ -113,7 +113,7 @@ export function Catalog({ products, categories, initialCategory, initialQuery }:
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.96 }}
               transition={{ duration: 0.5, delay: Math.min(i, 8) * 0.03, ease: [0.16, 1, 0.3, 1] }}
-              className={cn(p.featured && !category && !query && i === 0 && 'sm:col-span-2')}
+              className={cn(p.featured && !category && !query && i === 0 && 'col-span-2')}
             >
               <ProductCard product={p} category={catBySlug.get(p.category)} wide={Boolean(p.featured && !category && !query && i === 0)} />
             </motion.li>
@@ -139,17 +139,17 @@ function ProductCard({ product, category, wide }: { product: Product; category?:
     <Link
       href={`/products/${product.slug}`}
       scroll={false}
-      className="group flex h-full flex-col rounded-4xl border border-line bg-paper p-2 transition-all duration-700 ease-out-expo hover:-translate-y-1 hover:border-transparent hover:shadow-[0_30px_60px_-30px_rgb(11_21_16/0.35)]"
+      className="group flex h-full flex-col rounded-3xl border border-line bg-paper p-1.5 transition-all sm:rounded-4xl sm:p-2 duration-700 ease-out-expo hover:-translate-y-1 hover:border-transparent hover:shadow-[0_30px_60px_-30px_rgb(11_21_16/0.35)]"
     >
-      <ProductVisual product={product} category={category} sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" className={cn('rounded-[1.6rem]', wide ? 'aspect-[16/9] sm:aspect-auto sm:h-72' : 'aspect-[4/3]')} />
-      <div className="flex flex-1 items-end justify-between gap-4 px-4 pb-4 pt-5">
+      <ProductVisual product={product} category={category} sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" className={cn('rounded-[1.1rem] sm:rounded-[1.6rem]', wide ? 'aspect-[16/9] sm:aspect-auto sm:h-72' : 'aspect-square sm:aspect-[4/3]')} />
+      <div className="flex flex-1 items-end justify-between gap-4 px-2.5 pb-3 pt-3 sm:px-4 sm:pb-4 sm:pt-5">
         <div>
           <p className="label">{product.brand}</p>
-          <h2 className="mt-1.5 text-lg font-semibold tracking-tight text-ink">{product.name}</h2>
-          <p className="mt-1 line-clamp-2 text-sm font-light text-ink-3">{product.summary}</p>
-          {product.specs[0] && <Badge className="mt-3">{product.specs[0].value}</Badge>}
+          <h2 className="mt-1 text-sm font-semibold leading-snug tracking-tight text-ink sm:mt-1.5 sm:text-lg">{product.name}</h2>
+          <p className="mt-1 line-clamp-2 hidden text-sm font-light text-ink-3 sm:block">{product.summary}</p>
+          {product.specs[0] && <Badge className="mt-3 hidden sm:inline-flex">{product.specs[0].value}</Badge>}
         </div>
-        <span className="grid size-10 shrink-0 place-items-center rounded-full bg-mist text-ink transition-all duration-500 group-hover:rotate-45 group-hover:bg-brand-600 group-hover:text-white">
+        <span className="hidden size-10 shrink-0 place-items-center rounded-full bg-mist text-ink transition-all sm:grid duration-500 group-hover:rotate-45 group-hover:bg-brand-600 group-hover:text-white">
           <Icon name="fi-rr-arrow-up-right" />
         </span>
       </div>

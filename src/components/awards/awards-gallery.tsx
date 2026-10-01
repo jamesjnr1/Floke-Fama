@@ -5,11 +5,11 @@ import { cn } from '@/lib/utils';
 
 /** Bento spans for five awards on a 6-column grid: feature + two stacked, then a 2 + 4 row. */
 const layout = [
-  { span: 'md:col-span-4 md:row-span-2', height: 'min-h-[520px]', sizes: '(min-width: 768px) 66vw, 100vw', feature: true },
-  { span: 'md:col-span-2', height: 'min-h-[300px]', sizes: '(min-width: 768px) 33vw, 100vw' },
-  { span: 'md:col-span-2', height: 'min-h-[300px]', sizes: '(min-width: 768px) 33vw, 100vw' },
-  { span: 'md:col-span-2', height: 'min-h-[380px]', sizes: '(min-width: 768px) 33vw, 100vw' },
-  { span: 'md:col-span-4', height: 'min-h-[380px]', sizes: '(min-width: 768px) 66vw, 100vw' },
+  { span: 'md:col-span-4 md:row-span-2', height: 'min-h-[340px] md:min-h-[520px]', sizes: '(min-width: 768px) 66vw, 100vw', feature: true },
+  { span: 'md:col-span-2', height: 'min-h-[340px] md:min-h-[300px]', sizes: '(min-width: 768px) 33vw, 100vw' },
+  { span: 'md:col-span-2', height: 'min-h-[340px] md:min-h-[300px]', sizes: '(min-width: 768px) 33vw, 100vw' },
+  { span: 'md:col-span-2', height: 'min-h-[340px] md:min-h-[380px]', sizes: '(min-width: 768px) 33vw, 100vw' },
+  { span: 'md:col-span-4', height: 'min-h-[340px] md:min-h-[380px]', sizes: '(min-width: 768px) 66vw, 100vw' },
 ];
 
 /** The actual awards, photographed: the No.1 healthcare ranking leads. */
@@ -21,7 +21,7 @@ export function AwardsGallery() {
           <p className="label">Awards &amp; recognition</p>
           <h2 className="display mt-4 max-w-3xl text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">Recognitions that reflect our impact.</h2>
         </Reveal>
-        <ul className="mt-12 grid gap-4 md:grid-cols-6">
+        <ul className="swipe-row mt-10 gap-4 md:mt-12 md:grid-cols-6">
           {awards.map((a, i) => {
             const l = layout[i] ?? layout[1];
             return (

@@ -32,7 +32,7 @@ export function Services() {
   };
 
   return (
-    <section id="services" className="scroll-mt-20 border-y border-line bg-paper py-24 md:py-32">
+    <section id="services" className="scroll-mt-20 border-y border-line bg-paper py-14 md:py-32">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal className="flex flex-wrap items-end justify-between gap-8">
           <div className="max-w-2xl">

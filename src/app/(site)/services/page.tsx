@@ -32,7 +32,7 @@ export default function ServicesPage() {
       </PageHero>
       <Services />
 
-      <section id="why-choose-us" className="scroll-mt-28 border-t border-line bg-paper py-24 md:py-32">
+      <section id="why-choose-us" className="scroll-mt-28 border-t border-line bg-paper py-14 md:py-32">
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
           <Reveal>
             <p className="label">Why choose Flokefama?</p>
@@ -40,7 +40,7 @@ export default function ServicesPage() {
               The official distributor of <span className="text-brand-600">Mindray, Biozek Holland and MR Global.</span>
             </h2>
           </Reveal>
-          <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <ul className="swipe-row mt-10 gap-4 md:mt-12 md:grid-cols-2 lg:grid-cols-4">
             {whyChoose.map((w, i) => (
               <li key={w.title}>
                 <Reveal delay={i * 0.06} className="h-full rounded-3xl border border-line bg-canvas p-7">

@@ -2,7 +2,7 @@
 
 The new [flokefama.com](https://flokefama.com): a composable, headless healthcare platform for Flokefama Company Limited, a Ghana Club 100 supplier of medical equipment and diagnostics (founded 2008).
 
-**Stack:** Next.js 15 (App Router) · TypeScript · Tailwind CSS v4 · Geist Sans/Mono · Radix / shadcn-style UI · Motion (Framer Motion) · Three.js · Sanity · Algolia · HubSpot · Vercel
+**Stack:** Next.js 15 (App Router) · TypeScript · Tailwind CSS v4 · Poppins + Geist Sans · Radix / shadcn-style UI · Motion (Framer Motion) · Three.js · Sanity · Algolia · HubSpot · Vercel
 
 → Full architecture: [docs/05-architecture.md](docs/05-architecture.md)
 

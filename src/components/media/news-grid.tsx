@@ -6,13 +6,13 @@ import { cn } from '@/lib/utils';
 /** Media Centre stories. Full articles move into Sanity with the CMS migration. */
 export function NewsGrid() {
   return (
-    <section id="news" className="scroll-mt-28 border-t border-line bg-canvas py-20 md:py-28">
+    <section id="news" className="scroll-mt-28 border-t border-line bg-canvas py-12 md:py-28">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal>
           <p className="label">Media centre · What’s new</p>
           <h2 className="display mt-4 text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">Latest from Flokefama.</h2>
         </Reveal>
-        <ul className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <ul className="swipe-row mt-10 gap-4 md:mt-12 md:grid-cols-2 lg:grid-cols-3">
           {news.map((n, i) => (
             <li key={n.id} className={cn(i === 0 && 'lg:col-span-2')}>
               <Reveal delay={Math.min(i, 5) * 0.05} className="h-full">
