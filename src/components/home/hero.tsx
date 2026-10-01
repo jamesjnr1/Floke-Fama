@@ -11,7 +11,7 @@ import { Icon } from '@/components/ui/icon';
  * (Explore Solutions → shop, Contact Us → contact, as on the current site).
  * Right (span 5): 3D network globe with the published figures, over a faint wireframe network.
  */
-export function Hero({ visual }: { visual?: 'globe' | 'capsules' | 'molecule' | 'equipment' } = {}) {
+export function Hero({ visual }: { visual?: 'globe' | 'capsule' } = {}) {
   return (
     <section className="relative isolate overflow-hidden bg-midnight text-white">
       {/* Background: glow, light beam, wireframe network */}
