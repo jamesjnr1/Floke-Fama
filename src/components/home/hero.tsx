@@ -23,7 +23,7 @@ export function Hero() {
         <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-midnight to-transparent" />
       </div>
 
-      <div className="mx-auto grid min-h-[100svh] max-w-[1280px] grid-cols-1 items-center gap-12 px-5 pb-20 pt-36 md:px-16 lg:grid-cols-12 lg:gap-8 lg:pb-[120px] lg:pt-[168px]">
+      <div className="mx-auto grid lg:min-h-[100svh] max-w-[1280px] grid-cols-1 items-center gap-8 px-5 pb-12 pt-28 md:gap-12 md:px-16 md:pb-20 md:pt-36 lg:grid-cols-12 lg:gap-8 lg:pb-[120px] lg:pt-[168px]">
         {/* Column Left (span 7): vertical, gap 24px */}
         <div className="flex flex-col gap-6 lg:col-span-7">
           <Reveal delay={0.06}>

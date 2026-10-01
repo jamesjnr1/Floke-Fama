@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from 'next';
-import { GeistMono } from 'geist/font/mono';
 import { GeistSans } from 'geist/font/sans';
+import localFont from 'next/font/local';
 import { Toaster } from 'sonner';
 import { ServiceWorkerRegister } from '@/components/layout/sw-register';
 import { contact } from '@/data/seed';
@@ -8,6 +8,18 @@ import { allowIndexing, siteUrl } from '@/lib/utils';
 import '@/styles/uicons/uicons.css';
 import './globals.css';
 
+/** Poppins (self-hosted): the main typeface for headings and body text. */
+const poppins = localFont({
+  src: [
+    { path: '../fonts/poppins-300.woff2', weight: '300', style: 'normal' },
+    { path: '../fonts/poppins-400.woff2', weight: '400', style: 'normal' },
+    { path: '../fonts/poppins-500.woff2', weight: '500', style: 'normal' },
+    { path: '../fonts/poppins-600.woff2', weight: '600', style: 'normal' },
+    { path: '../fonts/poppins-700.woff2', weight: '700', style: 'normal' },
+  ],
+  variable: '--font-poppins',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -36,7 +48,7 @@ const organizationLd = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en-GH" className={`${GeistSans.variable} ${GeistMono.variable}`}>
+    <html lang="en-GH" className={`${poppins.variable} ${GeistSans.variable}`}>
       <body className="font-sans">
         <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-brand-600 focus:px-4 focus:py-2 focus:text-white">
           Skip to content

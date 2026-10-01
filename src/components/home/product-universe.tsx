@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 
 export function ProductUniverse({ categories }: { categories: Category[]; products?: Product[] }) {
   return (
-    <section className="relative py-28 md:py-40">
+    <section className="relative py-14 md:py-40">
       <div className="grid-fade-light absolute inset-x-0 top-0 h-[600px]" />
       <div className="relative mx-auto max-w-[1280px] px-5 md:px-10">
         <div className="flex flex-wrap items-end justify-between gap-8">
@@ -18,12 +18,12 @@ export function ProductUniverse({ categories }: { categories: Category[]; produc
           </Button>
         </div>
 
-        <div className="mt-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
+        <div className="swipe-row mt-10 gap-4 md:mt-16 md:grid-cols-2 lg:grid-cols-6">
           {categories.map((c, i) => (
             <Reveal key={c.slug} delay={i * 0.06} className={cn(i < 2 ? 'lg:col-span-3' : 'lg:col-span-2')}>
               <Link
                 href={`/products?category=${c.slug}`}
-                className="group relative flex h-full min-h-[240px] flex-col justify-between overflow-hidden rounded-4xl border border-line bg-paper p-7 transition-all duration-700 ease-out-expo hover:-translate-y-1 hover:border-transparent hover:shadow-[0_30px_60px_-30px_rgb(11_21_16/0.35)]"
+                className="group relative flex h-full min-h-[220px] md:min-h-[240px] flex-col justify-between overflow-hidden rounded-4xl border border-line bg-paper p-7 transition-all duration-700 ease-out-expo hover:-translate-y-1 hover:border-transparent hover:shadow-[0_30px_60px_-30px_rgb(11_21_16/0.35)]"
               >
                 <Icon name={c.icon} className="pointer-events-none absolute -bottom-10 -right-6 text-[11rem] text-brand-600/[0.07] transition-[transform,color] duration-1000 ease-out-expo group-hover:-rotate-6 group-hover:scale-110 group-hover:text-brand-600/[0.12]" />
                 <div className="relative mt-auto">

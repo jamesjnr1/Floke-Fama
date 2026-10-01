@@ -84,7 +84,7 @@ export function Navbar() {
             {anchors.map((a) => {
               const active = isActive(pathname, a);
               const itemClass = cn(
-                'relative flex items-center gap-1.5 rounded-full px-3 py-2 text-sm transition-colors duration-300 focus-visible:outline-none',
+                'relative flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-2 text-[13px] transition-colors 2xl:px-3 2xl:text-sm duration-300 focus-visible:outline-none',
                 dark ? 'text-white/70 hover:text-white' : 'text-ink-2 hover:text-ink',
                 active && (dark ? 'text-white' : 'text-ink'),
               );
@@ -180,14 +180,14 @@ export function Navbar() {
         <div className="flex items-center gap-3">
           <Link
             href="/quote"
-            className="hidden items-center rounded-xl border border-white/15 px-4 py-3 text-sm font-medium text-white transition hover:border-white/30 hover:bg-white/[0.06] xl:inline-flex"
+            className="hidden items-center whitespace-nowrap rounded-xl border border-white/15 px-3.5 py-3 text-[13px] font-medium text-white 2xl:px-4 2xl:text-sm transition hover:border-white/30 hover:bg-white/[0.06] xl:inline-flex"
           >
             Get a Quote
           </Link>
           {/* CTA Button: padding 12px 24px, brand green, radius 12px */}
           <Link
             href="/portal"
-            className="group hidden items-center gap-2 rounded-xl bg-brand-600 px-6 py-3 text-sm font-medium text-white shadow-[0_0_0_1px_rgb(143_209_169/0.25),0_10px_30px_-10px_rgb(46_154_91/0.8)] transition hover:bg-brand-700 sm:inline-flex"
+            className="group hidden items-center gap-2 whitespace-nowrap rounded-xl bg-brand-600 px-4 py-3 text-[13px] font-medium text-white 2xl:px-6 2xl:text-sm shadow-[0_0_0_1px_rgb(143_209_169/0.25),0_10px_30px_-10px_rgb(46_154_91/0.8)] transition hover:bg-brand-700 sm:inline-flex"
           >
             <span className="hidden 2xl:inline">Client Portal Access</span><span className="2xl:hidden">Client Portal</span> <span aria-hidden className="transition-transform duration-500 group-hover:translate-x-1">→</span>
           </Link>

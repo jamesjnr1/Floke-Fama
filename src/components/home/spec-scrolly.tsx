@@ -94,15 +94,15 @@ export function SpecScrolly() {
       </div>
 
       {/* Mobile / tablet */}
-      <div className="px-5 py-24 md:px-10 lg:hidden">
+      <div className="px-5 py-14 md:px-10 lg:hidden">
         <p className="label !text-brand-300">In-vitro diagnostics · Official Mindray distributor</p>
         <h2 className="display mt-4 text-5xl text-white">Diagnostics you can trust.</h2>
-        <div className="relative mt-8 aspect-[4/3]">
+        <div className="relative mt-6 aspect-[16/10]">
           <Image src="/images/bs-240-stage.webp" alt="" fill sizes="100vw" className="object-contain" />
         </div>
-        <ol className="mt-8 divide-y divide-white/10 border-y border-white/10">
+        <ol className="swipe-row mt-6">
           {chapters.map((c) => (
-            <li key={c.label} className="py-5">
+            <li key={c.label} className="rounded-3xl border border-white/10 bg-white/[0.04] p-5">
               <p className="label !text-white/40">{c.label}</p>
               <p className="mt-2 text-lg font-semibold text-white">{c.title}</p>
               <p className="mt-1 text-sm font-light text-white/60">{c.body}</p>

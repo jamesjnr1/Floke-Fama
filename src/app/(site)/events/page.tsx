@@ -26,7 +26,7 @@ export default function EventsPage() {
         lead="Celebrations, community programmes and industry events from across the Flokefama family."
       />
 
-      <section className="bg-paper py-24 md:py-32">
+      <section className="bg-paper py-14 md:py-32">
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
           <Reveal className="flex flex-wrap items-end justify-between gap-4">
             <div>
