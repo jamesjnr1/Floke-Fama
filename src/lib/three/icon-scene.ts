@@ -298,41 +298,85 @@ function build(icon: HeroIcon): Built {
         const fanGeo = new BufferGeometry().setFromPoints(outline);
         const fanMat = new LineBasicMaterial({ color: MINT, transparent: true, opacity: 0.55, depthWrite: false });
         screen.add(new Line(fanGeo, fanMat));
-        // Speckle, denser in a soft band (the tissue), with a dark oval inside it
+        // The image: speckle plus a few bright tissue layers, with a dark oval (an organ) in the middle.
+        // Each dot keeps its angle so it can light up as the beam passes, like a live scan.
         const speck: number[] = [];
+        const angles: number[] = [];
+        const base: number[] = [];
         let seed = 7;
         const rand = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
-        for (let i = 0; i < 520; i++) {
-          const ang = (rand() * 2 - 1) * A * 0.96;
-          const r = 0.22 + rand() * (R - 0.26);
+        const oval = (p: Vector3) => ((p.x - 0.1) / 0.36) ** 2 + ((p.y - (apex.y - R * 0.62)) / 0.2) ** 2;
+        const push = (ang: number, r: number, b: number) => {
           const p = at(ang, r);
-          const inOval = ((p.x - 0.12) / 0.34) ** 2 + ((p.y - (apex.y - R * 0.6)) / 0.2) ** 2 < 1;
-          if (inOval || rand() > 0.35 + 0.5 * Math.exp(-(((r / R) - 0.55) ** 2) / 0.05)) continue;
+          if (oval(p) < 1) return;
           speck.push(p.x, p.y, p.z);
+          angles.push(ang);
+          base.push(b);
+        };
+        for (let i = 0; i < 420; i++) push((rand() * 2 - 1) * A * 0.96, 0.24 + rand() * (R - 0.28), 0.35);
+        for (const [depth, wobble] of [[0.32, 0.03], [0.5, 0.05], [0.86, 0.04]] as const)
+          for (let i = 0; i < 70; i++) {
+            const ang = (i / 69 - 0.5) * 2 * A * 0.92;
+            push(ang, R * depth + Math.sin(ang * 9 + depth * 20) * wobble, 0.75);
+          }
+        for (let i = 0; i < 46; i++) {
+          // bright rim of the oval
+          const t = (i / 46) * Math.PI * 2;
+          const p = new Vector3(0.1 + Math.cos(t) * 0.38, apex.y - R * 0.62 + Math.sin(t) * 0.22, z);
+          speck.push(p.x, p.y, p.z);
+          angles.push(Math.atan2(p.x - apex.x, apex.y - p.y));
+          base.push(0.85);
         }
         const speckGeo = new BufferGeometry();
         speckGeo.setAttribute('position', new BufferAttribute(new Float32Array(speck), 3));
-        const speckMat = new PointsMaterial({ color: '#d7f2e1', size: 0.03, transparent: true, opacity: 0.75, depthWrite: false });
+        const speckCol = new Float32Array(speck.length);
+        speckGeo.setAttribute('color', new BufferAttribute(speckCol, 3));
+        const speckMat = new PointsMaterial({ vertexColors: true, size: 0.034, transparent: true, depthWrite: false, blending: AdditiveBlending });
         screen.add(new Points(speckGeo, speckMat));
-        const beamGeo = new BufferGeometry().setFromPoints([at(0, 0.18), at(0, R)]);
-        const beamMat = new LineBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.9, depthWrite: false });
-        const beam = new Line(beamGeo, beamMat);
-        screen.add(beam);
-        // The logo's red dot: the trackball on the keyboard
+        const beamGeo = new BufferGeometry().setFromPoints([at(0, 0.05), at(0, R)]);
+        const beamMat = new LineBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.85, depthWrite: false });
+        screen.add(new Line(beamGeo, beamMat));
+        // The logo's red dot: the transducer at the top of the fan, where the beam starts
         const tex = glowTexture('rgba(228,40,60,1)');
         const mat = new SpriteMaterial({ map: tex, transparent: true, blending: AdditiveBlending, depthWrite: false });
-        const ball = new Sprite(mat);
-        ball.position.copy(new Vector3(0, 0.17, 0.35).applyMatrix4(baseM));
-        g.add(ball);
-        [fanGeo, fanMat, speckGeo, speckMat, beamGeo, beamMat, tex, mat].forEach(track);
+        const source = new Sprite(mat);
+        source.position.copy(apex).setZ(z + 0.01);
+        screen.add(source);
+        const coreGeo = new BufferGeometry().setFromPoints([source.position.clone()]);
+        const coreMat = new PointsMaterial({ color: RED, size: 0.09, transparent: true, depthWrite: false });
+        screen.add(new Points(coreGeo, coreMat));
+        // Keyboard: a trackball ring and two rows of keys
+        const deck = new Group();
+        deck.applyMatrix4(baseM);
+        g.add(deck);
+        const ringPts = Array.from({ length: 49 }, (_, k) => new Vector3(Math.cos((k / 48) * Math.PI * 2) * 0.17, 0.16, 0.38 + Math.sin((k / 48) * Math.PI * 2) * 0.17));
+        const ringGeo = new BufferGeometry().setFromPoints(ringPts);
+        const lineMat = new LineBasicMaterial({ color: MINT, transparent: true, opacity: 0.7, depthWrite: false });
+        deck.add(new Line(ringGeo, lineMat));
+        const keys: number[] = [];
+        for (const zz of [-0.35, -0.12]) for (let x = -1.0; x <= 1.0 + 1e-6; x += 0.2) keys.push(x, 0.16, zz);
+        const keyGeo = new BufferGeometry();
+        keyGeo.setAttribute('position', new BufferAttribute(new Float32Array(keys), 3));
+        const keyMat = new PointsMaterial({ color: '#ffffff', size: 0.06, transparent: true, opacity: 0.85, depthWrite: false });
+        deck.add(new Points(keyGeo, keyMat));
+        [speckGeo, speckMat, beamGeo, beamMat, tex, mat, coreGeo, coreMat, ringGeo, lineMat, keyGeo, keyMat].forEach(track);
+        const tint = new Color('#d7f2e1');
         return (t: number) => {
-          const ang = Math.sin(t * 1.4) * A * 0.95;
+          const ang = Math.sin(t * 1.2) * A * 0.95;
           const pos = beamGeo.getAttribute('position') as BufferAttribute;
-          const a0 = at(ang, 0.18), a1 = at(ang, R);
+          const a0 = at(ang, 0.05), a1 = at(ang, R);
           pos.setXYZ(0, a0.x, a0.y, a0.z);
           pos.setXYZ(1, a1.x, a1.y, a1.z);
           pos.needsUpdate = true;
-          ball.scale.setScalar(0.4 + 0.15 * Math.sin(t * 3));
+          for (let i = 0; i < angles.length; i++) {
+            const lit = Math.exp(-((angles[i] - ang) ** 2) / 0.03);
+            const v = base[i] * (0.45 + 0.75 * lit);
+            speckCol[i * 3] = tint.r * v;
+            speckCol[i * 3 + 1] = tint.g * v;
+            speckCol[i * 3 + 2] = tint.b * v;
+          }
+          speckGeo.attributes.color.needsUpdate = true;
+          source.scale.setScalar(0.42 + 0.14 * Math.sin(t * 3));
         };
       },
     };
