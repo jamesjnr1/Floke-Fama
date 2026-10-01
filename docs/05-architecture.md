@@ -18,14 +18,14 @@
 | Frontend | **Next.js 15.5** App Router, React 19, TypeScript (strict) | `src/app` |
 | Styling | **Tailwind CSS v4** (CSS-first tokens) + shadcn-style components on **Radix** primitives | `src/app/globals.css`, `src/components/ui` |
 | Motion | **Motion** (Framer Motion's current package, `motion/react`) | throughout, e.g. `layoutId` morphs |
-| 3D | Three.js wireframe-polyhedra network behind the hero, lazy chunk, pauses off-screen | `src/lib/three/network-scene.ts` |
+| 3D | Three.js dotted capsule in the hero (points and lines only), lazy chunk, pauses off-screen, still frame with reduced motion | `src/lib/three/capsule-scene.ts` |
 | CMS | **Sanity** (headless), falls back to seed data when not configured | `src/lib/sanity.ts`, `src/lib/data.ts`, `studio/` |
 | Search | **Algolia** (lite client), falls back to a local scorer | `src/lib/search.ts`, `scripts/algolia-sync.ts` |
-| Leads | Validated route handler → **HubSpot** Forms API | `src/app/api/quote/route.ts` |
+| Leads | Validated route handlers (quote, contact, portal registration) → **HubSpot** Forms API, with email/WhatsApp hand-off when not configured | `src/app/api/*/route.ts`, `src/lib/crm.ts` |
 | Toasts | **Sonner**, clinical styling | `src/app/layout.tsx` |
 | Offline | Hand-written service worker + `/offline` emergency page | `public/sw.js`, `src/app/offline` |
 | Hosting | **Vercel** (global CDN, preview deploy per PR) | CI: `.github/workflows/ci.yml` |
-| Fonts / icons | Geist Sans + Geist Mono (`geist` package, `next/font`); Flaticon UIcons subset (~6 KB) | `src/app/layout.tsx`, `src/styles/uicons` |
+| Fonts / icons / logo | Poppins (self-hosted) + Geist Sans (`geist` package, `next/font`); Flaticon UIcons subset (~6 KB); official vector logo from the company brochure | `src/app/layout.tsx`, `src/styles/uicons`, `src/components/layout/logo.tsx` |
 
 ## Design principle: works with zero config
 Every integration is optional at runtime. With no environment variables the site runs entirely on `src/data/seed.ts`: search runs locally and quote requests are validated and logged. Add keys one at a time as Flokefama's accounts are created (`.env.example`).
@@ -110,7 +110,7 @@ Launch day (only when approved) is a separate, planned task: back up the live si
 |---|---|
 | Lint + strict type-check + production build in CI | ✅ |
 | Next-gen images (`next/image`, AVIF/WebP) | ✅ configured; real product photography still needed |
-| Responsive, no horizontal overflow (390 / 1440 px, all routes) | ✅ `npm run qa` |
+| Responsive, no horizontal overflow, header contents fit the bar (390 / 1440 / 1600 px, all routes) | ✅ `npm run qa` |
 | Keyboard and screen-reader support via Radix (dialogs, tabs), skip link, focus rings, reduced motion | ✅ baseline; a full WCAG 2.1 AA audit with axe and a manual screen-reader pass is still to do |
 | Offline page + service worker | ✅ |
 | Security headers (HSTS, nosniff, frame, referrer, permissions) | ✅ |
