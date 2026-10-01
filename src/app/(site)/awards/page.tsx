@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import { AwardsGallery } from '@/components/awards/awards-gallery';
-import { Testimonials } from '@/components/home/testimonials';
 import { PageHero } from '@/components/layout/page-hero';
 
 export const metadata: Metadata = {
@@ -18,7 +17,6 @@ export default function AwardsPage() {
         lead="Our commitment to excellence, innovation and service has earned the trust of countless healthcare institutions, and prestigious awards and honours along the way."
       />
       <AwardsGallery />
-      <Testimonials />
     </>
   );
 }
