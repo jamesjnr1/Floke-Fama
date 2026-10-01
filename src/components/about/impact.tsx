@@ -57,7 +57,7 @@ export function Impact({ metrics }: { metrics: Metric[] }) {
 
         {/* The figures */}
         <Reveal delay={0.08}>
-          <dl className="mt-16 grid grid-cols-2 gap-px overflow-hidden rounded-4xl border border-white/10 bg-white/10 lg:grid-cols-4">
+          <dl className="mt-10 grid md:mt-16 grid-cols-2 gap-px overflow-hidden rounded-4xl border border-white/10 bg-white/10 lg:grid-cols-4">
             {metrics.slice(0, 4).map((m, i) => (
               <div key={m.label} className="flex flex-col-reverse justify-end gap-3 bg-midnight p-6 md:p-8">
                 <dt className="text-sm leading-snug">
@@ -73,7 +73,7 @@ export function Impact({ metrics }: { metrics: Metric[] }) {
         </Reveal>
 
         {/* The stories behind them */}
-        <ul className="mt-6 grid gap-4 md:grid-cols-2">
+        <ul className="swipe-row mt-6 gap-4 md:grid-cols-2">
           {stories.map((s, i) => {
             const card = (
               <>

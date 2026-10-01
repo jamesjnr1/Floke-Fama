@@ -7,7 +7,7 @@ import { branches, contact, maps } from '@/data/seed';
 /** Head office photo, live map and one-tap directions, plus the branch network. */
 export function VisitUs({ id = 'visit', photo = true }: { id?: string; photo?: boolean }) {
   return (
-    <section id={id} className="scroll-mt-28 bg-paper py-24 md:py-32">
+    <section id={id} className="scroll-mt-28 bg-paper py-14 md:py-32">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal className="flex flex-wrap items-end justify-between gap-6">
           <div>
@@ -21,7 +21,7 @@ export function VisitUs({ id = 'visit', photo = true }: { id?: string; photo?: b
           {/* The building */}
           {photo && (
           <Reveal className="lg:col-span-5">
-            <figure className="group relative isolate h-full min-h-[440px] overflow-hidden rounded-5xl bg-midnight">
+            <figure className="group relative isolate h-full min-h-[280px] overflow-hidden rounded-5xl md:min-h-[440px] bg-midnight">
               <Image
                 src="/images/head-office.webp"
                 alt="The Floke Company head office building in Santa Maria, Accra"
@@ -42,7 +42,7 @@ export function VisitUs({ id = 'visit', photo = true }: { id?: string; photo?: b
           {/* The map + directions */}
           <Reveal delay={0.08} className={photo ? 'lg:col-span-7' : 'lg:col-span-12'}>
             <div className="flex h-full flex-col overflow-hidden rounded-5xl border border-line bg-canvas">
-              <div className="relative min-h-[320px] flex-1 overflow-hidden">
+              <div className="relative min-h-[260px] flex-1 overflow-hidden md:min-h-[320px]">
                 {/* Shown while the map loads (or if it can't): a quiet grid with the head-office pin */}
                 <div aria-hidden className="absolute inset-0 grid place-items-center bg-canvas [background-image:linear-gradient(rgb(11_21_16/0.05)_1px,transparent_1px),linear-gradient(90deg,rgb(11_21_16/0.05)_1px,transparent_1px)] [background-size:32px_32px]">
                   <span className="relative grid size-14 place-items-center rounded-full bg-brand-600 text-xl text-white shadow-[0_0_0_10px_rgb(37_120_71/0.12)]"><Icon name="fi-rr-marker" /></span>
@@ -79,14 +79,14 @@ export function VisitUs({ id = 'visit', photo = true }: { id?: string; photo?: b
 
         {/* Branches */}
         <Reveal delay={0.12}>
-          <ul className="mt-4 grid grid-cols-2 gap-px overflow-hidden rounded-4xl border border-line bg-line sm:grid-cols-3 lg:grid-cols-6">
+          <ul className="mt-4 grid grid-cols-3 gap-px overflow-hidden rounded-4xl border border-line bg-line lg:grid-cols-6">
             {branches.map((b) => (
               <li key={b.name} className="bg-paper">
                 <a
                   href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`Flokefama ${b.name} ${b.detail} Ghana`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group block h-full p-5 transition hover:bg-canvas"
+                  className="group block h-full p-3 transition hover:bg-canvas sm:p-5"
                 >
                   <span className="flex items-center justify-between">
                     <Icon name="fi-rr-marker" className="text-brand-600" />
