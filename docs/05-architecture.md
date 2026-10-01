@@ -18,7 +18,7 @@
 | Frontend | **Next.js 15.5** App Router, React 19, TypeScript (strict) | `src/app` |
 | Styling | **Tailwind CSS v4** (CSS-first tokens) + shadcn-style components on **Radix** primitives | `src/app/globals.css`, `src/components/ui` |
 | Motion | **Motion** (Framer Motion's current package, `motion/react`) | throughout, e.g. `layoutId` morphs |
-| 3D | Three.js dotted capsule in the hero (white and green halves, a sweeping band of light, the logo's red dot on its seam, orbit rings with light pulses). Points and lines only, lazy chunk, pauses off-screen, still frame with reduced motion | `src/lib/three/capsule-scene.ts` |
+| 3D | Three.js dotted capsule in the hero (points and lines only), lazy chunk, pauses off-screen, still frame with reduced motion | `src/lib/three/capsule-scene.ts` |
 | CMS | **Sanity** (headless), falls back to seed data when not configured | `src/lib/sanity.ts`, `src/lib/data.ts`, `studio/` |
 | Search | **Algolia** (lite client), falls back to a local scorer | `src/lib/search.ts`, `scripts/algolia-sync.ts` |
 | Leads | Validated route handlers (quote, contact, portal registration) → **HubSpot** Forms API, with email/WhatsApp hand-off when not configured | `src/app/api/*/route.ts`, `src/lib/crm.ts` |
