@@ -1,6 +1,7 @@
 /**
  * Seed content used when Sanity is not configured (local dev, previews) and as the
- * initial import into Sanity. Everything here comes from flokefama.com as of Sep 2026.
+ * initial import into Sanity. Everything here comes from flokefama.com as of Sep 2026
+ * (product names from the 92-item shop; only a sample is seeded).
  *
  * CLIENT TO CONFIRM before launch (see docs/01-site-audit.md §5):
  *  - Product specs are marked `specsVerified: false` until checked against manufacturer datasheets.
@@ -52,27 +53,20 @@ const datasheet = (name: string) => [{ title: `${name} datasheet`, kind: 'datash
 
 export const products: Product[] = [
   {
-    slug: 'mindray-bs-240',
-    name: 'BS-240 Chemistry Analyser',
+    slug: 'mindray-semi-auto-chemistry',
+    name: 'Semi-Automated Chemistry Analyser',
     brand: 'Mindray',
     category: 'in-vitro-diagnostics',
-    summary: 'Compact, fully automated clinical chemistry for hospital and private laboratories.',
-    image: '/images/bs-240-stage.webp',
-    highlights: ['Fully automated bench-top chemistry', 'Refrigerated reagent compartment', 'Optional ISE module'],
-    specs: [
-      { label: 'Throughput', value: 'Up to 200 tests/hour (330 with ISE)' },
-      { label: 'Sample positions', value: '40' },
-      { label: 'Reagent positions', value: '40, refrigerated' },
-      { label: 'Format', value: 'Bench-top' },
-    ],
+    summary: 'Semi-automated clinical chemistry analyser for laboratories that want Mindray accuracy with manual sample handling.',
+    highlights: ['Semi-automated clinical chemistry', 'Mindray reagents and controls', 'Installed and calibrated by Flokefama'],
+    specs: [{ label: 'Format', value: 'Semi-automated' }],
     specsVerified: false,
     compatibility: [
       { item: 'Mindray original reagents', status: 'validated' },
-      { item: 'Mindray calibrators & controls', status: 'validated' },
       { item: 'Third-party reagents', status: 'consult', note: 'Speak to our applications team' },
     ],
-    documents: datasheet('BS-240'),
-    tags: ['biochemistry', 'chemistry analyser', 'clinical chemistry', 'automated'],
+    documents: datasheet('Semi-automated chemistry analyser'),
+    tags: ['biochemistry', 'chemistry analyser', 'clinical chemistry', 'semi-automated'],
     featured: true,
   },
   {
@@ -110,6 +104,30 @@ export const products: Product[] = [
     specsVerified: false,
     documents: datasheet('BC-3000Plus'),
     tags: ['haematology', 'cbc', '3-part'],
+  },
+  {
+    slug: 'mindray-bc-30s',
+    name: 'BC-30s Haematology Analyser',
+    brand: 'Mindray',
+    category: 'in-vitro-diagnostics',
+    summary: 'Compact Mindray haematology analyser for clinics and hospital laboratories.',
+    highlights: ['Complete blood count', 'Compact bench-top unit', 'Mindray reagents'],
+    specs: [{ label: 'Format', value: 'Bench-top' }],
+    specsVerified: false,
+    documents: datasheet('BC-30s'),
+    tags: ['haematology', 'cbc'],
+  },
+  {
+    slug: 'mindray-bc-20s',
+    name: 'BC-20s Haematology Analyser',
+    brand: 'Mindray',
+    category: 'in-vitro-diagnostics',
+    summary: 'Entry-level Mindray haematology analyser for smaller laboratories.',
+    highlights: ['Complete blood count', 'Simple operation', 'Mindray reagents'],
+    specs: [{ label: 'Format', value: 'Bench-top' }],
+    specsVerified: false,
+    documents: datasheet('BC-20s'),
+    tags: ['haematology', 'cbc'],
   },
   {
     slug: 'olympus-cx23',
@@ -333,19 +351,19 @@ export const distributors = ['Mindray', 'Biozek Holland', 'MR Global'];
 
 /** Technology partners (manufacturers Flokefama officially distributes). */
 export const technologyPartners = [
-  { name: 'Mindray', logo: '/images/partners/mindray.png', role: 'Official distributor' },
-  { name: 'Biozek Holland', logo: '/images/partners/biozek.png', role: 'Official distributor' },
-  { name: 'MR Global', logo: null, role: 'Official distributor' },
+  { name: 'Mindray', logo: '/images/partners/mindray.webp', w: 800, h: 190, role: 'Official distributor' },
+  { name: 'Biozek Holland', logo: '/images/partners/biozek.webp', w: 600, h: 160, role: 'Official distributor' },
+  { name: 'MR Global', logo: null, w: 0, h: 0, role: 'Official distributor' },
 ];
 
 /** Clientele shown on the current flokefama.com "Our Partners & Clientele" strip. */
 export const clients = [
-  { name: 'The Trust Hospital', logo: '/images/partners/trust-hospital.jpg' },
-  { name: 'Korle Bu Teaching Hospital', logo: '/images/partners/korle-bu.png' },
-  { name: 'Komfo Anokye Teaching Hospital', logo: '/images/partners/kath.webp' },
-  { name: 'University of Ghana Medical Centre', logo: '/images/partners/ugmc.png' },
-  { name: 'Euracare', logo: '/images/partners/euracare.png' },
-  { name: 'LEKMA Hospital', logo: '/images/partners/lekma.png' },
+  { name: 'The Trust Hospital', logo: '/images/partners/trust-hospital.webp', w: 320, h: 134 },
+  { name: 'Korle Bu Teaching Hospital', logo: '/images/partners/korle-bu.webp', w: 800, h: 763 },
+  { name: 'Komfo Anokye Teaching Hospital', logo: '/images/partners/kath.webp', w: 512, h: 512 },
+  { name: 'University of Ghana Medical Centre', logo: '/images/partners/ugmc.webp', w: 800, h: 468 },
+  { name: 'Euracare', logo: '/images/partners/euracare.webp', w: 218, h: 50 },
+  { name: 'LEKMA Hospital', logo: '/images/partners/lekma.webp', w: 267, h: 335 },
 ];
 
 export const branches = [
@@ -397,10 +415,10 @@ export const testimonials = [
 
 /** Core values, from the current About page. */
 export const coreValues = [
-  { title: 'Honesty', icon: 'fi-rr-shield-check', text: 'Transparent and truthful in all business dealings, with clear communication and realistic expectations. We build trust by consistently delivering what we promise.' },
-  { title: 'Integrity', icon: 'fi-rr-badge-check', text: 'Strong ethical standards and consistent quality and service: prompt delivery, met deadlines and a swift response to customer needs.' },
-  { title: 'Innovation', icon: 'fi-rr-bulb', text: 'Continuously embracing new ideas, technologies and solutions to enhance efficiency and meet evolving needs, with cutting-edge solutions and exceptional support.' },
-  { title: 'Respect', icon: 'fi-rr-users', text: 'Valuing people through professionalism, inclusivity and strong relationships, treating every client, partner and team member with care and attentiveness.' },
+  { title: 'Honesty', icon: 'fi-rr-handshake', line: 'We deliver what we promise.', text: 'Transparent and truthful in all business dealings, with clear communication and realistic expectations. We build trust by consistently delivering what we promise.' },
+  { title: 'Integrity', icon: 'fi-rr-balance-scale-left', line: 'The same standard, every time.', text: 'Strong ethical standards and consistent quality and service: prompt delivery, met deadlines and a swift response to customer needs.' },
+  { title: 'Innovation', icon: 'fi-rr-lightbulb-on', line: 'Better ways to deliver care.', text: 'Continuously embracing new ideas, technologies and solutions to enhance efficiency and meet evolving needs, with cutting-edge solutions and exceptional support.' },
+  { title: 'Respect', icon: 'fi-rr-hands-heart', line: 'Every person, treated with care.', text: 'Valuing people through professionalism, inclusivity and strong relationships, treating every client, partner and team member with care and attentiveness.' },
 ] as const;
 
 /** Services, as listed on the current Services and About pages. */

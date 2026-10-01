@@ -52,7 +52,7 @@ export const tickets: Ticket[] = [
   },
   {
     id: 'TK-1039',
-    asset: 'Mindray BS-240',
+    asset: 'Mindray chemistry analyser',
     title: 'Quarterly preventive maintenance',
     status: 'scheduled',
     priority: 'routine',
@@ -93,10 +93,9 @@ export const tickets: Ticket[] = [
 export const assets: Asset[] = [
   {
     id: 'AS-01',
-    name: 'BS-240 Chemistry Analyser',
+    name: 'Semi-Auto Chemistry Analyser',
     brand: 'Mindray',
-    productSlug: 'mindray-bs-240',
-    image: '/images/bs-240-stage.webp',
+    productSlug: 'mindray-semi-auto-chemistry',
     serial: 'DEMO-BS240-0917',
     location: 'Main laboratory',
     installed: '14 Feb 2025',

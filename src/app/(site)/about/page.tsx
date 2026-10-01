@@ -1,14 +1,15 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { BentoGrid } from '@/components/home/BentoGrid';
+import { CoreValues } from '@/components/about/core-values';
+import { Impact } from '@/components/about/impact';
 import { Partners } from '@/components/home/partners';
 import { Testimonials } from '@/components/home/testimonials';
 import { PageHero } from '@/components/layout/page-hero';
 import { Reveal } from '@/components/motion/reveal';
 import { Button } from '@/components/ui/button';
 import { Icon, IconTile } from '@/components/ui/icon';
-import { coreValues, purpose } from '@/data/seed';
+import { purpose } from '@/data/seed';
 import { getMetrics } from '@/lib/data';
 
 export const revalidate = 600;
@@ -58,7 +59,7 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      <BentoGrid metrics={metrics} />
+      <Impact metrics={metrics} />
 
       {/* Mission, vision, aim */}
       <section id="mission" className="scroll-mt-28 border-t border-line bg-paper py-24 md:py-32">
@@ -88,18 +89,9 @@ export default async function AboutPage() {
           <Reveal>
             <p className="label !text-brand-300">Our core values</p>
             <h2 className="display mt-4 max-w-3xl text-[clamp(2rem,1.2rem+2.8vw,3.5rem)] text-white">The principles that define who we are.</h2>
+            <p className="mt-4 max-w-xl font-light leading-relaxed text-white/55">Our success is built on four values that guide how we work and the impact we make in healthcare.</p>
           </Reveal>
-          <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {coreValues.map((v, i) => (
-              <li key={v.title}>
-                <Reveal delay={i * 0.06} className="flex h-full flex-col rounded-3xl border border-white/10 bg-white/[0.04] p-7 transition hover:border-brand-400/40">
-                  <span className="grid size-12 place-items-center rounded-2xl bg-brand-500/15 text-xl text-brand-300"><Icon name={v.icon} /></span>
-                  <h3 className="mt-8 text-xl font-bold uppercase tracking-[0.04em] text-white">{v.title}</h3>
-                  <p className="mt-3 text-sm font-light leading-relaxed text-white/60">{v.text}</p>
-                </Reveal>
-              </li>
-            ))}
-          </ul>
+          <CoreValues />
         </div>
       </section>
 

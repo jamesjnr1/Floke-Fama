@@ -9,7 +9,7 @@ import { Icon } from '@/components/ui/icon';
 import { contact } from '@/data/seed';
 import { cn } from '@/lib/utils';
 
-type NavItem = { href: string; label: string; children?: { href: string; label: string; hint: string; icon: string }[] };
+type NavItem = { href: string; label: string; children?: { href: string; label: string; hint: string }[] };
 
 /** Primary navigation, matching the menu on flokefama.com. Each tab is its own page. */
 const anchors: NavItem[] = [
@@ -18,8 +18,8 @@ const anchors: NavItem[] = [
     href: '/about',
     label: 'Company',
     children: [
-      { href: '/about', label: 'About Us', hint: 'Our story, mission and values', icon: 'fi-rr-building' },
-      { href: '/awards', label: 'Awards', hint: 'No.1 in Healthcare, Ghana Club 100', icon: 'fi-rr-trophy' },
+      { href: '/about', label: 'About Us', hint: 'Our story, mission and values' },
+      { href: '/awards', label: 'Awards', hint: 'No.1 in Healthcare, Ghana Club 100' },
     ],
   },
   { href: '/services', label: 'Products & Services' },
@@ -131,9 +131,9 @@ export function Navbar() {
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, y: 6, scale: 0.98 }}
                             transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-                            className="absolute left-1/2 top-full w-72 -translate-x-1/2 pt-3"
+                            className="absolute left-1/2 top-full w-64 -translate-x-1/2 pt-3"
                           >
-                            <ul className="rounded-2xl border border-white/10 bg-midnight/95 p-2 shadow-[0_30px_60px_-20px_rgb(0_0_0/0.6)] backdrop-blur-xl">
+                            <ul className="rounded-2xl border border-white/10 bg-midnight p-2 shadow-[0_30px_60px_-20px_rgb(0_0_0/0.6)] backdrop-blur-xl">
                               {a.children.map((c) => {
                                 const on = matches(pathname, c.href);
                                 return (
@@ -141,9 +141,8 @@ export function Navbar() {
                                     <Link
                                       href={c.href}
                                       aria-current={on ? 'page' : undefined}
-                                      className={cn('group flex items-center gap-3 rounded-xl p-3 transition hover:bg-white/[0.06] focus-visible:bg-white/[0.06] focus-visible:outline-none', on && 'bg-white/[0.04]')}
+                                      className={cn('group flex items-center justify-between gap-3 rounded-xl px-4 py-3 transition hover:bg-white/[0.06] focus-visible:bg-white/[0.06] focus-visible:outline-none', on && 'bg-white/[0.04]')}
                                     >
-                                      <span className="grid size-10 place-items-center rounded-xl bg-brand-500/15 text-brand-300 transition group-hover:bg-brand-600 group-hover:text-white"><Icon name={c.icon} /></span>
                                       <span>
                                         <span className="flex items-center gap-2 text-sm font-medium text-white">
                                           {c.label} {on && <span aria-hidden className="size-1.5 rounded-full bg-brand-400" />}

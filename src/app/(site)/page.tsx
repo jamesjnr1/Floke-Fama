@@ -1,4 +1,3 @@
-import { GetInTouch } from '@/components/contact/get-in-touch';
 import { VisitUs } from '@/components/contact/visit-us';
 import { Hero } from '@/components/home/hero';
 import { Partners } from '@/components/home/partners';
@@ -10,21 +9,18 @@ import { getCategories, getProducts } from '@/lib/data';
 
 export const revalidate = 600;
 
-/** Home: the approved sections, plus testimonials, the head office and get in touch, as on flokefama.com. */
+/** Home: the approved sections, plus testimonials and the head office. "Get in touch" lives in the footer. */
 export default async function HomePage() {
   const [categories, products] = await Promise.all([getCategories(), getProducts()]);
-  const flagship = products.find((p) => p.slug === 'mindray-bs-240') ?? products.find((p) => p.featured && p.image);
-
   return (
     <>
       <Hero />
       <Partners />
-      {flagship && <SpecScrolly product={flagship} />}
+      <SpecScrolly />
       <ProductUniverse categories={categories} products={products} />
       <Services />
       <Testimonials />
       <VisitUs />
-      <GetInTouch />
     </>
   );
 }
