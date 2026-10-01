@@ -29,7 +29,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
           className="-z-20 object-cover object-[28%_45%]"
         />
         <div aria-hidden className="absolute inset-0 -z-10 bg-brand-700/40 mix-blend-multiply" />
-        <div aria-hidden className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgb(11_21_16/0.4)_0%,transparent_28%,transparent_45%,rgb(19_66_40/0.7)_75%,rgb(11_21_16/0.92)_100%)]" />
+        <div aria-hidden className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgb(0_40_21/0.4)_0%,transparent_28%,transparent_45%,rgb(0_70_36/0.7)_75%,rgb(0_40_21/0.92)_100%)]" />
 
         <Logo />
 

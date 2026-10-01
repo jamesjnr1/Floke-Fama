@@ -163,7 +163,7 @@ function Radial({ value }: { value: number }) {
       <svg viewBox="0 0 180 180" className="size-full -rotate-90" role="img" aria-label={`${value}% of systems healthy`}>
         <circle cx="90" cy="90" r={r} fill="none" stroke="rgb(255 255 255 / 0.07)" strokeWidth="12" />
         <motion.circle
-          cx="90" cy="90" r={r} fill="none" stroke="#3aa867" strokeWidth="12" strokeLinecap="round" strokeDasharray={c}
+          cx="90" cy="90" r={r} fill="none" stroke="#3fa06d" strokeWidth="12" strokeLinecap="round" strokeDasharray={c}
           initial={{ strokeDashoffset: reduce ? c * (1 - value / 100) : c }}
           animate={{ strokeDashoffset: c * (1 - value / 100) }}
           transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
