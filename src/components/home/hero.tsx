@@ -2,10 +2,12 @@ import Link from 'next/link';
 import { HeroGlobe } from '@/components/home/hero-globe';
 import { NetworkCanvas } from '@/components/home/network-canvas';
 import { Reveal } from '@/components/motion/reveal';
+import { Button } from '@/components/ui/button';
+import { Icon } from '@/components/ui/icon';
 
 /**
  * Hero Section: dark canvas, 12-column grid.
- * Left (span 7): the company line from flokefama.com, muted subline, bracketed actions
+ * Left (span 7): the company line from flokefama.com, muted subline, and two simple actions
  * (Explore Solutions → shop, Contact Us → contact, as on the current site).
  * Right (span 5): 3D network globe with the published figures, over a faint wireframe network.
  */
@@ -37,19 +39,13 @@ export function Hero() {
           <Reveal delay={0.14}>
             <p className="max-w-xl text-lg leading-relaxed text-white/60 md:text-xl">Total healthcare solutions for hospitals and laboratories across Ghana and West Africa. Saving lives since 2008.</p>
           </Reveal>
-          <Reveal delay={0.22} className="pt-2">
-            {/* Action Button: bracketed outline control holding the two actions from the current site */}
-            <div className="flex w-full flex-col rounded-xl border sm:inline-flex sm:w-auto sm:flex-row sm:items-center border-brand-500 bg-brand-500/10 text-sm font-medium shadow-[0_0_40px_-12px_rgb(46_154_91/0.8)] backdrop-blur md:text-[15px]">
-              <span aria-hidden className="hidden pl-4 font-mono text-brand-300 sm:inline">[</span>
-              <Link href="/products" className="rounded-lg px-4 py-3.5 text-white transition hover:bg-brand-700/20 sm:px-3">
-                Explore Solutions
-              </Link>
-              <span aria-hidden className="hidden font-mono text-brand-300/60 sm:inline">|</span>
-              <Link href="/contact" className="group rounded-lg border-t border-brand-500/30 px-4 py-3.5 text-white transition hover:bg-brand-700/20 sm:border-0 sm:px-3">
-                Contact Us <span aria-hidden className="inline-block transition-transform duration-500 group-hover:translate-x-1">→</span>
-              </Link>
-              <span aria-hidden className="hidden pr-4 font-mono text-brand-300 sm:inline">]</span>
-            </div>
+          <Reveal delay={0.22} className="flex flex-wrap gap-3 pt-2">
+            <Button asChild variant="glow" size="lg">
+              <Link href="/products">Explore Solutions <Icon name="fi-rr-arrow-small-right" /></Link>
+            </Button>
+            <Button asChild variant="glass" size="lg">
+              <Link href="/contact">Contact Us</Link>
+            </Button>
           </Reveal>
         </div>
 

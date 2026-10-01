@@ -42,7 +42,7 @@ Every integration is optional at runtime. With no environment variables the site
 | `/services` | Static + ISR | Products & Services: the six services, product categories, why choose Flokefama |
 | `/events` | Static, daily ISR | Events & Activities: upcoming / past events, Media Centre news |
 | `/esg` | Static | ESG: patient safety, community, education, governance, local industry (from Flokefama’s own published material) |
-| `/contact` | Static | Call / WhatsApp / message actions, head office photo, live map, directions, branches |
+| `/contact` | Static | “How can we help?”: Sales / Service / General routes with direct actions, message form, head office + directions, live map, branches |
 | `/products` | Dynamic | Category morphing and keystroke search without reloads; state mirrored to the URL |
 | `/products/[slug]` | SSG + ISR | Full Deep Spec Sheet page for SEO, with `Product` JSON-LD |
 | `/products/(.)[slug]` | Intercepted (parallel `@modal` slot) | The same spec sheet as an overlay when opened from the catalogue |
@@ -50,7 +50,7 @@ Every integration is optional at runtime. With no environment variables the site
 | `/api/quote`, `/api/contact` | Dynamic | Validate, then deliver to HubSpot when configured (see “Form delivery”) |
 | `/login` | Dynamic | Sign-in for both portals. Sends each account to its own portal |
 | `/portal` | Dynamic, **sign-in required (client)** | Flokefama Care client portal (**demo data**): facility header with stats, service tickets with engineer dispatch, installed inventory with deep spec sheets |
-| `/engineer` | Dynamic, own layout, **sign-in required (engineer)** | Biomedical Engineer Service Portal (**demo data**, separate from the client portal): sidebar rail, System Status rail with sparklines, ticket timeline tracker, log-fault terminal, radial uptime, System Pulse and Documentation views |
+| `/engineer` | Dynamic, own layout, **sign-in required (engineer)** | Biomedical Engineer Service Portal (**demo data**, separate from the client portal). Working app: Overview (live KPIs, work queue, fleet health, calibrations due, activity), Service Tickets (filters; assign → en route with ETA → on site → resolve with report; work log notes; parts), System Pulse (status derived from open tickets, facility filter), Calibration schedule (overdue / due soon, record result → certificate + next due date), Documentation (system sheets, service history, downloadable certificates, manual requests), ⌘K command palette, notifications. State persists in the browser (`src/lib/engineer/store.ts`) with a reset button; in production the same actions call the service backend |
 | `/offline` | Static | Precached; emergency biomedical support contacts |
 | `/sitemap.xml`, `/robots.txt`, `/manifest.webmanifest` | Generated | |
 
