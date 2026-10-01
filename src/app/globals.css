@@ -1,42 +1,43 @@
 @import 'tailwindcss';
 
 /* ==========================================================================
-   Flokefama tokens: company colours only
-   Brand green  #257847  (logo disc) · primary actions, highlights, links
-   Brand red    #E4283C  (logo dot)  · sparing signal: alerts, critical states
-   Neutrals     rich green-black #0B1510 canvas, clean white #F8F9FA, greys
-   Status dots  #3AA867  brand green, lifted for visibility on dark
+   Flokefama tokens: every colour comes from the logo (green #00703A, red #ED1C24, white)
+   Brand green  #00703A  (logo disc) · primary actions, highlights, links; scale built from it
+   Deep greens  #003D20… (the logo green, darkened) · dark surfaces. No black or grey-black
+   Brand red    #ED1C24  (logo dot)  · sparing signal: alerts, critical states
+   Light        white, and white with a faint logo-green tint for canvases and lines
+   Text         #062C19, a very dark logo green
    ========================================================================== */
 @theme {
   /* Two typefaces: Poppins for text, Geist Sans for labels, numerals and accents (the `font-mono` utility). */
   --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
 
-  --color-canvas: #f8f9fa;
+  --color-canvas: #f6faf7;
   --color-paper: #ffffff;
-  --color-mist: #eef2ef;
-  --color-line: #e1e7e3;
-  --color-ink: #0b1510;
-  --color-ink-2: #3d4843;
-  --color-ink-3: #6f7a74;
+  --color-mist: #eaf3ee;
+  --color-line: #dce8e1;
+  --color-ink: #062c19;
+  --color-ink-2: #2d4a3b;
+  --color-ink-3: #5b7266;
 
-  --color-midnight: #0b1510;
-  --color-midnight-2: #111d17;
-  --color-midnight-3: #17261e;
+  --color-midnight: #003d20;
+  --color-midnight-2: #004726;
+  --color-midnight-3: #00522c;
 
   /* Brand green scale from the logo (600 = logo green, 5.6:1 with white text). */
-  --color-brand-50: #eef7f1;
-  --color-brand-100: #d5ecdd;
-  --color-brand-300: #8fd1a9;
-  --color-brand-400: #52b57c;
-  --color-brand-500: #2e9a5b;
-  --color-brand-600: #257847;
-  --color-brand-700: #1b5e37;
-  --color-brand-800: #134228;
+  --color-brand-50: #ebf6f0;
+  --color-brand-100: #cce9d9;
+  --color-brand-300: #80c4a0;
+  --color-brand-400: #3fa06d;
+  --color-brand-500: #198552;
+  --color-brand-600: #00703a;
+  --color-brand-700: #005e31;
+  --color-brand-800: #004d28;
 
-  --color-surgical: #3aa867;
-  --color-signal: #e4283c;
-  --color-signal-700: #b41d2e; /* logo red, darkened for AA text on light backgrounds */
+  --color-surgical: #3fa06d;
+  --color-signal: #ed1c24;
+  --color-signal-700: #b5151b; /* logo red, darkened for AA text on light backgrounds */
 
   --radius-4xl: 2rem;
   --radius-5xl: 2.5rem;
@@ -51,8 +52,8 @@
   }
   --animate-status-pulse: status-pulse 2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
   @keyframes status-pulse {
-    0% { box-shadow: 0 0 0 0 rgb(58 168 103 / 0.55); }
-    100% { box-shadow: 0 0 0 8px rgb(58 168 103 / 0); }
+    0% { box-shadow: 0 0 0 0 rgb(63 160 109 / 0.55); }
+    100% { box-shadow: 0 0 0 8px rgb(63 160 109 / 0); }
   }
 }
 
@@ -123,13 +124,13 @@
   }
   .grid-fade-light {
     background-image:
-      linear-gradient(rgb(11 21 16 / 0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgb(11 21 16 / 0.05) 1px, transparent 1px);
+      linear-gradient(rgb(0 61 32 / 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(0 61 32 / 0.05) 1px, transparent 1px);
     background-size: 56px 56px;
     mask-image: radial-gradient(ellipse 60% 60% at 50% 0%, #000 10%, transparent 70%);
   }
   .text-gradient {
-    background: linear-gradient(100deg, #8fd1a9 0%, #2e9a5b 45%, #d5ecdd 100%);
+    background: linear-gradient(100deg, #80c4a0 0%, #198552 45%, #cce9d9 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -142,14 +143,14 @@ html[data-text='larger'] { font-size: 125%; }
 html:is([data-text='large'], [data-text='larger']) :is(h1, h2, h3, p) { overflow-wrap: break-word; }
 
 html[data-contrast='high'] {
-  --color-ink-2: #0b1510;
-  --color-ink-3: #27312c;
-  --color-line: #8d9992;
+  --color-ink-2: #062c19;
+  --color-ink-3: #1f3a2c;
+  --color-line: #86a394;
 }
 html[data-contrast='high'] [class*='text-white/'] { color: #fff !important; }
 html[data-contrast='high'] [class*='border-white/'] { border-color: rgb(255 255 255 / 0.5) !important; }
 html[data-contrast='high'] ::placeholder { color: currentColor !important; opacity: 0.7; }
-html[data-contrast='high'] :focus-visible { outline: 3px solid #e4283c !important; outline-offset: 2px; }
+html[data-contrast='high'] :focus-visible { outline: 3px solid #ed1c24 !important; outline-offset: 2px; }
 
 html[data-motion='reduce'] *,
 html[data-motion='reduce'] *::before,

@@ -21,13 +21,13 @@ export function ProductVisual({ product, category, className, sizes, priority, s
       layoutId={shared ? `visual-${product.slug}` : undefined}
       className={cn(
         'relative isolate overflow-hidden rounded-[inherit]',
-        dark ? 'bg-[radial-gradient(120%_90%_at_100%_100%,#132a1e_0%,#05090d_60%)]' : 'bg-[radial-gradient(90%_70%_at_50%_35%,#fff_0%,#f1f5f2_65%,#e6ece8_100%)]',
+        dark ? 'bg-[radial-gradient(120%_90%_at_100%_100%,#00522c_0%,#003d20_60%)]' : 'bg-[radial-gradient(90%_70%_at_50%_35%,#fff_0%,#eef6f1_65%,#dceee3_100%)]',
         className,
       )}
     >
       {product.image ? (
         <>
-          {!dark && <div className="absolute inset-x-[22%] bottom-[10%] -z-10 h-[9%] rounded-[50%] bg-[radial-gradient(closest-side,rgb(11_21_16/0.22),transparent)]" />}
+          {!dark && <div className="absolute inset-x-[22%] bottom-[10%] -z-10 h-[9%] rounded-[50%] bg-[radial-gradient(closest-side,rgb(0_40_21/0.22),transparent)]" />}
           <Image
             src={product.image}
             alt={`${product.brand} ${product.name}`}

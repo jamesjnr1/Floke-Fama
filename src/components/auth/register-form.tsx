@@ -76,7 +76,7 @@ export function RegisterForm({ onSignIn }: { onSignIn: () => void }) {
       <button
         type="submit"
         disabled={pending}
-        className="!mt-6 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand-600 text-[15px] font-medium text-white shadow-[0_12px_28px_-14px_rgb(37_120_71/0.9)] transition hover:bg-brand-700 disabled:opacity-60"
+        className="!mt-6 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand-600 text-[15px] font-medium text-white shadow-[0_12px_28px_-14px_rgb(0_112_58/0.9)] transition hover:bg-brand-700 disabled:opacity-60"
       >
         {pending ? 'Sending…' : 'Create account'} {!pending && <Icon name="fi-rr-arrow-small-right" />}
       </button>

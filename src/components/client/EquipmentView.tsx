@@ -31,8 +31,8 @@ export function EquipmentView({ assets, tickets, onOpenAsset }: { assets: Asset[
           const warranty = daysUntil(a.warrantyUntil) >= 0;
           return (
             <li key={a.id} className="min-w-0">
-              <button onClick={() => onOpenAsset(a.id)} className="flex h-full w-full flex-col rounded-3xl border border-line bg-paper p-2 text-left transition hover:border-ink/20 hover:shadow-[0_24px_48px_-32px_rgb(11_21_16/0.45)]">
-                <div className="relative grid aspect-[16/9] place-items-center overflow-hidden rounded-2xl bg-[radial-gradient(90%_70%_at_50%_35%,#fff,#eef2ef)]">
+              <button onClick={() => onOpenAsset(a.id)} className="flex h-full w-full flex-col rounded-3xl border border-line bg-paper p-2 text-left transition hover:border-ink/20 hover:shadow-[0_24px_48px_-32px_rgb(0_40_21/0.45)]">
+                <div className="relative grid aspect-[16/9] place-items-center overflow-hidden rounded-2xl bg-[radial-gradient(90%_70%_at_50%_35%,#fff,#eaf3ee)]">
                   {a.image ? <Image src={a.image} alt="" fill sizes="(min-width: 1280px) 30vw, 50vw" className="object-contain p-6 mix-blend-multiply" /> : <IconTile name="fi-rr-microscope" />}
                   <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-paper/90 px-2.5 py-1 text-xs font-medium text-ink backdrop-blur">
                     <span className={cn('size-1.5 rounded-full', st.dot)} aria-hidden /> {st.text}

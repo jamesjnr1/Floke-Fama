@@ -68,7 +68,7 @@ export function Partners({ heading = true }: { heading?: boolean }) {
               return (
                 <li
                   key={c.name}
-                  className="group flex flex-col items-center justify-between gap-2 rounded-2xl border border-line bg-paper px-2 pb-3 pt-4 text-center transition sm:gap-4 sm:rounded-3xl sm:px-4 sm:pb-5 sm:pt-7 duration-500 ease-out-expo hover:-translate-y-1 hover:shadow-[0_24px_48px_-28px_rgb(11_21_16/0.4)]"
+                  className="group flex flex-col items-center justify-between gap-2 rounded-2xl border border-line bg-paper px-2 pb-3 pt-4 text-center transition sm:gap-4 sm:rounded-3xl sm:px-4 sm:pb-5 sm:pt-7 duration-500 ease-out-expo hover:-translate-y-1 hover:shadow-[0_24px_48px_-28px_rgb(0_40_21/0.4)]"
                 >
                   <span className="flex h-12 items-center justify-center sm:h-20">
                     <Image src={c.logo} alt="" width={box.width} height={box.height} style={{ width: box.width, height: box.height }} className="max-h-11 max-w-full object-contain sm:max-h-none" />

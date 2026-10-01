@@ -1,24 +1,28 @@
-# Flokefama Design System (v5, company colours)
+# Flokefama Design System (v6, logo colours)
 
-> **Rule: company colours only.** Every accent comes from the Flokefama logo: **green** (disc) and **red** (dot), on neutral backgrounds. No other hues. Where older sections below conflict, **v5 wins**. The only exceptions are photography and partner logos, which are shown exactly as the manufacturers and hospitals publish them.
+> **Rule: every colour comes from the logo.** The Flokefama logo has no black or grey, so the site uses only the logo's **green #00703A** (disc), **red #ED1C24** (dot) and **white**, plus lighter tints and deeper shades of that same green. Dark surfaces are deep logo greens, not black; text is a very dark logo green. No other hues. Where older sections below conflict, **v6 wins**. The only exceptions are photography and partner logos, which are shown exactly as the manufacturers and hospitals publish them.
 
 ## Colour tokens (`src/app/globals.css` → `@theme`)
 | Token | Value | Use |
 |---|---|---|
-| `brand-600` | **`#257847`** (logo green) | Primary buttons, links, active states. 5.6:1 with white text (AA) |
-| `brand-50 … brand-800` | `#EEF7F1` → `#134228` | Tints and shades of the logo green: surfaces, glows, gradients, hovers |
-| `signal` | **`#E4283C`** (logo red) | Sparingly: critical priority, "needs attention", error states |
-| `signal-700` | `#B41D2E` | Logo red darkened for AA text on light backgrounds |
-| `surgical` | `#3AA867` | Live status dots (brand green lifted for visibility on dark) |
-| `midnight` | `#0B1510` | Dark canvas: a rich black with a hint of the logo green |
-| `canvas` / `paper` | `#F8F9FA` / `#FFFFFF` | Light sections |
-| `ink`, `ink-2`, `ink-3`, `line`, `mist` | neutral greys | Text and borders |
+| `brand-600` | **`#00703A`** (logo green) | Primary buttons, links, active states. 6.2:1 with white text (AA) |
+| `brand-50 … brand-800` | `#EBF6F0` → `#004D28` | Tints and shades of the logo green: surfaces, glows, gradients, hovers |
+| `signal` | **`#ED1C24`** (logo red) | Sparingly: critical priority, "needs attention", error states |
+| `signal-700` | `#B5151B` | Logo red darkened for AA text on light backgrounds |
+| `surgical` | `#3FA06D` | Live status dots (logo green lifted for visibility on deep green) |
+| `midnight`, `midnight-2`, `midnight-3` | `#003D20`, `#004726`, `#00522C` | Dark surfaces (menu bar, footer, page headers, portal sidebars, engineer portal): the logo green, darkened. The token keeps its old name |
+| `canvas` / `paper` / `mist` / `line` | `#F6FAF7` / `#FFFFFF` / `#EAF3EE` / `#DCE8E1` | Light sections and borders: white with a faint logo-green tint |
+| `ink`, `ink-2`, `ink-3` | `#062C19`, `#2D4A3B`, `#5B7266` | Text: very dark to muted logo green |
+
+**Home hero and the Services stage panel:** a deep logo-green gradient (`#00592E → #00421F → #00321A`). **Testimonials** sit on their own `brand-50` band with a top and bottom rule, so they read as a separate section from the product cards above.
+
+**Event dates:** a calendar-page tile: a logo-green band with the month, the day large on white, the year beneath.
 
 **Mobile:** sections use tighter vertical padding on phones, and stacks of cards (awards, impact stories, news, ESG, mission, why-choose, categories) become a horizontal swipe row (`.swipe-row` in `globals.css`); the catalogue is two columns; the footer is compact.
 
 **Accessibility panel:** a floating button (bottom left, every public page; in the portals it is in the sidebar/header) opens text size (Standard / Large / Larger), high contrast, reduce motion (also stops the 3D scenes and Motion animations), underline links and a readable system font. Preferences are saved on the visitor’s device and applied before first paint (`src/lib/a11y.ts`, rules at the end of `globals.css`). With larger text or the readable font, the header uses the menu button below 1536 px so nothing overflows.
 
-**Section rhythm:** pages alternate dark (`midnight`), light (`canvas`/`paper`) and **brand green** (a deep `brand-700 → brand-800` gradient, used for Core values and ESG “Made in Ghana”), so no page is a run of dark sections.
+**Section rhythm:** pages alternate deep logo green (`midnight`), light (`canvas`/`paper`) and **brand green** (a deep `brand-700 → brand-800` gradient, used for Core values and ESG “Made in Ghana”), so no page is a run of dark sections.
 
 Hover states always go **darker** (`brand-700`), never lighter, so white text stays AA-compliant.
 
