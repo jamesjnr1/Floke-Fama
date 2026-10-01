@@ -33,7 +33,7 @@ const anchors: NavItem[] = [
 const flat = anchors.flatMap((a) => a.children?.map(({ href, label }) => ({ href, label })) ?? [{ href: a.href, label: a.label }]);
 
 /** Pages that open on the dark canvas, so the header starts light-on-dark. */
-const darkTop = ['/', '/about', '/awards', '/services', '/events', '/esg', '/contact', '/portal', '/login'];
+const darkTop = ['/', '/about', '/awards', '/services', '/events', '/esg', '/contact', '/portal'];
 
 /** A tab stays active on its sub-pages too (e.g. /products/...). Home only matches exactly. */
 const matches = (pathname: string, href: string) => (href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(`${href}/`));

@@ -22,31 +22,28 @@ export function LoginForm({ next, demo, notice }: { next?: string; demo: Demo[];
   };
 
   const field =
-    'h-12 w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 text-[15px] text-white outline-none transition placeholder:text-white/30 focus:border-brand-400 focus:bg-white/[0.07] focus:ring-4 focus:ring-brand-500/20';
+    'h-12 w-full rounded-xl border border-line bg-paper px-4 text-[15px] text-ink outline-none transition placeholder:text-ink-3/70 focus:border-brand-500 focus:ring-4 focus:ring-brand-100';
 
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-6 shadow-[0_40px_80px_-30px_rgb(0_0_0/0.7),inset_0_1px_0_rgb(255_255_255/0.06)] backdrop-blur-xl md:p-8">
-      <h2 className="text-2xl font-bold tracking-[-0.02em] text-white">Sign in</h2>
-      <p className="mt-1 text-sm text-white/50">Use the account issued by Flokefama.</p>
+    <div className="mt-8">
+      {notice && <p className="mb-5 rounded-xl bg-brand-50 px-4 py-3 text-sm text-brand-700 ring-1 ring-brand-100">{notice}</p>}
 
-      {notice && <p className="mt-5 rounded-xl bg-brand-500/10 px-4 py-3 text-sm text-brand-300 ring-1 ring-brand-400/20">{notice}</p>}
-
-      <form ref={form} action={action} className="mt-6 space-y-4" noValidate>
+      <form ref={form} action={action} className="space-y-4" noValidate>
         {next && <input type="hidden" name="next" value={next} />}
         <label className="grid gap-1.5">
-          <span className="font-mono text-[11px] uppercase tracking-widest text-white/50">Email</span>
+          <span className="text-sm font-medium text-ink-2">Email</span>
           <input ref={email} name="email" type="email" autoComplete="username" required defaultValue={state.email} placeholder="you@hospital.org" className={field} />
         </label>
         <label className="grid gap-1.5">
-          <span className="font-mono text-[11px] uppercase tracking-widest text-white/50">Password</span>
+          <span className="text-sm font-medium text-ink-2">Password</span>
           <span className="relative">
-            <input ref={password} name="password" type={show ? 'text' : 'password'} autoComplete="current-password" required className={cn(field, 'pr-12')} />
+            <input ref={password} name="password" type={show ? 'text' : 'password'} autoComplete="current-password" required placeholder="••••••••" className={cn(field, 'pr-12')} />
             <button
               type="button"
               onClick={() => setShow((s) => !s)}
               aria-label={show ? 'Hide password' : 'Show password'}
               aria-pressed={show}
-              className="absolute right-2 top-1/2 grid size-9 -translate-y-1/2 place-items-center rounded-lg text-white/50 hover:bg-white/10 hover:text-white"
+              className="absolute right-2 top-1/2 grid size-9 -translate-y-1/2 place-items-center rounded-lg text-ink-3 hover:bg-mist hover:text-ink"
             >
               <Icon name={show ? 'fi-rr-eye-crossed' : 'fi-rr-eye'} />
             </button>
@@ -54,7 +51,7 @@ export function LoginForm({ next, demo, notice }: { next?: string; demo: Demo[];
         </label>
 
         {state.error && (
-          <p role="alert" className="flex items-center gap-2 rounded-xl bg-signal/10 px-4 py-3 text-sm text-white ring-1 ring-signal/40">
+          <p role="alert" className="flex items-center gap-2 rounded-xl bg-signal/[0.06] px-4 py-3 text-sm text-signal-700 ring-1 ring-signal/30">
             <span className="size-1.5 shrink-0 rounded-full bg-signal" aria-hidden /> {state.error}
           </p>
         )}
@@ -62,26 +59,28 @@ export function LoginForm({ next, demo, notice }: { next?: string; demo: Demo[];
         <button
           type="submit"
           disabled={pending}
-          className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand-600 text-[15px] font-medium text-white shadow-[0_10px_30px_-10px_rgb(46_154_91/0.8)] transition hover:bg-brand-700 disabled:opacity-60"
+          className="!mt-6 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand-600 text-[15px] font-medium text-white shadow-[0_12px_28px_-14px_rgb(37_120_71/0.9)] transition hover:bg-brand-700 disabled:opacity-60"
         >
           {pending ? 'Signing in…' : 'Sign in'} {!pending && <Icon name="fi-rr-arrow-small-right" />}
         </button>
       </form>
 
       {demo.length > 0 && (
-        <div className="mt-8 border-t border-white/10 pt-6">
-          <p className="font-mono text-[11px] uppercase tracking-widest text-white/40">Demo access · preview only</p>
-          <div className="mt-3 grid gap-2 sm:grid-cols-2">
+        <div className="mt-8">
+          <p className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-widest text-ink-3">
+            <span className="h-px flex-1 bg-line" aria-hidden /> Demo access · preview only <span className="h-px flex-1 bg-line" aria-hidden />
+          </p>
+          <div className="mt-4 grid gap-2 sm:grid-cols-2">
             {demo.map((d) => (
               <button
                 key={d.role}
                 type="button"
                 onClick={() => signInWithDemo(d)}
                 disabled={pending}
-                className="rounded-xl border border-dashed border-white/15 px-4 py-3 text-left transition hover:border-brand-400/60 hover:bg-white/[0.04] disabled:opacity-60"
+                className="rounded-xl border border-dashed border-line px-4 py-3 text-left transition hover:border-brand-400 hover:bg-brand-50 disabled:opacity-60"
               >
-                <span className="block text-sm font-medium text-white">{d.label}</span>
-                <span className="block truncate font-mono text-[11px] text-white/40">{d.email}</span>
+                <span className="block text-sm font-medium text-ink">{d.label}</span>
+                <span className="block truncate font-mono text-[11px] text-ink-3">{d.email}</span>
               </button>
             ))}
           </div>
