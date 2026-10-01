@@ -15,15 +15,15 @@ import { Icon } from '@/components/ui/icon';
 export function Hero() {
   return (
     <section className="relative isolate overflow-hidden bg-brand-800 bg-[radial-gradient(120%_90%_at_78%_18%,#1f6b3e_0%,#134228_52%,#0d301d_100%)] text-white">
-      {/* Background: head office photo (faint, green-tinted), glow, light beam, wireframe network */}
+      {/* Background: head office photo (pre-tinted green, faint), glow, light beam, wireframe network */}
       <div aria-hidden className="absolute inset-0 -z-10">
         <Image
-          src="/images/head-office.webp"
+          src="/images/hero-head-office.webp"
           alt=""
           fill
           priority
           sizes="100vw"
-          className="object-cover object-[50%_52%] opacity-[0.22] mix-blend-luminosity"
+          className="object-cover object-[50%_52%] opacity-30"
         />
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgb(13_48_29/0.85)_0%,rgb(13_48_29/0.55)_45%,rgb(13_48_29/0.15)_80%)]" />
         <div className="absolute -right-40 -top-56 size-[860px] rounded-full bg-[radial-gradient(circle,rgb(82_181_124/0.3),transparent_62%)]" />
