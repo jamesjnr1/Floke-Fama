@@ -36,9 +36,10 @@ Hover states always go **darker** (`brand-700`), never lighter, so white text st
 | Text (headings + body) | **Poppins** (self-hosted, `src/fonts/`, 300–700) | `font-sans` (default) |
 | Display/Hero Large | Poppins Semibold, −3% tracking, uppercase for page slogans | `.display` |
 | Labels, numerals, accents | **Geist Sans**, 12px, Medium, +15% tracking, uppercase | `.label` / `font-mono` utility |
-| Logo wordmark only | **Righteous** (SIL OFL, self-hosted `src/fonts/righteous-400.woff2`), uppercase "FLOKE FAMA", hairline stroke for the original logo's weight; white on dark, brand green on light | `.wordmark` / `font-logo` |
 
-Text uses only Poppins and Geist Sans. (The `font-mono` utility is mapped to Geist Sans.) Righteous matches the lettering of the original Flokefama logo and is used for the wordmark alone.
+Only these two typefaces are used. (The `font-mono` utility is mapped to Geist Sans.)
+
+**Logo:** the official Flokefama logo as vector paths (`src/components/layout/logo.tsx`), taken from the company brochure on flokefama.com, so it is exact and needs no font. Logo green #00703A, red #ED1C24; the "FLOKE FAMA" lettering is white on dark backgrounds and logo green on light ones.
 
 ## Navigation
 - Mirrors the flokefama.com menu, each tab its own page: **Home** · **Company** ▾ (About Us `/about`, Awards `/awards`) · **Products & Services** `/services` · **Events & Activities** `/events` · **Shop** `/products` · **ESG** `/esg` · **Contact** `/contact`. Below 1280 px it collapses into the menu button.

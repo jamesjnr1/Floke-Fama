@@ -11,8 +11,6 @@
   /* Two typefaces: Poppins for text, Geist Sans for labels, numerals and accents (the `font-mono` utility). */
   --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  /* The logo wordmark only (Righteous, as on the original Flokefama logo). */
-  --font-logo: var(--font-righteous), var(--font-poppins), ui-sans-serif, sans-serif;
 
   --color-canvas: #f8f9fa;
   --color-paper: #ffffff;
@@ -109,14 +107,6 @@
   /* Surgical-green pulsating status dot */
   .status-dot {
     @apply inline-block size-2 shrink-0 rounded-full bg-surgical animate-status-pulse;
-  }
-  /* Logo wordmark: Righteous with a hairline stroke for the heavier weight of the original logo. */
-  .wordmark {
-    font-family: var(--font-logo);
-    text-transform: uppercase;
-    letter-spacing: 0.015em;
-    -webkit-text-stroke: 0.035em currentColor;
-    paint-order: stroke fill;
   }
   .glass {
     @apply border border-white/10 bg-white/[0.045] backdrop-blur-xl;

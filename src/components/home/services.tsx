@@ -88,8 +88,8 @@ export function Services() {
             </ol>
           </div>
 
-          <div id="service-panel" role="tabpanel" className="relative mt-12 overflow-hidden rounded-5xl bg-midnight text-white">
-            <div aria-hidden className="absolute -right-24 -top-24 size-[420px] rounded-full bg-[radial-gradient(circle,rgb(46_154_91/0.3),transparent_65%)]" />
+          <div id="service-panel" role="tabpanel" className="relative mt-12 overflow-hidden rounded-5xl bg-brand-800 bg-[linear-gradient(120deg,#18512f_0%,#0f3520_70%)] text-white">
+            <div aria-hidden className="absolute -right-24 -top-24 size-[420px] rounded-full bg-[radial-gradient(circle,rgb(82_181_124/0.22),transparent_65%)]" />
             <AnimatePresence mode="wait">
               <motion.div
                 key={active}
@@ -102,9 +102,9 @@ export function Services() {
                 <div>
                   <p className="font-mono text-sm text-brand-300">Stage {String(active + 1).padStart(2, '0')} of {String(services.length).padStart(2, '0')}</p>
                   <h3 className="display mt-4 text-5xl text-white">{s.title}</h3>
-                  <p className="mt-5 max-w-xl text-lg font-light leading-relaxed text-white/65">{s.body}</p>
+                  <p className="mt-5 max-w-xl text-lg font-light leading-relaxed text-white/75">{s.body}</p>
                   <div className="mt-8 flex gap-3">
-                    <Link href="/quote" className="inline-flex h-12 items-center gap-2 rounded-xl bg-brand-600 px-6 text-[15px] font-medium text-white transition hover:bg-brand-700">
+                    <Link href="/quote" className="inline-flex h-12 items-center gap-2 rounded-xl bg-white px-6 text-[15px] font-medium text-brand-800 transition hover:bg-brand-50">
                       Request a quote <Icon name="fi-rr-arrow-small-right" />
                     </Link>
                     <Link href="/contact" className="glass inline-flex h-12 items-center rounded-xl px-6 text-[15px] text-white transition hover:bg-white/10">
@@ -112,7 +112,7 @@ export function Services() {
                     </Link>
                   </div>
                 </div>
-                <Icon name={s.icon} className="text-[11rem] leading-none text-brand-400/25" />
+                <Icon name={s.icon} className="text-[11rem] leading-none text-brand-300/25" />
               </motion.div>
             </AnimatePresence>
           </div>
