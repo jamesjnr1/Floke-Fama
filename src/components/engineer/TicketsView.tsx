@@ -2,10 +2,10 @@
 
 import { AnimatePresence, motion } from 'motion/react';
 import { useMemo, useRef, useState } from 'react';
-import { ticketStatusMeta } from '@/components/engineer/status';
-import { fieldClass, GhostButton, Panel, PrimaryButton, PriorityBadge, SectionLabel } from '@/components/engineer/ui';
+import { ticketStatusMeta } from '@/components/service/status';
+import { fieldClass, GhostButton, Panel, PrimaryButton, PriorityBadge, SectionLabel } from '@/components/service/ui';
 import { Icon } from '@/components/ui/icon';
-import { fmtTime, isOpen, statusSteps, stepIndex, type Action, type EngineerState, type Ticket } from '@/lib/engineer/store';
+import { fmtTime, isOpen, statusSteps, stepIndex, type Action, type EngineerState, type Ticket } from '@/lib/service/store';
 import { cn } from '@/lib/utils';
 
 type Filter = 'open' | 'mine' | 'new' | 'resolved' | 'all';
@@ -151,6 +151,14 @@ function TicketDetail({ ticket: t, state, me, dispatch, onResolve, onOpenAsset }
         </div>
         <h2 className="mt-3 text-2xl font-bold tracking-[-0.02em] text-white md:text-3xl">{t.title}</h2>
         <p className="mt-2 text-sm text-white/60">{t.description}</p>
+        {(t.requestedBy || t.contactPhone || t.preferredVisit) && (
+          <p className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-white/45">
+            {t.requestedBy && <span>Raised by <span className="text-white/75">{t.requestedBy}</span></span>}
+            {t.contactPhone && <a href={`tel:${t.contactPhone.replace(/\s/g, '')}`} className="text-brand-300 hover:text-white">{t.contactPhone}</a>}
+            {t.preferredVisit && <span>Preferred visit: <span className="text-white/75">{t.preferredVisit}</span></span>}
+            {t.rating && <span>Client rating: <span className="text-white/75">{t.rating}/5</span></span>}
+          </p>
+        )}
         {asset && (
           <button onClick={() => onOpenAsset(asset.id)} className="mt-4 inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-white/70 transition hover:bg-white/10 hover:text-white">
             <Icon name="fi-rr-hospital" className="text-brand-300" /> {asset.name} · {asset.facility}, {asset.location} · {asset.serial}

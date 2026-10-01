@@ -43,13 +43,13 @@ Every integration is optional at runtime. With no environment variables the site
 | `/events` | Static, daily ISR | Events & Activities: upcoming / past events, Media Centre news |
 | `/esg` | Static | ESG: patient safety, community, education, governance, local industry (from Flokefama’s own published material) |
 | `/contact` | Static | Contact details, simple message form, head office photo, live map, directions, branches |
-| `/products` | Dynamic | Category morphing and keystroke search without reloads; state mirrored to the URL |
+| `/products` | Dynamic | Shop: **New arrivals** strip (products flagged `newArrival`, as on the current homepage), then category morphing and keystroke search without reloads; state mirrored to the URL |
 | `/products/[slug]` | SSG + ISR | Full Deep Spec Sheet page for SEO, with `Product` JSON-LD |
 | `/products/(.)[slug]` | Intercepted (parallel `@modal` slot) | The same spec sheet as an overlay when opened from the catalogue |
 | `/quote` | Dynamic | Multi-step procurement flow (quote or demo), react-hook-form + zod, validated again on the server |
 | `/api/quote`, `/api/contact` | Dynamic | Validate, then deliver to HubSpot when configured (see “Form delivery”) |
 | `/login` | Dynamic | Sign-in for both portals. Sends each account to its own portal |
-| `/portal` | Dynamic, **sign-in required (client)** | Flokefama Care client portal (**demo data**): facility header with stats, service tickets with engineer dispatch, installed inventory with deep spec sheets |
+| `/portal` | Dynamic, own layout, **sign-in required (client)** | Flokefama Care client dashboard (**demo data**): Overview (live KPIs, live service tracker with engineer + ETA, calibrations due, updates, quick actions), Service requests (submit a request with urgency, contact and preferred visit; follow progress; message the engineer; rate the visit), Equipment (health, warranty, calibration, service history, report a fault, order consumables), Certificates (download) |
 | `/engineer` | Dynamic, own layout, **sign-in required (engineer)** | Biomedical Engineer Service Portal (**demo data**, separate from the client portal). Working app: Overview (live KPIs, work queue, fleet health, calibrations due, activity), Service Tickets (filters; assign → en route with ETA → on site → resolve with report; work log notes; parts), System Pulse (status derived from open tickets, facility filter), Calibration schedule (overdue / due soon, record result → certificate + next due date), Documentation (system sheets, service history, downloadable certificates, manual requests), ⌘K command palette, notifications. State persists in the browser (`src/lib/engineer/store.ts`) with a reset button; in production the same actions call the service backend |
 | `/offline` | Static | Precached; emergency biomedical support contacts |
 | `/sitemap.xml`, `/robots.txt`, `/manifest.webmanifest` | Generated | |
@@ -62,6 +62,9 @@ Old WordPress URLs (`/index.php/shop`, `/index.php/product/*`, `/index.php/about
 
 ## Form delivery (no lost enquiries)
 Quote requests and “Get in touch” messages are validated on the server and sent to HubSpot when `HUBSPOT_PORTAL_ID` and `HUBSPOT_FORM_GUID` are set. **Until then, nothing is silently dropped:** the API answers `delivered: false` and the page shows *Send by email* / *Send on WhatsApp* buttons with the full request pre-filled (quotes → sales@, contact messages → sales@, support@ or info@ by topic). Once the CRM is connected, visitors simply see “Request received”.
+
+## Shared service desk
+Both portals run on one service desk (`src/lib/service/store.ts`). A request a hospital submits in `/portal` lands in the engineers’ queue in `/engineer`; each step an engineer takes (assign, en route with ETA, on site, resolved with report, calibration certificate) appears live for the hospital, with a notification for the other side, and the hospital can message the engineer and rate the visit. In this preview the desk lives in the browser (localStorage, synced across tabs) so the round trip can be demonstrated with the two demo accounts; in production the same actions call the service-management backend.
 
 ## Portal sign-in
 Two separate areas, two roles: **client** (hospital staff) → `/portal`, **engineer** (Flokefama biomedical engineers) → `/engineer`. Neither can open the other's area.

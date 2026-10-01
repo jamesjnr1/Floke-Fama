@@ -1,9 +1,9 @@
 'use client';
 
 import * as Dialog from '@radix-ui/react-dialog';
-import { priorityStyle } from '@/components/engineer/status';
+import { priorityStyle } from '@/components/service/status';
 import { Icon } from '@/components/ui/icon';
-import type { Priority } from '@/lib/engineer/store';
+import type { Priority } from '@/lib/service/store';
 import { cn } from '@/lib/utils';
 
 export const fieldClass =
