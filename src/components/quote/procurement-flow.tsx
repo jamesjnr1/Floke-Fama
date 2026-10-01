@@ -2,7 +2,6 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AnimatePresence, motion } from 'motion/react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 import { useForm, type FieldPath } from 'react-hook-form';
@@ -16,7 +15,6 @@ import { cn } from '@/lib/utils';
 
 type Option = { slug: string; label: string; group: string };
 /** The machine the visitor came from ("Request a quote" on a product page). */
-type Focus = { slug: string; name: string; brand: string; image?: string; label: string; category?: string };
 
 const steps: { title: string; hint: string; fields: FieldPath<QuoteInput>[] }[] = [
   { title: 'Your department', hint: 'Who is this equipment for?', fields: ['intent', 'department'] },
@@ -26,7 +24,7 @@ const steps: { title: string; hint: string; fields: FieldPath<QuoteInput>[] }[] 
   { title: 'Review', hint: 'Check everything before sending.', fields: [] },
 ];
 
-export function ProcurementFlow({ options, initial, focus }: { options: Option[]; initial: Partial<QuoteInput>; focus?: Focus }) {
+export function ProcurementFlow({ options, initial }: { options: Option[]; initial: Partial<QuoteInput> }) {
   const [step, setStep] = useState(0);
   const [dir, setDir] = useState(1);
   const [custom, setCustom] = useState('');
@@ -121,7 +119,6 @@ export function ProcurementFlow({ options, initial, focus }: { options: Option[]
   const q = find.trim().toLowerCase();
   const shown = q ? options.filter((o) => `${o.label} ${o.group}`.toLowerCase().includes(q)) : options;
   const groups = [...new Set(shown.map((o) => o.group))];
-  const focusSelected = Boolean(focus && values.equipment.includes(focus.label));
 
   return (
     <form
@@ -133,21 +130,6 @@ export function ProcurementFlow({ options, initial, focus }: { options: Option[]
         } else void submit(e);
       }}
       noValidate className="overflow-hidden rounded-5xl border border-line bg-paper shadow-[0_40px_80px_-40px_rgb(11_21_16/0.25)]">
-      {/* The machine this quote is for */}
-      {focus && focusSelected && (
-        <div className="flex items-center gap-4 border-b border-line bg-brand-50/60 p-4 md:px-10" data-testid="quote-focus">
-          <div className="relative size-16 shrink-0 overflow-hidden rounded-2xl border border-line bg-paper">
-            {focus.image ? <Image src={focus.image} alt="" fill sizes="64px" className="object-contain p-1.5 mix-blend-multiply" /> : <Icon name="fi-rr-box-open" className="absolute inset-0 m-auto size-fit text-2xl text-ink-3" />}
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="label">{values.intent === 'demo' ? 'Demonstration of' : 'Quote for'}</p>
-            <p className="truncate text-lg font-semibold tracking-[-0.01em] text-ink">{focus.name}</p>
-            <p className="text-xs text-ink-3">{focus.brand}{focus.category ? ` · ${focus.category}` : ''}</p>
-          </div>
-          <Link href="/products" className="shrink-0 rounded-full border border-line bg-paper px-3.5 py-2 text-xs font-medium text-ink-2 transition hover:border-ink/30 hover:text-ink">Change</Link>
-        </div>
-      )}
-
       {/* Progress */}
       <div className="border-b border-line p-6 md:px-10">
         <div className="flex items-center justify-between text-sm">

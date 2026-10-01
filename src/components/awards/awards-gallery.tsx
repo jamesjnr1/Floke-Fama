@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { CountUp } from '@/components/motion/count-up';
 import { Reveal } from '@/components/motion/reveal';
 import { awards, companyFigures } from '@/data/seed';
 import { cn } from '@/lib/utils';
@@ -55,14 +56,18 @@ export function AwardsGallery() {
         </Reveal>
 
         {/* Figures from the current Awards page */}
-        <Reveal className="mt-16 rounded-4xl border border-line bg-paper p-8 md:p-12">
-          <p className="label">Flokefama</p>
-          <h3 className="mt-3 text-2xl font-bold tracking-[-0.02em] text-ink md:text-3xl">Innovative Solutions for Better Health Outcomes</h3>
-          <dl className="mt-8 grid gap-4 sm:grid-cols-3">
-            {companyFigures.map((f) => (
-              <div key={f.label} className="rounded-3xl bg-canvas p-6">
-                <dd className="text-5xl font-bold tracking-[-0.03em] text-brand-600">{f.value}{f.suffix}</dd>
-                <dt className="mt-2 text-sm font-medium text-ink-2">{f.label}</dt>
+        <Reveal className="mt-20 grid gap-10 border-t border-line pt-12 lg:grid-cols-12 lg:items-end lg:gap-16">
+          <div className="lg:col-span-5">
+            <p className="label">Flokefama</p>
+            <h3 className="mt-3 text-balance text-2xl font-bold tracking-[-0.02em] text-ink md:text-[2.125rem] md:leading-tight">Innovative Solutions for Better Health Outcomes</h3>
+          </div>
+          <dl className="grid grid-cols-3 divide-x divide-line lg:col-span-7">
+            {companyFigures.map((f, i) => (
+              <div key={f.label} className={cn('flex flex-col-reverse justify-end gap-2 px-4 md:px-8', i === 0 && '!pl-0')}>
+                <dt className="text-sm text-ink-3 md:text-[15px]">{f.label}</dt>
+                <dd className="text-[clamp(2.25rem,1.6rem+2.4vw,3.75rem)] font-bold leading-none tracking-[-0.04em] text-brand-600">
+                  <CountUp value={f.value} suffix={f.suffix} />
+                </dd>
               </div>
             ))}
           </dl>
