@@ -5,19 +5,20 @@
  *   cross: a medical cross with a heartbeat line across it (healthcare)
  *   tube: a blood sample tube with bubbles rising (diagnostics)
  *   microscope: a laboratory microscope with a red sample on the stage (laboratory)
+ *   ultrasound: a portable ultrasound (after the Mindray DP-10 in the Shop) with a live scan on its screen
  * Lines and points only (no lights), so it stays cheap on phones. Lazy chunk; returns a cleanup.
  */
 import { prefersReducedMotion } from '@/lib/a11y';
 import {
   AdditiveBlending, BufferAttribute, BufferGeometry, CanvasTexture, Color, CylinderGeometry, Group, Line, LineBasicMaterial,
   Mesh, MeshBasicMaterial, PerspectiveCamera, Points, PointsMaterial, Scene, SphereGeometry, Sprite, SpriteMaterial,
-  TorusGeometry, Vector3, WebGLRenderer,
+  Matrix4, TorusGeometry, Vector3, WebGLRenderer,
 } from 'three';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 import { MeshSurfaceSampler } from 'three/examples/jsm/math/MeshSurfaceSampler.js';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
-export type HeroIcon = 'cross' | 'tube' | 'microscope';
+export type HeroIcon = 'cross' | 'tube' | 'microscope' | 'ultrasound';
 
 const STEP = 0.11; // dot spacing
 const GREEN_BRIGHT = new Color('#8fd1a9'); // light enough to read on the green hero
@@ -244,6 +245,98 @@ function build(icon: HeroIcon): Built {
       },
     };
   }
+  if (icon === 'ultrasound') {
+    // Portable ultrasound: keyboard base, a screen tilted back on its hinge, a carry handle on top.
+    const pts: number[] = [];
+    const place = (local: number[], m: Matrix4, keep: (x: number, y: number, z: number) => boolean = () => true) => {
+      const v = new Vector3();
+      for (let i = 0; i < local.length; i += 3) {
+        if (!keep(local[i], local[i + 1], local[i + 2])) continue;
+        v.set(local[i], local[i + 1], local[i + 2]).applyMatrix4(m);
+        pts.push(v.x, v.y, v.z);
+      }
+    };
+    const baseM = new Matrix4().makeRotationX(0.12).setPosition(0, -1.0, 0.35);
+    const SW = 2.5, SH = 1.65, SD = 0.16; // screen
+    const screenM = new Matrix4().makeRotationX(-0.16).setPosition(0, 0.12, -0.45);
+    const VIEW = { w: SW - 0.36, h: SH - 0.34 }; // the open display area
+    place(roundedBoxDots(2.7, 0.3, 1.75, 0.12), baseM);
+    place(roundedBoxDots(SW, SH, SD, 0.14), screenM, (x, y, z) => !(z > SD / 2 - 0.02 && Math.abs(x) < VIEW.w / 2 && Math.abs(y) < VIEW.h / 2));
+    // Handle: an arch of dots over the screen
+    const handleM = new Matrix4().makeRotationX(-0.16).setPosition(0, 0.12 + SH / 2 - 0.05, -0.45);
+    const handle: number[] = [];
+    for (let a = 0; a <= Math.PI + 1e-6; a += STEP / 0.62) for (let k = -1; k <= 1; k++) handle.push(Math.cos(a) * 0.95, Math.sin(a) * 0.42, k * 0.05);
+    place(handle, handleM);
+    const occs = [
+      new RoundedBoxGeometry(2.62, 0.24, 1.66, 2, 0.1).applyMatrix4(baseM),
+      new RoundedBoxGeometry(SW * 0.97, SH * 0.97, SD * 0.8, 2, 0.12).applyMatrix4(screenM),
+    ];
+    return {
+      points: pts,
+      occluders: occs,
+      extras: (g, track) => {
+        // The live scan: a fan with speckle and a beam sweeping back and forth
+        const screen = new Group();
+        screen.applyMatrix4(screenM);
+        g.add(screen);
+        const z = SD / 2 + 0.02;
+        const apex = new Vector3(0, VIEW.h / 2 - 0.08, z);
+        const R = VIEW.h - 0.16;
+        const A = 0.62; // half-angle of the fan
+        const at = (ang: number, r: number) => new Vector3(apex.x + Math.sin(ang) * r, apex.y - Math.cos(ang) * r, z);
+        const outline = [at(-A, 0.18)];
+        for (let i = 0; i <= 40; i++) outline.push(at(-A + (i / 40) * 2 * A, R));
+        outline.push(at(A, 0.18));
+        for (let i = 0; i <= 10; i++) outline.push(at(A - (i / 10) * 2 * A, 0.18));
+        // A thin frame round the display
+        const fw = VIEW.w / 2, fh = VIEW.h / 2;
+        const frameGeo = new BufferGeometry().setFromPoints([new Vector3(-fw, -fh, z), new Vector3(fw, -fh, z), new Vector3(fw, fh, z), new Vector3(-fw, fh, z), new Vector3(-fw, -fh, z)]);
+        const frameMat = new LineBasicMaterial({ color: MINT, transparent: true, opacity: 0.35, depthWrite: false });
+        screen.add(new Line(frameGeo, frameMat));
+        track(frameGeo);
+        track(frameMat);
+        const fanGeo = new BufferGeometry().setFromPoints(outline);
+        const fanMat = new LineBasicMaterial({ color: MINT, transparent: true, opacity: 0.55, depthWrite: false });
+        screen.add(new Line(fanGeo, fanMat));
+        // Speckle, denser in a soft band (the tissue), with a dark oval inside it
+        const speck: number[] = [];
+        let seed = 7;
+        const rand = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+        for (let i = 0; i < 520; i++) {
+          const ang = (rand() * 2 - 1) * A * 0.96;
+          const r = 0.22 + rand() * (R - 0.26);
+          const p = at(ang, r);
+          const inOval = ((p.x - 0.12) / 0.34) ** 2 + ((p.y - (apex.y - R * 0.6)) / 0.2) ** 2 < 1;
+          if (inOval || rand() > 0.35 + 0.5 * Math.exp(-(((r / R) - 0.55) ** 2) / 0.05)) continue;
+          speck.push(p.x, p.y, p.z);
+        }
+        const speckGeo = new BufferGeometry();
+        speckGeo.setAttribute('position', new BufferAttribute(new Float32Array(speck), 3));
+        const speckMat = new PointsMaterial({ color: '#d7f2e1', size: 0.03, transparent: true, opacity: 0.75, depthWrite: false });
+        screen.add(new Points(speckGeo, speckMat));
+        const beamGeo = new BufferGeometry().setFromPoints([at(0, 0.18), at(0, R)]);
+        const beamMat = new LineBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.9, depthWrite: false });
+        const beam = new Line(beamGeo, beamMat);
+        screen.add(beam);
+        // The logo's red dot: the trackball on the keyboard
+        const tex = glowTexture('rgba(228,40,60,1)');
+        const mat = new SpriteMaterial({ map: tex, transparent: true, blending: AdditiveBlending, depthWrite: false });
+        const ball = new Sprite(mat);
+        ball.position.copy(new Vector3(0, 0.17, 0.35).applyMatrix4(baseM));
+        g.add(ball);
+        [fanGeo, fanMat, speckGeo, speckMat, beamGeo, beamMat, tex, mat].forEach(track);
+        return (t: number) => {
+          const ang = Math.sin(t * 1.4) * A * 0.95;
+          const pos = beamGeo.getAttribute('position') as BufferAttribute;
+          const a0 = at(ang, 0.18), a1 = at(ang, R);
+          pos.setXYZ(0, a0.x, a0.y, a0.z);
+          pos.setXYZ(1, a1.x, a1.y, a1.z);
+          pos.needsUpdate = true;
+          ball.scale.setScalar(0.4 + 0.15 * Math.sin(t * 3));
+        };
+      },
+    };
+  }
   // microscope: side view, eyepiece up and to the left
   const parts = [
     new RoundedBoxGeometry(2.1, 0.3, 1.3, 3, 0.12).translate(0.1, -1.55, 0),
@@ -303,6 +396,7 @@ export function mountIcon(container: HTMLElement, icon: HeroIcon = 'cross', onRe
 
   const built = build(icon);
   tilt.rotation.z = built.tilt ?? 0;
+  if (icon === 'ultrasound') shape.scale.setScalar(1.18);
   const pos = new Float32Array(built.points);
   const count = pos.length / 3;
   const col = new Float32Array(count * 3);
@@ -388,7 +482,7 @@ export function mountIcon(container: HTMLElement, icon: HeroIcon = 'cross', onRe
   const render = (t: number) => {
     eased.x += (pointer.x - eased.x) * 0.04;
     eased.y += (pointer.y - eased.y) * 0.04;
-    shape.rotation.y = icon === 'tube' ? t * 0.25 : Math.sin(t * 0.3) * (icon === 'microscope' ? 0.3 : 0.45); // the tube turns; the others sway, front in view
+    shape.rotation.y = icon === 'tube' ? t * 0.25 : Math.sin(t * 0.3) * (icon === 'microscope' ? 0.3 : icon === 'ultrasound' ? 0.5 : 0.45) + (icon === 'ultrasound' ? -0.25 : 0); // the tube turns; the others sway, front in view
     tilt.rotation.x = eased.y * 0.15;
     tilt.rotation.y = eased.x * 0.3;
     tilt.position.y = Math.sin(t * 0.8) * 0.06;
