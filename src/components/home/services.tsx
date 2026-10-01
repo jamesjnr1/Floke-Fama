@@ -74,7 +74,7 @@ export function Services() {
                       <span
                         className={cn(
                           'relative grid size-12 place-items-center rounded-full border font-mono text-sm transition-all duration-500',
-                          on ? 'scale-110 border-brand-600 bg-brand-600 text-white shadow-[0_0_0_8px_rgb(37_120_71/0.12)]' : done ? 'border-brand-500 bg-paper text-brand-700' : 'border-line bg-paper text-ink-3 group-hover:border-ink/30',
+                          on ? 'scale-110 border-brand-600 bg-brand-600 text-white shadow-[0_0_0_8px_rgb(0_112_58/0.12)]' : done ? 'border-brand-500 bg-paper text-brand-700' : 'border-line bg-paper text-ink-3 group-hover:border-ink/30',
                           'group-focus-visible:ring-4 group-focus-visible:ring-brand-500/30',
                         )}
                       >
@@ -88,8 +88,8 @@ export function Services() {
             </ol>
           </div>
 
-          <div id="service-panel" role="tabpanel" className="relative mt-12 overflow-hidden rounded-5xl bg-brand-800 bg-[linear-gradient(120deg,#18512f_0%,#0f3520_70%)] text-white">
-            <div aria-hidden className="absolute -right-24 -top-24 size-[420px] rounded-full bg-[radial-gradient(circle,rgb(82_181_124/0.22),transparent_65%)]" />
+          <div id="service-panel" role="tabpanel" className="relative mt-12 overflow-hidden rounded-5xl bg-brand-800 bg-[linear-gradient(120deg,#00592e_0%,#00421f_70%)] text-white">
+            <div aria-hidden className="absolute -right-24 -top-24 size-[420px] rounded-full bg-[radial-gradient(circle,rgb(63_160_109/0.22),transparent_65%)]" />
             <AnimatePresence mode="wait">
               <motion.div
                 key={active}

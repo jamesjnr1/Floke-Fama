@@ -17,7 +17,7 @@ export function NewArrivals({ products, categories }: { products: Product[]; cat
       <ul className="swipe-row mt-4 gap-3 md:grid-cols-4">
         {items.map((p) => (
           <li key={p.slug} className="min-w-0">
-            <Link href={`/products/${p.slug}`} scroll={false} className="group flex h-full items-center gap-3 rounded-3xl border border-line bg-paper p-2 pr-4 transition hover:border-ink/20 hover:shadow-[0_20px_40px_-30px_rgb(11_21_16/0.4)]">
+            <Link href={`/products/${p.slug}`} scroll={false} className="group flex h-full items-center gap-3 rounded-3xl border border-line bg-paper p-2 pr-4 transition hover:border-ink/20 hover:shadow-[0_20px_40px_-30px_rgb(0_40_21/0.4)]">
               <ProductVisual product={p} category={categories.find((c) => c.slug === p.category)} shared={false} sizes="96px" className="size-20 shrink-0 rounded-2xl" />
               <span className="min-w-0 flex-1">
                 <span className="label block !text-[10px]">{p.brand}</span>

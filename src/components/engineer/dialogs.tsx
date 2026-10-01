@@ -55,7 +55,7 @@ export function LogFaultDialog({ open, onOpenChange, assets, defaultAssetId, onS
           </div>
         </fieldset>
         <label className="flex items-center gap-3 text-sm text-white/70">
-          <input type="checkbox" checked={assignToMe} onChange={(e) => setAssignToMe(e.target.checked)} className="size-4 accent-[#257847]" />
+          <input type="checkbox" checked={assignToMe} onChange={(e) => setAssignToMe(e.target.checked)} className="size-4 accent-[#00703a]" />
           Assign to me
         </label>
         <div className="flex justify-end gap-2 pt-2">
@@ -96,7 +96,7 @@ export function ResolveDialog({ ticket, onOpenChange, onSubmit }: {
           <p className="text-xs text-white/50">Parts on this ticket: {ticket.parts.map((p) => `${p.qty} × ${p.name}`).join(', ')}</p>
         )}
         <label className="flex items-center gap-3 text-sm text-white/70">
-          <input type="checkbox" checked={calibrated} onChange={(e) => setCalibrated(e.target.checked)} className="size-4 accent-[#257847]" />
+          <input type="checkbox" checked={calibrated} onChange={(e) => setCalibrated(e.target.checked)} className="size-4 accent-[#00703a]" />
           Calibration performed and passed (issues a certificate)
         </label>
         <div className="flex justify-end gap-2 pt-2">
