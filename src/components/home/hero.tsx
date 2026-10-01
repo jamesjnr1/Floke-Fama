@@ -11,7 +11,7 @@ import { Icon } from '@/components/ui/icon';
  * (Explore Solutions → shop, Contact Us → contact, as on the current site).
  * Right (span 5): 3D network globe with the published figures, over a faint wireframe network.
  */
-export function Hero() {
+export function Hero({ visual }: { visual?: 'globe' | 'capsules' | 'molecule' } = {}) {
   return (
     <section className="relative isolate overflow-hidden bg-midnight text-white">
       {/* Background: glow, light beam, wireframe network */}
@@ -46,7 +46,7 @@ export function Hero() {
 
         {/* Column Right (span 5): the 3D network globe */}
         <Reveal delay={0.2} y={40} className="relative lg:col-span-5">
-          <HeroGlobe />
+          <HeroGlobe visual={visual} />
         </Reveal>
       </div>
     </section>

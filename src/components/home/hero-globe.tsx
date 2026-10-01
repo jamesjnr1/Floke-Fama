@@ -3,6 +3,7 @@
 import { motion, useReducedMotion } from 'motion/react';
 import { useEffect, useRef, useState } from 'react';
 import { CountUp } from '@/components/motion/count-up';
+import type { PharmaVariant } from '@/lib/three/pharma-scene';
 import { cn } from '@/lib/utils';
 
 const chips = [
@@ -12,7 +13,7 @@ const chips = [
 ];
 
 /** The 3D network globe, with floating glass read-outs of the published figures. */
-export function HeroGlobe() {
+export function HeroGlobe({ visual = 'globe' }: { visual?: 'globe' | PharmaVariant }) {
   const ref = useRef<HTMLDivElement>(null);
   const [ready, setReady] = useState(false);
   const reduce = useReducedMotion();
@@ -20,14 +21,20 @@ export function HeroGlobe() {
   useEffect(() => {
     let cleanup: (() => void) | undefined;
     let cancelled = false;
-    import('@/lib/three/globe-scene').then(({ mountGlobe }) => {
-      if (!cancelled && ref.current) cleanup = mountGlobe(ref.current, () => setReady(true));
-    });
+    const done = () => setReady(true);
+    if (visual === 'globe')
+      import('@/lib/three/globe-scene').then(({ mountGlobe }) => {
+        if (!cancelled && ref.current) cleanup = mountGlobe(ref.current, done);
+      });
+    else
+      import('@/lib/three/pharma-scene').then(({ mountPharma }) => {
+        if (!cancelled && ref.current) cleanup = mountPharma(ref.current, visual, done);
+      });
     return () => {
       cancelled = true;
       cleanup?.();
     };
-  }, []);
+  }, [visual]);
 
   return (
     <div className="relative mx-auto aspect-square w-full max-w-[300px] sm:max-w-[420px] lg:max-w-[560px]">
