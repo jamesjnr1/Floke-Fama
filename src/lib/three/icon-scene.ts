@@ -12,7 +12,7 @@ import { prefersReducedMotion } from '@/lib/a11y';
 import {
   AdditiveBlending, BufferAttribute, BufferGeometry, CanvasTexture, Color, CylinderGeometry, Group, Line, LineBasicMaterial,
   Mesh, MeshBasicMaterial, PerspectiveCamera, Points, PointsMaterial, Scene, SphereGeometry, Sprite, SpriteMaterial,
-  Matrix4, TorusGeometry, Vector3, WebGLRenderer,
+  Matrix4, PlaneGeometry, TorusGeometry, Vector3, WebGLRenderer,
 } from 'three';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 import { MeshSurfaceSampler } from 'three/examples/jsm/math/MeshSurfaceSampler.js';
@@ -291,12 +291,21 @@ function build(icon: HeroIcon): Built {
         // A thin frame round the display
         const fw = VIEW.w / 2, fh = VIEW.h / 2;
         const frameGeo = new BufferGeometry().setFromPoints([new Vector3(-fw, -fh, z), new Vector3(fw, -fh, z), new Vector3(fw, fh, z), new Vector3(-fw, fh, z), new Vector3(-fw, -fh, z)]);
-        const frameMat = new LineBasicMaterial({ color: MINT, transparent: true, opacity: 0.35, depthWrite: false });
+        const frameMat = new LineBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.8, depthWrite: false });
         screen.add(new Line(frameGeo, frameMat));
+        // Dark glass behind the scan so the image stands out
+        const panelGeo = new PlaneGeometry(VIEW.w, VIEW.h);
+        const panelMat = new MeshBasicMaterial({ color: '#04140c', transparent: true, opacity: 0.75, depthWrite: false });
+        const panel = new Mesh(panelGeo, panelMat);
+        panel.position.z = z - 0.005;
+        panel.renderOrder = -0.5; // drawn first, so the scan and the red dot sit on top
+        screen.add(panel);
+        track(panelGeo);
+        track(panelMat);
         track(frameGeo);
         track(frameMat);
         const fanGeo = new BufferGeometry().setFromPoints(outline);
-        const fanMat = new LineBasicMaterial({ color: MINT, transparent: true, opacity: 0.55, depthWrite: false });
+        const fanMat = new LineBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.9, depthWrite: false });
         screen.add(new Line(fanGeo, fanMat));
         // The image: speckle plus a few bright tissue layers, with a dark oval (an organ) in the middle.
         // Each dot keeps its angle so it can light up as the beam passes, like a live scan.
@@ -331,7 +340,7 @@ function build(icon: HeroIcon): Built {
         speckGeo.setAttribute('position', new BufferAttribute(new Float32Array(speck), 3));
         const speckCol = new Float32Array(speck.length);
         speckGeo.setAttribute('color', new BufferAttribute(speckCol, 3));
-        const speckMat = new PointsMaterial({ vertexColors: true, size: 0.034, transparent: true, depthWrite: false, blending: AdditiveBlending });
+        const speckMat = new PointsMaterial({ vertexColors: true, size: 0.05, transparent: true, depthWrite: false, blending: AdditiveBlending });
         screen.add(new Points(speckGeo, speckMat));
         const beamGeo = new BufferGeometry().setFromPoints([at(0, 0.05), at(0, R)]);
         const beamMat = new LineBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.85, depthWrite: false });
@@ -343,7 +352,7 @@ function build(icon: HeroIcon): Built {
         source.position.copy(apex).setZ(z + 0.01);
         screen.add(source);
         const coreGeo = new BufferGeometry().setFromPoints([source.position.clone()]);
-        const coreMat = new PointsMaterial({ color: RED, size: 0.09, transparent: true, depthWrite: false });
+        const coreMat = new PointsMaterial({ color: RED, size: 0.13, transparent: true, depthWrite: false });
         screen.add(new Points(coreGeo, coreMat));
         // Keyboard: a trackball ring and two rows of keys
         const deck = new Group();
@@ -351,13 +360,13 @@ function build(icon: HeroIcon): Built {
         g.add(deck);
         const ringPts = Array.from({ length: 49 }, (_, k) => new Vector3(Math.cos((k / 48) * Math.PI * 2) * 0.17, 0.16, 0.38 + Math.sin((k / 48) * Math.PI * 2) * 0.17));
         const ringGeo = new BufferGeometry().setFromPoints(ringPts);
-        const lineMat = new LineBasicMaterial({ color: MINT, transparent: true, opacity: 0.7, depthWrite: false });
+        const lineMat = new LineBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.9, depthWrite: false });
         deck.add(new Line(ringGeo, lineMat));
         const keys: number[] = [];
         for (const zz of [-0.35, -0.12]) for (let x = -1.0; x <= 1.0 + 1e-6; x += 0.2) keys.push(x, 0.16, zz);
         const keyGeo = new BufferGeometry();
         keyGeo.setAttribute('position', new BufferAttribute(new Float32Array(keys), 3));
-        const keyMat = new PointsMaterial({ color: '#ffffff', size: 0.06, transparent: true, opacity: 0.85, depthWrite: false });
+        const keyMat = new PointsMaterial({ color: '#ffffff', size: 0.075, transparent: true, opacity: 1, depthWrite: false });
         deck.add(new Points(keyGeo, keyMat));
         [speckGeo, speckMat, beamGeo, beamMat, tex, mat, coreGeo, coreMat, ringGeo, lineMat, keyGeo, keyMat].forEach(track);
         const tint = new Color('#d7f2e1');
@@ -376,7 +385,7 @@ function build(icon: HeroIcon): Built {
             speckCol[i * 3 + 2] = tint.b * v;
           }
           speckGeo.attributes.color.needsUpdate = true;
-          source.scale.setScalar(0.42 + 0.14 * Math.sin(t * 3));
+          source.scale.setScalar(0.6 + 0.18 * Math.sin(t * 3));
         };
       },
     };
@@ -440,7 +449,7 @@ export function mountIcon(container: HTMLElement, icon: HeroIcon = 'cross', onRe
 
   const built = build(icon);
   tilt.rotation.z = built.tilt ?? 0;
-  if (icon === 'ultrasound') shape.scale.setScalar(1.18);
+  if (icon === 'ultrasound') shape.scale.setScalar(1.32);
   const pos = new Float32Array(built.points);
   const count = pos.length / 3;
   const col = new Float32Array(count * 3);
@@ -451,7 +460,10 @@ export function mountIcon(container: HTMLElement, icon: HeroIcon = 'cross', onRe
   const dotGeo = new BufferGeometry();
   dotGeo.setAttribute('position', new BufferAttribute(pos, 3));
   dotGeo.setAttribute('color', new BufferAttribute(col, 3));
-  const dotMat = new PointsMaterial({ vertexColors: true, size: 0.042, transparent: true, opacity: 0.92, depthWrite: false });
+  // The ultrasound is the hero's centrepiece: brighter, larger dots so it reads clearly on the green photo
+  const bold = icon === 'ultrasound';
+  if (bold) for (let i = 0; i < count; i++) col.set([0.93, 1, 0.96], i * 3);
+  const dotMat = new PointsMaterial({ vertexColors: true, size: bold ? 0.062 : 0.042, transparent: true, opacity: bold ? 1 : 0.92, depthWrite: false });
   shape.add(new Points(dotGeo, dotMat));
   track(dotGeo);
   track(dotMat);

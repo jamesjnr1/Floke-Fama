@@ -22,8 +22,8 @@ export function HeroCapsule() {
 
   return (
     <div className="relative mx-auto aspect-square w-full max-w-[300px] sm:max-w-[420px] lg:max-w-[560px]">
-      {/* Soft glow behind the machine (also the fallback if WebGL isn't available) */}
-      <div aria-hidden className="absolute inset-[12%] rounded-full bg-[radial-gradient(circle_at_40%_35%,rgb(82_181_124/0.35),rgb(19_66_40/0.25)_45%,transparent_70%)] blur-xl" />
+      {/* Dark halo behind the machine so the white dots stand out on the photo (also the fallback if WebGL isn't available) */}
+      <div aria-hidden className="absolute inset-[6%] rounded-full bg-[radial-gradient(circle,rgb(5_22_13/0.72),rgb(5_22_13/0.45)_45%,transparent_70%)] blur-2xl" />
       <div ref={ref} aria-hidden className={cn('absolute inset-0 transition-opacity duration-[1600ms]', ready ? 'opacity-100' : 'opacity-0')} />
     </div>
   );
