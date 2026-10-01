@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Reveal } from '@/components/motion/reveal';
+import { CountUp } from '@/components/motion/count-up';
 import { Icon } from '@/components/ui/icon';
 import { clients, metrics, technologyPartners } from '@/data/seed';
 
@@ -81,21 +82,33 @@ export function Partners({ heading = true }: { heading?: boolean }) {
           </ul>
         </Reveal>
 
-        {/* "The Results", as on the current homepage */}
+        {/* The results: one balanced band (figures from the current homepage) */}
         <Reveal delay={0.1}>
-          <div className="mt-10 grid gap-3 sm:grid-cols-3">
-            {metrics.slice(0, 2).map((m) => (
-              <div key={m.label} className="rounded-3xl border border-line bg-paper p-6">
-                <p className="label">The results</p>
-                <p className="mt-3 text-4xl font-bold tracking-[-0.03em] text-brand-600">{m.value}{m.suffix}</p>
-                <p className="mt-1 text-sm font-medium uppercase tracking-[0.04em] text-ink-2">{m.label}</p>
+          <div className="relative isolate mt-10 overflow-hidden rounded-4xl bg-midnight text-white">
+            <div aria-hidden className="absolute -left-24 -top-32 -z-10 size-[420px] rounded-full bg-[radial-gradient(circle,rgb(46_154_91/0.28),transparent_65%)]" />
+            <div aria-hidden className="absolute -bottom-40 right-0 -z-10 size-[420px] rounded-full bg-[radial-gradient(circle,rgb(46_154_91/0.16),transparent_65%)]" />
+            <div className="grid divide-y divide-white/10 md:grid-cols-3 md:divide-x md:divide-y-0">
+              {metrics.slice(0, 2).map((m, i) => (
+                <div key={m.label} className="flex flex-col gap-5 p-7 md:p-10">
+                  <span className="grid size-11 place-items-center rounded-2xl bg-white/[0.07] text-xl text-brand-300 ring-1 ring-white/10">
+                    <Icon name={i === 0 ? 'fi-rr-hospital' : 'fi-rr-settings'} />
+                  </span>
+                  <p className="text-[clamp(2.75rem,2rem+2.4vw,4rem)] font-bold leading-none tracking-[-0.04em]">
+                    <CountUp value={m.value} suffix={m.suffix} />
+                  </p>
+                  <p className="max-w-[16rem] text-[15px] leading-snug text-white/65">{i === 0 ? 'Hospitals and medical laboratories served, and counting' : 'Successful system integrations'}</p>
+                </div>
+              ))}
+              <div className="flex flex-col gap-5 p-7 md:p-10">
+                <span className="grid size-11 place-items-center rounded-2xl bg-white/[0.07] text-xl text-brand-300 ring-1 ring-white/10">
+                  <Icon name="fi-rr-trophy" />
+                </span>
+                <p className="text-[clamp(1.75rem,1.4rem+1.2vw,2.5rem)] font-bold leading-[1.05] tracking-[-0.03em]">Ghana Club 100</p>
+                <p className="text-[15px] leading-snug text-white/65">
+                  Trusted badges &amp; associations: CEO’s Summit, partnerships and more.
+                  <Link href="/awards" className="mt-3 flex items-center gap-1 font-medium text-brand-300 transition hover:text-white">View our awards <Icon name="fi-rr-arrow-small-right" /></Link>
+                </p>
               </div>
-            ))}
-            <div className="rounded-3xl border border-line bg-paper p-6">
-              <p className="label">Trusted</p>
-              <p className="mt-3 text-xl font-bold uppercase tracking-[0.02em] text-ink">Badges &amp; associations</p>
-              <p className="mt-1 text-sm font-medium uppercase tracking-[0.04em] text-ink-2">Ghana Club 100, CEO’s Summit, partnerships etc.</p>
-              <Link href="/awards" className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-brand-700">View Our Awards <Icon name="fi-rr-arrow-small-right" /></Link>
             </div>
           </div>
         </Reveal>

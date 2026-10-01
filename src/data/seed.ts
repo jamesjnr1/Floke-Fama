@@ -198,12 +198,12 @@ export const serviceList = [
 
 /** "Our Services" on the current About page: the six services in one line each. */
 export const servicesInBrief = [
-  { title: 'Medical Equipment Sales', text: 'Providing top-of-the-line medical equipment to meet diverse healthcare needs.' },
-  { title: 'Equipment Installation', text: 'Ensuring seamless setup and optimal functionality.' },
-  { title: 'Equipment Maintenance', text: 'Regular maintenance to keep equipment in peak condition, minimizing downtime.' },
-  { title: 'Equipment Repairs', text: 'Efficient repair services to minimize operational disruptions.' },
-  { title: 'Calibration Services', text: 'Precise calibration for accuracy and reliability.' },
-  { title: 'Training and Support', text: 'Comprehensive programs and ongoing support to optimize equipment utilization.' },
+  { icon: 'fi-rr-box-open', title: 'Medical Equipment Sales', text: 'Providing top-of-the-line medical equipment to meet diverse healthcare needs.' },
+  { icon: 'fi-rr-settings', title: 'Equipment Installation', text: 'Ensuring seamless setup and optimal functionality.' },
+  { icon: 'fi-rr-shield-check', title: 'Equipment Maintenance', text: 'Regular maintenance to keep equipment in peak condition, minimizing downtime.' },
+  { icon: 'fi-rr-tool-box', title: 'Equipment Repairs', text: 'Efficient repair services to minimize operational disruptions.' },
+  { icon: 'fi-rr-chart-line-up', title: 'Calibration Services', text: 'Precise calibration for accuracy and reliability.' },
+  { icon: 'fi-rr-graduation-cap', title: 'Training and Support', text: 'Comprehensive programs and ongoing support to optimize equipment utilization.' },
 ] as const;
 
 /** "Why choose Flokefama?", from the current Services page. */
