@@ -1,7 +1,6 @@
 import { Hero } from '@/components/home/hero';
 import { Partners } from '@/components/home/partners';
 import { ProductUniverse } from '@/components/home/product-universe';
-import { ServicesTeaser } from '@/components/home/services-teaser';
 import { SpecScrolly } from '@/components/home/spec-scrolly';
 import { Testimonials } from '@/components/home/testimonials';
 import { getCategories, getProducts } from '@/lib/data';
@@ -17,7 +16,6 @@ export default async function HomePage() {
       <Partners />
       <SpecScrolly />
       <ProductUniverse categories={categories} products={products} />
-      <ServicesTeaser />
       <Testimonials />
     </>
   );
