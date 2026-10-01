@@ -47,7 +47,7 @@ const nextConfig: NextConfig = {
       { source: '/products/mindray-bs-240', destination: '/products?category=in-vitro-diagnostics', permanent: true },
       // Earlier preview URLs
       { source: '/solutions', destination: '/services', permanent: true },
-      { source: '/partners', destination: '/about#partners', permanent: true },
+      { source: '/partners', destination: '/#partners', permanent: true },
       { source: '/impact', destination: '/about', permanent: true },
       { source: '/media', destination: '/events', permanent: true },
     ];

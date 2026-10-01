@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
 import { PageHero } from '@/components/layout/page-hero';
 import { Reveal } from '@/components/motion/reveal';
 import { Icon } from '@/components/ui/icon';
@@ -76,18 +75,23 @@ export default function EsgPage() {
       {/* Local industry: the long-term commitment */}
       <section className="relative isolate overflow-hidden bg-[linear-gradient(160deg,#1b5e37_0%,#134228_55%,#0e3320_100%)] py-24 text-white md:py-32">
         <div aria-hidden className="absolute -right-40 -top-40 -z-10 size-[640px] rounded-full bg-[radial-gradient(circle,rgb(143_209_169/0.18),transparent_65%)]" />
-        <div className="mx-auto grid max-w-[1280px] items-center gap-12 px-5 md:px-10 lg:grid-cols-2">
+        <div className="mx-auto grid max-w-[1280px] items-start gap-12 px-5 md:px-10 lg:grid-cols-[0.8fr_1.2fr]">
           <Reveal>
             <p className="label !text-brand-100">Economic · Local industry</p>
             <h2 className="display mt-4 text-[clamp(2rem,1.2rem+2.8vw,3.5rem)] text-white">Made in Ghana, for Ghana.</h2>
-            <p className="mt-6 text-lg font-light leading-relaxed text-white/75">Our aim: {aim.text.charAt(0).toLowerCase() + aim.text.slice(1)}</p>
-            <p className="mt-4 text-lg font-light leading-relaxed text-white/75">Our vision: {vision.text.charAt(0).toLowerCase() + vision.text.slice(1)}</p>
+            <p className="mt-6 max-w-md text-lg font-light leading-relaxed text-white/75">Our long-term commitment goes beyond distribution: building the capacity to make what Ghana’s healthcare needs, here.</p>
           </Reveal>
-          <Reveal delay={0.1}>
-            <figure className="relative aspect-[4/3.6] overflow-hidden rounded-5xl">
-              <Image src="/images/office-team.webp" alt="The ‘Together we do great things’ wall at the Flokefama head office" fill sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />
-            </figure>
-          </Reveal>
+          <ul className="grid gap-4 sm:grid-cols-2">
+            {[aim, vision].map((p, i) => (
+              <li key={p.label}>
+                <Reveal delay={0.08 * (i + 1)} className="flex h-full flex-col rounded-4xl border border-white/15 bg-white/[0.08] p-7">
+                  <Icon name={p.icon} className="text-2xl text-brand-100" />
+                  <p className="label mt-8 !text-brand-100">Our {p.label.toLowerCase()}</p>
+                  <p className="mt-3 text-lg leading-relaxed text-white">{p.text}</p>
+                </Reveal>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
     </>
