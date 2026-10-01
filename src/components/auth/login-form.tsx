@@ -2,6 +2,7 @@
 
 import { useActionState, useRef, useState } from 'react';
 import { Icon } from '@/components/ui/icon';
+import { contact } from '@/data/seed';
 import { login, type LoginState } from '@/lib/auth/actions';
 import { cn } from '@/lib/utils';
 
@@ -49,6 +50,14 @@ export function LoginForm({ next, demo, notice }: { next?: string; demo: Demo[];
             </button>
           </span>
         </label>
+        <p className="-mt-2 text-right">
+          <a
+            href={`mailto:${contact.support}?subject=${encodeURIComponent('Client portal: password reset')}&body=${encodeURIComponent('Please reset the password for my client portal account.\n\nEmail on the account: ')}`}
+            className="text-sm font-medium text-brand-700 underline-offset-4 hover:underline"
+          >
+            Forgot password?
+          </a>
+        </p>
 
         {state.error && (
           <p role="alert" className="flex items-center gap-2 rounded-xl bg-signal/[0.06] px-4 py-3 text-sm text-signal-700 ring-1 ring-signal/30">
