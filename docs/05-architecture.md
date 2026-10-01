@@ -18,7 +18,7 @@
 | Frontend | **Next.js 15.5** App Router, React 19, TypeScript (strict) | `src/app` |
 | Styling | **Tailwind CSS v4** (CSS-first tokens) + shadcn-style components on **Radix** primitives | `src/app/globals.css`, `src/components/ui` |
 | Motion | **Motion** (Framer Motion's current package, `motion/react`) | throughout, e.g. `layoutId` morphs |
-| 3D | Three.js dotted capsule in the hero (points and lines only), lazy chunk, pauses off-screen, still frame with reduced motion | `src/lib/three/capsule-scene.ts` |
+| 3D | Three.js dotted portable ultrasound in the hero (after the Mindray DP-10 in the Shop): a live scan sweeps from the red transducer dot. Points and lines only, lazy chunk, pauses off-screen, still frame with reduced motion | `src/lib/three/icon-scene.ts` |
 | CMS | **Sanity** (headless), falls back to seed data when not configured | `src/lib/sanity.ts`, `src/lib/data.ts`, `studio/` |
 | Search | **Algolia** (lite client), falls back to a local scorer | `src/lib/search.ts`, `scripts/algolia-sync.ts` |
 | Leads | Validated route handlers (quote, contact, portal registration) → **HubSpot** Forms API, with email/WhatsApp hand-off when not configured | `src/app/api/*/route.ts`, `src/lib/crm.ts` |
@@ -36,7 +36,7 @@ Every integration is optional at runtime. With no environment variables the site
 ## Routes
 | Route | Rendering | Notes |
 |---|---|---|
-| `/` | Static + ISR | Hero (“Ghana’s No.1 Healthcare Company.”, 3D dotted capsule), Partners & Clientele, in-vitro diagnostics scrollytelling, product universe, testimonials |
+| `/` | Static + ISR | Hero (“Ghana’s No.1 Healthcare Company.”, 3D dotted ultrasound), Partners & Clientele, in-vitro diagnostics scrollytelling, product universe, testimonials |
 | `/about` | Static + ISR | Company → About Us: who we are, impact (figures + sourced stories), mission / vision / aim, core values |
 | `/awards` | Static | Company → Awards: photographed awards, closing statement |
 | `/services` | Static | Products & Services: the service lifecycle, why choose Flokefama (products live in the Shop) |
