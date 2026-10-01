@@ -16,12 +16,12 @@ export function LogoMark({ className }: { className?: string }) {
   );
 }
 
-/** Left Brand Node: mark + wordmark (gap 8px). */
+/** Left Brand Node: mark + wordmark (gap 8px). The wordmark uses the original logo's lettering, "FLOKE FAMA". */
 export function Logo({ className, tone = 'dark' }: { className?: string; tone?: 'dark' | 'light' }) {
   return (
     <Link href="/" aria-label="Flokefama home" className={cn('flex items-center gap-2', className)}>
       <LogoMark />
-      <span className={cn('text-xl font-semibold tracking-[-0.02em]', tone === 'dark' ? 'text-white' : 'text-ink')}>Flokefama</span>
+      <span className={cn('wordmark whitespace-nowrap text-[19px] leading-none', tone === 'dark' ? 'text-white' : 'text-brand-600')}>Floke Fama</span>
     </Link>
   );
 }
