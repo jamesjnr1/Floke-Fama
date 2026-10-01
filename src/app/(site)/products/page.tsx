@@ -20,7 +20,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
         <div className="relative mx-auto max-w-[1280px] px-5 pb-10 pt-16 md:px-10 md:pt-24">
           <p className="label">Product universe</p>
           <h1 className="display mt-5 max-w-4xl text-[clamp(2.75rem,1.4rem+5vw,6rem)]">
-            Clinical-grade equipment. <span className="text-ink-3">Instantly searchable.</span>
+            Clinical-grade equipment. <span className="text-brand-600">Instantly searchable.</span>
           </h1>
         </div>
       </section>
