@@ -37,6 +37,7 @@ export const product = defineType({
     defineField({ name: 'summary', type: 'text', rows: 2, group: 'main', validation: (r) => r.required().max(180) }),
     defineField({ name: 'image', type: 'image', group: 'main', description: 'Square, white or transparent background, product centred' }),
     defineField({ name: 'featured', type: 'boolean', group: 'main', initialValue: false }),
+    defineField({ name: 'newArrival', title: 'New arrival', type: 'boolean', group: 'main', initialValue: false, description: 'Show in “New arrivals” on the Shop' }),
     defineField({ name: 'highlights', type: 'array', of: [{ type: 'string' }], group: 'main', validation: (r) => r.max(4) }),
     defineField({ name: 'tags', title: 'Search keywords', type: 'array', of: [{ type: 'string' }], options: { layout: 'tags' }, group: 'main' }),
     defineField({

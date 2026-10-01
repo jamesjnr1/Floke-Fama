@@ -1,11 +1,11 @@
 'use client';
 
 import { motion, useReducedMotion } from 'motion/react';
-import { Sparkline } from '@/components/engineer/Sparkline';
-import { statusMeta, ticketStatusMeta } from '@/components/engineer/status';
-import { Panel, PriorityBadge, SectionLabel } from '@/components/engineer/ui';
+import { Sparkline } from '@/components/service/Sparkline';
+import { statusMeta, ticketStatusMeta } from '@/components/service/status';
+import { Panel, PriorityBadge, SectionLabel } from '@/components/service/ui';
 import { Icon } from '@/components/ui/icon';
-import { assetStatus, daysUntil, dueLabel, fmtTime, isOpen, type EngineerState } from '@/lib/engineer/store';
+import { assetStatus, daysUntil, dueLabel, fmtTime, isOpen, type EngineerState } from '@/lib/service/store';
 import { cn } from '@/lib/utils';
 
 /** Overview: today at a glance. Every number is derived from the live portal state. */

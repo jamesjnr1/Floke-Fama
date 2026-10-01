@@ -146,6 +146,7 @@ export const products: Product[] = [
     documents: datasheet('CX23'),
     tags: ['microscope', 'microscopy', 'olympus'],
     featured: true,
+    newArrival: true,
   },
   {
     slug: 'quantum-analyser',
@@ -159,6 +160,7 @@ export const products: Product[] = [
     specsVerified: false,
     documents: [],
     tags: ['screening', 'portable', 'wellness'],
+    newArrival: true,
   },
   {
     slug: 'cpap-machine',
@@ -173,6 +175,7 @@ export const products: Product[] = [
     documents: [],
     tags: ['respiratory', 'cpap', 'ventilation', 'sleep apnoea'],
     featured: true,
+    newArrival: true,
   },
   {
     slug: 'aed-defibrillator',
@@ -222,6 +225,7 @@ export const products: Product[] = [
     specsVerified: false,
     documents: [],
     tags: ['scale', 'bmi', 'anthropometry'],
+    newArrival: true,
   },
   {
     slug: 'autoclave-range',

@@ -17,8 +17,8 @@
 .fi-rr-calendar::before{content:"\f339"}
 .fi-rr-chart-line-up::before{content:"\f3a5"}
 .fi-rr-check::before{content:"\f3c8"}
+.fi-rr-clipboard-list::before{content:"\f43b"}
 .fi-rr-clock::before{content:"\f45a"}
-.fi-rr-clock-three::before{content:"\f453"}
 .fi-rr-comment::before{content:"\f4b8"}
 .fi-rr-cross-small::before{content:"\f4f6"}
 .fi-rr-download::before{content:"\f591"}
@@ -58,6 +58,7 @@
 .fi-rr-truck-side::before{content:"\fe4d"}
 .fi-rr-user::before{content:"\fea0"}
 .fi-rr-user-add::before{content:"\fe7a"}
+.fi-rr-wrench-simple::before{content:"\ff25"}
 @font-face{font-family:"uicons-brands";src:url("uicons-brands.woff2") format("woff2");font-display:block}
 [class^="fi-brands-"]::before,[class*=" fi-brands-"]::before{font-family:"uicons-brands"!important;font-style:normal;font-weight:normal!important;line-height:1;display:inline-block;vertical-align:-.125em;-webkit-font-smoothing:antialiased}
 .fi-brands-whatsapp::before{content:"\f1d2"}

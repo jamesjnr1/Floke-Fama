@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { Sparkline } from '@/components/engineer/Sparkline';
-import { statusMeta } from '@/components/engineer/status';
+import { Sparkline } from '@/components/service/Sparkline';
+import { statusMeta } from '@/components/service/status';
 import { cn } from '@/lib/utils';
-import { assetStatus, dueLabel, daysUntil, isOpen, type AssetStatus, type EngineerState } from '@/lib/engineer/store';
+import { assetStatus, dueLabel, daysUntil, isOpen, type AssetStatus, type EngineerState } from '@/lib/service/store';
 
 /** System pulse: every installed system, filterable by status and facility. */
 export function SystemsView({ state, onOpenAsset }: { state: EngineerState; onOpenAsset: (id: string) => void }) {

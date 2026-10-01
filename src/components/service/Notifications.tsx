@@ -3,11 +3,12 @@
 import { AnimatePresence, motion } from 'motion/react';
 import { useEffect, useRef, useState } from 'react';
 import { Icon } from '@/components/ui/icon';
-import { fmtTime, type Notification } from '@/lib/engineer/store';
+import { fmtTime, type Notification } from '@/lib/service/store';
 import { cn } from '@/lib/utils';
 
 /** Bell with unread count and a dropdown list; clicking a notification opens what it refers to. */
-export function Notifications({ items, onRead, onReadAll, onOpen }: {
+export function Notifications({ items, onRead, onReadAll, onOpen, tone = 'dark' }: {
+  tone?: 'dark' | 'light';
   items: Notification[];
   onRead: (id: string) => void;
   onReadAll: () => void;
@@ -37,7 +38,7 @@ export function Notifications({ items, onRead, onReadAll, onOpen }: {
         aria-expanded={open}
         aria-controls="notif-panel"
         aria-label={unread ? `Notifications (${unread} unread)` : 'Notifications'}
-        className="relative grid size-11 place-items-center rounded-xl border border-white/10 bg-white/[0.04] hover:bg-white/10"
+        className={cn('relative grid size-11 place-items-center rounded-xl border', tone === 'dark' ? 'border-white/10 bg-white/[0.04] text-white hover:bg-white/10' : 'border-line bg-paper text-ink hover:border-ink/25')}
       >
         <Icon name="fi-rr-bell" />
         {unread > 0 && <span className="absolute -right-1 -top-1 grid min-w-5 place-items-center rounded-full bg-signal px-1 text-[10px] font-semibold text-white">{unread}</span>}

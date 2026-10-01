@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Field, fieldClass, GhostButton, PortalDialog, PrimaryButton } from '@/components/engineer/ui';
+import { Field, fieldClass, GhostButton, PortalDialog, PrimaryButton } from '@/components/service/ui';
 import { Icon } from '@/components/ui/icon';
-import type { Asset, Certificate, Priority, Ticket } from '@/lib/engineer/store';
+import type { Asset, Certificate, Priority, Ticket } from '@/lib/service/store';
 import { cn } from '@/lib/utils';
 
 /** Log a new equipment fault against an installed system. */

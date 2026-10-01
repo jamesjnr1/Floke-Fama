@@ -1,8 +1,8 @@
 'use client';
 
-import { GhostButton, Panel } from '@/components/engineer/ui';
+import { GhostButton, Panel } from '@/components/service/ui';
 import { Icon } from '@/components/ui/icon';
-import { daysUntil, dueLabel, fmtDate, type Asset, type EngineerState } from '@/lib/engineer/store';
+import { daysUntil, dueLabel, fmtDate, type Asset, type EngineerState } from '@/lib/service/store';
 import { cn } from '@/lib/utils';
 
 /** Calibration schedule: soonest first, overdue flagged, record a result in one click. */

@@ -20,7 +20,7 @@ const productFields = `
   "slug": slug.current, name, brand, "category": category->slug.current, summary,
   "image": image.asset->url, highlights, specs[]{label, value}, specsVerified,
   compatibility[]{item, status, note}, documents[]{title, kind, "url": file.asset->url},
-  tags, featured
+  tags, featured, newArrival
 `;
 
 export const queries = {

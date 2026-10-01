@@ -2,9 +2,9 @@
 
 import * as Dialog from '@radix-ui/react-dialog';
 import { useEffect, useMemo, useState } from 'react';
-import { PriorityBadge } from '@/components/engineer/ui';
+import { PriorityBadge } from '@/components/service/ui';
 import { Icon } from '@/components/ui/icon';
-import type { EngineerState } from '@/lib/engineer/store';
+import type { EngineerState } from '@/lib/service/store';
 import { cn } from '@/lib/utils';
 
 export type Command = { id: string; label: string; hint?: string; icon: string; group: 'Actions' | 'Tickets' | 'Systems'; run: () => void; priority?: 'critical' | 'high' | 'routine' };
