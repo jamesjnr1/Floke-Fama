@@ -3,12 +3,10 @@
 import { motion, useReducedMotion } from 'motion/react';
 import { useEffect, useRef, useState } from 'react';
 import { CountUp } from '@/components/motion/count-up';
-import type { PharmaVariant } from '@/lib/three/pharma-scene';
 import { cn } from '@/lib/utils';
 
 const chipPlaces: Record<string, string[]> = {
   globe: ['left-0 top-[14%]', 'right-0 top-[46%]', 'bottom-[10%] left-[8%]'],
-  equipment: ['left-0 top-[6%]', 'right-0 top-[52%]', 'bottom-0 left-0'],
 };
 const chips = [
   { value: 700, suffix: '+', label: 'Hospitals & labs served', className: 'left-0 top-[14%]' },
@@ -17,7 +15,7 @@ const chips = [
 ];
 
 /** The 3D network globe, with floating glass read-outs of the published figures. */
-export function HeroGlobe({ visual = 'globe' }: { visual?: 'globe' | PharmaVariant }) {
+export function HeroGlobe({ visual = 'globe' }: { visual?: 'globe' | 'capsule' }) {
   const ref = useRef<HTMLDivElement>(null);
   const [ready, setReady] = useState(false);
   const reduce = useReducedMotion();
@@ -31,8 +29,8 @@ export function HeroGlobe({ visual = 'globe' }: { visual?: 'globe' | PharmaVaria
         if (!cancelled && ref.current) cleanup = mountGlobe(ref.current, done);
       });
     else
-      import('@/lib/three/pharma-scene').then(({ mountPharma }) => {
-        if (!cancelled && ref.current) cleanup = mountPharma(ref.current, visual, done);
+      import('@/lib/three/capsule-scene').then(({ mountCapsule }) => {
+        if (!cancelled && ref.current) cleanup = mountCapsule(ref.current, done);
       });
     return () => {
       cancelled = true;
