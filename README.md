@@ -34,7 +34,9 @@ Optional integrations are switched on by environment variables. Copy `.env.examp
 ```
 src/
   app/(site)/          Public pages (Navbar + footer), matching the flokefama.com menu: home, about, awards, services,
-                       events, products (shop, + intercepted spec modal), esg, contact, quote, offline, login, client portal /portal
+                       events, products (shop, + intercepted spec modal), esg, contact, quote, offline
+  app/login/           Split-screen portal sign-in (no site chrome)
+  app/portal/          Client portal /portal (own shell)
   app/engineer/        Biomedical Engineer Service Portal /engineer (own app-shell layout, separate from the client portal)
   middleware.ts        Protects /portal and /engineer (sign-in + role check)
   components/          home/, about/, contact/, awards/, products/, quote/, client-portal/, engineer/, auth/, layout/, ui/, motion/

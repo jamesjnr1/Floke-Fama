@@ -31,7 +31,7 @@
 Every integration is optional at runtime. With no environment variables the site runs entirely on `src/data/seed.ts`: search runs locally and quote requests are validated and logged. Add keys one at a time as Flokefama's accounts are created (`.env.example`).
 
 ## Route groups
-`src/app/(site)/` holds the public pages and shares the Navbar and footer via `(site)/layout.tsx`. `src/app/engineer/` is an application shell with its own layout, with no marketing chrome. `/login` and the client portal `/portal` live inside `(site)` and keep the Navbar.
+`src/app/(site)/` holds the public pages and shares the Navbar and footer via `(site)/layout.tsx`. `src/app/engineer/` and `src/app/portal/` are application shells with their own layouts, with no marketing chrome. `src/app/login/` is a standalone split screen (head office photo left, sign-in panel right) with no Navbar or footer.
 
 ## Routes
 | Route | Rendering | Notes |
@@ -48,7 +48,7 @@ Every integration is optional at runtime. With no environment variables the site
 | `/products/(.)[slug]` | Intercepted (parallel `@modal` slot) | The same spec sheet as an overlay when opened from the catalogue |
 | `/quote` | Dynamic | Multi-step procurement flow (quote or demo), react-hook-form + zod, validated again on the server |
 | `/api/quote`, `/api/contact` | Dynamic | Validate, then deliver to HubSpot when configured (see “Form delivery”) |
-| `/login` | Dynamic | Sign-in for both portals. Sends each account to its own portal |
+| `/login` | Dynamic, no site chrome | Sign-in for both portals: head office photo (`public/images/head-office-entrance.webp`) on the left, light sign-in panel on the right; a short photo banner on phones. Sends each account to its own portal |
 | `/portal` | Dynamic, own layout, **sign-in required (client)** | Flokefama Care client dashboard (**demo data**): Overview (live KPIs, live service tracker with engineer + ETA, calibrations due, updates, quick actions), Service requests (submit a request with urgency, contact and preferred visit; follow progress; message the engineer; rate the visit), Equipment (health, warranty, calibration, service history, report a fault, order consumables), Certificates (download) |
 | `/engineer` | Dynamic, own layout, **sign-in required (engineer)** | Biomedical Engineer Service Portal (**demo data**, separate from the client portal). Working app: Overview (live KPIs, work queue, fleet health, calibrations due, activity), Service Tickets (filters; assign → en route with ETA → on site → resolve with report; work log notes; parts), System Pulse (status derived from open tickets, facility filter), Calibration schedule (overdue / due soon, record result → certificate + next due date), Documentation (system sheets, service history, downloadable certificates, manual requests), ⌘K command palette, notifications. State persists in the browser (`src/lib/engineer/store.ts`) with a reset button; in production the same actions call the service backend |
 | `/offline` | Static | Precached; emergency biomedical support contacts |
