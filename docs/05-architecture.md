@@ -31,7 +31,7 @@
 Every integration is optional at runtime. With no environment variables the site runs entirely on `src/data/seed.ts`: search runs locally and quote requests are validated and logged. Add keys one at a time as Flokefama's accounts are created (`.env.example`).
 
 ## Route groups
-`src/app/(site)/` holds the public pages and shares the Navbar and footer via `(site)/layout.tsx`. `src/app/engineer/` and `src/app/portal/` are application shells with their own layouts, with no marketing chrome. `src/app/login/` is a standalone split screen (head office photo left, sign-in panel right) with no Navbar or footer.
+`src/app/(site)/` holds the public pages and shares the Navbar and footer via `(site)/layout.tsx`. `src/app/engineer/` and `src/app/portal/` are application shells with their own layouts, with no marketing chrome. `src/app/login/` is a standalone split screen (head office photo left, Sign in / Register panel right) with no Navbar or footer.
 
 ## Routes
 | Route | Rendering | Notes |
@@ -47,8 +47,8 @@ Every integration is optional at runtime. With no environment variables the site
 | `/products/[slug]` | SSG + ISR | Full Deep Spec Sheet page for SEO, with `Product` JSON-LD |
 | `/products/(.)[slug]` | Intercepted (parallel `@modal` slot) | The same spec sheet as an overlay when opened from the catalogue |
 | `/quote` | Dynamic | Multi-step procurement flow (quote or demo), react-hook-form + zod, validated again on the server |
-| `/api/quote`, `/api/contact` | Dynamic | Validate, then deliver to HubSpot when configured (see “Form delivery”) |
-| `/login` | Dynamic, no site chrome | Sign-in for both portals: head office photo (`public/images/head-office-entrance.webp`) on the left, light sign-in panel on the right; a short photo banner on phones. Sends each account to its own portal |
+| `/api/quote`, `/api/contact`, `/api/register` | Dynamic | Validate, then deliver to HubSpot when configured (see “Form delivery”) |
+| `/login` | Dynamic, no site chrome | Portal access: head office photo (`public/images/head-office-entrance.webp`) on the left; on the right **Sign in** and **Register** tabs, as on the original site's account page (`?mode=register` opens Register). Sign in sends each account to its own portal and has a *Forgot password?* email link to support. Register sends a client portal access request (name, facility, role, email, phone, installed systems) to `/api/register`: the CRM when configured, otherwise a pre-filled email or WhatsApp to support. Accounts are verified by Flokefama before they go live. The engineer sign-in (`?next=/engineer`) has no Register tab. A short photo banner on phones |
 | `/portal` | Dynamic, own layout, **sign-in required (client)** | Flokefama Care client dashboard (**demo data**): Overview (live KPIs, live service tracker with engineer + ETA, calibrations due, updates, quick actions), Service requests (submit a request with urgency, contact and preferred visit; follow progress; message the engineer; rate the visit), Equipment (health, warranty, calibration, service history, report a fault, order consumables), Certificates (download) |
 | `/engineer` | Dynamic, own layout, **sign-in required (engineer)** | Biomedical Engineer Service Portal (**demo data**, separate from the client portal). Working app: Overview (live KPIs, work queue, fleet health, calibrations due, activity), Service Tickets (filters; assign → en route with ETA → on site → resolve with report; work log notes; parts), System Pulse (status derived from open tickets, facility filter), Calibration schedule (overdue / due soon, record result → certificate + next due date), Documentation (system sheets, service history, downloadable certificates, manual requests), ⌘K command palette, notifications. State persists in the browser (`src/lib/engineer/store.ts`) with a reset button; in production the same actions call the service backend |
 | `/offline` | Static | Precached; emergency biomedical support contacts |
