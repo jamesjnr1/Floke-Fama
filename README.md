@@ -4,7 +4,7 @@ The new [flokefama.com](https://flokefama.com): a composable, headless healthcar
 
 **Stack:** Next.js 15 (App Router) · TypeScript · Tailwind CSS v4 · Poppins + Geist Sans · Radix / shadcn-style UI · Motion (Framer Motion) · Three.js · Sanity · Algolia · HubSpot · Vercel
 
-→ Full architecture: [docs/05-architecture.md](docs/05-architecture.md)
+→ Full architecture: [docs/05-architecture.md](docs/05-architecture.md) · Plain-language guide to how the site works and its integrations: [docs/Flokefama-Website-Guide.docx](docs/Flokefama-Website-Guide.docx)
 
 ## Quick start
 
@@ -22,7 +22,7 @@ Optional integrations are switched on by environment variables. Copy `.env.examp
 | `npm run dev` | Development server |
 | `npm run check` | Lint + type-check + production build (what CI runs) |
 | `npm run build && npm start` | Production build and server |
-| `npm run qa` | With the server running: screenshots every page at 390 and 1440 px into `qa/`, fails on overflow, console errors or broken images |
+| `npm run qa` | With the server running: screenshots every page at 390, 1440 and 1600 px into `qa/`, fails on overflow, header contents spilling out of the bar, console errors or broken images |
 | `npm run icons` | Rebuilds the Flaticon UIcons subset after adding or removing `fi-*` classes (needs `pip install fonttools brotli`) |
 | `npm run algolia:sync` | Pushes the catalogue to Algolia |
 | `npm run flyers` | Renders social flyer templates to `flyers/export/` |

@@ -1,6 +1,7 @@
 // Visual + health QA against a running server (default http://localhost:3000).
 // Usage: npm run build && npm start   (in another terminal)   then: npm run qa [baseUrl]
-// Writes screenshots to qa/ and exits non-zero on horizontal overflow, console errors or broken images.
+// Writes screenshots to qa/ and exits non-zero on horizontal overflow, header contents spilling out of the bar,
+// console errors or broken images.
 import { mkdir } from 'node:fs/promises';
 import { chromium } from 'playwright';
 
@@ -8,7 +9,7 @@ const base = process.argv[2] ?? 'http://localhost:3000';
 const pages = ['/', '/about', '/awards', '/services', '/events', '/esg', '/contact', '/products', '/products/mindray-bc-5150', '/quote', '/login', '/offline'];
 // Protected pages are checked signed in with the preview demo accounts (ENABLE_DEMO_ACCOUNTS must not be "false").
 const protectedPages = { '/portal': ['client@demo.flokefama.com', 'FlokeCare-2026'], '/engineer': ['engineer@demo.flokefama.com', 'FlokeEng-2026'] };
-const sizes = [[390, 844], [1440, 900]];
+const sizes = [[390, 844], [1440, 900], [1600, 900]];
 await mkdir('qa', { recursive: true });
 
 const browser = await chromium.launch({
@@ -47,10 +48,19 @@ for (const path of [...pages, ...Object.keys(protectedPages)]) {
     const r = await page.evaluate(() => ({
       overflow: document.documentElement.scrollWidth - innerWidth,
       broken: [...document.images].filter((i) => i.complete && i.naturalWidth === 0).map((i) => i.src),
+      // Header contents must fit inside the bar (the CTA once spilled out at 1536px+)
+      headerSpill: (() => {
+        const bar = document.querySelector('header > div');
+        if (!bar) return 0;
+        const cs = getComputedStyle(bar);
+        const inner = bar.getBoundingClientRect().right - parseFloat(cs.paddingRight) - parseFloat(cs.borderRightWidth);
+        const right = Math.max(...[...bar.children].filter((e) => getComputedStyle(e).display !== 'none').map((e) => e.getBoundingClientRect().right));
+        return Math.max(0, Math.round(right - inner));
+      })(),
     }));
-    const ok = r.overflow <= 0 && !r.broken.length && !errors.length;
+    const ok = r.overflow <= 0 && !r.broken.length && !errors.length && r.headerSpill === 0;
     failed ||= !ok;
-    console.log(`${ok ? '✔' : '✘'} ${path.padEnd(28)} ${w}px  overflow=${r.overflow}  broken=${r.broken.length}  errors=${errors.length}${errors.length ? '\n    ' + errors.slice(0, 3).join('\n    ') : ''}`);
+    console.log(`${ok ? '✔' : '✘'} ${path.padEnd(28)} ${w}px  overflow=${r.overflow}  header=${r.headerSpill}  broken=${r.broken.length}  errors=${errors.length}${errors.length ? '\n    ' + errors.slice(0, 3).join('\n    ') : ''}`);
     await page.screenshot({ path: `qa/${path === '/' ? 'home' : path.slice(1).replaceAll('/', '-')}-${w}.png` });
     await ctx.close();
   }
