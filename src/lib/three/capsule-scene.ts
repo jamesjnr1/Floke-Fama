@@ -15,9 +15,9 @@ import {
 const R = 1.05; // capsule radius
 const H = 1.15; // half-length of the straight section
 const STEP = 0.115; // dot spacing
-const GREEN_BRIGHT = new Color('#80c4a0'); // light enough to read on the green hero
+const GREEN_BRIGHT = new Color('#8fd1a9'); // light enough to read on the green hero
 const MINT = new Color('#e6f6ec');
-const RED = new Color('#ed1c24');
+const RED = new Color('#e4283c');
 
 function glowTexture(inner: string) {
   const c = document.createElement('canvas');

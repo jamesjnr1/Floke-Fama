@@ -88,7 +88,7 @@ export function AccessibilityProvider({ children }: { children: React.ReactNode 
           aria-expanded={open}
           aria-controls="a11y-panel"
           aria-label="Accessibility options"
-          className="fixed bottom-4 left-4 z-[55] grid size-12 place-items-center rounded-full bg-brand-600 text-xl text-white shadow-[0_12px_30px_-10px_rgb(0_40_21/0.6)] ring-2 ring-white/70 transition hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-300"
+          className="fixed bottom-4 left-4 z-[55] grid size-12 place-items-center rounded-full bg-brand-600 text-xl text-white shadow-[0_12px_30px_-10px_rgb(11_21_16/0.6)] ring-2 ring-white/70 transition hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-300"
         >
           <Icon name="fi-rr-universal-access" />
           {changed && <span className="absolute -right-0.5 -top-0.5 size-3 rounded-full border-2 border-white bg-brand-300" aria-hidden />}
@@ -102,7 +102,7 @@ export function AccessibilityProvider({ children }: { children: React.ReactNode 
           role="dialog"
           aria-modal="false"
           aria-labelledby="a11y-title"
-          className="fixed bottom-20 left-4 z-[56] w-[min(340px,calc(100vw-2rem))] rounded-3xl border border-line bg-paper p-5 text-ink shadow-[0_30px_60px_-20px_rgb(0_40_21/0.45)]"
+          className="fixed bottom-20 left-4 z-[56] w-[min(340px,calc(100vw-2rem))] rounded-3xl border border-line bg-paper p-5 text-ink shadow-[0_30px_60px_-20px_rgb(11_21_16/0.45)]"
         >
           <div className="flex items-center justify-between">
             <h2 id="a11y-title" className="flex items-center gap-2 text-lg font-semibold"><Icon name="fi-rr-universal-access" className="text-brand-600" /> Accessibility</h2>

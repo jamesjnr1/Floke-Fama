@@ -84,7 +84,7 @@ export function SpecScrolly() {
             </Button>
           </div>
           <div className="relative h-[80vh]">
-            <motion.div style={{ opacity: glow }} className="absolute inset-[10%] rounded-full bg-[radial-gradient(circle,rgb(63_160_109/0.35),transparent_65%)] blur-2xl" />
+            <motion.div style={{ opacity: glow }} className="absolute inset-[10%] rounded-full bg-[radial-gradient(circle,rgb(82_181_124/0.35),transparent_65%)] blur-2xl" />
             <div aria-hidden className="absolute inset-x-[12%] bottom-[18%] h-12 rounded-[100%] bg-black/70 blur-2xl" />
             <motion.div style={{ scale, y }} className="absolute inset-0">
               <Image src="/images/bs-240-stage.webp" alt="A Mindray laboratory analyser" fill sizes="50vw" className="object-contain drop-shadow-[0_40px_60px_rgb(0_0_0/0.55)]" />

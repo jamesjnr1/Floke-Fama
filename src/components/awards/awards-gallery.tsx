@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import { Reveal } from '@/components/motion/reveal';
-import { awards } from '@/data/seed';
+import { awards, companyFigures } from '@/data/seed';
 import { cn } from '@/lib/utils';
 
 /** Bento spans for five awards on a 6-column grid: feature + two stacked, then a 2 + 4 row. */
@@ -19,7 +19,7 @@ export function AwardsGallery() {
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal>
           <p className="label">Awards &amp; recognition</p>
-          <h2 className="display mt-4 max-w-3xl text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">Recognitions that reflect our impact.</h2>
+          <h2 className="display mt-4 max-w-3xl text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">We are proud to share some of the awards that celebrate our passion and progress.</h2>
         </Reveal>
         <ul className="swipe-row mt-10 gap-4 md:mt-12 md:grid-cols-6">
           {awards.map((a, i) => {
@@ -49,9 +49,23 @@ export function AwardsGallery() {
         </ul>
         <Reveal>
           <p className="mx-auto mt-16 max-w-3xl text-center text-xl font-light leading-relaxed text-ink-3 md:text-2xl">
-            Every accolade is a testament to the <span className="font-medium text-ink">hard work of our team</span>, the{' '}
-            <span className="font-medium text-ink">quality of our solutions</span> and our <span className="font-medium text-brand-700">impact on healthcare across Ghana and West Africa</span>.
+            These accolades serve as a testament to the <span className="font-medium text-ink">hard work of our team</span>, the{' '}
+            <span className="font-medium text-ink">quality of our solutions</span>, and the <span className="font-medium text-brand-700">positive impact we’ve made in transforming healthcare delivery across Ghana and the West African region</span>.
           </p>
+        </Reveal>
+
+        {/* Figures from the current Awards page */}
+        <Reveal className="mt-16 rounded-4xl border border-line bg-paper p-8 md:p-12">
+          <p className="label">Flokefama</p>
+          <h3 className="mt-3 text-2xl font-bold tracking-[-0.02em] text-ink md:text-3xl">Innovative Solutions for Better Health Outcomes</h3>
+          <dl className="mt-8 grid gap-4 sm:grid-cols-3">
+            {companyFigures.map((f) => (
+              <div key={f.label} className="rounded-3xl bg-canvas p-6">
+                <dd className="text-5xl font-bold tracking-[-0.03em] text-brand-600">{f.value}{f.suffix}</dd>
+                <dt className="mt-2 text-sm font-medium text-ink-2">{f.label}</dt>
+              </div>
+            ))}
+          </dl>
         </Reveal>
       </div>
     </section>

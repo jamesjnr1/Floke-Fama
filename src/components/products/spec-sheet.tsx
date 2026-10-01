@@ -5,35 +5,58 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { brochureUrl } from '@/data/seed';
 import type { Product } from '@/lib/types';
 
 const statusTone = { validated: 'green', supported: 'blue', consult: 'amber' } as const;
 const statusLabel = { validated: 'Validated', supported: 'Supported', consult: 'Consult us' };
 
-/** Tabbed technical detail: specifications, compatibility matrix and documents. */
-export function SpecTabs({ product }: { product: Product }) {
+/** Tabbed detail: key features (from the Flokefama brochure), product details, compatibility and documents. */
+export function SpecTabs({ product, categoryTitle }: { product: Product; categoryTitle?: string }) {
+  const features = product.highlights.length > 0;
   return (
-    <Tabs defaultValue="specs" className="gap-6">
+    <Tabs defaultValue={features ? 'features' : 'details'} className="gap-6">
       <TabsList aria-label="Product information" className="self-start">
-        <TabsTrigger value="specs">Specifications</TabsTrigger>
+        {features && <TabsTrigger value="features">Key features</TabsTrigger>}
+        <TabsTrigger value="details">Details</TabsTrigger>
         {product.compatibility?.length ? <TabsTrigger value="compat">Compatibility</TabsTrigger> : null}
         <TabsTrigger value="docs">Documents</TabsTrigger>
       </TabsList>
 
-      <TabsContent value="specs">
+      {features && (
+        <TabsContent value="features">
+          <ul className="divide-y divide-line rounded-3xl border border-line bg-paper">
+            {product.highlights.map((h) => (
+              <li key={h} className="flex items-start gap-3 px-5 py-3.5 text-sm text-ink">
+                <Icon name="fi-rr-check" className="mt-0.5 shrink-0 text-brand-600" /> {h}
+              </li>
+            ))}
+          </ul>
+          {product.highlightsSource === 'brochure' && (
+            <p className="mt-3 flex items-center gap-2 text-xs text-ink-3">
+              <Icon name="fi-rr-info" /> From the Flokefama brochure.
+            </p>
+          )}
+        </TabsContent>
+      )}
+
+      <TabsContent value="details">
         <dl className="divide-y divide-line rounded-3xl border border-line bg-paper">
-          {product.specs.map((s) => (
+          {[
+            { label: 'Brand', value: product.brand },
+            ...(categoryTitle ? [{ label: 'Category', value: categoryTitle }] : []),
+            ...(product.types?.length ? [{ label: 'Listed under', value: product.types.join(', ') }] : []),
+            ...product.specs,
+          ].map((s) => (
             <div key={s.label} className="grid grid-cols-[1fr_1.4fr] gap-6 px-5 py-4 text-sm">
               <dt className="text-ink-3">{s.label}</dt>
               <dd className="font-medium text-ink">{s.value}</dd>
             </div>
           ))}
         </dl>
-        {!product.specsVerified && (
-          <p className="mt-3 flex items-center gap-2 text-xs text-ink-3">
-            <Icon name="fi-rr-info" /> Indicative specifications. Our applications team will confirm against the manufacturer datasheet.
-          </p>
-        )}
+        <p className="mt-3 flex items-center gap-2 text-xs text-ink-3">
+          <Icon name="fi-rr-info" /> Full specifications on request: our applications team will send the manufacturer datasheet.
+        </p>
       </TabsContent>
 
       {product.compatibility?.length ? (
@@ -65,25 +88,9 @@ export function SpecTabs({ product }: { product: Product }) {
 
       <TabsContent value="docs">
         <ul className="space-y-2">
+          <DocRow title="Flokefama company brochure" kind="brochure" href={brochureUrl} />
           {(product.documents.length ? product.documents : [{ title: `${product.name} datasheet`, kind: 'datasheet' as const }]).map((d) => (
-            <li key={d.title} className="flex items-center justify-between gap-4 rounded-2xl border border-line bg-paper p-4">
-              <span className="flex items-center gap-3">
-                <span className="grid size-10 place-items-center rounded-xl bg-signal/10 text-signal-700"><Icon name="fi-rr-file-pdf" /></span>
-                <span>
-                  <span className="block text-sm font-medium text-ink">{d.title}</span>
-                  <span className="text-xs capitalize text-ink-3">{d.kind} · PDF</span>
-                </span>
-              </span>
-              {d.url ? (
-                <Button asChild size="sm" variant="outline">
-                  <a href={d.url} download><Icon name="fi-rr-download" /> Download</a>
-                </Button>
-              ) : (
-                <Button asChild size="sm" variant="ghost">
-                  <Link href={`/quote?product=${product.slug}&docs=1`}>Request</Link>
-                </Button>
-              )}
-            </li>
+            <DocRow key={d.title} title={d.title} kind={d.kind} href={d.url} requestHref={`/quote?product=${product.slug}&docs=1`} />
           ))}
         </ul>
       </TabsContent>
@@ -91,17 +98,45 @@ export function SpecTabs({ product }: { product: Product }) {
   );
 }
 
+function DocRow({ title, kind, href, requestHref }: { title: string; kind: string; href?: string; requestHref?: string }) {
+  return (
+    <li className="flex items-center justify-between gap-4 rounded-2xl border border-line bg-paper p-4">
+      <span className="flex items-center gap-3">
+        <span className="grid size-10 place-items-center rounded-xl bg-signal/10 text-signal-700"><Icon name="fi-rr-file-pdf" /></span>
+        <span>
+          <span className="block text-sm font-medium text-ink">{title}</span>
+          <span className="text-xs capitalize text-ink-3">{kind} · PDF</span>
+        </span>
+      </span>
+      {href ? (
+        <Button asChild size="sm" variant="outline">
+          <a href={href} download><Icon name="fi-rr-download" /> Download</a>
+        </Button>
+      ) : requestHref ? (
+        <Button asChild size="sm" variant="ghost">
+          <Link href={requestHref}>Request</Link>
+        </Button>
+      ) : null}
+    </li>
+  );
+}
+
 export function SpecHeader({ product, categoryTitle }: { product: Product; categoryTitle?: string }) {
+  const description = product.description?.length ? product.description : [product.summary];
   return (
     <div>
       <p className="label">{product.brand}{categoryTitle ? ` · ${categoryTitle}` : ''}</p>
       <h1 className="display mt-3 text-4xl md:text-5xl">{product.name}</h1>
-      <p className="mt-4 max-w-lg font-light leading-relaxed text-ink-3">{product.summary}</p>
-      <ul className="mt-6 flex flex-wrap gap-2">
-        {product.highlights.map((h) => (
-          <li key={h}><Badge tone="green"><Icon name="fi-rr-check" /> {h}</Badge></li>
-        ))}
-      </ul>
+      {description.map((d) => (
+        <p key={d} className="mt-4 max-w-lg font-light leading-relaxed text-ink-3">{d}</p>
+      ))}
+      {product.types?.length ? (
+        <ul className="mt-6 flex flex-wrap gap-2" aria-label="Listed under">
+          {product.types.map((t) => (
+            <li key={t}><Badge tone="green">{t}</Badge></li>
+          ))}
+        </ul>
+      ) : null}
     </div>
   );
 }

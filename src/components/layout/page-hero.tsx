@@ -6,7 +6,7 @@ export function PageHero({ label, title, lead, children }: { label: string; titl
   return (
     <section className="relative isolate overflow-hidden bg-midnight text-white">
       <div aria-hidden className="absolute inset-0 -z-10">
-        <div className="absolute -right-40 -top-56 size-[760px] rounded-full bg-[radial-gradient(circle,rgb(25_133_82/0.26),transparent_62%)]" />
+        <div className="absolute -right-40 -top-56 size-[760px] rounded-full bg-[radial-gradient(circle,rgb(46_154_91/0.26),transparent_62%)]" />
         <div className="grid-fade absolute inset-0 opacity-60" />
         <NetworkCanvas className="absolute inset-0 opacity-70 [mask-image:linear-gradient(90deg,transparent_0%,transparent_40%,#000_75%)]" />
         <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-midnight to-transparent" />

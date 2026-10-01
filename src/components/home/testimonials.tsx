@@ -27,6 +27,7 @@ export function Testimonials() {
         <Reveal className="flex flex-col items-center text-center">
           <p className="label">Testimonials</p>
           <h2 className="display mt-4 max-w-3xl text-[clamp(1.9rem,1.2rem+2.4vw,3.25rem)]">Hear what our customers say.</h2>
+          <p className="mt-4 max-w-2xl text-lg font-light leading-relaxed text-ink-3">Don’t just take our word for it—hear from our satisfied customers! Here’s what they have to say about their experience with Flokefama.</p>
         </Reveal>
 
         <Reveal delay={0.08}>
@@ -35,7 +36,7 @@ export function Testimonials() {
             onMouseLeave={() => setPaused(false)}
             onFocusCapture={() => setPaused(true)}
             onBlurCapture={() => setPaused(false)}
-            className="relative mx-auto mt-14 grid max-w-5xl overflow-hidden rounded-5xl border border-line bg-paper shadow-[0_40px_80px_-50px_rgb(0_40_21/0.4)] lg:grid-cols-[1.6fr_1fr]"
+            className="relative mx-auto mt-14 grid max-w-5xl overflow-hidden rounded-5xl border border-line bg-paper shadow-[0_40px_80px_-50px_rgb(11_21_16/0.4)] lg:grid-cols-[1.6fr_1fr]"
           >
             <figure className="relative flex min-h-[340px] flex-col p-8 md:p-12">
               <span aria-hidden className="pointer-events-none absolute -top-6 left-6 select-none font-mono text-[10rem] leading-none text-brand-600/10">“</span>

@@ -48,7 +48,7 @@ export function CommandPalette({ open, onOpenChange, state, actions, onOpenTicke
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm" />
-        <Dialog.Content aria-describedby={undefined} className="fixed left-1/2 top-[12vh] z-[70] w-[calc(100%-2rem)] max-w-xl -translate-x-1/2 overflow-hidden rounded-3xl border border-white/10 bg-[#004726] text-white shadow-2xl outline-none">
+        <Dialog.Content aria-describedby={undefined} className="fixed left-1/2 top-[12vh] z-[70] w-[calc(100%-2rem)] max-w-xl -translate-x-1/2 overflow-hidden rounded-3xl border border-white/10 bg-[#111d17] text-white shadow-2xl outline-none">
           <Dialog.Title className="sr-only">Search the portal</Dialog.Title>
           <div className="flex items-center gap-3 border-b border-white/10 px-5">
             <Icon name="fi-rr-search" className="text-white/40" />

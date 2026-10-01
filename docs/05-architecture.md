@@ -41,10 +41,11 @@ Every integration is optional at runtime. With no environment variables the site
 | `/awards` | Static | Company → Awards: photographed awards, closing statement |
 | `/services` | Static | Products & Services: the service lifecycle, why choose Flokefama (products live in the Shop) |
 | `/events` | Static, daily ISR | Events & Activities: upcoming / past events (an optional `image` per event in `seed.ts`, e.g. the Floke Praise 2025 flyer from the current site, shown uncropped at 16:9 beside the details), Media Centre news |
+| `/news/[slug]` | SSG | The full text of every News, Blog & Press post from the current site (8 articles, `src/data/articles.ts`), with images, dates and categories; `NewsArticle` JSON-LD |
 | `/esg` | Static | ESG: patient safety, community, education, governance, local industry (from Flokefama’s own published material) |
 | `/contact` | Static | Contact details, simple message form, head office photo, live map, directions, branches |
-| `/products` | Dynamic | Shop: **New arrivals** strip (products flagged `newArrival`, as on the current homepage), then category morphing and keystroke search without reloads; state mirrored to the URL |
-| `/products/[slug]` | SSG + ISR | Full Deep Spec Sheet page for SEO, with `Product` JSON-LD |
+| `/products` | Dynamic | Shop: the **full catalogue of the current flokefama.com shop (92 products)** with their original names, brands, descriptions and photos (`src/data/catalogue.ts`). **New arrivals** strip (as on the current homepage), five category tabs, keystroke search, and **Explore Product Categories**: the original shop categories with counts, each filtering exactly (`?type=`). State mirrored to the URL |
+| `/products/[slug]` | SSG + ISR | Product page with the same slug as the current shop, the original description and categories, **key features from the Flokefama brochure** where it lists the product (BC-5150, BC-20s, BC-30s, BA-88A semi-auto chemistry, DCR-2000), and the brochure for download; `Product` JSON-LD |
 | `/products/(.)[slug]` | Intercepted (parallel `@modal` slot) | The same spec sheet as an overlay when opened from the catalogue |
 | `/quote` | Dynamic | Multi-step procurement flow (quote or demo), react-hook-form + zod, validated again on the server |
 | `/api/quote`, `/api/contact`, `/api/register` | Dynamic | Validate, then deliver to HubSpot when configured (see “Form delivery”) |
@@ -56,9 +57,12 @@ Every integration is optional at runtime. With no environment variables the site
 
 The navigation mirrors the menu on flokefama.com: Home · Company (About Us, Awards) · Products & Services · Events & Activities · Shop (`/products`) · ESG · Contact, with **Client Portal** in place of “My Account”.
 
-Old WordPress URLs (`/index.php/shop`, `/index.php/product/*`, `/index.php/about-us`, `/index.php/awards`, `/index.php/services`, `/index.php/esg`, `/index.php/contact`, `/index.php/media-centre`, `/index.php/my-account`) and the earlier preview pages (`/solutions`, `/partners`, `/impact`, `/media`) are 308-redirected in `next.config.ts`.
+Old WordPress URLs (`/index.php/shop`, `/index.php/product/<slug>` → `/products/<slug>`, `/index.php/<yyyy>/<mm>/<dd>/<slug>` → `/news/<slug>`, `/index.php/category/*`, `/index.php/careers`, `/event/*`, `/index.php/about-us`, `/index.php/awards`, `/index.php/services`, `/index.php/esg`, `/index.php/contact`, `/index.php/media-centre`, `/index.php/my-account`) and the earlier preview pages (`/solutions`, `/partners`, `/impact`, `/media`) are 308-redirected in `next.config.ts`.
 
 **No duplication:** every section lives on exactly one page (testimonials and partners on Home, the service lifecycle on Services, map / directions / branches on Contact); other pages link to them.
+
+## Content from the current site
+All copy, figures, products and articles come from flokefama.com (and its brochure, `public/brochure/flokefama-brochure.pdf`, re-saved at web size). The catalogue and articles are generated from the site's public data feeds by `scripts/content-import/` (read only; see its README). Page text is the original wording, with obvious typos corrected.
 
 ## Form delivery (no lost enquiries)
 Quote requests and “Get in touch” messages are validated on the server and sent to HubSpot when `HUBSPOT_PORTAL_ID` and `HUBSPOT_FORM_GUID` are set. **Until then, nothing is silently dropped:** the API answers `delivered: false` and the page shows *Send by email* / *Send on WhatsApp* buttons with the full request pre-filled (quotes → sales@, contact messages → sales@, support@ or info@ by topic). Once the CRM is connected, visitors simply see “Request received”.
