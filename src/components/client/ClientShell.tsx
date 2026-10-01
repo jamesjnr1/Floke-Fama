@@ -9,7 +9,7 @@ import { EquipmentSheet, RequestDialog } from '@/components/client/dialogs';
 import { EquipmentView } from '@/components/client/EquipmentView';
 import { Overview } from '@/components/client/Overview';
 import { RequestsView } from '@/components/client/RequestsView';
-import { LogoMark } from '@/components/layout/logo';
+import { LogoMark, LogoWordmark } from '@/components/layout/logo';
 import { Notifications } from '@/components/service/Notifications';
 import { useAccessibility } from '@/components/layout/accessibility';
 import { Icon } from '@/components/ui/icon';
@@ -63,9 +63,9 @@ export function ClientShell({ user }: { user: { name: string; email: string; fac
     <div className="flex min-h-svh bg-canvas text-ink">
       {/* Sidebar */}
       <aside className="sticky top-0 hidden h-svh w-[248px] shrink-0 flex-col bg-midnight p-5 text-white lg:flex">
-        <Link href="/" className="flex items-center gap-2">
+        <Link href="/" aria-label="Flokefama home" className="flex items-center gap-1.5">
           <LogoMark />
-          <span className="text-lg font-semibold tracking-[-0.02em]">Flokefama</span>
+          <LogoWordmark className="h-[17px] text-white" />
           <span className="ml-auto rounded-md bg-white/10 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-widest text-white/60">Care</span>
         </Link>
         <div className="mt-8 rounded-2xl bg-white/[0.06] p-3">
