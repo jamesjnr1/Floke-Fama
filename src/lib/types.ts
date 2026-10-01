@@ -41,6 +41,8 @@ export interface Product {
   documents: ProductDocument[];
   tags: string[];
   featured?: boolean;
+  /** Shown in “New arrivals” on the Shop (as on the current flokefama.com homepage). */
+  newArrival?: boolean;
 }
 
 export interface Metric {
