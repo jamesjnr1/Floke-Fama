@@ -22,18 +22,18 @@ function Runs({ runs }: { runs: Run[] }) {
 export function ArticleBody({ blocks }: { blocks: Block[] }) {
   const firstP = blocks.findIndex((b) => b.type === 'p');
   return (
-    <div className="text-[17px] font-light leading-[1.8] text-ink-2 [&>*+*]:mt-6">
+    <div className="text-[17px] font-light leading-[1.85] text-ink-2 md:text-lg [&>*+*]:mt-6">
       {blocks.map((b, i) => {
         switch (b.type) {
           case 'h':
             return (
-              <h2 key={i} id={headingId(b.text)} className="!mt-14 scroll-mt-28 border-l-4 border-brand-500 pl-4 text-[1.6rem] font-bold leading-snug tracking-[-0.02em] text-ink">
+              <h2 key={i} id={headingId(b.text)} className="!mt-14 scroll-mt-28 text-[1.65rem] font-bold leading-snug tracking-[-0.02em] text-ink">
                 {b.text}
               </h2>
             );
           case 'p':
             return i === firstP ? (
-              <p key={i} className="text-xl font-normal leading-relaxed text-ink"><Runs runs={b.runs} /></p>
+              <p key={i} className="text-xl font-normal leading-relaxed text-ink md:text-[1.375rem]"><Runs runs={b.runs} /></p>
             ) : (
               <p key={i}><Runs runs={b.runs} /></p>
             );
@@ -69,7 +69,7 @@ export function ArticleBody({ blocks }: { blocks: Block[] }) {
           case 'img':
             return (
               <figure key={i} className="!my-10 overflow-hidden last:!mb-0 rounded-3xl border border-line bg-paper">
-                <Image src={b.src} alt={b.alt} width={b.width} height={b.height} sizes="(min-width: 1024px) 700px, 100vw" className="h-auto w-full" />
+                <Image src={b.src} alt={b.alt} width={b.width} height={b.height} sizes="(min-width: 1024px) 800px, 100vw" className="h-auto w-full" />
                 {b.alt && <figcaption className="border-t border-line px-5 py-3 text-sm text-ink-3">{b.alt}</figcaption>}
               </figure>
             );
