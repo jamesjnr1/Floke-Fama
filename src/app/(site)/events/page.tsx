@@ -1,9 +1,11 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import { PageHero } from '@/components/layout/page-hero';
 import { NewsGrid } from '@/components/media/news-grid';
 import { Reveal } from '@/components/motion/reveal';
 import { Icon } from '@/components/ui/icon';
 import { events } from '@/data/seed';
+import { cn } from '@/lib/utils';
 
 // Re-render daily so events move from Upcoming to Past on their own.
 export const revalidate = 86400;
@@ -66,23 +68,30 @@ function EventList({ items }: { items: typeof events }) {
       {items.map((e, i) => (
         <li key={e.id}>
           <Reveal delay={i * 0.05}>
-            <article className="grid gap-6 rounded-4xl border border-line bg-canvas p-6 md:grid-cols-[auto_1fr_auto] md:items-center md:p-8">
-              <div className="grid size-24 place-items-center rounded-3xl bg-midnight text-center text-white">
-                <div>
-                  <p className="font-mono text-[11px] uppercase tracking-widest text-brand-300">{e.month}</p>
-                  <p className="text-4xl font-bold leading-none tracking-[-0.03em]">{e.day}</p>
-                  <p className="mt-1 font-mono text-[11px] text-white/50">{e.year}</p>
+            <article className={cn('overflow-hidden rounded-4xl border border-line bg-canvas', e.image && 'md:grid md:grid-cols-2 md:items-center')}>
+              {e.image && (
+                <div className="relative aspect-[16/9] bg-paper">
+                  <Image src={e.image} alt={e.alt} fill sizes="(min-width: 1280px) 620px, (min-width: 768px) 50vw, 100vw" className="object-cover" />
                 </div>
-              </div>
-              <div>
-                <h3 className="text-2xl font-bold tracking-[-0.02em]">{e.title}</h3>
-                <p className="mt-2 max-w-2xl font-light leading-relaxed text-ink-3">{e.body}</p>
+              )}
+              <div className="p-6 md:p-8">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="grid size-20 shrink-0 place-items-center rounded-3xl bg-brand-700 text-center text-white">
+                    <div>
+                      <p className="font-mono text-[11px] uppercase tracking-widest text-brand-100">{e.month}</p>
+                      <p className="text-3xl font-bold leading-none tracking-[-0.03em]">{e.day}</p>
+                      <p className="mt-1 font-mono text-[11px] text-white/70">{e.year}</p>
+                    </div>
+                  </div>
+                  <span className="rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-700">{e.price}</span>
+                </div>
+                <h3 className="mt-5 text-2xl font-bold tracking-[-0.02em]">{e.title}</h3>
+                <p className="mt-2 font-light leading-relaxed text-ink-3">{e.body}</p>
                 <ul className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-ink-2">
                   <li className="flex items-center gap-2"><Icon name="fi-rr-clock" className="text-brand-600" /> {e.time}</li>
                   <li className="flex items-center gap-2"><Icon name="fi-rr-marker" className="text-brand-600" /> {e.venue}</li>
                 </ul>
               </div>
-              <span className="self-start rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-700 md:self-center">{e.price}</span>
             </article>
           </Reveal>
         </li>
