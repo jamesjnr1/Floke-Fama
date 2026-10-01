@@ -29,8 +29,8 @@ export function CoreValues() {
             layout
             transition={{ layout: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } }}
             className={cn(
-              'group relative isolate overflow-hidden rounded-4xl border text-left transition-colors duration-500 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/40',
-              on ? 'border-brand-400/40 bg-brand-700/30 lg:flex-[3.2]' : 'border-white/10 bg-white/[0.03] hover:bg-white/[0.06] lg:flex-1',
+              'group relative isolate overflow-hidden rounded-4xl border text-left transition-colors duration-500 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-white/40',
+              on ? 'border-white/25 bg-white/[0.1] shadow-[0_30px_60px_-30px_rgb(0_0_0/0.5)] lg:flex-[3.2]' : 'border-white/10 bg-black/[0.12] hover:bg-white/[0.06] lg:flex-1',
             )}
           >
             {/* Oversized watermark icon */}
@@ -38,7 +38,7 @@ export function CoreValues() {
               name={v.icon}
               className={cn(
                 'pointer-events-none absolute -bottom-8 -right-6 -z-10 text-[13rem] transition-all duration-700 ease-out-expo',
-                on ? 'text-brand-300/[0.12]' : 'text-white/[0.03]',
+                on ? 'text-white/[0.08]' : 'text-white/[0.04]',
               )}
             />
             <div className="flex h-full flex-col p-6 md:p-8">
@@ -46,12 +46,12 @@ export function CoreValues() {
                 <span
                   className={cn(
                     'grid size-14 place-items-center rounded-2xl text-2xl transition-colors duration-500',
-                    on ? 'bg-brand-500 text-white shadow-[0_12px_30px_-10px_rgb(82_181_124/0.8)]' : 'bg-white/[0.06] text-brand-300',
+                    on ? 'bg-white text-brand-700 shadow-[0_12px_30px_-10px_rgb(0_0_0/0.4)]' : 'bg-white/[0.08] text-brand-100',
                   )}
                 >
                   <Icon name={v.icon} />
                 </span>
-                <span className="font-mono text-xs text-white/35">{String(i + 1).padStart(2, '0')}</span>
+                <span className="font-mono text-xs text-white/45">{String(i + 1).padStart(2, '0')}</span>
               </div>
 
               <div className="mt-8 lg:mt-auto">
@@ -65,8 +65,8 @@ export function CoreValues() {
                       animate={{ opacity: 1, y: 0, transition: { delay: 0.15, duration: 0.5 } }}
                       exit={{ opacity: 0, transition: { duration: 0.1 } }}
                     >
-                      <p className="mt-3 text-lg font-medium text-brand-300">{v.line}</p>
-                      <p className="mt-3 max-w-xl text-[15px] font-light leading-relaxed text-white/65">{v.text}</p>
+                      <p className="mt-3 text-lg font-medium text-brand-100">{v.line}</p>
+                      <p className="mt-3 max-w-xl text-[15px] font-light leading-relaxed text-white/75">{v.text}</p>
                     </motion.div>
                   )}
                 </AnimatePresence>

@@ -74,14 +74,14 @@ export default function EsgPage() {
       </section>
 
       {/* Local industry: the long-term commitment */}
-      <section className="relative isolate overflow-hidden bg-midnight py-24 text-white md:py-32">
-        <div aria-hidden className="absolute -left-40 top-0 -z-10 size-[600px] rounded-full bg-[radial-gradient(circle,rgb(46_154_91/0.25),transparent_65%)]" />
+      <section className="relative isolate overflow-hidden bg-[linear-gradient(160deg,#1b5e37_0%,#134228_55%,#0e3320_100%)] py-24 text-white md:py-32">
+        <div aria-hidden className="absolute -right-40 -top-40 -z-10 size-[640px] rounded-full bg-[radial-gradient(circle,rgb(143_209_169/0.18),transparent_65%)]" />
         <div className="mx-auto grid max-w-[1280px] items-center gap-12 px-5 md:px-10 lg:grid-cols-2">
           <Reveal>
-            <p className="label !text-brand-300">Economic · Local industry</p>
+            <p className="label !text-brand-100">Economic · Local industry</p>
             <h2 className="display mt-4 text-[clamp(2rem,1.2rem+2.8vw,3.5rem)] text-white">Made in Ghana, for Ghana.</h2>
-            <p className="mt-6 text-lg font-light leading-relaxed text-white/65">Our aim: {aim.text.charAt(0).toLowerCase() + aim.text.slice(1)}</p>
-            <p className="mt-4 text-lg font-light leading-relaxed text-white/65">Our vision: {vision.text.charAt(0).toLowerCase() + vision.text.slice(1)}</p>
+            <p className="mt-6 text-lg font-light leading-relaxed text-white/75">Our aim: {aim.text.charAt(0).toLowerCase() + aim.text.slice(1)}</p>
+            <p className="mt-4 text-lg font-light leading-relaxed text-white/75">Our vision: {vision.text.charAt(0).toLowerCase() + vision.text.slice(1)}</p>
           </Reveal>
           <Reveal delay={0.1}>
             <figure className="relative aspect-[4/3.6] overflow-hidden rounded-5xl">
