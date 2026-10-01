@@ -23,6 +23,13 @@ const poppins = localFont({
   display: 'swap',
 });
 
+/** Instrument Serif italic (self-hosted, OFL): the accent word in the home headline. */
+const serif = localFont({
+  src: [{ path: '../fonts/instrument-serif-italic.woff2', weight: '400', style: 'italic' }],
+  variable: '--font-instrument',
+  display: 'swap',
+});
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: { default: 'Flokefama | Medical Equipment & Diagnostics in Ghana', template: '%s | Flokefama' },
@@ -50,7 +57,7 @@ const organizationLd = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en-GH" className={`${poppins.variable} ${GeistSans.variable}`} suppressHydrationWarning>
+    <html lang="en-GH" className={`${poppins.variable} ${GeistSans.variable} ${serif.variable}`} suppressHydrationWarning>
       <head>
         {/* Apply saved accessibility preferences before first paint */}
         <script dangerouslySetInnerHTML={{ __html: a11yBootScript }} />

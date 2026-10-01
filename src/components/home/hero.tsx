@@ -36,8 +36,21 @@ export function Hero() {
         {/* Column Left (span 7): vertical, gap 24px */}
         <div className="flex flex-col gap-6 lg:col-span-7">
           <Reveal delay={0.06}>
-            <h1 className="display text-[clamp(42px,16px+4.2vw,84px)] uppercase leading-[0.95] text-white">
-              Ghana’s No.1 <span className="bg-[linear-gradient(100deg,#8fd1a9_0%,#d5ecdd_55%,#ffffff_100%)] bg-clip-text text-transparent">Healthcare Company.</span>
+            <h1 className="text-[clamp(44px,16px+4.4vw,88px)] font-semibold leading-[0.98] tracking-[-0.045em] text-white">
+              <span className="block">
+                Ghana’s{' '}
+                <span className="relative inline-block">
+                  No.1
+                  {/* hand-drawn underline */}
+                  <svg aria-hidden viewBox="0 0 200 16" preserveAspectRatio="none" className="absolute -bottom-[0.12em] left-0 h-[0.16em] w-full text-signal">
+                    <path d="M3 11 C 50 3, 120 2, 197 8" fill="none" stroke="currentColor" strokeWidth="5" strokeLinecap="round" />
+                  </svg>
+                </span>
+              </span>{' '}
+              <span className="block pr-[0.08em] font-serif text-[1.18em] font-normal italic leading-[0.95] tracking-[-0.02em]">
+                <span className="bg-[linear-gradient(100deg,#8fd1a9_0%,#d5ecdd_60%,#ffffff_100%)] bg-clip-text pr-[0.06em] text-transparent">Healthcare</span>
+              </span>{' '}
+              <span className="block">Company.</span>
             </h1>
           </Reveal>
           <Reveal delay={0.14}>
