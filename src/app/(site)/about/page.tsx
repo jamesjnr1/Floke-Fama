@@ -10,7 +10,6 @@ import { CountUp } from '@/components/motion/count-up';
 import { Icon, IconTile } from '@/components/ui/icon';
 import { brochureUrl, experienceFigures, purpose, servicesInBrief } from '@/data/seed';
 import { getMetrics } from '@/lib/data';
-import { cn } from '@/lib/utils';
 
 export const revalidate = 600;
 
@@ -62,7 +61,7 @@ export default async function AboutPage() {
       {/* Industry experience and services (content from the current About page) */}
       <section id="experience" className="scroll-mt-28 border-t border-line bg-canvas py-14 md:py-32">
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
-          <div className="grid items-stretch gap-6 lg:grid-cols-12">
+          <div className="grid gap-10 lg:grid-cols-12 lg:items-center lg:gap-16">
             <Reveal className="lg:col-span-7">
               <p className="label">About us</p>
               <h2 className="display mt-4 text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">Industry Experience</h2>
@@ -71,24 +70,16 @@ export default async function AboutPage() {
               </p>
             </Reveal>
             <Reveal delay={0.08} className="lg:col-span-5">
-              <div className="relative isolate h-full overflow-hidden rounded-4xl bg-midnight text-white">
-                <div aria-hidden className="absolute -right-16 -top-16 -z-10 size-64 rounded-full bg-[radial-gradient(circle,rgb(46_154_91/0.35),transparent_65%)]" />
-                <dl className="grid h-full min-h-56 grid-cols-2">
-                  {experienceFigures.map((f, i) => (
-                    <div key={f.label} className={cn('relative flex flex-col-reverse justify-start p-7 pt-24 md:p-9 md:pt-28', i > 0 && 'border-l border-white/10')}>
-                      <dt className="mt-3 min-h-[2.5em] text-sm leading-tight text-white/65 lg:min-h-0">
-                        <span aria-hidden className="absolute left-7 top-7 grid size-11 place-items-center rounded-xl bg-white/[0.08] text-lg text-brand-300 ring-1 ring-white/10 md:left-9 md:top-9">
-                          <Icon name={i === 0 ? 'fi-rr-calendar' : 'fi-rr-handshake'} />
-                        </span>
-                        {f.label}
-                      </dt>
-                      <dd className="text-[clamp(3rem,2rem+3vw,4.5rem)] font-bold leading-none tracking-[-0.04em]">
-                        <CountUp value={f.value} />
-                      </dd>
-                    </div>
-                  ))}
-                </dl>
-              </div>
+              <dl className="grid grid-cols-2 gap-6 lg:grid-cols-1 lg:gap-0 lg:divide-y lg:divide-line">
+                {experienceFigures.map((f) => (
+                  <div key={f.label} className="flex flex-col-reverse gap-2 border-t border-line pt-5 lg:flex-row-reverse lg:items-center lg:justify-end lg:gap-6 lg:border-t-0 lg:py-7 lg:first:pt-0 lg:last:pb-0">
+                    <dt className="text-[15px] text-ink-3 lg:text-lg">{f.label}</dt>
+                    <dd className="text-[clamp(3rem,2rem+3vw,4.5rem)] font-bold leading-none tracking-[-0.04em] text-brand-600 lg:min-w-[2.2ch]">
+                      <CountUp value={f.value} />
+                    </dd>
+                  </div>
+                ))}
+              </dl>
             </Reveal>
           </div>
 

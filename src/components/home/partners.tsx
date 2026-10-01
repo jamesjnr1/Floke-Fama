@@ -90,8 +90,8 @@ export function Partners({ heading = true }: { heading?: boolean }) {
             <div className="grid divide-y divide-white/10 md:grid-cols-3 md:divide-x md:divide-y-0">
               {metrics.slice(0, 2).map((m, i) => (
                 <div key={m.label} className="flex flex-col gap-5 p-7 md:p-10">
-                  <span className="grid size-11 place-items-center rounded-2xl bg-white/[0.07] text-xl text-brand-300 ring-1 ring-white/10">
-                    <Icon name={i === 0 ? 'fi-rr-hospital' : 'fi-rr-settings'} />
+                  <span aria-hidden className="grid size-12 place-items-center rounded-full bg-brand-600 text-[22px] text-white shadow-[0_10px_24px_-12px_rgb(46_154_91/0.9)]">
+                    <Icon name={i === 0 ? 'fi-rr-hospitals' : 'fi-rr-plug-connection'} />
                   </span>
                   <p className="text-[clamp(2.75rem,2rem+2.4vw,4rem)] font-bold leading-none tracking-[-0.04em]">
                     <CountUp value={m.value} suffix={m.suffix} />
@@ -100,8 +100,8 @@ export function Partners({ heading = true }: { heading?: boolean }) {
                 </div>
               ))}
               <div className="flex flex-col gap-5 p-7 md:p-10">
-                <span className="grid size-11 place-items-center rounded-2xl bg-white/[0.07] text-xl text-brand-300 ring-1 ring-white/10">
-                  <Icon name="fi-rr-trophy" />
+                <span aria-hidden className="grid size-12 place-items-center rounded-full bg-brand-600 text-[22px] text-white shadow-[0_10px_24px_-12px_rgb(46_154_91/0.9)]">
+                  <Icon name="fi-rr-award" />
                 </span>
                 <p className="text-[clamp(1.75rem,1.4rem+1.2vw,2.5rem)] font-bold leading-[1.05] tracking-[-0.03em]">Ghana Club 100</p>
                 <p className="text-[15px] leading-snug text-white/65">
