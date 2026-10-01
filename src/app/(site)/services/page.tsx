@@ -1,16 +1,11 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { FinalCta } from '@/components/home/final-cta';
-import { ProductUniverse } from '@/components/home/product-universe';
 import { Services } from '@/components/home/services';
 import { PageHero } from '@/components/layout/page-hero';
 import { Reveal } from '@/components/motion/reveal';
 import { Button } from '@/components/ui/button';
 import { Icon, IconTile } from '@/components/ui/icon';
 import { whyChoose } from '@/data/seed';
-import { getCategories, getProducts } from '@/lib/data';
-
-export const revalidate = 600;
 
 export const metadata: Metadata = {
   title: 'Products & Services',
@@ -18,8 +13,7 @@ export const metadata: Metadata = {
   alternates: { canonical: '/services' },
 };
 
-export default async function ServicesPage() {
-  const [categories, products] = await Promise.all([getCategories(), getProducts()]);
+export default function ServicesPage() {
   return (
     <>
       <PageHero
@@ -37,7 +31,6 @@ export default async function ServicesPage() {
         </div>
       </PageHero>
       <Services />
-      <ProductUniverse categories={categories} products={products} />
 
       <section id="why-choose-us" className="scroll-mt-28 border-t border-line bg-paper py-24 md:py-32">
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
@@ -60,7 +53,6 @@ export default async function ServicesPage() {
           </ul>
         </div>
       </section>
-      <FinalCta />
     </>
   );
 }

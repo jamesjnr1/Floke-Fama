@@ -3,8 +3,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { CoreValues } from '@/components/about/core-values';
 import { Impact } from '@/components/about/impact';
-import { Partners } from '@/components/home/partners';
-import { Testimonials } from '@/components/home/testimonials';
 import { PageHero } from '@/components/layout/page-hero';
 import { Reveal } from '@/components/motion/reveal';
 import { Button } from '@/components/ui/button';
@@ -96,8 +94,6 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      <Partners />
-      <Testimonials />
     </>
   );
 }

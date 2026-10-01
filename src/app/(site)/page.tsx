@@ -1,15 +1,14 @@
-import { VisitUs } from '@/components/contact/visit-us';
 import { Hero } from '@/components/home/hero';
 import { Partners } from '@/components/home/partners';
 import { ProductUniverse } from '@/components/home/product-universe';
-import { Services } from '@/components/home/services';
+import { ServicesTeaser } from '@/components/home/services-teaser';
 import { SpecScrolly } from '@/components/home/spec-scrolly';
 import { Testimonials } from '@/components/home/testimonials';
 import { getCategories, getProducts } from '@/lib/data';
 
 export const revalidate = 600;
 
-/** Home: the approved sections, plus testimonials and the head office. "Get in touch" lives in the footer. */
+/** Home: each section appears only here; services, contact and company detail live on their own pages. */
 export default async function HomePage() {
   const [categories, products] = await Promise.all([getCategories(), getProducts()]);
   return (
@@ -18,9 +17,8 @@ export default async function HomePage() {
       <Partners />
       <SpecScrolly />
       <ProductUniverse categories={categories} products={products} />
-      <Services />
+      <ServicesTeaser />
       <Testimonials />
-      <VisitUs />
     </>
   );
 }

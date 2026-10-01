@@ -26,11 +26,6 @@ export function Hero() {
       <div className="mx-auto grid min-h-[100svh] max-w-[1280px] grid-cols-1 items-center gap-12 px-5 pb-20 pt-36 md:px-16 lg:grid-cols-12 lg:gap-8 lg:pb-[120px] lg:pt-[168px]">
         {/* Column Left (span 7): vertical, gap 24px */}
         <div className="flex flex-col gap-6 lg:col-span-7">
-          <Reveal>
-            <p className="label flex items-center gap-3 !text-brand-300">
-              <span className="status-dot" aria-hidden /> Ghana Club 100 · No.1 in Healthcare · Est. 2008
-            </p>
-          </Reveal>
           <Reveal delay={0.06}>
             <h1 className="display text-[clamp(2.6rem,1.1rem+4.6vw,5rem)] uppercase leading-[0.95] text-white">
               Ghana’s No.1 <span className="text-gradient">Healthcare Company.</span>

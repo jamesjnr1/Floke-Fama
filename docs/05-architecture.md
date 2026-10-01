@@ -36,13 +36,13 @@ Every integration is optional at runtime. With no environment variables the site
 ## Routes
 | Route | Rendering | Notes |
 |---|---|---|
-| `/` | Static + ISR | Hero (“Ghana’s No.1 Healthcare Company.”, 3D network globe), Partners & Clientele, pinned in-vitro diagnostics scrollytelling, product universe, services, testimonials, head office + map + directions |
-| `/about` | Static + ISR | Company → About Us: who we are, impact (figures + sourced stories, incl. the UGMC M680 installation), mission / vision / aim, interactive core values, partners & clientele, testimonials |
-| `/awards` | Static | Company → Awards: photographed awards (No.1 in Healthcare, Ghana Club 100, Mindray, EMY Africa) |
-| `/services` | Static + ISR | Products & Services: the six services, product categories, why choose Flokefama |
+| `/` | Static + ISR | Hero (“Ghana’s No.1 Healthcare Company.”, 3D network globe), Partners & Clientele, in-vitro diagnostics scrollytelling, product universe, services teaser (→ /services), testimonials |
+| `/about` | Static + ISR | Company → About Us: who we are, impact (figures + sourced stories), mission / vision / aim, core values |
+| `/awards` | Static | Company → Awards: photographed awards, closing statement |
+| `/services` | Static | Products & Services: the service lifecycle, why choose Flokefama (products live in the Shop) |
 | `/events` | Static, daily ISR | Events & Activities: upcoming / past events, Media Centre news |
 | `/esg` | Static | ESG: patient safety, community, education, governance, local industry (from Flokefama’s own published material) |
-| `/contact` | Static | “How can we help?”: Sales / Service / General routes with direct actions, message form, head office + directions, live map, branches |
+| `/contact` | Static | Contact details, simple message form, head office photo, live map, directions, branches |
 | `/products` | Dynamic | Category morphing and keystroke search without reloads; state mirrored to the URL |
 | `/products/[slug]` | SSG + ISR | Full Deep Spec Sheet page for SEO, with `Product` JSON-LD |
 | `/products/(.)[slug]` | Intercepted (parallel `@modal` slot) | The same spec sheet as an overlay when opened from the catalogue |
@@ -58,7 +58,7 @@ The navigation mirrors the menu on flokefama.com: Home · Company (About Us, Awa
 
 Old WordPress URLs (`/index.php/shop`, `/index.php/product/*`, `/index.php/about-us`, `/index.php/awards`, `/index.php/services`, `/index.php/esg`, `/index.php/contact`, `/index.php/media-centre`, `/index.php/my-account`) and the earlier preview pages (`/solutions`, `/partners`, `/impact`, `/media`) are 308-redirected in `next.config.ts`.
 
-“Get in touch” (every channel + the message form) is part of the site footer, so it is on every page.
+**No duplication:** every section lives on exactly one page (testimonials and partners on Home, the service lifecycle on Services, map / directions / branches on Contact); other pages link to them.
 
 ## Form delivery (no lost enquiries)
 Quote requests and “Get in touch” messages are validated on the server and sent to HubSpot when `HUBSPOT_PORTAL_ID` and `HUBSPOT_FORM_GUID` are set. **Until then, nothing is silently dropped:** the API answers `delivered: false` and the page shows *Send by email* / *Send on WhatsApp* buttons with the full request pre-filled (quotes → sales@, contact messages → sales@, support@ or info@ by topic). Once the CRM is connected, visitors simply see “Request received”.
