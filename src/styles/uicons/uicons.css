@@ -2,6 +2,7 @@
 @font-face{font-family:"uicons-regular-rounded";src:url("uicons-rr.woff2") format("woff2");font-display:block}
 [class^="fi-rr-"]::before,[class*=" fi-rr-"]::before{font-family:"uicons-regular-rounded"!important;font-style:normal;font-weight:normal!important;line-height:1;display:inline-block;vertical-align:-.125em;-webkit-font-smoothing:antialiased}
 .fi-rr-angle-small-down::before{content:"\f153"}
+.fi-rr-angle-small-right::before{content:"\f155"}
 .fi-rr-apps::before{content:"\f16c"}
 .fi-rr-arrow-small-left::before{content:"\f19d"}
 .fi-rr-arrow-small-right::before{content:"\f19e"}
@@ -13,6 +14,7 @@
 .fi-rr-bell::before{content:"\f239"}
 .fi-rr-book-alt::before{content:"\f274"}
 .fi-rr-box-open::before{content:"\f2b3"}
+.fi-rr-building::before{content:"\f303"}
 .fi-rr-bullseye::before{content:"\f309"}
 .fi-rr-calendar::before{content:"\f339"}
 .fi-rr-chart-line-up::before{content:"\f3a5"}
@@ -64,4 +66,5 @@
 .fi-rr-wrench-simple::before{content:"\ff25"}
 @font-face{font-family:"uicons-brands";src:url("uicons-brands.woff2") format("woff2");font-display:block}
 [class^="fi-brands-"]::before,[class*=" fi-brands-"]::before{font-family:"uicons-brands"!important;font-style:normal;font-weight:normal!important;line-height:1;display:inline-block;vertical-align:-.125em;-webkit-font-smoothing:antialiased}
+.fi-brands-linkedin::before{content:"\f17b"}
 .fi-brands-whatsapp::before{content:"\f1d2"}

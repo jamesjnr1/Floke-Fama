@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AnimatePresence, motion } from 'motion/react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 import { useForm, type FieldPath } from 'react-hook-form';
@@ -14,6 +15,8 @@ import { departments, quoteSchema, timelines, type QuoteInput } from '@/lib/quot
 import { cn } from '@/lib/utils';
 
 type Option = { slug: string; label: string; group: string };
+/** The machine the visitor came from ("Request a quote" on a product page). */
+type Focus = { slug: string; name: string; brand: string; image?: string; label: string; category?: string };
 
 const steps: { title: string; hint: string; fields: FieldPath<QuoteInput>[] }[] = [
   { title: 'Your department', hint: 'Who is this equipment for?', fields: ['intent', 'department'] },
@@ -23,10 +26,11 @@ const steps: { title: string; hint: string; fields: FieldPath<QuoteInput>[] }[] 
   { title: 'Review', hint: 'Check everything before sending.', fields: [] },
 ];
 
-export function ProcurementFlow({ options, initial }: { options: Option[]; initial: Partial<QuoteInput> }) {
+export function ProcurementFlow({ options, initial, focus }: { options: Option[]; initial: Partial<QuoteInput>; focus?: Focus }) {
   const [step, setStep] = useState(0);
   const [dir, setDir] = useState(1);
   const [custom, setCustom] = useState('');
+  const [find, setFind] = useState('');
   const [done, setDone] = useState<{ reference: string; delivered: boolean; data: QuoteInput } | null>(null);
 
   const form = useForm<QuoteInput>({
@@ -114,7 +118,10 @@ export function ProcurementFlow({ options, initial }: { options: Option[]; initi
   }
 
   const progress = ((step + 1) / steps.length) * 100;
-  const groups = [...new Set(options.map((o) => o.group))];
+  const q = find.trim().toLowerCase();
+  const shown = q ? options.filter((o) => `${o.label} ${o.group}`.toLowerCase().includes(q)) : options;
+  const groups = [...new Set(shown.map((o) => o.group))];
+  const focusSelected = Boolean(focus && values.equipment.includes(focus.label));
 
   return (
     <form
@@ -126,6 +133,21 @@ export function ProcurementFlow({ options, initial }: { options: Option[]; initi
         } else void submit(e);
       }}
       noValidate className="overflow-hidden rounded-5xl border border-line bg-paper shadow-[0_40px_80px_-40px_rgb(11_21_16/0.25)]">
+      {/* The machine this quote is for */}
+      {focus && focusSelected && (
+        <div className="flex items-center gap-4 border-b border-line bg-brand-50/60 p-4 md:px-10" data-testid="quote-focus">
+          <div className="relative size-16 shrink-0 overflow-hidden rounded-2xl border border-line bg-paper">
+            {focus.image ? <Image src={focus.image} alt="" fill sizes="64px" className="object-contain p-1.5 mix-blend-multiply" /> : <Icon name="fi-rr-box-open" className="absolute inset-0 m-auto size-fit text-2xl text-ink-3" />}
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="label">{values.intent === 'demo' ? 'Demonstration of' : 'Quote for'}</p>
+            <p className="truncate text-lg font-semibold tracking-[-0.01em] text-ink">{focus.name}</p>
+            <p className="text-xs text-ink-3">{focus.brand}{focus.category ? ` · ${focus.category}` : ''}</p>
+          </div>
+          <Link href="/products" className="shrink-0 rounded-full border border-line bg-paper px-3.5 py-2 text-xs font-medium text-ink-2 transition hover:border-ink/30 hover:text-ink">Change</Link>
+        </div>
+      )}
+
       {/* Progress */}
       <div className="border-b border-line p-6 md:px-10">
         <div className="flex items-center justify-between text-sm">
@@ -194,11 +216,31 @@ export function ProcurementFlow({ options, initial }: { options: Option[]; initi
 
             {step === 1 && (
               <div className="space-y-6">
+                {values.equipment.length > 0 && (
+                  <div className="rounded-3xl bg-canvas p-4">
+                    <p className="label mb-3">Selected ({values.equipment.length})</p>
+                    <ul className="flex flex-wrap gap-2">
+                      {values.equipment.map((e) => (
+                        <li key={e}>
+                          <button type="button" onClick={() => toggle(e)} aria-label={`Remove ${e}`} className="inline-flex items-center gap-1.5 rounded-full bg-midnight px-3.5 py-1.5 text-sm text-white">
+                            {e} <Icon name="fi-rr-cross-small" className="text-white/60" />
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                <label className="relative block">
+                  <span className="sr-only">Find equipment</span>
+                  <Icon name="fi-rr-search" className="absolute left-4 top-1/2 -translate-y-1/2 text-ink-3" />
+                  <input value={find} onChange={(e) => setFind(e.target.value)} placeholder="Find equipment, e.g. analyser, monitor, autoclave" className="h-11 w-full rounded-full border border-line bg-paper pl-11 pr-4 text-sm outline-none focus:border-brand-500" />
+                </label>
+                {groups.length === 0 && <p className="text-sm text-ink-3">Nothing matches “{find}”. Add it below and we’ll source it.</p>}
                 {groups.map((g) => (
                   <div key={g}>
                     <p className="label mb-3">{g}</p>
                     <div className="flex flex-wrap gap-2">
-                      {options.filter((o) => o.group === g).map((o) => {
+                      {shown.filter((o) => o.group === g).map((o) => {
                         const active = values.equipment.includes(o.label);
                         return (
                           <motion.button
