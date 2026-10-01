@@ -6,6 +6,10 @@ import { CountUp } from '@/components/motion/count-up';
 import type { PharmaVariant } from '@/lib/three/pharma-scene';
 import { cn } from '@/lib/utils';
 
+const chipPlaces: Record<string, string[]> = {
+  globe: ['left-0 top-[14%]', 'right-0 top-[46%]', 'bottom-[10%] left-[8%]'],
+  equipment: ['left-0 top-[6%]', 'right-0 top-[52%]', 'bottom-0 left-0'],
+};
 const chips = [
   { value: 700, suffix: '+', label: 'Hospitals & labs served', className: 'left-0 top-[14%]' },
   { value: 300, suffix: '+', label: 'System integrations', className: 'right-0 top-[46%]' },
@@ -41,7 +45,7 @@ export function HeroGlobe({ visual = 'globe' }: { visual?: 'globe' | PharmaVaria
       {/* Glow + CSS fallback sphere (visible until WebGL is ready, or if it isn't available) */}
       <div aria-hidden className="absolute inset-[12%] rounded-full bg-[radial-gradient(circle_at_40%_35%,rgb(82_181_124/0.35),rgb(19_66_40/0.25)_45%,transparent_70%)] blur-xl" />
       <div ref={ref} aria-hidden className={cn('absolute inset-0 transition-opacity duration-[1600ms]', ready ? 'opacity-100' : 'opacity-0')} />
-      {chips.map((c, i) => (
+      {chips.map((c, i) => ({ ...c, className: (chipPlaces[visual] ?? chipPlaces.globe)[i] })).map((c, i) => (
         <motion.div
           key={c.label}
           initial={{ opacity: 0, y: 12 }}

@@ -10,11 +10,13 @@ import {
   ACESFilmicToneMapping, AdditiveBlending, BufferAttribute, BufferGeometry, CapsuleGeometry, Color, CylinderGeometry,
   DirectionalLight, Group, LatheGeometry, Material, Mesh, MeshPhysicalMaterial, Object3D, PerspectiveCamera,
   PMREMGenerator, PointLight, Points, PointsMaterial, Quaternion, Scene, SphereGeometry, SRGBColorSpace, TorusGeometry,
-  Vector2, Vector3, WebGLRenderer,
+  Vector2, Vector3, WebGLRenderer, CanvasTexture, Line, LineBasicMaterial, MeshBasicMaterial, PlaneGeometry,
+  QuadraticBezierCurve3, RepeatWrapping, Texture,
 } from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
+import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 
-export type PharmaVariant = 'capsules' | 'molecule';
+export type PharmaVariant = 'capsules' | 'molecule' | 'equipment';
 
 const GREEN = new Color('#257847');
 const GREEN_LIGHT = new Color('#3aa867');
@@ -73,8 +75,10 @@ export function mountPharma(container: HTMLElement, variant: PharmaVariant, onRe
     return m;
   };
 
+  const tickers: ((t: number) => void)[] = [];
   if (variant === 'capsules') buildCapsules();
-  else buildMolecule();
+  else if (variant === 'molecule') buildMolecule();
+  else buildEquipment();
 
   // Fine floating dust for depth
   const DUST = 160;
@@ -223,8 +227,235 @@ export function mountPharma(container: HTMLElement, variant: PharmaVariant, onRe
     mol.scale.setScalar(0.62);
     mol.rotation.set(0.35, 0, -0.5);
     world.add(mol);
-    floaters.push({ obj: mol, base: new Vector3(0, 0, 0), spin: new Vector3(0, 0, 0), phase: 0, amp: 0.08 });
+    floaters.push({ obj: mol, base: new Vector3(0, 0, 0), spin: new Vector3(0, 0.75, 0), phase: 0, amp: 0.08 });
     swayOnly = true;
+  }
+
+  /** Canvas-drawn texture (screens), shown unlit so it reads as a glowing display. */
+  function canvasTexture(w: number, h: number, draw: (g: CanvasRenderingContext2D) => void) {
+    const c = document.createElement('canvas');
+    c.width = w;
+    c.height = h;
+    draw(c.getContext('2d')!);
+    const tex = new CanvasTexture(c);
+    tex.colorSpace = SRGBColorSpace;
+    tex.anisotropy = 4;
+    disposables.push(tex);
+    return tex;
+  }
+  function screenMat(map: Texture) {
+    const m = new MeshBasicMaterial({ map, toneMapped: false });
+    disposables.push(m);
+    return m;
+  }
+  function box(w: number, h: number, d: number, r: number) {
+    const g = new RoundedBoxGeometry(w, h, d, 4, r);
+    disposables.push(g);
+    return g;
+  }
+
+  function buildEquipment() {
+    const shell = glossy(new Color('#eef3f0'), { roughness: 0.32, clearcoat: 0.7 });
+    const trim = glossy(new Color('#d9e3dd'), { roughness: 0.45, clearcoat: 0.3 });
+    const glass = glossy(new Color('#0b1510'), { roughness: 0.08, metalness: 0.2, clearcoat: 1 });
+    const brand = glossy(GREEN, { roughness: 0.3 });
+    const rig = new Group();
+
+    // Display plinth: dark glass disc with a glowing brand-green edge
+    const plinthGeo = new CylinderGeometry(2.25, 2.35, 0.24, 96);
+    disposables.push(plinthGeo);
+    const plinth = new Mesh(plinthGeo, glossy(new Color('#111d17'), { roughness: 0.7, clearcoat: 0, envMapIntensity: 0.15 }));
+    plinth.position.y = -1.32;
+    rig.add(plinth);
+    const edgeGeo = new TorusGeometry(2.3, 0.022, 8, 160);
+    disposables.push(edgeGeo);
+    const edgeMat = new MeshBasicMaterial({ color: GREEN_LIGHT, toneMapped: false });
+    disposables.push(edgeMat);
+    const edge = new Mesh(edgeGeo, edgeMat);
+    edge.rotation.x = Math.PI / 2;
+    edge.position.y = -1.2;
+    rig.add(edge);
+
+    // Benchtop analyser
+    const analyser = new Group();
+    analyser.position.y = -0.62;
+    const body = new Mesh(box(2.6, 1.0, 1.55, 0.14), shell);
+    analyser.add(body);
+    const base = new Mesh(box(2.64, 0.16, 1.6, 0.06), trim);
+    base.position.y = -0.5;
+    analyser.add(base);
+    const stripe = new Mesh(box(2.66, 0.05, 1.62, 0.02), brand);
+    stripe.position.y = -0.4;
+    analyser.add(stripe);
+    // Front viewing window
+    const win = new Mesh(box(1.3, 0.34, 0.05, 0.03), glass);
+    win.position.set(0.45, -0.05, 0.78);
+    analyser.add(win);
+    // Status light
+    const ledGeo = new SphereGeometry(0.035, 12, 8);
+    disposables.push(ledGeo);
+    const led = new Mesh(ledGeo, edgeMat);
+    led.position.set(1.12, 0.3, 0.79);
+    analyser.add(led);
+
+    // Angled touchscreen on the left with a results view
+    const screenTex = canvasTexture(512, 340, (g) => {
+      g.fillStyle = '#07130d';
+      g.fillRect(0, 0, 512, 340);
+      g.fillStyle = '#257847';
+      g.fillRect(0, 0, 512, 42);
+      g.fillStyle = '#eaf6ee';
+      g.font = '600 20px sans-serif';
+      g.fillText('Sample 0428 · Biochemistry', 18, 28);
+      const rows: [string, number][] = [['GLU', 0.62], ['ALT', 0.38], ['CREA', 0.74], ['TBIL', 0.3]];
+      rows.forEach(([k, v], i) => {
+        const y = 78 + i * 40;
+        g.fillStyle = '#8fd1a9';
+        g.font = '500 17px sans-serif';
+        g.fillText(k, 18, y + 6);
+        g.fillStyle = '#17261e';
+        g.fillRect(96, y - 8, 280, 14);
+        g.fillStyle = i === 2 ? '#e4283c' : '#3aa867';
+        g.fillRect(96, y - 8, 280 * v, 14);
+      });
+      g.strokeStyle = '#52b57c';
+      g.lineWidth = 3;
+      g.beginPath();
+      for (let x = 0; x <= 470; x += 4) g.lineTo(20 + x, 300 - Math.exp(-((x - 230) ** 2) / 4000) * 70 - Math.sin(x / 30) * 4);
+      g.stroke();
+    });
+    const panel = new Group();
+    panel.position.set(-0.78, 0.62, 0.42);
+    panel.rotation.x = -0.75;
+    const panelBody = new Mesh(box(0.98, 0.7, 0.08, 0.04), shell);
+    const screenGeo = new PlaneGeometry(0.88, 0.6);
+    disposables.push(screenGeo);
+    const screen = new Mesh(screenGeo, screenMat(screenTex));
+    screen.position.z = 0.042;
+    panel.add(panelBody, screen);
+    analyser.add(panel);
+
+    // Sample carousel with capped tubes, turning
+    const carousel = new Group();
+    carousel.position.set(0.62, 0.5, 0.05);
+    const trayGeo = new CylinderGeometry(0.62, 0.64, 0.08, 64);
+    disposables.push(trayGeo);
+    carousel.add(new Mesh(trayGeo, trim));
+    const tubeGeo = new CylinderGeometry(0.04, 0.04, 0.34, 12);
+    const capGeo = new CylinderGeometry(0.052, 0.052, 0.07, 16);
+    disposables.push(tubeGeo, capGeo);
+    const tubeMat = glossy(new Color('#f7faf8'), { roughness: 0.15, transmission: 0.5, thickness: 0.1 });
+    const capMats = [GREEN, MINT, WHITE, GREEN_LIGHT, RED].map((c) => glossy(c, { roughness: 0.4 }));
+    for (const [ring, n] of [[0.5, 18], [0.32, 11]] as const) {
+      for (let i = 0; i < n; i++) {
+        const a = (i / n) * Math.PI * 2;
+        const tube = new Mesh(tubeGeo, tubeMat);
+        tube.position.set(Math.cos(a) * ring, 0.2, Math.sin(a) * ring);
+        const cap = new Mesh(capGeo, capMats[i === 3 && ring > 0.4 ? 4 : i % 4]);
+        cap.position.set(tube.position.x, 0.4, tube.position.z);
+        carousel.add(tube, cap);
+      }
+    }
+    analyser.add(carousel);
+    tickers.push((t) => (carousel.rotation.y = t * 0.35));
+    rig.add(analyser);
+    rig.rotation.x = 0.12;
+    rig.position.x = -0.3;
+    world.add(rig);
+    world.position.y = 0.3;
+    floaters.push({ obj: rig, base: new Vector3(-0.45, 0, 0), spin: new Vector3(0, 0.45, 0), phase: 0, amp: 0.05 });
+    swayOnly = true;
+
+    // Patient monitor with a scrolling ECG trace
+    const ecg = canvasTexture(512, 128, (g) => {
+      g.fillStyle = '#07130d';
+      g.fillRect(0, 0, 512, 128);
+      g.strokeStyle = '#8fd1a9';
+      g.lineWidth = 3;
+      g.beginPath();
+      for (let x = 0; x <= 512; x += 2) {
+        const p = x % 128;
+        const y = p > 50 && p < 56 ? 30 : p >= 56 && p < 62 ? 100 : p > 80 && p < 96 ? 58 - Math.sin(((p - 80) / 16) * Math.PI) * 10 : 64;
+        g.lineTo(x, y);
+      }
+      g.stroke();
+    });
+    ecg.wrapS = RepeatWrapping;
+    const monitor = new Group();
+    const monBody = new Mesh(box(1.05, 0.78, 0.14, 0.06), shell);
+    const monScreenGeo = new PlaneGeometry(0.9, 0.42);
+    disposables.push(monScreenGeo);
+    const monScreen = new Mesh(monScreenGeo, screenMat(ecg));
+    monScreen.position.set(0, 0.08, 0.072);
+    const monBar = new Mesh(box(0.9, 0.1, 0.02, 0.01), brand);
+    monBar.position.set(0, -0.26, 0.07);
+    monitor.add(monBody, monScreen, monBar);
+    tickers.push((t) => (ecg.offset.x = t * 0.25));
+    monitor.position.set(0.2, 2.3, -1.0);
+    monitor.rotation.set(0.12, 0.3, -0.05);
+    world.add(monitor);
+    floaters.push({ obj: monitor, base: monitor.position.clone(), spin: new Vector3(), phase: 1.2, amp: 0.1 });
+
+    // Shipping carton with brand tape: distribution
+    const carton = new Group();
+    carton.add(new Mesh(box(0.62, 0.48, 0.5, 0.04), shell));
+    const tape = new Mesh(box(0.64, 0.5, 0.12, 0.02), brand);
+    carton.add(tape);
+    carton.position.set(2.35, 0.75, -0.4);
+    carton.rotation.set(0.35, -0.6, 0.12);
+    world.add(carton);
+    floaters.push({ obj: carton, base: carton.position.clone(), spin: new Vector3(), phase: 2.4, amp: 0.12 });
+
+    // Two capsules: the pharmaceutical side of the business
+    const c1 = capsule(GREEN, WHITE, 0.15, 0.42);
+    c1.position.set(1.9, 2.0, 0.2);
+    c1.rotation.set(0.3, 0.2, -0.8);
+    world.add(c1);
+    floaters.push({ obj: c1, base: c1.position.clone(), spin: new Vector3(), phase: 0.6, amp: 0.1 });
+    const c2 = capsule(RED, WHITE, 0.12, 0.34);
+    c2.position.set(-2.55, -0.25, 0.4);
+    c2.rotation.set(-0.2, 0.4, 0.9);
+    world.add(c2);
+    floaters.push({ obj: c2, base: c2.position.clone(), spin: new Vector3(), phase: 3.1, amp: 0.1 });
+
+    // Delivery arcs from the plinth out to facilities, with travelling light
+    const hubs = Array.from({ length: 7 }, (_, i) => {
+      const a = -0.35 + (i / 6) * (Math.PI + 0.7);
+      return new Vector3(Math.cos(a) * 3.1, -1.32, Math.sin(a) * 1.5 + 0.3);
+    });
+    const arcMat = new LineBasicMaterial({ color: GREEN_LIGHT, transparent: true, opacity: 0.6, blending: AdditiveBlending, depthWrite: false });
+    disposables.push(arcMat);
+    const curves = hubs.map((h) => {
+      const from = new Vector3(h.x, 0, h.z).normalize().multiplyScalar(2.3).setY(-1.2);
+      const mid = from.clone().add(h).multiplyScalar(0.5).setY(-0.55);
+      return new QuadraticBezierCurve3(from, mid, h);
+    });
+    curves.forEach((c) => {
+      const geo = new BufferGeometry().setFromPoints(c.getPoints(40));
+      disposables.push(geo);
+      world.add(new Line(geo, arcMat));
+    });
+    const hubGeo = new BufferGeometry().setFromPoints(hubs);
+    const hubMat = new PointsMaterial({ color: MINT, size: 0.12, transparent: true, opacity: 0.9, blending: AdditiveBlending, depthWrite: false });
+    world.add(new Points(hubGeo, hubMat));
+    disposables.push(hubGeo, hubMat);
+    const pulsePos = new Float32Array(curves.length * 3);
+    const pulseGeo = new BufferGeometry();
+    pulseGeo.setAttribute('position', new BufferAttribute(pulsePos, 3));
+    const pulseMat = new PointsMaterial({ color: new Color('#c9f0d8'), size: 0.16, transparent: true, blending: AdditiveBlending, depthWrite: false });
+    world.add(new Points(pulseGeo, pulseMat));
+    disposables.push(pulseGeo, pulseMat);
+    const tmp = new Vector3();
+    tickers.push((t) => {
+      curves.forEach((c, i) => {
+        c.getPoint((t * 0.22 + i * 0.37) % 1, tmp);
+        pulsePos.set([tmp.x, tmp.y, tmp.z], i * 3);
+      });
+      pulseGeo.attributes.position.needsUpdate = true;
+    });
+
+    camera.position.set(0, 1.7, 9.2);
+    camera.lookAt(0, 0.3, 0);
   }
 
   const resize = () => {
@@ -253,7 +484,7 @@ export function mountPharma(container: HTMLElement, variant: PharmaVariant, onRe
     world.rotation.x = eased.y * 0.15;
     floaters.forEach((f, i) => {
       f.obj.position.y = f.base.y + Math.sin(t * 0.8 + f.phase) * f.amp;
-      if (i === 0) f.obj.rotation.y = swayOnly ? Math.sin(t * 0.35) * 0.75 : t * f.spin.y;
+      if (i === 0) f.obj.rotation.y = swayOnly ? f.base.x + Math.sin(t * 0.3) * f.spin.y : t * f.spin.y;
       else {
         f.obj.rotation.x += f.spin.x * 0.01;
         f.obj.rotation.y += f.spin.y * 0.01;
@@ -261,6 +492,7 @@ export function mountPharma(container: HTMLElement, variant: PharmaVariant, onRe
       }
     });
     dust.rotation.y = t * 0.02;
+    tickers.forEach((fn) => fn(t));
     renderer.render(scene, camera);
   };
 
