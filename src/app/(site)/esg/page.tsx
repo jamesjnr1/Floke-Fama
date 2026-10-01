@@ -54,9 +54,9 @@ export default function EsgPage() {
         lead="How Flokefama creates value beyond supply: for patients, for communities and for Ghana’s economy."
       />
 
-      <section className="bg-paper py-24 md:py-32">
+      <section className="bg-paper py-14 md:py-32">
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
-          <ul className="grid gap-4 md:grid-cols-2">
+          <ul className="swipe-row gap-4 md:grid-cols-2">
             {pillars.map((p, i) => (
               <li key={p.title}>
                 <Reveal delay={i * 0.06} className="relative flex h-full flex-col overflow-hidden rounded-4xl border border-line bg-canvas p-8 md:p-10">
@@ -81,7 +81,7 @@ export default function EsgPage() {
             <h2 className="display mt-4 text-[clamp(2rem,1.2rem+2.8vw,3.5rem)] text-white">Made in Ghana, for Ghana.</h2>
             <p className="mt-6 max-w-md text-lg font-light leading-relaxed text-white/75">Our long-term commitment goes beyond distribution: building the capacity to make what Ghana’s healthcare needs, here.</p>
           </Reveal>
-          <ul className="grid gap-4 sm:grid-cols-2">
+          <ul className="swipe-row gap-4 md:grid-cols-2">
             {[aim, vision].map((p, i) => (
               <li key={p.label}>
                 <Reveal delay={0.08 * (i + 1)} className="flex h-full flex-col rounded-4xl border border-white/15 bg-white/[0.08] p-7">

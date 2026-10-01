@@ -22,7 +22,7 @@ export function Testimonials() {
   }, [active, paused, reduce]);
 
   return (
-    <section id="testimonials" className="scroll-mt-28 border-b border-line bg-canvas py-24 md:py-32">
+    <section id="testimonials" className="scroll-mt-28 border-b border-line bg-canvas py-14 md:py-32">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal className="flex flex-col items-center text-center">
           <p className="label">Testimonials</p>
@@ -38,7 +38,7 @@ export function Testimonials() {
             className="relative mx-auto mt-14 grid max-w-5xl overflow-hidden rounded-5xl border border-line bg-paper shadow-[0_40px_80px_-50px_rgb(11_21_16/0.4)] lg:grid-cols-[1.6fr_1fr]"
           >
             <figure className="relative flex min-h-[340px] flex-col p-8 md:p-12">
-              <span aria-hidden className="pointer-events-none absolute -top-6 left-6 select-none font-serif text-[10rem] leading-none text-brand-600/10">“</span>
+              <span aria-hidden className="pointer-events-none absolute -top-6 left-6 select-none font-mono text-[10rem] leading-none text-brand-600/10">“</span>
               <AnimatePresence mode="wait" initial={false}>
                 <motion.div
                   key={active}

@@ -22,8 +22,8 @@ const media = [
 export function SiteFooter() {
   return (
     <footer className="bg-midnight text-white/60">
-      <div className="mx-auto grid max-w-[1280px] gap-12 px-5 py-20 md:grid-cols-2 md:px-10 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1.2fr]">
-        <div>
+      <div className="mx-auto grid max-w-[1280px] grid-cols-2 gap-x-6 gap-y-10 px-5 py-14 md:grid-cols-2 md:gap-12 md:px-10 md:py-20 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1.2fr]">
+        <div className="col-span-2 md:col-span-1">
           <Logo tone="dark" />
           <p className="mt-5 max-w-xs text-sm font-light leading-relaxed">
             Revolutionising healthcare practices in Ghana with cutting-edge technologies and solutions that set new standards in medical care and patient safety.
@@ -34,7 +34,7 @@ export function SiteFooter() {
             <li key={l.href}><Link href={l.href} className="hover:text-white">{l.label}</Link></li>
           ))}
         </FooterCol>
-        <FooterCol title="Products & solutions">
+        <FooterCol title="Products & solutions" className="hidden md:block">
           {categories.map((c) => (
             <li key={c.slug}>
               <Link href={`/products?category=${c.slug}`} className="hover:text-white">{c.title}</Link>
@@ -49,7 +49,7 @@ export function SiteFooter() {
           <li className="pt-3"><Link href="/portal" className="hover:text-white">Client portal</Link></li>
           <li><Link href="/engineer" className="hover:text-white">Engineer sign in</Link></li>
         </FooterCol>
-        <FooterCol title="Contact">
+        <FooterCol title="Contact" className="col-span-2 md:col-span-1">
           <li><a href={contact.phoneHref} className="hover:text-white">{contact.phone}</a></li>
           <li><a href={`mailto:${contact.info}`} className="hover:text-white">{contact.info}</a></li>
           <li>
@@ -68,11 +68,11 @@ export function SiteFooter() {
   );
 }
 
-function FooterCol({ title, children }: { title: string; children: React.ReactNode }) {
+function FooterCol({ title, children, className }: { title: string; children: React.ReactNode; className?: string }) {
   return (
-    <div>
+    <div className={className}>
       <h2 className="label !text-white/40">{title}</h2>
-      <ul className="mt-5 space-y-3 text-sm font-light">{children}</ul>
+      <ul className="mt-4 space-y-2.5 text-sm font-light md:mt-5 md:space-y-3">{children}</ul>
     </div>
   );
 }

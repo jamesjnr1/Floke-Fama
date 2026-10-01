@@ -8,8 +8,9 @@
    Status dots  #3AA867  brand green, lifted for visibility on dark
    ========================================================================== */
 @theme {
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+  /* Two typefaces: Poppins for text, Geist Sans for labels, numerals and accents (the `font-mono` utility). */
+  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
 
   --color-canvas: #f8f9fa;
   --color-paper: #ffffff;
@@ -84,13 +85,24 @@
 }
 
 @layer components {
-  /* Heading/Muted Label: Geist Mono, 12px, medium, +15% tracking, uppercase */
+  /* Heading/Muted Label: Geist Sans, 12px, medium, +15% tracking, uppercase */
   .label {
     @apply font-mono text-[12px] font-medium uppercase tracking-[0.15em] text-ink-3;
   }
-  /* Display/Hero Large: Geist Sans bold, -3% tracking */
+  /* Display/Hero Large: Poppins semibold, -3% tracking */
   .display {
-    @apply font-bold tracking-[-0.03em] leading-[0.98];
+    @apply font-semibold tracking-[-0.03em] leading-[1.02];
+  }
+  /* Phones: a stack of cards becomes one horizontal swipe row (saves scrolling). md+: the element's own grid. */
+  .swipe-row {
+    @apply -mx-5 flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-2 md:mx-0 md:grid md:overflow-visible md:px-0 md:pb-0;
+    scrollbar-width: none;
+  }
+  .swipe-row::-webkit-scrollbar {
+    display: none;
+  }
+  .swipe-row > * {
+    @apply w-[84%] shrink-0 snap-start md:w-auto;
   }
   /* Surgical-green pulsating status dot */
   .status-dot {

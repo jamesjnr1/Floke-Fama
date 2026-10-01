@@ -29,7 +29,7 @@ export default async function AboutPage() {
       />
 
       {/* Who we are */}
-      <section id="who-we-are" className="scroll-mt-28 bg-paper py-24 md:py-32">
+      <section id="who-we-are" className="scroll-mt-28 bg-paper py-14 md:py-32">
         <div className="mx-auto grid max-w-[1280px] items-center gap-12 px-5 md:px-10 lg:grid-cols-2 lg:gap-16">
           <Reveal>
             <p className="label">Who we are</p>
@@ -60,13 +60,13 @@ export default async function AboutPage() {
       <Impact metrics={metrics} />
 
       {/* Mission, vision, aim */}
-      <section id="mission" className="scroll-mt-28 border-t border-line bg-paper py-24 md:py-32">
+      <section id="mission" className="scroll-mt-28 border-t border-line bg-paper py-14 md:py-32">
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
           <Reveal>
             <p className="label">Our mission</p>
             <h2 className="display mt-4 max-w-2xl text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">What we stand for.</h2>
           </Reveal>
-          <ul className="mt-12 grid gap-4 md:grid-cols-3">
+          <ul className="swipe-row mt-10 gap-4 md:mt-12 md:grid-cols-3">
             {purpose.map((p, i) => (
               <li key={p.label}>
                 <Reveal delay={i * 0.06} className="flex h-full flex-col rounded-3xl border border-line bg-canvas p-7">

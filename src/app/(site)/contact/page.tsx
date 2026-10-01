@@ -25,7 +25,7 @@ export default function ContactPage() {
     <>
       <PageHero label="Contact" title={<>Get in touch <span className="text-gradient">with us</span></>} lead="We’re here to provide total healthcare solutions. Reach out to us anytime." />
 
-      <section className="bg-canvas py-20 md:py-28">
+      <section className="bg-canvas py-12 md:py-28">
         <div className="mx-auto grid max-w-[1280px] gap-12 px-5 md:px-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
           <div>
             <h2 className="text-2xl font-bold tracking-[-0.02em] text-ink">Talk to us</h2>

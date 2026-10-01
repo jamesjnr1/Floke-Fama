@@ -11,7 +11,7 @@ export function PageHero({ label, title, lead, children }: { label: string; titl
         <NetworkCanvas className="absolute inset-0 opacity-70 [mask-image:linear-gradient(90deg,transparent_0%,transparent_40%,#000_75%)]" />
         <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-midnight to-transparent" />
       </div>
-      <div className="mx-auto max-w-[1280px] px-5 pb-20 pt-40 md:px-16 md:pb-28 md:pt-48">
+      <div className="mx-auto max-w-[1280px] px-5 pb-12 pt-32 md:px-16 md:pb-28 md:pt-48">
         <Reveal>
           <p className="label flex items-center gap-3 !text-brand-300">
             <span className="status-dot" aria-hidden /> {label}

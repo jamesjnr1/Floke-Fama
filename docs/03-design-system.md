@@ -14,6 +14,8 @@
 | `canvas` / `paper` | `#F8F9FA` / `#FFFFFF` | Light sections |
 | `ink`, `ink-2`, `ink-3`, `line`, `mist` | neutral greys | Text and borders |
 
+**Mobile:** sections use tighter vertical padding on phones, and stacks of cards (awards, impact stories, news, ESG, mission, why-choose, categories) become a horizontal swipe row (`.swipe-row` in `globals.css`); the catalogue is two columns; the footer is compact.
+
 **Section rhythm:** pages alternate dark (`midnight`), light (`canvas`/`paper`) and **brand green** (a deep `brand-700 → brand-800` gradient, used for Core values and ESG “Made in Ghana”), so no page is a run of dark sections.
 
 Hover states always go **darker** (`brand-700`), never lighter, so white text stays AA-compliant.
@@ -29,8 +31,11 @@ Hover states always go **darker** (`brand-700`), never lighter, so white text st
 ## Typography
 | Style | Spec | Implementation |
 |---|---|---|
-| Display/Hero Large | Geist Sans, Bold, −3% tracking, uppercase for page slogans | `.display` |
-| Heading/Muted Label | Geist Mono, 12px, Medium, +15% tracking, uppercase | `.label` |
+| Text (headings + body) | **Poppins** (self-hosted, `src/fonts/`, 300–700) | `font-sans` (default) |
+| Display/Hero Large | Poppins Semibold, −3% tracking, uppercase for page slogans | `.display` |
+| Labels, numerals, accents | **Geist Sans**, 12px, Medium, +15% tracking, uppercase | `.label` / `font-mono` utility |
+
+Only these two typefaces are used. (The `font-mono` utility is mapped to Geist Sans.)
 
 ## Navigation
 - Mirrors the flokefama.com menu, each tab its own page: **Home** · **Company** ▾ (About Us `/about`, Awards `/awards`) · **Products & Services** `/services` · **Events & Activities** `/events` · **Shop** `/products` · **ESG** `/esg` · **Contact** `/contact`. Below 1280 px it collapses into the menu button.
@@ -41,7 +46,7 @@ Hover states always go **darker** (`brand-700`), never lighter, so white text st
 
 **Component map:** `Navbar.tsx` (Global Header) · `home/testimonials.tsx` · `contact/visit-us.tsx` (head office photo, greyscale live map, directions, branches) · `contact/get-in-touch.tsx` + `contact-form.tsx` (in the footer) · `awards/awards-gallery.tsx` · `home/hero-globe.tsx` + `lib/three/globe-scene.ts` (hero 3D) · `about/impact.tsx` · `about/core-values.tsx` · `home/services.tsx` (service lifecycle rail) · `engineer/*` (service portal app) · `page-hero.tsx` (shared dark page header) · `media/news-grid.tsx` (Newsroom) · `hero.tsx` (Hero Section) · `partners.tsx` (Partners & Clientele) · `BentoGrid.tsx` (Insights Deck) · `client-portal/tickets.tsx` + `inventory.tsx` (Client portal) · `auth/login-form.tsx` (Sign-in card) · `engineer/PortalShell.tsx` (Engineer Portal Shell + Sidebar Rail) · `engineer/AssetStatusList.tsx` (System Status Rail) · `engineer/TimelineTracker.tsx` (Interactive Timeline Block) · `engineer/QuickActions.tsx` (Terminal Button + Radial Efficiency Chart).
 
-**Social flyers** already use the brand green and red; their typeface (Poppins) can move to Geist for full consistency.
+**Social flyers** already use the brand green and red and Poppins, so they match the site.
 
 
 The rules that make the website, flyers and brochures look like one flagship healthcare brand. Every token below is a CSS custom property in `site/assets/css/styles.css`.
