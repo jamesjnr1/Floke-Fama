@@ -22,7 +22,7 @@
 
 Hover states always go **darker** (`brand-700`), never lighter, so white text stays AA-compliant.
 
-**Hero 3D:** a dotted globe with the head office as a pulsing logo-red node and green arcs carrying light pulses out to facilities; glass read-outs show the published figures. Pauses off-screen; a still frame with reduced motion.
+**Hero 3D:** a capsule drawn in dots (one half brand green, the other mint), turning slowly inside two orbit rings that carry light pulses to facility nodes, with the logo's red dot pulsing on its seam. Lines and points only (an invisible inner capsule hides the far-side dots). No overlaid figures. Pauses off-screen; a still frame with reduced motion.
 
 **Logos:** partner and client logos are trimmed of built-in margins and sized to equal visual area (`logoBox` in `home/partners.tsx`), so wordmarks and crests look the same size.
 
@@ -46,7 +46,7 @@ Only these two typefaces are used. (The `font-mono` utility is mapped to Geist S
 - Hover: a soft glass pill **glides** between items (Motion shared `layoutId`), and also follows keyboard focus. No underline.
 - Active page: a quiet persistent pill plus a small brand-green dot, with `aria-current="page"`.
 
-**Component map:** `Navbar.tsx` (Global Header) · `home/testimonials.tsx` · `contact/visit-us.tsx` (head office photo, greyscale live map, directions, branches) · `contact/get-in-touch.tsx` + `contact-form.tsx` (in the footer) · `awards/awards-gallery.tsx` · `home/hero-globe.tsx` + `lib/three/globe-scene.ts` (hero 3D) · `about/impact.tsx` · `about/core-values.tsx` · `home/services.tsx` (service lifecycle rail) · `engineer/*` (service portal app) · `page-hero.tsx` (shared dark page header) · `media/news-grid.tsx` (Newsroom) · `hero.tsx` (Hero Section) · `partners.tsx` (Partners & Clientele) · `BentoGrid.tsx` (Insights Deck) · `client-portal/tickets.tsx` + `inventory.tsx` (Client portal) · `app/login/page.tsx` + `auth/login-form.tsx` (split-screen sign-in: tinted head office photo, light form panel) · `engineer/PortalShell.tsx` (Engineer Portal Shell + Sidebar Rail) · `engineer/AssetStatusList.tsx` (System Status Rail) · `engineer/TimelineTracker.tsx` (Interactive Timeline Block) · `engineer/QuickActions.tsx` (Terminal Button + Radial Efficiency Chart).
+**Component map:** `Navbar.tsx` (Global Header) · `home/testimonials.tsx` · `contact/visit-us.tsx` (head office photo, greyscale live map, directions, branches) · `contact/get-in-touch.tsx` + `contact-form.tsx` (in the footer) · `awards/awards-gallery.tsx` · `home/hero-capsule.tsx` + `lib/three/capsule-scene.ts` (hero 3D) · `about/impact.tsx` · `about/core-values.tsx` · `home/services.tsx` (service lifecycle rail) · `engineer/*` (service portal app) · `page-hero.tsx` (shared dark page header) · `media/news-grid.tsx` (Newsroom) · `hero.tsx` (Hero Section) · `partners.tsx` (Partners & Clientele) · `BentoGrid.tsx` (Insights Deck) · `client-portal/tickets.tsx` + `inventory.tsx` (Client portal) · `app/login/page.tsx` + `auth/login-form.tsx` (split-screen sign-in: tinted head office photo, light form panel) · `engineer/PortalShell.tsx` (Engineer Portal Shell + Sidebar Rail) · `engineer/AssetStatusList.tsx` (System Status Rail) · `engineer/TimelineTracker.tsx` (Interactive Timeline Block) · `engineer/QuickActions.tsx` (Terminal Button + Radial Efficiency Chart).
 
 **Social flyers** already use the brand green and red and Poppins, so they match the site.
 

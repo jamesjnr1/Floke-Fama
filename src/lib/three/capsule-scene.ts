@@ -2,7 +2,7 @@
  * Hero centrepiece: a capsule drawn in dots (one half brand green, the other mint), turning
  * slowly inside two orbit rings that carry light pulses out to facility nodes, a picture of
  * the medicines and equipment Flokefama distributes. A single red node echoes the logo's dot.
- * Same visual language as the globe: lines and points only, cheap on mid-range phones.
+ * Lines and points only (no lights or textures), so it stays cheap on mid-range phones.
  * Loaded lazily in its own chunk. Returns a cleanup function that disposes everything.
  */
 import { prefersReducedMotion } from '@/lib/a11y';

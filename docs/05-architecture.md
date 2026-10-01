@@ -36,7 +36,7 @@ Every integration is optional at runtime. With no environment variables the site
 ## Routes
 | Route | Rendering | Notes |
 |---|---|---|
-| `/` | Static + ISR | Hero (“Ghana’s No.1 Healthcare Company.”, 3D network globe), Partners & Clientele, in-vitro diagnostics scrollytelling, product universe, testimonials |
+| `/` | Static + ISR | Hero (“Ghana’s No.1 Healthcare Company.”, 3D dotted capsule), Partners & Clientele, in-vitro diagnostics scrollytelling, product universe, testimonials |
 | `/about` | Static + ISR | Company → About Us: who we are, impact (figures + sourced stories), mission / vision / aim, core values |
 | `/awards` | Static | Company → Awards: photographed awards, closing statement |
 | `/services` | Static | Products & Services: the service lifecycle, why choose Flokefama (products live in the Shop) |

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { HeroGlobe } from '@/components/home/hero-globe';
+import { HeroCapsule } from '@/components/home/hero-capsule';
 import { NetworkCanvas } from '@/components/home/network-canvas';
 import { Reveal } from '@/components/motion/reveal';
 import { Button } from '@/components/ui/button';
@@ -9,9 +9,9 @@ import { Icon } from '@/components/ui/icon';
  * Hero Section: dark canvas, 12-column grid.
  * Left (span 7): the company line from flokefama.com, muted subline, and two simple actions
  * (Explore Solutions → shop, Contact Us → contact, as on the current site).
- * Right (span 5): 3D network globe with the published figures, over a faint wireframe network.
+ * Right (span 5): 3D dotted capsule in orbit rings, over a faint wireframe network.
  */
-export function Hero({ visual, figures }: { visual?: 'globe' | 'capsule'; figures?: boolean } = {}) {
+export function Hero() {
   return (
     <section className="relative isolate overflow-hidden bg-midnight text-white">
       {/* Background: glow, light beam, wireframe network */}
@@ -44,9 +44,9 @@ export function Hero({ visual, figures }: { visual?: 'globe' | 'capsule'; figure
           </Reveal>
         </div>
 
-        {/* Column Right (span 5): the 3D network globe */}
+        {/* Column Right (span 5): the 3D dotted capsule */}
         <Reveal delay={0.2} y={40} className="relative lg:col-span-5">
-          <HeroGlobe visual={visual} figures={figures} />
+          <HeroCapsule />
         </Reveal>
       </div>
     </section>
