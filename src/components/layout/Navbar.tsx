@@ -62,7 +62,9 @@ export function Navbar() {
     document.body.style.overflow = open ? 'hidden' : '';
   }, [open]);
 
-  const dark = open || darkTop.includes(pathname);
+  // The header is always the dark glass bar; on pages that open light it is solid from the start.
+  const dark = true;
+  const solid = open || scrolled || !darkTop.includes(pathname);
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 px-3 pt-3 md:px-6 md:pt-4">
@@ -70,7 +72,7 @@ export function Navbar() {
         className={cn(
           'mx-auto flex h-[72px] max-w-[1280px] items-center justify-between gap-6 rounded-2xl border px-4 transition-[background-color,border-color,box-shadow] duration-500 md:px-6',
           dark
-            ? cn('border-white/10 backdrop-blur-xl', scrolled || open ? 'bg-midnight/85 shadow-[0_20px_50px_-20px_rgb(0_0_0/0.6)]' : 'bg-white/[0.04]')
+            ? cn('border-white/10 backdrop-blur-xl', solid ? 'bg-midnight/90 shadow-[0_20px_50px_-20px_rgb(0_0_0/0.6)]' : 'bg-white/[0.04]')
             : cn('border-line backdrop-blur-xl', scrolled ? 'bg-paper/90 shadow-[0_20px_50px_-30px_rgb(11_21_16/0.35)]' : 'bg-paper/70'),
         )}
       >
@@ -82,7 +84,7 @@ export function Navbar() {
             {anchors.map((a) => {
               const active = isActive(pathname, a);
               const itemClass = cn(
-                'relative flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm transition-colors duration-300 focus-visible:outline-none',
+                'relative flex items-center gap-1.5 rounded-full px-3 py-2 text-sm transition-colors duration-300 focus-visible:outline-none',
                 dark ? 'text-white/70 hover:text-white' : 'text-ink-2 hover:text-ink',
                 active && (dark ? 'text-white' : 'text-ink'),
               );
@@ -176,6 +178,12 @@ export function Navbar() {
         </nav>
 
         <div className="flex items-center gap-3">
+          <Link
+            href="/quote"
+            className="hidden items-center rounded-xl border border-white/15 px-4 py-3 text-sm font-medium text-white transition hover:border-white/30 hover:bg-white/[0.06] xl:inline-flex"
+          >
+            Get a Quote
+          </Link>
           {/* CTA Button: padding 12px 24px, brand green, radius 12px */}
           <Link
             href="/portal"
@@ -209,7 +217,7 @@ export function Navbar() {
             className="fixed inset-x-3 bottom-3 top-[92px] flex flex-col overflow-y-auto rounded-2xl border border-white/10 bg-midnight/95 p-5 backdrop-blur-xl xl:hidden"
           >
             <ul className="divide-y divide-white/10">
-              {[...flat, { href: '/portal', label: 'Client Portal Access' }].map((item, i) => (
+              {[...flat, { href: '/quote', label: 'Get a Quote' }, { href: '/portal', label: 'Client Portal Access' }].map((item, i) => (
                 <motion.li key={item.href} initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.04 * i }}>
                   <Link
                     href={item.href}

@@ -1,7 +1,5 @@
 import type { Metadata } from 'next';
 import { ProcurementFlow } from '@/components/quote/procurement-flow';
-import { Icon } from '@/components/ui/icon';
-import { contact } from '@/data/seed';
 import { getCategories, getProducts } from '@/lib/data';
 
 export const metadata: Metadata = {
@@ -23,18 +21,6 @@ export default async function QuotePage({ searchParams }: { searchParams: Promis
           <p className="mt-6 max-w-sm font-light leading-relaxed text-ink-3">
             Four short steps. Your request goes straight to our sales engineers, and you’ll hear back within one business day.
           </p>
-          <ul className="mt-10 space-y-4 text-sm">
-            {[
-              ['fi-rr-shield-check', 'Official distributor pricing and warranty'],
-              ['fi-rr-settings', 'Installation, training and calibration included in proposals'],
-              ['fi-rr-marker', 'Six branches for fast on-site support'],
-            ].map(([icon, text]) => (
-              <li key={text} className="flex items-center gap-3 text-ink-2"><Icon name={icon} className="text-brand-600" /> {text}</li>
-            ))}
-          </ul>
-          <a href={contact.phoneHref} className="mt-10 inline-flex items-center gap-2 text-sm font-medium text-ink">
-            <Icon name="fi-rr-phone-call" className="text-brand-600" /> Prefer to talk? {contact.phone}
-          </a>
         </aside>
         <ProcurementFlow options={options} initial={{ intent: intent === 'demo' ? 'demo' : 'quote', equipment: preselected }} />
       </div>
