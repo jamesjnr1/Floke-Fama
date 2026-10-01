@@ -43,7 +43,7 @@ export interface Ticket {
 
 export const assets: Asset[] = [
   {
-    id: 'AS-01', name: 'BS-240 Chemistry Analyser', brand: 'Mindray', productSlug: 'mindray-bs-240', image: '/images/bs-240-stage.webp',
+    id: 'AS-01', name: 'Semi-Auto Chemistry Analyser', brand: 'Mindray', productSlug: 'mindray-semi-auto-chemistry',
     serial: 'DEMO-BS240-0917', location: 'Main laboratory', status: 'online', readings: [42, 48, 45, 60, 58, 66, 71, 64, 72, 78],
     installed: '14 Feb 2025', warrantyUntil: '14 Feb 2027', lastCalibration: '02 Jul 2026', nextCalibration: '02 Oct 2026',
     certificates: [
@@ -105,7 +105,7 @@ export const tickets: Ticket[] = [
     current: 1,
   },
   {
-    id: 'TK-1039', assetId: 'AS-01', title: 'BS-240: quarterly preventive maintenance', priority: 'routine', opened: 'Mon, 09:00',
+    id: 'TK-1039', assetId: 'AS-01', title: 'Chemistry analyser: quarterly preventive maintenance', priority: 'routine', opened: 'Mon, 09:00',
     steps: [{ label: 'Log ticket', detail: 'Scheduled PM visit' }, { label: 'Engineer assigned' }, { label: 'On-site diagnostics' }, { label: 'Resolution' }],
     current: 1,
   },

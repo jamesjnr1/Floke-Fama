@@ -8,11 +8,10 @@
 .fi-rr-award::before{content:"\f1df"}
 .fi-rr-baby::before{content:"\f1e4"}
 .fi-rr-badge-check::before{content:"\f1eb"}
+.fi-rr-balance-scale-left::before{content:"\f1fb"}
 .fi-rr-bell::before{content:"\f239"}
 .fi-rr-book-alt::before{content:"\f274"}
 .fi-rr-box-open::before{content:"\f2b3"}
-.fi-rr-building::before{content:"\f303"}
-.fi-rr-bulb::before{content:"\f304"}
 .fi-rr-bullseye::before{content:"\f309"}
 .fi-rr-calendar::before{content:"\f339"}
 .fi-rr-chart-line-up::before{content:"\f3a5"}
@@ -29,17 +28,19 @@
 .fi-rr-globe::before{content:"\f705"}
 .fi-rr-graduation-cap::before{content:"\f70f"}
 .fi-rr-hand-holding-heart::before{content:"\f75a"}
+.fi-rr-hands-heart::before{content:"\f770"}
+.fi-rr-handshake::before{content:"\f779"}
 .fi-rr-headset::before{content:"\f794"}
 .fi-rr-heart-rate::before{content:"\f79d"}
 .fi-rr-hospital::before{content:"\f7c5"}
 .fi-rr-info::before{content:"\f80b"}
+.fi-rr-lightbulb-on::before{content:"\f8ac"}
 .fi-rr-link-alt::before{content:"\f8b5"}
 .fi-rr-marker::before{content:"\f8fd"}
 .fi-rr-microscope::before{content:"\f945"}
 .fi-rr-navigation::before{content:"\f99d"}
 .fi-rr-paper-plane::before{content:"\f9f7"}
 .fi-rr-phone-call::before{content:"\fa61"}
-.fi-rr-play::before{content:"\fa9e"}
 .fi-rr-search::before{content:"\fbba"}
 .fi-rr-settings::before{content:"\fbd2"}
 .fi-rr-shield-check::before{content:"\fbdb"}
@@ -53,7 +54,6 @@
 .fi-rr-trophy::before{content:"\fe39"}
 .fi-rr-truck-side::before{content:"\fe4d"}
 .fi-rr-user::before{content:"\fea0"}
-.fi-rr-users::before{content:"\fea6"}
 @font-face{font-family:"uicons-brands";src:url("uicons-brands.woff2") format("woff2");font-display:block}
 [class^="fi-brands-"]::before,[class*=" fi-brands-"]::before{font-family:"uicons-brands"!important;font-style:normal;font-weight:normal!important;line-height:1;display:inline-block;vertical-align:-.125em;-webkit-font-smoothing:antialiased}
 .fi-brands-whatsapp::before{content:"\f1d2"}

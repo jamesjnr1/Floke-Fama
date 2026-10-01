@@ -37,7 +37,7 @@ src/
                        events, products (shop, + intercepted spec modal), esg, contact, quote, offline, login, client portal /portal
   app/engineer/        Biomedical Engineer Service Portal /engineer (own app-shell layout, separate from the client portal)
   middleware.ts        Protects /portal and /engineer (sign-in + role check)
-  components/          home/, contact/, awards/, products/, quote/, client-portal/, engineer/, auth/, layout/, ui/, motion/
+  components/          home/, about/, contact/, awards/, products/, quote/, client-portal/, engineer/, auth/, layout/, ui/, motion/
   data/seed.ts         Content from the current site; fallback when Sanity isn't configured
   data/*-demo.ts       Fictional demo data for the two portals
   lib/                 auth/ (sessions, sign-in), data access (Sanity), search (Algolia/local), quote schema (zod), Three.js scene
@@ -71,6 +71,7 @@ Both require signing in at `/login`, and each account can only open its own port
 - The **Ministry of Health partnership** in the brief is **not shown** until Flokefama confirms it.
 - The **client portal uses clearly labelled demo data** (fictional facility and engineers) until it's connected to a real service backend.
 - Real event photography only. Awards are shown from photos of the actual awards; testimonials, figures (700+ facilities, 300+ integrations), services and events are taken from the current site.
+- Only products in Flokefama’s actual catalogue are named. (The BS-240 render is used as an illustration for in-vitro diagnostics, as on the current homepage; the BS-240 itself is not sold by Flokefama and is not listed.)
 - The site never links to the live flokefama.com (the brochure PDF will be added once Flokefama supplies a web-sized copy).
 
 ## Git workflow
