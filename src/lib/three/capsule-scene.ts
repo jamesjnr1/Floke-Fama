@@ -15,8 +15,7 @@ import {
 const R = 1.05; // capsule radius
 const H = 1.15; // half-length of the straight section
 const STEP = 0.115; // dot spacing
-const GREEN = new Color('#3aa867');
-const GREEN_BRIGHT = new Color('#52b57c');
+const GREEN_BRIGHT = new Color('#8fd1a9'); // light enough to read on the green hero
 const MINT = new Color('#e6f6ec');
 const RED = new Color('#e4283c');
 
@@ -101,7 +100,7 @@ export function mountCapsule(container: HTMLElement, onReady?: () => void): () =
   disposables.push(occGeo, occMat);
 
   // 2. Faint outline: profile lines around the body and the seam
-  const lineMat = new LineBasicMaterial({ color: GREEN, transparent: true, opacity: 0.1, depthWrite: false });
+  const lineMat = new LineBasicMaterial({ color: MINT, transparent: true, opacity: 0.1, depthWrite: false });
   disposables.push(lineMat);
   // Half silhouette from the bottom pole, up the side, to the top pole
   const profile: Vector3[] = [];
@@ -132,7 +131,7 @@ export function mountCapsule(container: HTMLElement, onReady?: () => void): () =
   disposables.push(redTex, redMat, redCoreGeo, redCoreMat);
 
   // 4. Two orbit rings with facility nodes and light pulses travelling round them
-  const ringMat = new LineBasicMaterial({ color: GREEN, transparent: true, opacity: 0.38, depthWrite: false });
+  const ringMat = new LineBasicMaterial({ color: MINT, transparent: true, opacity: 0.3, depthWrite: false });
   const nodeMat = new PointsMaterial({ color: MINT, size: 0.09, transparent: true, opacity: 0.95, blending: AdditiveBlending, depthWrite: false });
   const pulseTex = glowTexture('rgba(190,240,210,1)');
   const pulseMat = new PointsMaterial({ map: pulseTex, size: 0.24, transparent: true, blending: AdditiveBlending, depthWrite: false });
