@@ -58,25 +58,46 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      {/* Leadership: portrait from the current site's media library; facts from its Media Centre */}
+      {/* Leadership. Portrait from the current site's media library; facts and quotes from published
+          interviews and press (Graphic Online, Citi Newsroom, Ghana CEO Summit, EMY Africa) and his podcast. */}
       <section id="ceo" className="scroll-mt-28 border-t border-line bg-paper py-14 md:py-24">
         <div className="mx-auto grid max-w-[1280px] items-center gap-10 px-5 md:px-10 lg:grid-cols-12 lg:gap-16">
           <Reveal className="lg:col-span-5">
             <figure className="relative mx-auto aspect-[4/5] max-w-md overflow-hidden rounded-5xl bg-[#e9e6e3] lg:max-w-none">
-              <Image src="/images/ceo-emmanuel-kenney.webp" alt="Mr. Emmanuel Kenney, Chief Executive Officer of Flokefama" fill sizes="(min-width: 1024px) 40vw, 100vw" className="object-cover object-top" />
+              <Image src="/images/ceo-emmanuel-kenney.webp" alt="Mr. Emmanuel Teye Kwabena Kenney, Chief Executive Officer of Flokefama" fill sizes="(min-width: 1024px) 40vw, 100vw" className="object-cover object-top" />
+              <figcaption className="absolute inset-x-4 bottom-4 rounded-2xl bg-midnight/85 px-4 py-3 text-white backdrop-blur">
+                <p className="font-semibold">Emmanuel Teye Kwabena Kenney</p>
+                <p className="text-sm text-white/70">Founder &amp; Chief Executive Officer</p>
+              </figcaption>
             </figure>
           </Reveal>
           <Reveal delay={0.08} className="lg:col-span-7">
-            <p className="label">Leadership</p>
-            <h2 className="display mt-4 text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">Meet our CEO</h2>
-            <p className="mt-6 text-xl font-semibold text-ink">Mr. Emmanuel Kenney</p>
-            <p className="mt-1 text-[15px] text-brand-700">Chief Executive Officer, Flokefama Company Limited</p>
-            <p className="mt-6 max-w-xl text-lg font-light leading-relaxed text-ink-3">
-              Mr. Kenney leads Flokefama, a Ghana Club 100 company delivering world-class healthcare equipment across Ghana and West Africa since 2008. He is a strong advocate of industry-academic partnerships that produce “industry-ready” engineers capable of transforming Ghana’s healthcare landscape.
-            </p>
-            <Link href="/news/flokefama-partners-with-university-of-ghana-to-shape-the-next-generation-of-biomedical-engineers" className="mt-8 inline-flex items-center gap-1.5 font-medium text-brand-700 transition hover:text-brand-600">
-              Read: Flokefama partners with the University of Ghana <Icon name="fi-rr-arrow-small-right" />
-            </Link>
+            <p className="label">Meet our CEO</p>
+            <h2 className="display mt-4 text-[clamp(2rem,1.2rem+2.8vw,3.25rem)]">Moving healthcare beyond limits.</h2>
+            <div className="mt-6 max-w-xl space-y-4 text-lg font-light leading-relaxed text-ink-3">
+              <p>
+                Flokefama began with a personal story. Years ago, Mr. Kenney survived a near-death experience and an operation carried out with inadequate equipment. He came out of it with a mission: make sure no Ghanaian depends on equipment that isn’t good enough.
+              </p>
+              <p>
+                Today he is one of the country’s leading voices on diagnostic quality, with more than 16 years in in-vitro diagnostics. A proud son of St. Augustine’s College and an alumnus of Stanford Graduate School of Business, he gives back to the institutions that shaped him, champions young biomedical engineers, and hosts <span className="font-medium text-ink">Diagnostics and Beyond</span>, a podcast of honest conversations about health with doctors and innovators.
+              </p>
+            </div>
+            <blockquote className="mt-8 max-w-xl border-l-2 border-brand-500 pl-5">
+              <p className="text-xl font-medium leading-snug tracking-[-0.01em] text-ink">“We can’t compromise on our health by using below standard medical technologies.”</p>
+            </blockquote>
+            <ul className="mt-8 grid max-w-xl gap-3 sm:grid-cols-2">
+              {[
+                { icon: 'fi-rr-trophy', text: 'Man of the Year in Health, EMY Africa Awards 2024' },
+                { icon: 'fi-rr-award', text: 'CEO Leadership Excellence Award, Ghana CEO Summit 2025' },
+                { icon: 'fi-rr-heart', text: 'Led the renovation of the National Blood Bank, Korle-Bu' },
+                { icon: 'fi-rr-microphone', text: 'Host of the Diagnostics and Beyond podcast' },
+              ].map((x) => (
+                <li key={x.text} className="flex items-start gap-3 rounded-2xl border border-line bg-canvas p-4 text-sm leading-snug text-ink-2">
+                  <Icon name={x.icon} className="mt-0.5 text-base text-brand-600" />
+                  {x.text}
+                </li>
+              ))}
+            </ul>
           </Reveal>
         </div>
       </section>
