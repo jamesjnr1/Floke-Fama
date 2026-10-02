@@ -33,6 +33,8 @@ export interface Product {
   category: string;
   summary: string;
   image?: string;
+  /** More photos of the same product, as shown on the current shop. */
+  gallery?: string[];
   /** The original shop categories the product is listed under on flokefama.com (e.g. "Hematology Analyzers"). */
   types?: string[];
   /** Product description paragraphs, as published on flokefama.com. */

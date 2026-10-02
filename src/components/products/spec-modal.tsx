@@ -3,7 +3,7 @@
 import * as Dialog from '@radix-ui/react-dialog';
 import { motion } from 'motion/react';
 import { useRouter } from 'next/navigation';
-import { ProductVisual } from '@/components/products/product-visual';
+import { ProductGallery } from '@/components/products/product-gallery';
 import { SpecActions, SpecHeader, SpecTabs } from '@/components/products/spec-sheet';
 import { Icon } from '@/components/ui/icon';
 import type { Category, Product } from '@/lib/types';
@@ -23,7 +23,9 @@ export function SpecModal({ product, category }: { product: Product; category?: 
         >
           <Dialog.Title className="sr-only">{product.name}</Dialog.Title>
           <div className="grid h-full overflow-y-auto lg:grid-cols-[1fr_1.1fr] lg:overflow-hidden">
-            <ProductVisual product={product} category={category} sizes="(min-width: 1024px) 50vw, 100vw" className="min-h-[300px] rounded-none lg:h-full" priority />
+            <div className="relative lg:h-full">
+              <ProductGallery product={product} category={category} sizes="(min-width: 1024px) 50vw, 100vw" priority className="lg:h-full lg:pb-4" visualClassName="min-h-[300px] flex-1 rounded-none" thumbsClassName="px-4" />
+            </div>
             <motion.div
               initial={{ opacity: 0, x: 24 }}
               animate={{ opacity: 1, x: 0 }}

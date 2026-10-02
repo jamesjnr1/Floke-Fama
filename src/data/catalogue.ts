@@ -17,6 +17,11 @@ export const catalogue: Product[] = [
       "The SEMI AUTOMATED CHEMISTRY ANALYSER(MINDRAY) is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/semi-automated-chemistry-analysermindray.webp",
+    "gallery": [
+      "/images/products/semi-automated-chemistry-analysermindray-2.webp",
+      "/images/products/semi-automated-chemistry-analysermindray-3.webp",
+      "/images/products/semi-automated-chemistry-analysermindray-4.webp"
+    ],
     "highlights": [
       "BA-88A semi-auto chemistry analyzer",
       "Features a 7.0” TFT touch-screen",
@@ -48,6 +53,11 @@ export const catalogue: Product[] = [
       "The A.N.D BP MONITOR is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/a-n-d-bp-monitor.webp",
+    "gallery": [
+      "/images/products/a-n-d-bp-monitor-2.webp",
+      "/images/products/a-n-d-bp-monitor-3.webp",
+      "/images/products/a-n-d-bp-monitor-4.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -72,6 +82,11 @@ export const catalogue: Product[] = [
       "The AIR MATTRESS is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/air-mattress.webp",
+    "gallery": [
+      "/images/products/air-mattress-2.webp",
+      "/images/products/air-mattress-3.webp",
+      "/images/products/air-mattress-4.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -96,6 +111,12 @@ export const catalogue: Product[] = [
       "The ANERIOD SPHYG is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/aneriod-sphyg.webp",
+    "gallery": [
+      "/images/products/aneriod-sphyg-2.webp",
+      "/images/products/aneriod-sphyg-3.webp",
+      "/images/products/aneriod-sphyg-4.webp",
+      "/images/products/aneriod-sphyg-5.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -119,6 +140,11 @@ export const catalogue: Product[] = [
       "The AUTO HAEMATOLOGY ANALYZER BC3000plus is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/auto-haematology-analyzer-bc3000plus.webp",
+    "gallery": [
+      "/images/products/auto-haematology-analyzer-bc3000plus-2.webp",
+      "/images/products/auto-haematology-analyzer-bc3000plus-3.webp",
+      "/images/products/auto-haematology-analyzer-bc3000plus-4.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -143,6 +169,11 @@ export const catalogue: Product[] = [
       "The Auto Heamatology Analyzer BC5150 is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/auto-heamatology-analyzer-bc5150.webp",
+    "gallery": [
+      "/images/products/auto-heamatology-analyzer-bc5150-2.webp",
+      "/images/products/auto-heamatology-analyzer-bc5150-3.webp",
+      "/images/products/auto-heamatology-analyzer-bc5150-4.webp"
+    ],
     "highlights": [
       "CBC + 5-part",
       "Compact and user-friendly",
@@ -176,6 +207,9 @@ export const catalogue: Product[] = [
       "The Autoclave Machine 100L is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/autoclave-machine-100l.webp",
+    "gallery": [
+      "/images/products/autoclave-machine-100l-2.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -201,6 +235,11 @@ export const catalogue: Product[] = [
       "The Autoclave Machine 24L is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/autoclave-machine-24l.webp",
+    "gallery": [
+      "/images/products/autoclave-machine-24l-2.webp",
+      "/images/products/autoclave-machine-24l-3.webp",
+      "/images/products/autoclave-machine-24l-4.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -225,6 +264,9 @@ export const catalogue: Product[] = [
       "The Autoclave Machine 35L is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/autoclave-machine-35l.webp",
+    "gallery": [
+      "/images/products/autoclave-machine-35l-2.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -248,6 +290,9 @@ export const catalogue: Product[] = [
       "The Autoclave Machine 50L is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/autoclave-machine-50l.webp",
+    "gallery": [
+      "/images/products/autoclave-machine-50l-2.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -271,6 +316,9 @@ export const catalogue: Product[] = [
       "The Autoclave Machine 75L is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/autoclave-machine-75l.webp",
+    "gallery": [
+      "/images/products/autoclave-machine-75l-2.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -294,6 +342,9 @@ export const catalogue: Product[] = [
       "The B.PP MONITOR- SHS is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/b-pp-monitor-shs.webp",
+    "gallery": [
+      "/images/products/b-pp-monitor-shs-2.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -315,6 +366,11 @@ export const catalogue: Product[] = [
       "The BA 88A BULB is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/ba-88a-bulb.webp",
+    "gallery": [
+      "/images/products/ba-88a-bulb-2.webp",
+      "/images/products/ba-88a-bulb-3.webp",
+      "/images/products/ba-88a-bulb-4.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -337,6 +393,11 @@ export const catalogue: Product[] = [
       "The Baby Basinet is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/baby-basinet.webp",
+    "gallery": [
+      "/images/products/baby-basinet-2.webp",
+      "/images/products/baby-basinet-3.webp",
+      "/images/products/baby-basinet-4.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -360,6 +421,13 @@ export const catalogue: Product[] = [
       "The Baby Cot is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/baby-cot.webp",
+    "gallery": [
+      "/images/products/baby-cot-2.webp",
+      "/images/products/baby-cot-3.webp",
+      "/images/products/baby-cot-4.webp",
+      "/images/products/baby-cot-5.webp",
+      "/images/products/baby-cot-6.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -381,6 +449,13 @@ export const catalogue: Product[] = [
       "The BABY SCALE is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/baby-scale.webp",
+    "gallery": [
+      "/images/products/baby-scale-2.webp",
+      "/images/products/baby-scale-3.webp",
+      "/images/products/baby-scale-4.webp",
+      "/images/products/baby-scale-5.webp",
+      "/images/products/baby-scale-6.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -403,6 +478,11 @@ export const catalogue: Product[] = [
       "The BIOLOGICAL MICROSCOPE is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/biological-microscope.webp",
+    "gallery": [
+      "/images/products/biological-microscope-2.webp",
+      "/images/products/biological-microscope-3.webp",
+      "/images/products/biological-microscope-4.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -426,6 +506,9 @@ export const catalogue: Product[] = [
       "The BP Machine with Stand is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/bp-machine-with-stand.webp",
+    "gallery": [
+      "/images/products/bp-machine-with-stand-2.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -449,6 +532,11 @@ export const catalogue: Product[] = [
       "The Cardiotocography Machine (CTG) is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/cardiotocography-machine-ctg.webp",
+    "gallery": [
+      "/images/products/cardiotocography-machine-ctg-2.webp",
+      "/images/products/cardiotocography-machine-ctg-3.webp",
+      "/images/products/cardiotocography-machine-ctg-4.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -472,6 +560,9 @@ export const catalogue: Product[] = [
       "The CENTRIFUGE 2 is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/centrifuge-2.webp",
+    "gallery": [
+      "/images/products/centrifuge-2-2.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -495,6 +586,10 @@ export const catalogue: Product[] = [
       "The CHEMISTRY CUVETTE Bs-230 is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/chemistry-cuvette-bs-230.webp",
+    "gallery": [
+      "/images/products/chemistry-cuvette-bs-230-2.webp",
+      "/images/products/chemistry-cuvette-bs-230-3.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -518,6 +613,10 @@ export const catalogue: Product[] = [
       "The Children Bed is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/children-bed.webp",
+    "gallery": [
+      "/images/products/children-bed-2.webp",
+      "/images/products/children-bed-3.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -541,6 +640,10 @@ export const catalogue: Product[] = [
       "The CPAP MACHINE is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/cpap-machine.webp",
+    "gallery": [
+      "/images/products/cpap-machine-2.webp",
+      "/images/products/cpap-machine-3.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -563,6 +666,9 @@ export const catalogue: Product[] = [
       "The DCR – 2000 (Biozek) is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/dcr-2000-biozek.webp",
+    "gallery": [
+      "/images/products/dcr-2000-biozek-2.webp"
+    ],
     "highlights": [
       "Immunofluorescence quantitative analyzer: premium point of care solution",
       "Advanced fluorescence immunoassay",
@@ -595,6 +701,9 @@ export const catalogue: Product[] = [
       "The DEFIBRILLATOR (A.ED) is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/defibrillator-a-ed.webp",
+    "gallery": [
+      "/images/products/defibrillator-a-ed-2.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -641,6 +750,9 @@ export const catalogue: Product[] = [
       "The Dental Chair is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/dental-chair.webp",
+    "gallery": [
+      "/images/products/dental-chair-2.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -685,6 +797,11 @@ export const catalogue: Product[] = [
       "The DIGITAL THERMOMETER is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/digital-thermometer.webp",
+    "gallery": [
+      "/images/products/digital-thermometer-2.webp",
+      "/images/products/digital-thermometer-3.webp",
+      "/images/products/digital-thermometer-4.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -705,6 +822,10 @@ export const catalogue: Product[] = [
       "The DP 10 ULTRASOUND is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/dp-10-ultrasound.webp",
+    "gallery": [
+      "/images/products/dp-10-ultrasound-2.webp",
+      "/images/products/dp-10-ultrasound-3.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -727,6 +848,9 @@ export const catalogue: Product[] = [
       "The ECG 12 CHANNEL is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/ecg-12-channel.webp",
+    "gallery": [
+      "/images/products/ecg-12-channel-2.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -750,6 +874,9 @@ export const catalogue: Product[] = [
       "The Electric Cautery Digital (Diathermy Machine) is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/electric-cautery-digital-diathermy-machine.webp",
+    "gallery": [
+      "/images/products/electric-cautery-digital-diathermy-machine-2.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -791,6 +918,9 @@ export const catalogue: Product[] = [
       "The ELECTRONIC SCALE WITH HEIGHT AND FAT is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/electronic-scale-with-height-and-fat.webp",
+    "gallery": [
+      "/images/products/electronic-scale-with-height-and-fat-2.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -814,6 +944,9 @@ export const catalogue: Product[] = [
       "The Electrophoresis Machine is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/electrophoresis-machine.webp",
+    "gallery": [
+      "/images/products/electrophoresis-machine-2.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -860,6 +993,9 @@ export const catalogue: Product[] = [
       "The Examiation Lamp is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/examiation-lamp.webp",
+    "gallery": [
+      "/images/products/examiation-lamp-2.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -883,6 +1019,9 @@ export const catalogue: Product[] = [
       "The EXAMINATION BED is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/examination-bed.webp",
+    "gallery": [
+      "/images/products/examination-bed-2.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -904,6 +1043,10 @@ export const catalogue: Product[] = [
       "The FETAL DOPPLER SMALL is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/fetal-doppler-small.webp",
+    "gallery": [
+      "/images/products/fetal-doppler-small-2.webp",
+      "/images/products/fetal-doppler-small-3.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -926,6 +1069,10 @@ export const catalogue: Product[] = [
       "The FIRST AID BAG (Red) is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/first-aid-bag-red.webp",
+    "gallery": [
+      "/images/products/first-aid-bag-red-2.webp",
+      "/images/products/first-aid-bag-red-3.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -972,6 +1119,10 @@ export const catalogue: Product[] = [
       "The HAEMATOLOGY ANALYZER (Mindray BC 20s) is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/haematology-analyzer-mindray-bc-20s.webp",
+    "gallery": [
+      "/images/products/haematology-analyzer-mindray-bc-20s-2.webp",
+      "/images/products/haematology-analyzer-mindray-bc-20s-3.webp"
+    ],
     "highlights": [
       "CBC + 3-DIFF, 19 parameters, and 3 histograms",
       "40 samples per hour",
@@ -1003,6 +1154,10 @@ export const catalogue: Product[] = [
       "The HAEMATOLOGY ANALYZER BC30s is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/haematology-analyzer-bc30s.webp",
+    "gallery": [
+      "/images/products/haematology-analyzer-bc30s-2.webp",
+      "/images/products/haematology-analyzer-bc30s-3.webp"
+    ],
     "highlights": [
       "CBC + 3-DIFF, 21 parameters, and 3 histograms",
       "70 samples per hour",
@@ -1054,6 +1209,9 @@ export const catalogue: Product[] = [
       "The Handheld Tally Counter is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/handheld-tally-counter.webp",
+    "gallery": [
+      "/images/products/handheld-tally-counter-2.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -1097,6 +1255,10 @@ export const catalogue: Product[] = [
       "The Infant Radiant Warmer is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/infant-radiant-warmer.webp",
+    "gallery": [
+      "/images/products/infant-radiant-warmer-2.webp",
+      "/images/products/infant-radiant-warmer-3.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -1118,6 +1280,10 @@ export const catalogue: Product[] = [
       "The KINLEE SCALE MANUAL is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/kinlee-scale-manual.webp",
+    "gallery": [
+      "/images/products/kinlee-scale-manual-2.webp",
+      "/images/products/kinlee-scale-manual-3.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -1140,6 +1306,10 @@ export const catalogue: Product[] = [
       "The Lab Incubator is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/lab-incubator.webp",
+    "gallery": [
+      "/images/products/lab-incubator-2.webp",
+      "/images/products/lab-incubator-3.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -1163,6 +1333,10 @@ export const catalogue: Product[] = [
       "The Lab Incubator 30 L is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/lab-incubator-30-l.webp",
+    "gallery": [
+      "/images/products/lab-incubator-30-l-2.webp",
+      "/images/products/lab-incubator-30-l-3.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -1186,6 +1360,10 @@ export const catalogue: Product[] = [
       "The MEDICINE TROLLEY -2 STEP is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/medicine-trolley-2-step.webp",
+    "gallery": [
+      "/images/products/medicine-trolley-2-step-2.webp",
+      "/images/products/medicine-trolley-2-step-3.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -1209,6 +1387,9 @@ export const catalogue: Product[] = [
       "The MEDICINE TROLLEY – 3 STEP is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/medicine-trolley-3-step.webp",
+    "gallery": [
+      "/images/products/medicine-trolley-3-step-2.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -1255,6 +1436,9 @@ export const catalogue: Product[] = [
       "The MICROSCOPE (SCREEN) is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/microscope-screen.webp",
+    "gallery": [
+      "/images/products/microscope-screen-2.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -1278,6 +1462,9 @@ export const catalogue: Product[] = [
       "The Microscope Olympus – CX23 is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/microscope-olympus-cx23.webp",
+    "gallery": [
+      "/images/products/microscope-olympus-cx23-2.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -1302,6 +1489,9 @@ export const catalogue: Product[] = [
       "The Microscope Olympus-CX 33 is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/microscope-olympus-cx-33.webp",
+    "gallery": [
+      "/images/products/microscope-olympus-cx-33-2.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -1325,6 +1515,10 @@ export const catalogue: Product[] = [
       "The Multifuctional Bed – 1 Crank is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/multifuctional-bed-1-crank.webp",
+    "gallery": [
+      "/images/products/multifuctional-bed-1-crank-2.webp",
+      "/images/products/multifuctional-bed-1-crank-3.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -1392,6 +1586,10 @@ export const catalogue: Product[] = [
       "The Omron Digital Scale is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/omron-digital-scale.webp",
+    "gallery": [
+      "/images/products/omron-digital-scale-2.webp",
+      "/images/products/omron-digital-scale-3.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -1414,6 +1612,11 @@ export const catalogue: Product[] = [
       "The OMRON M2 is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/omron-m2.webp",
+    "gallery": [
+      "/images/products/omron-m2-2.webp",
+      "/images/products/omron-m2-3.webp",
+      "/images/products/omron-m2-4.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -1437,6 +1640,11 @@ export const catalogue: Product[] = [
       "The Omron M3 is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/omron-m3.webp",
+    "gallery": [
+      "/images/products/omron-m3-2.webp",
+      "/images/products/omron-m3-3.webp",
+      "/images/products/omron-m3-4.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -1460,6 +1668,10 @@ export const catalogue: Product[] = [
       "The OMRON M7 is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/omron-m7.webp",
+    "gallery": [
+      "/images/products/omron-m7-2.webp",
+      "/images/products/omron-m7-3.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -1483,6 +1695,10 @@ export const catalogue: Product[] = [
       "The Omron Nebulizer is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/omron-nebulizer.webp",
+    "gallery": [
+      "/images/products/omron-nebulizer-2.webp",
+      "/images/products/omron-nebulizer-3.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -1506,6 +1722,9 @@ export const catalogue: Product[] = [
       "The ONETOUCH SELECT PLUS METRE is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/onetouch-select-plus-metre.webp",
+    "gallery": [
+      "/images/products/onetouch-select-plus-metre-2.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -1529,6 +1748,10 @@ export const catalogue: Product[] = [
       "The OXYGEN CONCENTRATOR 10L is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/oxygen-concentrator-10l.webp",
+    "gallery": [
+      "/images/products/oxygen-concentrator-10l-2.webp",
+      "/images/products/oxygen-concentrator-10l-3.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -1598,6 +1821,10 @@ export const catalogue: Product[] = [
       "The Patient Monitor- Comen is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/patient-monitor-comen.webp",
+    "gallery": [
+      "/images/products/patient-monitor-comen-2.webp",
+      "/images/products/patient-monitor-comen-3.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -1621,6 +1848,9 @@ export const catalogue: Product[] = [
       "The PATIENT MONITOR-Normal is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/patient-monitor-normal.webp",
+    "gallery": [
+      "/images/products/patient-monitor-normal-2.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -1644,6 +1874,9 @@ export const catalogue: Product[] = [
       "The Patient Stretcher is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/patient-stretcher.webp",
+    "gallery": [
+      "/images/products/patient-stretcher-2.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -1667,6 +1900,12 @@ export const catalogue: Product[] = [
       "The PH METER is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/ph-meter.webp",
+    "gallery": [
+      "/images/products/ph-meter-2.webp",
+      "/images/products/ph-meter-3.webp",
+      "/images/products/ph-meter-4.webp",
+      "/images/products/ph-meter-5.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -1690,6 +1929,10 @@ export const catalogue: Product[] = [
       "The Portable Suction Machine is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/portable-suction-machine.webp",
+    "gallery": [
+      "/images/products/portable-suction-machine-2.webp",
+      "/images/products/portable-suction-machine-3.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -1711,6 +1954,10 @@ export const catalogue: Product[] = [
       "The Pulse Oximeter(Visamat) is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/pulse-oximetervisamat.webp",
+    "gallery": [
+      "/images/products/pulse-oximetervisamat-2.webp",
+      "/images/products/pulse-oximetervisamat-3.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -1731,6 +1978,10 @@ export const catalogue: Product[] = [
       "The Pulse Oximeter (Promed) is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/pulse-oximeter-promed.webp",
+    "gallery": [
+      "/images/products/pulse-oximeter-promed-2.webp",
+      "/images/products/pulse-oximeter-promed-3.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -1751,6 +2002,10 @@ export const catalogue: Product[] = [
       "The Pulse Oximeter(Accare) is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/pulse-oximeteraccare.webp",
+    "gallery": [
+      "/images/products/pulse-oximeteraccare-2.webp",
+      "/images/products/pulse-oximeteraccare-3.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -1771,6 +2026,9 @@ export const catalogue: Product[] = [
       "The Pulse Oximeter(HBO-Smart) is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/pulse-oximeterhbo-smart.webp",
+    "gallery": [
+      "/images/products/pulse-oximeterhbo-smart-2.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -1791,6 +2049,10 @@ export const catalogue: Product[] = [
       "The PULSE OXIMETRE- (TOMORROW) is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/pulse-oximetre-tomorrow.webp",
+    "gallery": [
+      "/images/products/pulse-oximetre-tomorrow-2.webp",
+      "/images/products/pulse-oximetre-tomorrow-3.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -1811,6 +2073,11 @@ export const catalogue: Product[] = [
       "The QUANTUM ANALYSER (BIG) is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/quantum-analyser-big.webp",
+    "gallery": [
+      "/images/products/quantum-analyser-big-2.webp",
+      "/images/products/quantum-analyser-big-3.webp",
+      "/images/products/quantum-analyser-big-4.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -1834,6 +2101,11 @@ export const catalogue: Product[] = [
       "The SUCTION MACHINE is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/suction-machine.webp",
+    "gallery": [
+      "/images/products/suction-machine-2.webp",
+      "/images/products/suction-machine-3.webp",
+      "/images/products/suction-machine-4.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -1857,6 +2129,11 @@ export const catalogue: Product[] = [
       "The THEATRE BED is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/theatre-bed.webp",
+    "gallery": [
+      "/images/products/theatre-bed-2.webp",
+      "/images/products/theatre-bed-3.webp",
+      "/images/products/theatre-bed-4.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -1880,6 +2157,12 @@ export const catalogue: Product[] = [
       "The Theatre Light Halogen is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/theatre-light-halogen.webp",
+    "gallery": [
+      "/images/products/theatre-light-halogen-2.webp",
+      "/images/products/theatre-light-halogen-3.webp",
+      "/images/products/theatre-light-halogen-4.webp",
+      "/images/products/theatre-light-halogen-5.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -1903,6 +2186,11 @@ export const catalogue: Product[] = [
       "The Ultra Violet (UV) Light is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/ultra-violet-uv-light.webp",
+    "gallery": [
+      "/images/products/ultra-violet-uv-light-2.webp",
+      "/images/products/ultra-violet-uv-light-3.webp",
+      "/images/products/ultra-violet-uv-light-4.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -1924,6 +2212,11 @@ export const catalogue: Product[] = [
       "The ULTRASOUND MACHINE 4PRO is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/ultrasound-machine-4pro.webp",
+    "gallery": [
+      "/images/products/ultrasound-machine-4pro-2.webp",
+      "/images/products/ultrasound-machine-4pro-3.webp",
+      "/images/products/ultrasound-machine-4pro-4.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -1946,6 +2239,10 @@ export const catalogue: Product[] = [
       "The Urine Analyzer UA-66 is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/urine-analyzer-ua-66.webp",
+    "gallery": [
+      "/images/products/urine-analyzer-ua-66-2.webp",
+      "/images/products/urine-analyzer-ua-66-3.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -1969,6 +2266,10 @@ export const catalogue: Product[] = [
       "The VITAL MONITOR is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/vital-monitor.webp",
+    "gallery": [
+      "/images/products/vital-monitor-2.webp",
+      "/images/products/vital-monitor-3.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -1992,6 +2293,11 @@ export const catalogue: Product[] = [
       "The WARDSCREEN – 4FOLD is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/wardscreen-4fold.webp",
+    "gallery": [
+      "/images/products/wardscreen-4fold-2.webp",
+      "/images/products/wardscreen-4fold-3.webp",
+      "/images/products/wardscreen-4fold-4.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -2015,6 +2321,10 @@ export const catalogue: Product[] = [
       "The WARDSCREEN – 5FOLD is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/wardscreen-5fold.webp",
+    "gallery": [
+      "/images/products/wardscreen-5fold-2.webp",
+      "/images/products/wardscreen-5fold-3.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -2038,6 +2348,10 @@ export const catalogue: Product[] = [
       "The WATER BATH is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/water-bath.webp",
+    "gallery": [
+      "/images/products/water-bath-2.webp",
+      "/images/products/water-bath-3.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -2061,6 +2375,11 @@ export const catalogue: Product[] = [
       "The WHEEL CHAIR COMODE is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/wheel-chair-comode.webp",
+    "gallery": [
+      "/images/products/wheel-chair-comode-2.webp",
+      "/images/products/wheel-chair-comode-3.webp",
+      "/images/products/wheel-chair-comode-4.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -2084,6 +2403,9 @@ export const catalogue: Product[] = [
       "The WHEEL CHAIR – NORMAL is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/wheel-chair-normal.webp",
+    "gallery": [
+      "/images/products/wheel-chair-normal-2.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
@@ -2107,6 +2429,10 @@ export const catalogue: Product[] = [
       "The ZIMA FRAME WITH WHEELS is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics."
     ],
     "image": "/images/products/zima-frame-with-wheels.webp",
+    "gallery": [
+      "/images/products/zima-frame-with-wheels-2.webp",
+      "/images/products/zima-frame-with-wheels-3.webp"
+    ],
     "highlights": [],
     "specs": [],
     "specsVerified": false,
