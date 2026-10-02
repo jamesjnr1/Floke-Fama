@@ -16,7 +16,7 @@ const layout = [
 /** The actual awards, photographed: the No.1 healthcare ranking leads. */
 export function AwardsGallery() {
   return (
-    <section className="bg-canvas pb-4 pt-24 md:pt-32">
+    <section className="bg-canvas pb-24 pt-24 md:pb-32 md:pt-32">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal>
           <p className="label">Awards &amp; recognition</p>
@@ -53,19 +53,12 @@ export function AwardsGallery() {
             These accolades serve as a testament to the <span className="font-medium text-ink">hard work of our team</span>, the{' '}
             <span className="font-medium text-ink">quality of our solutions</span>, and the <span className="font-medium text-brand-700">positive impact we’ve made in transforming healthcare delivery across Ghana and the West African region</span>.
           </p>
-        </Reveal>
-
-        {/* Figures from the current Awards page */}
-        <Reveal className="mt-20 grid gap-10 border-t border-line pt-12 lg:grid-cols-12 lg:items-end lg:gap-16">
-          <div className="lg:col-span-5">
-            <p className="label">Flokefama</p>
-            <h3 className="mt-3 text-balance text-2xl font-bold tracking-[-0.02em] text-ink md:text-[2.125rem] md:leading-tight">Innovative Solutions for Better Health Outcomes</h3>
-          </div>
-          <dl className="grid grid-cols-3 divide-x divide-line lg:col-span-7">
-            {companyFigures.map((f, i) => (
-              <div key={f.label} className={cn('flex flex-col-reverse justify-end gap-2 px-4 md:px-8', i === 0 && '!pl-0')}>
+          {/* Figures from the current Awards page, as proof for the sentence above */}
+          <dl className="mx-auto mt-8 flex w-fit divide-x divide-line rounded-full border border-line bg-paper py-2.5">
+            {companyFigures.map((f) => (
+              <div key={f.label} className="flex items-baseline gap-1 whitespace-nowrap px-3 md:gap-2 md:px-7">
                 <dt className="text-sm text-ink-3 md:text-[15px]">{f.label}</dt>
-                <dd className="text-[clamp(2.25rem,1.6rem+2.4vw,3.75rem)] font-bold leading-none tracking-[-0.04em] text-brand-600">
+                <dd className="order-first text-xl font-bold tracking-[-0.03em] text-brand-600 md:text-3xl">
                   <CountUp value={f.value} suffix={f.suffix} />
                 </dd>
               </div>
