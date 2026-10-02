@@ -25,7 +25,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
       <section className="relative overflow-hidden">
         <div className="grid-fade-light absolute inset-0" />
         <div className="relative mx-auto max-w-[1280px] px-5 pb-10 pt-16 md:px-10 md:pt-24">
-          <p className="label">Product universe</p>
+          <p className="label">Our Products</p>
           <h1 className="display mt-5 text-[clamp(2.25rem,0.6rem+4.6vw,4.75rem)]">
             <span className="sm:whitespace-nowrap">Clinical-grade equipment.</span>{' '}
             <span className="block text-brand-600 sm:whitespace-nowrap">Instantly searchable.</span>
