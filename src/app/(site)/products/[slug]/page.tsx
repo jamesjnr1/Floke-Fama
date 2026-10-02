@@ -50,7 +50,19 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           <Icon name="fi-rr-arrow-small-left" /> Back to catalogue
         </Link>
         <div className="mt-8 grid gap-10 lg:grid-cols-2 lg:gap-16">
-          <ProductVisual product={product} category={category} sizes="(min-width: 1024px) 50vw, 100vw" priority shared={false} className="aspect-square rounded-5xl lg:sticky lg:top-28" />
+          {/* Photo and a compact action card stay in view while the spec sheet scrolls */}
+          <div className="lg:sticky lg:top-28 lg:self-start">
+            <ProductVisual product={product} category={category} sizes="(min-width: 1024px) 50vw, 100vw" priority shared={false} className="aspect-square rounded-5xl" />
+            <div className="mt-4 hidden items-center gap-4 rounded-3xl border border-line bg-paper p-4 lg:flex">
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-semibold text-ink">{product.brand} {product.name}</p>
+                <p className="text-xs text-ink-3">Priced to your configuration · reply within one business day</p>
+              </div>
+              <Link href={`/quote?product=${product.slug}`} className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full bg-brand-600 px-4 text-sm font-medium text-white transition hover:bg-brand-700">
+                Request a quote <Icon name="fi-rr-arrow-small-right" />
+              </Link>
+            </div>
+          </div>
           <div className="min-w-0 space-y-10">
             <SpecHeader product={product} categoryTitle={category?.title} />
             <SpecActions product={product} />

@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ProcurementFlow } from '@/components/quote/procurement-flow';
 import { Icon } from '@/components/ui/icon';
+import { contact } from '@/data/seed';
 import { getCategories, getProducts } from '@/lib/data';
 
 /** Which department a machine usually serves, from its Shop category (the visitor can change it). */
@@ -34,7 +35,7 @@ export default async function QuotePage({ searchParams }: { searchParams: Promis
 
   return (
     <div className="bg-canvas pt-20">
-      <div className="mx-auto grid max-w-[1280px] gap-12 px-5 py-16 md:px-10 md:py-24 lg:grid-cols-[0.8fr_1.2fr]">
+      <div className="mx-auto grid max-w-[1280px] gap-12 px-5 py-16 md:px-10 md:py-24 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
         <aside className="lg:sticky lg:top-32 lg:self-start">
           <p className="label">Procurement portal</p>
           <h1 className="display mt-5 text-[clamp(2.5rem,1.4rem+3.5vw,4.5rem)]">
@@ -79,6 +80,25 @@ export default async function QuotePage({ searchParams }: { searchParams: Promis
             {focus || listed.length
               ? listed.length > 1 ? 'These items are already in your request. Confirm the details in five short steps; our sales engineers reply within one business day.' : 'This machine is already in your request. Confirm the details in five short steps; our sales engineers reply within one business day.'
               : 'Five short steps. Your request goes straight to our sales engineers, and you’ll hear back within one business day.'}
+          </p>
+          {/* What happens after sending: answers the buyer's next question before they ask it */}
+          <ol className="mt-10 max-w-sm space-y-5 border-l border-line pl-6">
+            {[
+              { title: 'We confirm your request', body: 'A sales engineer reviews it and replies within one business day.' },
+              { title: 'You receive a tailored quote', body: 'Configuration, consumables, installation and training, priced for your facility.' },
+              { title: 'Demonstration on request', body: 'See the equipment working at your facility before you decide.' },
+              { title: 'Installed and supported', body: 'Our engineers install, calibrate and train your team, then support you through the client portal.' },
+            ].map((s, i) => (
+              <li key={s.title} className="relative">
+                <span className="absolute -left-[34px] top-0.5 grid size-5 place-items-center rounded-full bg-brand-600 font-mono text-[10px] text-white">{i + 1}</span>
+                <p className="text-sm font-semibold text-ink">{s.title}</p>
+                <p className="mt-0.5 text-sm leading-relaxed text-ink-3">{s.body}</p>
+              </li>
+            ))}
+          </ol>
+          <p className="mt-8 max-w-sm text-sm text-ink-3">
+            Prefer to talk? Call <a href={contact.phoneHref} className="font-medium text-ink hover:text-brand-700">{contact.phone}</a> or{' '}
+            <a href={contact.whatsapp} target="_blank" rel="noopener noreferrer" className="font-medium text-ink hover:text-brand-700">WhatsApp us</a>.
           </p>
         </aside>
         <ProcurementFlow

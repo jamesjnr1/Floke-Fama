@@ -43,6 +43,19 @@ export default function ContactPage() {
                 </li>
               ))}
             </ul>
+            {/* What to expect when you get in touch */}
+            <div className="mt-8 grid gap-3 sm:grid-cols-2">
+              <div className="rounded-3xl border border-line bg-paper p-5">
+                <Icon name="fi-rr-time-fast" className="text-xl text-brand-600" />
+                <p className="mt-3 font-semibold text-ink">One business day</p>
+                <p className="mt-1 text-sm text-ink-3">Our reply time for quotes and messages.</p>
+              </div>
+              <div className="rounded-3xl border border-line bg-paper p-5">
+                <Icon name="fi-rr-headset" className="text-xl text-brand-600" />
+                <p className="mt-3 font-semibold text-ink">24-hour support</p>
+                <p className="mt-1 text-sm text-ink-3">For installed equipment, through our technical support centre.</p>
+              </div>
+            </div>
           </div>
 
           <div id="message" className="scroll-mt-28 rounded-4xl border border-line bg-paper p-6 md:p-10">
