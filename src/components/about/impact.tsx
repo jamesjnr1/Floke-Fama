@@ -42,26 +42,27 @@ const stories = [
 
 export function Impact({ metrics }: { metrics: Metric[] }) {
   return (
-    <section id="impact" className="scroll-mt-28 relative isolate overflow-hidden bg-[#00703A] py-14 text-white md:py-20">
+    <section id="impact" className="scroll-mt-28 relative isolate overflow-hidden bg-midnight py-14 text-white md:py-20">
       <div aria-hidden className="absolute inset-0 -z-10">
-        <div className="absolute -right-40 -top-40 size-[640px] rounded-full bg-[radial-gradient(circle,rgb(255_255_255/0.1),transparent_65%)]" />
+        <div className="absolute -right-40 -top-40 size-[640px] rounded-full bg-[radial-gradient(circle,rgb(46_154_91/0.25),transparent_65%)]" />
+        <div className="grid-fade absolute inset-0 opacity-40" />
       </div>
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
           <div>
-            <p className="label !text-white/75">Our impact</p>
-            <h2 className="display mt-3 max-w-3xl text-[clamp(1.9rem,1.2rem+2.4vw,3.25rem)] text-white">Equipping the labs and wards that care for Ghana.</h2>
+            <p className="label !text-brand-300">Our impact</p>
+            <h2 className="display mt-3 max-w-3xl text-[clamp(1.9rem,1.2rem+2.4vw,3.25rem)] text-white">Equipping the labs and wards <span className="text-gradient">that care for Ghana.</span></h2>
           </div>
         </Reveal>
 
         {/* The figures */}
         <Reveal delay={0.08}>
-          <dl className="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-3xl border border-white/15 bg-white/15 md:mt-10 lg:grid-cols-4">
+          <dl className="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-3xl border border-white/10 bg-white/10 md:mt-10 lg:grid-cols-4">
             {metrics.slice(0, 4).map((m) => (
-              <div key={m.label} className="flex flex-col-reverse justify-end gap-2 bg-[#00703A] p-5 md:p-6">
+              <div key={m.label} className="flex flex-col-reverse justify-end gap-2 bg-midnight p-5 md:p-6">
                 <dt className="text-sm leading-snug">
                   <span className="block text-white">{m.label}</span>
-                  {m.caption && <span className="text-white/65">{m.caption}</span>}
+                  {m.caption && <span className="text-white/45">{m.caption}</span>}
                 </dt>
                 <dd className="text-4xl font-bold tracking-[-0.04em] text-white md:text-5xl">
                   <CountUp value={m.value} prefix={m.prefix} suffix={m.suffix} />
@@ -77,7 +78,7 @@ export function Impact({ metrics }: { metrics: Metric[] }) {
             const card = (
               <>
                 <div className="flex items-start justify-between gap-4">
-                  <p className="label !text-[11px] !text-white/70">{s.kicker}</p>
+                  <p className="label !text-[11px] !text-brand-300">{s.kicker}</p>
                   {s.logo && (
                     <span className="grid h-10 w-14 shrink-0 place-items-center rounded-xl bg-white p-1.5">
                       <Image src={s.logo.src} alt="" width={s.logo.w} height={s.logo.h} className="h-full w-auto object-contain" />
@@ -85,19 +86,19 @@ export function Impact({ metrics }: { metrics: Metric[] }) {
                   )}
                 </div>
                 <h3 className="mt-4 text-lg font-bold leading-snug tracking-[-0.01em] text-white">{s.title}</h3>
-                <p className="mt-2 text-sm font-light leading-relaxed text-white/75">{s.body}</p>
-                <p className="mt-auto flex items-center gap-2 pt-4 text-xs text-white/65">
+                <p className="mt-2 text-sm font-light leading-relaxed text-white/60">{s.body}</p>
+                <p className="mt-auto flex items-center gap-2 pt-4 text-xs text-white/45">
                   {s.source}
-                  {s.href && <Icon name="fi-rr-arrow-small-right" className="ml-auto text-base text-white transition-transform group-hover:translate-x-1" />}
+                  {s.href && <Icon name="fi-rr-arrow-small-right" className="ml-auto text-base text-brand-300 transition-transform group-hover:translate-x-1" />}
                 </p>
               </>
             );
-            const cls = 'group flex h-full flex-col rounded-3xl border border-white/15 bg-white/[0.07] p-5 transition duration-500 md:p-6';
+            const cls = 'group flex h-full flex-col rounded-3xl border border-white/10 bg-white/[0.04] p-5 transition duration-500 md:p-6';
             return (
               <li key={s.title}>
                 <Reveal delay={0.05 * i} className="h-full">
                   {s.href ? (
-                    <Link href={s.href} className={`${cls} hover:border-white/35 hover:bg-white/[0.12]`}>{card}</Link>
+                    <Link href={s.href} className={`${cls} hover:border-brand-400/40 hover:bg-white/[0.06]`}>{card}</Link>
                   ) : (
                     <article className={cls}>{card}</article>
                   )}
