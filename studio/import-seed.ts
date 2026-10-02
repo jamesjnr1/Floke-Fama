@@ -1,6 +1,6 @@
 /**
  * Loads the website's current content into Sanity, with images:
- * 6 categories, 92 products (photos), events (flyers), 8 news articles (covers and inline images),
+ * 6 categories, 92 products (main photo and gallery), events (flyers), 8 news articles (covers and inline images),
  * metrics and milestones. Safe to run again: documents keep fixed IDs and are replaced, and images
  * are de-duplicated by Sanity.
  *
@@ -45,12 +45,13 @@ async function main() {
   categories.forEach((c, i) => tx.createOrReplace({ _id: `category-${c.slug}`, _type: 'category', ...c, slug: { _type: 'slug', current: c.slug }, order: i }));
 
   console.log(`Uploading ${products.length} product photos…`);
-  for (const { image: img, documents, ...p } of products) {
+  for (const { image: img, gallery, documents, ...p } of products) {
     tx.createOrReplace({
       _id: `product-${p.slug}`,
       _type: 'product',
       ...p,
       image: await image(img),
+      gallery: (await Promise.all((gallery ?? []).map((g) => image(g)))).filter(Boolean).map((g) => ({ _key: k(), ...g })),
       slug: { _type: 'slug', current: p.slug },
       category: { _type: 'reference', _ref: `category-${p.category}` },
       specs: p.specs.map((s) => ({ _key: k(), ...s })),

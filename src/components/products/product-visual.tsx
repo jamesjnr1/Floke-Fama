@@ -7,15 +7,18 @@ import type { Category, Product } from '@/lib/types';
 import { cn } from '@/lib/utils';
 
 /** Product image on a lit pedestal. Falls back to a branded icon plate until photography exists. */
-export function ProductVisual({ product, category, className, sizes, priority, shared = true }: {
+export function ProductVisual({ product, category, className, sizes, priority, shared = true, src }: {
   product: Product;
+  /** Show this photo instead of the main one (gallery). */
+  src?: string;
   category?: Category;
   className?: string;
   sizes: string;
   priority?: boolean;
   shared?: boolean;
 }) {
-  const dark = product.image?.includes('bs-240-stage');
+  const image = src ?? product.image;
+  const dark = image?.includes('bs-240-stage');
   return (
     <motion.div
       layoutId={shared ? `visual-${product.slug}` : undefined}
@@ -25,11 +28,12 @@ export function ProductVisual({ product, category, className, sizes, priority, s
         className,
       )}
     >
-      {product.image ? (
+      {image ? (
         <>
           {!dark && <div className="absolute inset-x-[22%] bottom-[10%] -z-10 h-[9%] rounded-[50%] bg-[radial-gradient(closest-side,rgb(11_21_16/0.22),transparent)]" />}
           <Image
-            src={product.image}
+            key={image}
+            src={image}
             alt={`${product.brand} ${product.name}`}
             fill
             sizes={sizes}
