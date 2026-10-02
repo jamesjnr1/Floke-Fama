@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AnimatePresence, motion } from 'motion/react';
 import Link from 'next/link';
-import { useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import { useForm, type FieldPath } from 'react-hook-form';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -20,7 +20,7 @@ type Option = { slug: string; label: string; group: string };
 
 const steps: { title: string; hint: string; fields: FieldPath<QuoteInput>[] }[] = [
   { title: 'Your department', hint: 'Who is this equipment for?', fields: ['intent', 'department'] },
-  { title: 'Equipment', hint: 'Select everything you need. Add anything missing below.', fields: ['equipment'] },
+  { title: 'Equipment', hint: 'Search or browse, and tick everything you need.', fields: ['equipment'] },
   { title: 'Timeline', hint: 'When does it need to be installed?', fields: ['timeline'] },
   { title: 'Your details', hint: 'A specialist replies within one business day.', fields: ['name', 'facility', 'phone', 'email'] },
   { title: 'Review', hint: 'Check everything before sending.', fields: [] },
@@ -29,8 +29,6 @@ const steps: { title: string; hint: string; fields: FieldPath<QuoteInput>[] }[] 
 export function ProcurementFlow({ options, initial }: { options: Option[]; initial: Partial<QuoteInput> }) {
   const [step, setStep] = useState(0);
   const [dir, setDir] = useState(1);
-  const [custom, setCustom] = useState('');
-  const [find, setFind] = useState('');
   const [done, setDone] = useState<{ reference: string; delivered: boolean; data: QuoteInput } | null>(null);
 
   const form = useForm<QuoteInput>({
@@ -120,9 +118,6 @@ export function ProcurementFlow({ options, initial }: { options: Option[]; initi
   }
 
   const progress = ((step + 1) / steps.length) * 100;
-  const q = find.trim().toLowerCase();
-  const shown = q ? options.filter((o) => `${o.label} ${o.group}`.toLowerCase().includes(q)) : options;
-  const groups = [...new Set(shown.map((o) => o.group))];
 
   return (
     <form
@@ -216,44 +211,7 @@ export function ProcurementFlow({ options, initial }: { options: Option[]; initi
                     </ul>
                   </div>
                 )}
-                <label className="relative block">
-                  <span className="sr-only">Find equipment</span>
-                  <Icon name="fi-rr-search" className="absolute left-4 top-1/2 -translate-y-1/2 text-ink-3" />
-                  <input value={find} onChange={(e) => setFind(e.target.value)} placeholder="Find equipment, e.g. analyser, monitor, autoclave" className="h-11 w-full rounded-full border border-line bg-paper pl-11 pr-4 text-sm outline-none focus:border-brand-500" />
-                </label>
-                {groups.length === 0 && <p className="text-sm text-ink-3">Nothing matches “{find}”. Add it below and we’ll source it.</p>}
-                {groups.map((g) => (
-                  <div key={g}>
-                    <p className="label mb-3">{g}</p>
-                    <div className="flex flex-wrap gap-2">
-                      {shown.filter((o) => o.group === g).map((o) => {
-                        const active = values.equipment.includes(o.label);
-                        return (
-                          <motion.button
-                            key={o.slug}
-                            type="button"
-                            layout
-                            aria-pressed={active}
-                            onClick={() => toggle(o.label)}
-                            className={cn('inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm transition-colors', active ? 'border-midnight bg-midnight text-white' : 'border-line bg-paper text-ink-2 hover:border-ink/30')}
-                          >
-                            {active && <Icon name="fi-rr-check" className="text-brand-300" />}
-                            {o.label}
-                          </motion.button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
-                <div className="flex gap-2">
-                  <input value={custom} onChange={(e) => setCustom(e.target.value)} placeholder="Something else? e.g. Ultrasound machine" className="h-11 flex-1 rounded-full border border-line bg-canvas px-4 text-sm outline-none focus:border-brand-500" aria-label="Add other equipment" />
-                  <Button type="button" variant="outline" size="sm" className="h-11" onClick={() => { if (custom.trim()) { toggle(custom.trim()); setCustom(''); } }}>
-                    Add
-                  </Button>
-                </div>
-                {values.equipment.filter((e) => !options.some((o) => o.label === e)).length > 0 && (
-                  <p className="text-sm text-ink-3">Also requested: {values.equipment.filter((e) => !options.some((o) => o.label === e)).join(', ')}</p>
-                )}
+                <EquipmentPicker options={options} selected={values.equipment} onToggle={toggle} />
                 <FieldError message={errors.equipment?.message} />
               </div>
             )}
@@ -354,5 +312,118 @@ function FieldError({ message }: { message?: string }) {
         </motion.span>
       )}
     </AnimatePresence>
+  );
+}
+
+function EquipmentPicker({ options, selected, onToggle }: { options: Option[]; selected: string[]; onToggle: (label: string) => void }) {
+  const [find, setFind] = useState('');
+  const [open, setOpen] = useState(false);
+  const [active, setActive] = useState(0);
+  const box = useRef<HTMLDivElement>(null);
+  const list = useRef<HTMLUListElement>(null);
+
+  const q = find.trim().toLowerCase();
+  const order = [...new Set(options.map((o) => o.group))];
+  const shown = (q ? options.filter((o) => `${o.label} ${o.group}`.toLowerCase().includes(q)) : options)
+    .slice()
+    .sort((a, b) => order.indexOf(a.group) - order.indexOf(b.group));
+  const exact = options.some((o) => o.label.toLowerCase() === q) || selected.some((s) => s.toLowerCase() === q);
+  // Rows in display order; a typed request is offered when nothing in the catalogue is an exact match.
+  const rows: { id: string; label: string; group?: string; custom?: boolean }[] = [
+    ...shown.map((o) => ({ id: o.slug, label: o.label, group: o.group })),
+    ...(q && !exact ? [{ id: 'custom', label: find.trim(), custom: true }] : []),
+  ];
+
+  useEffect(() => {
+    if (!open) return;
+    const close = (e: PointerEvent) => { if (!box.current?.contains(e.target as Node)) setOpen(false); };
+    document.addEventListener('pointerdown', close);
+    return () => document.removeEventListener('pointerdown', close);
+  }, [open]);
+  useEffect(() => setActive(0), [q]);
+  useEffect(() => {
+    list.current?.querySelector(`[data-index="${active}"]`)?.scrollIntoView({ block: 'nearest' });
+  }, [active]);
+
+  const pick = (i: number) => {
+    const row = rows[i];
+    if (!row) return;
+    onToggle(row.label);
+    if (row.custom) setFind('');
+  };
+
+  return (
+    <div ref={box} className="relative">
+      <label className="relative block">
+        <span className="sr-only">Find equipment</span>
+        <Icon name="fi-rr-search" className="absolute left-4 top-1/2 -translate-y-1/2 text-ink-3" />
+        <input
+          role="combobox"
+          aria-expanded={open}
+          aria-controls="equipment-options"
+          aria-autocomplete="list"
+          aria-activedescendant={open && rows[active] ? `equipment-${rows[active].id}` : undefined}
+          value={find}
+          onChange={(e) => { setFind(e.target.value); setOpen(true); }}
+          onFocus={() => setOpen(true)}
+          onClick={() => setOpen(true)}
+          onKeyDown={(e) => {
+            if (e.key === 'ArrowDown') { e.preventDefault(); setOpen(true); setActive((a) => Math.min(a + 1, rows.length - 1)); }
+            else if (e.key === 'ArrowUp') { e.preventDefault(); setActive((a) => Math.max(a - 1, 0)); }
+            else if (e.key === 'Enter' && open) { e.preventDefault(); pick(active); }
+            else if (e.key === 'Escape') setOpen(false);
+          }}
+          placeholder="Search equipment, e.g. analyser"
+          className="h-12 w-full rounded-full border border-line bg-paper pl-11 pr-12 text-sm outline-none focus:border-brand-500"
+        />
+        <button type="button" tabIndex={-1} aria-label={open ? 'Close list' : 'Browse equipment'} onClick={() => setOpen((o) => !o)} className="absolute right-2 top-1/2 grid size-8 -translate-y-1/2 place-items-center rounded-full text-ink-3 hover:bg-mist">
+          <Icon name="fi-rr-angle-small-down" className={cn('transition-transform', open && 'rotate-180')} />
+        </button>
+      </label>
+      <AnimatePresence>
+        {open && (
+          <motion.ul
+            ref={list}
+            id="equipment-options"
+            role="listbox"
+            aria-multiselectable
+            aria-label="Equipment"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.18 }}
+            className="mt-2 max-h-72 overflow-y-auto overscroll-contain rounded-3xl border border-line bg-paper p-2 shadow-[0_24px_48px_-24px_rgb(11_21_16/0.35)]"
+          >
+            {rows.length === 0 && <li className="px-3 py-3 text-sm text-ink-3">Type the name of what you need.</li>}
+            {rows.map((r, i) => {
+              const on = selected.includes(r.label);
+              const heading = r.group && r.group !== rows[i - 1]?.group;
+              return (
+                <Fragment key={r.id}>
+                  {heading && <li role="presentation" className="label sticky -top-2 z-10 bg-paper px-3 pb-1.5 pt-3">{r.group}</li>}
+                  <li
+                    id={`equipment-${r.id}`}
+                    data-index={i}
+                    role="option"
+                    aria-selected={on}
+                    onPointerDown={(e) => e.preventDefault()}
+                    onClick={() => pick(i)}
+                    onPointerMove={() => setActive(i)}
+                    className={cn('flex cursor-pointer items-center gap-3 rounded-2xl px-3 py-2.5 text-sm', i === active ? 'bg-mist' : '', on ? 'text-ink' : 'text-ink-2')}
+                  >
+                    <span className={cn('grid size-5 shrink-0 place-items-center rounded-md border text-[10px]', on ? 'border-brand-600 bg-brand-600 text-white' : 'border-line')}>
+                      {on && <Icon name="fi-rr-check" />}
+                      {r.custom && !on && <Icon name="fi-rr-plus" className="text-ink-3" />}
+                    </span>
+                    {r.custom ? <span>Add “{r.label}” to the request</span> : <span className="truncate">{r.label}</span>}
+                  </li>
+                </Fragment>
+              );
+            })}
+          </motion.ul>
+        )}
+      </AnimatePresence>
+      <p className="mt-2 px-1 text-xs text-ink-3">{options.length} products in our catalogue. Not listed? Type it and add it.</p>
+    </div>
   );
 }
