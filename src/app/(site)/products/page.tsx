@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { BuyingFaq } from '@/components/products/buying-faq';
 import { Catalog } from '@/components/products/catalog';
 import { NewArrivals } from '@/components/products/new-arrivals';
 import { getCategories, getProducts } from '@/lib/data';
@@ -36,7 +37,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
           <Catalog key={`${initialCategory}|${q ?? ''}|${initialType}`} products={products} categories={categories} initialCategory={initialCategory} initialQuery={q ?? ''} initialType={initialType} />
         </div>
 
-        <section aria-labelledby="explore-categories" className="border-t border-line pb-20 pt-12 md:pb-28">
+        <section aria-labelledby="explore-categories" className="border-t border-line pb-12 pt-12 md:pb-16">
           <h2 id="explore-categories" className="text-2xl font-bold tracking-[-0.02em] text-ink">Explore Product Categories</h2>
           <ul className="mt-6 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
             {typeList.map(([t, n]) => (
@@ -52,6 +53,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
             ))}
           </ul>
         </section>
+        <BuyingFaq />
       </div>
     </div>
   );
