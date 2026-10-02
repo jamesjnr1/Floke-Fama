@@ -21,7 +21,7 @@ const media = [
 
 export function SiteFooter() {
   return (
-    <footer className="bg-midnight text-white/60">
+    <footer className="bg-[linear-gradient(135deg,#17402b_0%,#10301f_55%,#0b2418_100%)] text-white/60">
       <div className="mx-auto grid max-w-[1280px] grid-cols-2 gap-x-6 gap-y-10 px-5 py-14 md:grid-cols-2 md:gap-12 md:px-10 md:py-20 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1.2fr]">
         <div className="col-span-2 md:col-span-1">
           <Logo tone="dark" />
