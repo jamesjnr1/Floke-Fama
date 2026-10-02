@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { BuyAssurance, MobileQuoteBar, RelatedProducts, relatedProducts } from '@/components/products/product-extras';
 import { ProductVisual } from '@/components/products/product-visual';
 import { SpecActions, SpecHeader, SpecTabs } from '@/components/products/spec-sheet';
 import { Icon } from '@/components/ui/icon';
@@ -26,8 +27,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const [product, categories] = await Promise.all([getProduct(slug), getCategories()]);
+  const [product, categories, all] = await Promise.all([getProduct(slug), getCategories(), getProducts()]);
   if (!product) notFound();
+  const related = relatedProducts(product, all);
   const category = categories.find((c) => c.slug === product.category);
 
   const jsonLd = {
@@ -42,7 +44,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   };
 
   return (
-    <div className="bg-canvas pt-20">
+    <div className="bg-canvas pb-20 pt-20 md:pb-0">
       <div className="mx-auto max-w-[1280px] px-5 py-10 md:px-10 md:py-16">
         <Link href="/products" className="inline-flex items-center gap-2 text-sm text-ink-3 hover:text-ink">
           <Icon name="fi-rr-arrow-small-left" /> Back to catalogue
@@ -52,10 +54,13 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           <div className="min-w-0 space-y-10">
             <SpecHeader product={product} categoryTitle={category?.title} />
             <SpecActions product={product} />
+            <BuyAssurance />
             <SpecTabs product={product} categoryTitle={category?.title} />
           </div>
         </div>
       </div>
+      <RelatedProducts products={related} category={category} />
+      <MobileQuoteBar product={product} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
     </div>
   );
