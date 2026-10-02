@@ -19,7 +19,7 @@
 | Styling | **Tailwind CSS v4** (CSS-first tokens) + shadcn-style components on **Radix** primitives | `src/app/globals.css`, `src/components/ui` |
 | Motion | **Motion** (Framer Motion's current package, `motion/react`) | throughout, e.g. `layoutId` morphs |
 | 3D | Three.js dotted capsule in the hero (points and lines only), lazy chunk, pauses off-screen, still frame with reduced motion | `src/lib/three/capsule-scene.ts` |
-| CMS | **Sanity** (headless), falls back to seed data when not configured | `src/lib/sanity.ts`, `src/lib/data.ts`, `studio/` |
+| CMS | **Sanity** (headless) for products, categories, events, news articles, figures and milestones; falls back to the built-in content when not configured. A signed webhook (`/api/revalidate`) refreshes pages the moment an editor publishes. Setup and demo script: `studio/README.md` | `src/lib/sanity.ts`, `src/lib/data.ts`, `src/app/api/revalidate`, `studio/` |
 | Search | **Algolia** (lite client), falls back to a local scorer | `src/lib/search.ts`, `scripts/algolia-sync.ts` |
 | Leads | Validated route handlers (quote, contact, portal registration) → **HubSpot** Forms API, with email/WhatsApp hand-off when not configured | `src/app/api/*/route.ts`, `src/lib/crm.ts` |
 | Toasts | **Sonner**, clinical styling | `src/app/layout.tsx` |
