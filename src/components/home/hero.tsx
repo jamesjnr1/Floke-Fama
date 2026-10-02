@@ -44,7 +44,7 @@ export function Hero() {
             <p className="max-w-xl text-lg leading-relaxed text-white/75 md:text-xl">Total healthcare solutions for hospitals and laboratories across Ghana and West Africa. Saving lives since 2008.</p>
           </Reveal>
           <Reveal delay={0.22} className="flex flex-wrap gap-3 pt-2">
-            <Button asChild variant="outline" size="lg" className="border-transparent text-brand-800 shadow-[0_12px_32px_-12px_rgb(0_0_0/0.45)] hover:border-transparent">
+            <Button asChild variant="outline" size="lg" className="border-transparent text-brand-800 hover:border-transparent">
               <Link href="/products">Explore Solutions <Icon name="fi-rr-arrow-small-right" /></Link>
             </Button>
             <Button asChild variant="glass" size="lg">

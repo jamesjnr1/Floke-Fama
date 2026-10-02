@@ -158,7 +158,7 @@ export function ClientShell({ user }: { user: { name: string; email: string; fac
           )}
         </div>
         {/* Mobile: floating request button */}
-        <button onClick={() => setRequesting({ open: true })} className="fixed bottom-4 right-4 z-30 inline-flex h-12 items-center gap-2 rounded-full bg-brand-600 px-5 text-sm font-semibold text-white shadow-[0_12px_30px_-10px_rgb(37_120_71/0.8)] sm:hidden">
+        <button onClick={() => setRequesting({ open: true })} className="fixed bottom-4 right-4 z-30 inline-flex h-12 items-center gap-2 rounded-full bg-brand-600 px-5 text-sm font-semibold text-white shadow-[0_8px_20px_-8px_rgb(11_21_16/0.35)] sm:hidden">
           <Icon name="fi-rr-wrench-simple" /> Request service
         </button>
       </main>
