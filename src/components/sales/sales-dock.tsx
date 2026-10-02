@@ -116,7 +116,7 @@ export function SalesDock() {
           onClick={whatsapp}
           aria-label="Chat with Flokefama sales on WhatsApp"
           title="Chat on WhatsApp"
-          className="grid size-12 place-items-center rounded-full bg-[#25D366] text-2xl text-white shadow-[0_14px_30px_-12px_rgb(37_211_102/0.9)] transition hover:scale-105"
+          className="grid size-12 place-items-center rounded-full bg-[#25D366] text-2xl text-white shadow-[0_8px_20px_-8px_rgb(11_21_16/0.35)] transition hover:scale-105"
         >
           <Icon name="fi-brands-whatsapp" />
         </button>

@@ -68,7 +68,7 @@ export function LoginForm({ next, demo, notice }: { next?: string; demo: Demo[];
         <button
           type="submit"
           disabled={pending}
-          className="!mt-6 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand-600 text-[15px] font-medium text-white shadow-[0_12px_28px_-14px_rgb(37_120_71/0.9)] transition hover:bg-brand-700 disabled:opacity-60"
+          className="!mt-6 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand-600 text-[15px] font-medium text-white transition hover:bg-brand-700 disabled:opacity-60"
         >
           {pending ? 'Signing in…' : 'Sign in'} {!pending && <Icon name="fi-rr-arrow-small-right" />}
         </button>
