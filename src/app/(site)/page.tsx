@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { Hero } from '@/components/home/hero';
 import { Partners } from '@/components/home/partners';
 import { ProductUniverse } from '@/components/home/product-universe';
@@ -6,6 +7,8 @@ import { Testimonials } from '@/components/home/testimonials';
 import { getCategories, getProducts } from '@/lib/data';
 
 export const revalidate = 600;
+
+export const metadata: Metadata = { alternates: { canonical: '/' } };
 
 /** Home: each section appears only here; services, contact and company detail live on their own pages. */
 export default async function HomePage() {
