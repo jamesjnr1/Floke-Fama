@@ -1,5 +1,6 @@
 import 'server-only';
 import { cache } from 'react';
+import { articles as seedArticles, type Article } from '@/data/articles';
 import * as seed from '@/data/seed';
 import { queries, sanity } from '@/lib/sanity';
 import type { Category, EventItem, Metric, Milestone, Product } from '@/lib/types';
@@ -25,6 +26,9 @@ async function fromCms<T>(query: string, fallback: T, params: Record<string, str
 export const getCategories = cache(() => fromCms<Category[]>(queries.categories, seed.categories));
 export const getProducts = cache(() => fromCms<Product[]>(queries.products, seed.products));
 export const getMetrics = cache(() => fromCms<Metric[]>(queries.metrics, seed.metrics));
+/** News, Blog & Press, newest first. */
+export const getArticles = cache(() => fromCms<Article[]>(queries.articles, seedArticles));
+
 /** Events, newest first. */
 export const getEvents = cache(() => fromCms<EventItem[]>(queries.events, seed.events));
 export const getMilestones = cache(() => fromCms<Milestone[]>(queries.milestones, seed.milestones));
