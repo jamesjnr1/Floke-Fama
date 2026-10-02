@@ -10,7 +10,7 @@
  *  - A Ministry of Health partnership was proposed for the trust section; it is NOT shown until confirmed.
  */
 import { catalogue } from '@/data/catalogue';
-import type { Category, Metric, Milestone, Product } from '@/lib/types';
+import type { Category, EventItem, Metric, Milestone, Product } from '@/lib/types';
 
 export const categories: Category[] = [
   {
@@ -259,16 +259,33 @@ export const awards = [
 ];
 
 /** Events & Activities (the current site lists past events only). */
-export const events = [
+export const events: EventItem[] = [
+  {
+    id: 'floke-praise-2026',
+    title: 'Floke Praise 2026',
+    date: '2026-10-24',
+    start: '2026-10-24T15:00:00Z', // Ghana is on GMT all year
+    end: '2026-10-24T19:00:00Z', // for calendar invites only; the flyer gives a start time
+    time: '3:00 pm',
+    venue: 'Flokefama Company Limited, Head Office, Kwashieman',
+    theme: 'Grounded in Gratitude, Driven by Purpose.',
+    guests: 'Perez Music & other guest ministers',
+    body: 'Floke Praise 2026 is here. Let’s celebrate God together.',
+    /** The event flyer, as shared by Flokefama. */
+    image: '/images/event-floke-praise-2026.webp',
+    imageWidth: 1170,
+    imageHeight: 1450,
+    alt: 'Floke Praise 2026 flyer: Perez Music and other guest ministers, 24 October 2026 at 3:00 pm, Flokefama head office, Kwashieman. Theme: Grounded in gratitude, driven by purpose.',
+  },
   {
     id: 'floke-praise-2025',
     title: 'Floke Praise 2025 – Celebrating 17 Years of Saving Lives!',
     date: '2025-10-18',
-    day: '18',
-    month: 'Oct',
-    year: '2025',
+    start: '2025-10-18T15:00:00Z',
+    end: '2025-10-18T19:00:00Z',
     time: '3:00 pm – 7:00 pm',
     venue: 'Flokefama Company Limited, 2 Regy St., Accra',
+    guests: 'Uncle Ato and MOG Music',
     body: 'Join us for an evening of gratitude, worship, and celebration as Flokefama Company Ltd marks 17 years of saving lives and serving communities with excellence in healthcare.',
     more: [
       'This year’s edition, themed “Celebrating 17 Years of Saving Lives,” brings together the entire Flokefama family, partners, and friends to lift our voices in thanksgiving for how far we’ve come — and to rededicate ourselves to our purpose of service, compassion, and innovation in healthcare.',
@@ -277,6 +294,8 @@ export const events = [
     price: 'Free',
     /** The event flyer, from the current site's Events page. */
     image: '/images/event-floke-praise-2025.webp',
+    imageWidth: 1400,
+    imageHeight: 788,
     alt: 'Floke Praise 2025 flyer: celebrating 17 years of saving lives, 18 October, 3:00 pm to 7:00 pm, Flokefama head office, Santa Maria, with guest artists Uncle Ato and MOG',
   },
 ];
