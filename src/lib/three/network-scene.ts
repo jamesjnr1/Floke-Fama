@@ -12,7 +12,9 @@ import {
 const NODES = 26;
 const LINK_DISTANCE = 3.1;
 
-export function mountNetwork(container: HTMLElement, onReady?: () => void): () => void {
+/** `right`: clustered to the right of a headline (home hero). `full`: spread evenly edge to edge (page headers). */
+export function mountNetwork(container: HTMLElement, onReady?: () => void, layout: 'right' | 'full' = 'right'): () => void {
+  const count = layout === 'full' ? 40 : NODES;
   const reduceMotion = prefersReducedMotion();
   let renderer: WebGLRenderer;
   try {
@@ -35,7 +37,11 @@ export function mountNetwork(container: HTMLElement, onReady?: () => void): () =
   const rand = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
 
   // Nodes biased to the right half, where the product image sits
-  const positions: Vector3[] = Array.from({ length: NODES }, () => new Vector3(rand() * 10 - 1.5, (rand() - 0.5) * 9, (rand() - 0.5) * 6));
+  const positions: Vector3[] = Array.from({ length: count }, () =>
+    layout === 'full'
+      ? new Vector3((rand() - 0.5) * 22, (rand() - 0.5) * 9, (rand() - 0.5) * 6)
+      : new Vector3(rand() * 10 - 1.5, (rand() - 0.5) * 9, (rand() - 0.5) * 6),
+  );
 
   const ico = new EdgesGeometry(new IcosahedronGeometry(1, 0));
   const nodeMat = new LineBasicMaterial({ color: 0x3f9e66, transparent: true, opacity: 0.42 });
@@ -56,8 +62,8 @@ export function mountNetwork(container: HTMLElement, onReady?: () => void): () =
   // Connections, fading with distance
   const linkPos: number[] = [];
   const linkCol: number[] = [];
-  for (let i = 0; i < NODES; i++) {
-    for (let j = i + 1; j < NODES; j++) {
+  for (let i = 0; i < count; i++) {
+    for (let j = i + 1; j < count; j++) {
       const d = positions[i].distanceTo(positions[j]);
       if (d > LINK_DISTANCE) continue;
       const a = 1 - d / LINK_DISTANCE;
