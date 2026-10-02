@@ -5,6 +5,7 @@ import { AnimatePresence, LayoutGroup, motion } from 'motion/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ProductVisual } from '@/components/products/product-visual';
 import { Badge } from '@/components/ui/badge';
+import { AddToQuote } from '@/components/sales/add-to-quote';
 import { Icon } from '@/components/ui/icon';
 import { localSearch, searchProducts, searchProvider } from '@/lib/search';
 import type { Category, Product } from '@/lib/types';
@@ -147,6 +148,8 @@ export function Catalog({ products, categories, initialCategory, initialQuery, i
 
 function ProductCard({ product, category, wide }: { product: Product; category?: Category; wide: boolean }) {
   return (
+    <div className="relative h-full">
+    <AddToQuote item={{ slug: product.slug, name: product.name, brand: product.brand, image: product.image }} compact className="absolute right-3.5 top-3.5 z-10 sm:right-5 sm:top-5" />
     <Link
       href={`/products/${product.slug}`}
       scroll={false}
@@ -165,5 +168,6 @@ function ProductCard({ product, category, wide }: { product: Product; category?:
         </span>
       </div>
     </Link>
+    </div>
   );
 }
