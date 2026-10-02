@@ -5,9 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 
 /**
- * In-vitro diagnostics in one calm view. Every product named here is in the current
- * flokefama.com catalogue. Photo: Andrew Oklu on Unsplash (unsplash.com/photos/TZUjC1TyPBg),
- * free to use under the Unsplash License.
+ * In-vitro diagnostics: centred heading, one wide photo and a floating bar with the four areas.
+ * Every product named here is in the current flokefama.com catalogue. Photo: Amari Shutters on
+ * Unsplash (unsplash.com/photos/Vw2O5QkDJQo), free to use under the Unsplash License.
  */
 const areas = [
   { title: 'Haematology', body: 'Mindray BC-5150, BC-3000plus, BC-30s and BC-20s analysers.' },
@@ -18,40 +18,38 @@ const areas = [
 
 export function SpecScrolly() {
   return (
-    <section className="bg-[linear-gradient(135deg,#17402b_0%,#10301f_55%,#0b2418_100%)] py-16 text-white md:py-28">
-      <div className="mx-auto grid max-w-7xl items-center gap-10 px-5 md:px-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-20">
-        <Reveal>
-          <p className="label !text-brand-300">In-vitro diagnostics · Official Mindray distributor</p>
-          <h2 className="display mt-4 text-[clamp(34px,6vw,60px)] text-white">Diagnostics you can trust.</h2>
-          <p className="mt-5 max-w-md font-light text-white/70">Calibrated on day one, supported every day after.</p>
+    <section className="bg-brand-50 py-16 md:py-24">
+      <div className="mx-auto max-w-7xl px-5 md:px-10">
+        <Reveal className="mx-auto max-w-2xl text-center">
+          <p className="label !text-brand-700">In-vitro diagnostics · Official Mindray distributor</p>
+          <h2 className="display mt-4 text-[clamp(34px,6vw,60px)] text-ink">Diagnostics you can trust.</h2>
+          <p className="mt-5 text-lg font-light text-ink-2">Calibrated on day one, supported every day after.</p>
+        </Reveal>
 
-          <ol className="mt-10 border-b border-white/10">
-            {areas.map((a, i) => (
-              <li key={a.title} className="flex gap-6 border-t border-white/10 py-5">
-                <span className="w-6 shrink-0 pt-0.5 text-sm font-medium tabular-nums text-brand-300">{String(i + 1).padStart(2, '0')}</span>
-                <div>
-                  <p className="font-semibold tracking-tight text-white">{a.title}</p>
-                  <p className="mt-1 text-sm font-light text-white/60">{a.body}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
+        <Reveal delay={0.1} className="relative mt-10 aspect-[4/3] overflow-hidden rounded-4xl md:mt-14 md:aspect-[21/9]">
+          <Image
+            src="/images/diagnostics-blood-sample.jpg"
+            alt="Laboratory scientists in gloves handling a blood sample tube"
+            fill
+            sizes="(min-width: 1280px) 1200px, 100vw"
+            className="object-cover object-[50%_40%]"
+          />
+        </Reveal>
 
-          <Button asChild variant="glass" className="mt-10">
+        <div className="relative z-10 mx-3 -mt-10 grid gap-6 rounded-4xl bg-paper p-6 shadow-[0_30px_60px_-30px_rgb(11_21_16/0.35)] sm:grid-cols-2 md:mx-8 md:-mt-20 lg:grid-cols-4 lg:gap-0 lg:divide-x lg:divide-line lg:px-0 lg:py-8">
+          {areas.map((a) => (
+            <div key={a.title} className="lg:px-7">
+              <p className="font-semibold text-ink">{a.title}</p>
+              <p className="mt-1.5 text-sm font-light text-ink-3">{a.body}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-10 text-center">
+          <Button asChild>
             <Link href="/products?category=in-vitro-diagnostics">Explore diagnostics <Icon name="fi-rr-arrow-small-right" /></Link>
           </Button>
-        </Reveal>
-
-        <Reveal delay={0.1} className="relative order-first aspect-[4/3] overflow-hidden rounded-4xl lg:order-none lg:aspect-[4/5]">
-          <Image
-            src="/images/diagnostics-microscope.jpg"
-            alt="A laboratory scientist examining a sample under a microscope"
-            fill
-            sizes="(min-width: 1024px) 560px, 100vw"
-            className="object-cover object-[50%_68%]"
-          />
-          <div className="absolute inset-0 rounded-4xl ring-1 ring-inset ring-white/10" />
-        </Reveal>
+        </div>
       </div>
     </section>
   );
