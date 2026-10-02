@@ -71,3 +71,25 @@ export interface Milestone {
   icon: Icon;
   href?: string;
 }
+
+export interface EventItem {
+  id: string;
+  title: string;
+  /** Local date, YYYY-MM-DD: decides Upcoming or Past. */
+  date: string;
+  /** ISO start and end, for calendar invites and structured data. */
+  start: string;
+  end?: string;
+  /** As shown to visitors, e.g. "3:00 pm – 7:00 pm". */
+  time: string;
+  venue: string;
+  body: string;
+  more?: string[];
+  theme?: string;
+  guests?: string;
+  price?: string;
+  image?: string;
+  imageWidth?: number;
+  imageHeight?: number;
+  alt?: string;
+}

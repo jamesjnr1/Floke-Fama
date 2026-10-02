@@ -28,5 +28,6 @@ export const queries = {
   products: `*[_type == "product"] | order(featured desc, name asc){ ${productFields} }`,
   product: `*[_type == "product" && slug.current == $slug][0]{ ${productFields} }`,
   metrics: `*[_type == "metric"] | order(order asc){ label, value, prefix, suffix, caption }`,
+  events: `*[_type == "event"] | order(date desc){ "id": slug.current, title, date, start, end, time, venue, body, more, theme, guests, price, "image": image.asset->url, "imageWidth": image.asset->metadata.dimensions.width, "imageHeight": image.asset->metadata.dimensions.height, "alt": image.alt }`,
   milestones: `*[_type == "milestone"] | order(order asc){ "id": _id, kicker, title, body, date, "image": image.asset->url, icon, href }`,
 };

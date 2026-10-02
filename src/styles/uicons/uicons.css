@@ -17,6 +17,7 @@
 .fi-rr-building::before{content:"\f303"}
 .fi-rr-bullseye::before{content:"\f309"}
 .fi-rr-calendar::before{content:"\f339"}
+.fi-rr-calendar-plus::before{content:"\f332"}
 .fi-rr-chart-line-up::before{content:"\f3a5"}
 .fi-rr-check::before{content:"\f3c8"}
 .fi-rr-clipboard-list::before{content:"\f43b"}
@@ -41,6 +42,7 @@
 .fi-rr-lightbulb-on::before{content:"\f8ac"}
 .fi-rr-link-alt::before{content:"\f8b5"}
 .fi-rr-marker::before{content:"\f8fd"}
+.fi-rr-microphone::before{content:"\f944"}
 .fi-rr-microscope::before{content:"\f945"}
 .fi-rr-navigation::before{content:"\f99d"}
 .fi-rr-paper-plane::before{content:"\f9f7"}
@@ -56,6 +58,7 @@
 .fi-rr-stethoscope::before{content:"\fcf4"}
 .fi-rr-syringe::before{content:"\fd36"}
 .fi-rr-text::before{content:"\fd85"}
+.fi-rr-ticket::before{content:"\fd9d"}
 .fi-rr-time-fast::before{content:"\fda4"}
 .fi-rr-tool-box::before{content:"\fdc8"}
 .fi-rr-trophy::before{content:"\fe39"}

@@ -2,7 +2,7 @@ import 'server-only';
 import { cache } from 'react';
 import * as seed from '@/data/seed';
 import { queries, sanity } from '@/lib/sanity';
-import type { Category, Metric, Milestone, Product } from '@/lib/types';
+import type { Category, EventItem, Metric, Milestone, Product } from '@/lib/types';
 
 /**
  * Content access layer. Reads from Sanity when configured, otherwise from the seed.
@@ -25,6 +25,8 @@ async function fromCms<T>(query: string, fallback: T, params: Record<string, str
 export const getCategories = cache(() => fromCms<Category[]>(queries.categories, seed.categories));
 export const getProducts = cache(() => fromCms<Product[]>(queries.products, seed.products));
 export const getMetrics = cache(() => fromCms<Metric[]>(queries.metrics, seed.metrics));
+/** Events, newest first. */
+export const getEvents = cache(() => fromCms<EventItem[]>(queries.events, seed.events));
 export const getMilestones = cache(() => fromCms<Milestone[]>(queries.milestones, seed.milestones));
 
 export const getProduct = cache(async (slug: string) => {
