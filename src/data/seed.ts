@@ -70,11 +70,10 @@ export const experienceFigures: Metric[] = [
   { label: 'Satisfied Clients', value: 56 },
 ];
 
-/** Secondary figures from the current Awards page. */
+/** Secondary figures from the current Awards page (its "5 Awards" is left out: the gallery shows all five). */
 export const companyFigures: Metric[] = [
-  { label: 'Health Products', value: 200 },
-  { label: 'Awards', value: 5 },
-  { label: 'Talented Team Members', value: 40 },
+  { label: 'Health products', value: 200 },
+  { label: 'Team members', value: 40 },
 ];
 
 export const milestones: Milestone[] = [
