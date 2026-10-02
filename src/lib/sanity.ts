@@ -18,7 +18,7 @@ export const sanity: SanityClient | null = projectId
 
 const productFields = `
   "slug": slug.current, name, brand, "category": category->slug.current, summary,
-  "image": image.asset->url, highlights, specs[]{label, value}, specsVerified,
+  "image": image.asset->url, "gallery": gallery[].asset->url, highlights, specs[]{label, value}, specsVerified,
   compatibility[]{item, status, note}, documents[]{title, kind, "url": file.asset->url},
   tags, featured, newArrival, types, description, highlightsSource, source
 `;
