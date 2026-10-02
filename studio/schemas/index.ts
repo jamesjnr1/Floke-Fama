@@ -120,4 +120,84 @@ export const milestone = defineType({
   ],
 });
 
-export const schemaTypes = [category, product, metric, milestone];
+/** A run of text inside a paragraph or list item. */
+const run = defineArrayMember({
+  type: 'object',
+  name: 'run',
+  fields: [
+    defineField({ name: 't', title: 'Text', type: 'text', rows: 2 }),
+    defineField({ name: 'b', title: 'Bold', type: 'boolean' }),
+    defineField({ name: 'i', title: 'Italic', type: 'boolean' }),
+    defineField({ name: 'href', title: 'Link', type: 'url', validation: (r) => r.uri({ allowRelative: true, scheme: ['http', 'https', 'mailto', 'tel'] }) }),
+  ],
+  preview: { select: { title: 't', b: 'b', href: 'href' }, prepare: ({ title, b, href }) => ({ title, subtitle: [b && 'bold', href && 'link'].filter(Boolean).join(' · ') }) },
+});
+
+export const event = defineType({
+  name: 'event',
+  title: 'Event',
+  type: 'document',
+  description: 'Shown on Events & Activities. Upcoming events move to “Past” the day after they end.',
+  fields: [
+    defineField({ name: 'title', type: 'string', validation: (r) => r.required() }),
+    defineField({ name: 'slug', title: 'ID', type: 'slug', options: { source: 'title' }, validation: (r) => r.required(), description: 'Used in links and calendar invites, e.g. floke-praise-2026' }),
+    defineField({ name: 'date', type: 'date', validation: (r) => r.required(), description: 'The day of the event' }),
+    defineField({ name: 'start', title: 'Starts', type: 'datetime', validation: (r) => r.required(), description: 'Used for calendar invites (Ghana time)' }),
+    defineField({ name: 'end', title: 'Ends', type: 'datetime' }),
+    defineField({ name: 'time', title: 'Time as shown', type: 'string', validation: (r) => r.required(), description: 'e.g. “3:00 pm” or “3:00 pm – 7:00 pm”' }),
+    defineField({ name: 'venue', type: 'string', validation: (r) => r.required() }),
+    defineField({ name: 'theme', type: 'string' }),
+    defineField({ name: 'guests', title: 'Guests / ministering', type: 'string' }),
+    defineField({ name: 'price', title: 'Entry', type: 'string', description: 'e.g. “Free”' }),
+    defineField({ name: 'body', title: 'Short description', type: 'text', rows: 3, validation: (r) => r.required() }),
+    defineField({ name: 'more', title: 'More paragraphs', type: 'array', of: [{ type: 'text' }] }),
+    defineField({
+      name: 'image',
+      title: 'Flyer',
+      type: 'image',
+      fields: [defineField({ name: 'alt', title: 'Describe the flyer', type: 'string', description: 'Read aloud to visitors who use a screen reader' })],
+    }),
+  ],
+  orderings: [{ title: 'Date, newest first', name: 'dateDesc', by: [{ field: 'date', direction: 'desc' }] }],
+  preview: { select: { title: 'title', subtitle: 'date', media: 'image' } },
+});
+
+export const article = defineType({
+  name: 'article',
+  title: 'News article',
+  type: 'document',
+  description: 'News, Blog & Press. Each block is a paragraph, heading, quote, list or image.',
+  fields: [
+    defineField({ name: 'title', type: 'string', validation: (r) => r.required() }),
+    defineField({ name: 'slug', type: 'slug', options: { source: 'title' }, validation: (r) => r.required() }),
+    defineField({ name: 'date', type: 'date', validation: (r) => r.required() }),
+    defineField({ name: 'categories', type: 'array', of: [{ type: 'string' }], options: { layout: 'tags' } }),
+    defineField({ name: 'excerpt', type: 'text', rows: 3, description: 'Shown on the news cards' }),
+    defineField({ name: 'cover', title: 'Cover image', type: 'image', fields: [defineField({ name: 'alt', type: 'string' })] }),
+    defineField({
+      name: 'blocks',
+      title: 'Body',
+      type: 'array',
+      of: [
+        defineArrayMember({ type: 'object', name: 'heading', fields: [defineField({ name: 'text', type: 'string' })], preview: { select: { title: 'text' }, prepare: ({ title }) => ({ title, subtitle: 'Heading' }) } }),
+        defineArrayMember({ type: 'object', name: 'paragraph', fields: [defineField({ name: 'runs', type: 'array', of: [run] })], preview: { select: { t: 'runs.0.t' }, prepare: ({ t }) => ({ title: t, subtitle: 'Paragraph' }) } }),
+        defineArrayMember({ type: 'object', name: 'quote', fields: [defineField({ name: 'runs', type: 'array', of: [run] })], preview: { select: { t: 'runs.0.t' }, prepare: ({ t }) => ({ title: t, subtitle: 'Quote' }) } }),
+        defineArrayMember({
+          type: 'object',
+          name: 'list',
+          fields: [
+            defineField({ name: 'ordered', title: 'Numbered', type: 'boolean' }),
+            defineField({ name: 'items', type: 'array', of: [defineArrayMember({ type: 'object', name: 'item', fields: [defineField({ name: 'runs', type: 'array', of: [run] })], preview: { select: { title: 'runs.0.t' } } })] }),
+          ],
+          preview: { select: { t: 'items.0.runs.0.t', o: 'ordered' }, prepare: ({ t, o }) => ({ title: t, subtitle: o ? 'Numbered list' : 'List' }) },
+        }),
+        defineArrayMember({ type: 'image', name: 'figure', fields: [defineField({ name: 'alt', type: 'string' })] }),
+      ],
+    }),
+    defineField({ name: 'source', title: 'Path on the old site', type: 'string', description: 'Used to redirect old links' }),
+  ],
+  orderings: [{ title: 'Date, newest first', name: 'dateDesc', by: [{ field: 'date', direction: 'desc' }] }],
+  preview: { select: { title: 'title', subtitle: 'date', media: 'cover' } },
+});
+
+export const schemaTypes = [category, product, event, article, metric, milestone];

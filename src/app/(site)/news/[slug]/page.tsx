@@ -7,15 +7,17 @@ import { ArticleBody, headingId } from '@/components/media/article-body';
 import { formatDate } from '@/components/media/news-grid';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
-import { articles, type Article } from '@/data/articles';
+import type { Article } from '@/data/articles';
+import { getArticles } from '@/lib/data';
 import { siteUrl } from '@/lib/utils';
 
-export const dynamicParams = false;
-export const generateStaticParams = () => articles.map((a) => ({ slug: a.slug }));
+// New posts published in Sanity get a page on first visit; existing ones are built ahead of time.
+export const revalidate = 600;
+export const generateStaticParams = async () => (await getArticles()).map((a) => ({ slug: a.slug }));
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const a = articles.find((x) => x.slug === slug);
+  const a = (await getArticles()).find((x) => x.slug === slug);
   if (!a) return {};
   return {
     title: a.title,
@@ -37,6 +39,7 @@ function readingTime(a: Article) {
 /** A News, Blog & Press article from flokefama.com, presented as an editorial page. */
 export default async function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  const articles = await getArticles();
   const index = articles.findIndex((x) => x.slug === slug);
   if (index < 0) notFound();
   const a = articles[index];

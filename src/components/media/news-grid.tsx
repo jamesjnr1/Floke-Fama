@@ -2,13 +2,14 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Reveal } from '@/components/motion/reveal';
 import { Icon } from '@/components/ui/icon';
-import { articles } from '@/data/articles';
+import { getArticles } from '@/lib/data';
 import { cn } from '@/lib/utils';
 
 export const formatDate = (iso: string) => new Date(`${iso}T12:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 
 /** Media Centre: every news, blog and press post from flokefama.com, each opening its full article. */
-export function NewsGrid() {
+export async function NewsGrid() {
+  const articles = await getArticles();
   return (
     <section id="news" className="scroll-mt-28 border-t border-line bg-canvas py-12 md:py-28">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
