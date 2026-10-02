@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { AddToQuote } from '@/components/sales/add-to-quote';
 import { Icon } from '@/components/ui/icon';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { brochureUrl } from '@/data/seed';
@@ -147,9 +148,10 @@ export function SpecActions({ product }: { product: Product }) {
       <Button asChild>
         <Link href={`/quote?product=${product.slug}`}>Request a quote <Icon name="fi-rr-arrow-small-right" /></Link>
       </Button>
-      <Button asChild variant="outline">
-        <Link href={`/quote?intent=demo&product=${product.slug}`}>Schedule a demonstration</Link>
-      </Button>
+      <AddToQuote item={{ slug: product.slug, name: product.name, brand: product.brand, image: product.image }} />
+      <Link href={`/quote?intent=demo&product=${product.slug}`} className="inline-flex h-12 items-center px-2 text-sm font-medium text-brand-700 underline-offset-4 hover:underline">
+        Schedule a demonstration
+      </Link>
     </div>
   );
 }

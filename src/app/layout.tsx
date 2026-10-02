@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { GeistSans } from 'geist/font/sans';
 import localFont from 'next/font/local';
+import { Analytics } from '@vercel/analytics/next';
 import { Toaster } from 'sonner';
 import { AccessibilityProvider } from '@/components/layout/accessibility';
 import { ServiceWorkerRegister } from '@/components/layout/sw-register';
@@ -71,6 +72,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
         <ServiceWorkerRegister />
+        {/* Vercel Web Analytics: only on Vercel, where its script is served */}
+        {process.env.VERCEL && <Analytics />}
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationLd) }} />
       </body>
     </html>

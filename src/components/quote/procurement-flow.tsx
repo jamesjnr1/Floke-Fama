@@ -9,7 +9,9 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import { contact } from '@/data/seed';
+import { track } from '@/lib/analytics';
 import { composeLinks } from '@/lib/compose';
+import { quoteList } from '@/lib/quote-list';
 import { departments, quoteSchema, timelines, type QuoteInput } from '@/lib/quote-schema';
 import { cn } from '@/lib/utils';
 
@@ -61,6 +63,8 @@ export function ProcurementFlow({ options, initial }: { options: Option[]; initi
       return;
     }
     setDone({ reference: json.reference, delivered: json.delivered === true, data });
+    track(data.intent === 'demo' ? 'demo_submitted' : 'quote_submitted', { items: data.equipment.length, department: data.department, delivered: json.delivered === true });
+    quoteList.clear(); // the list has been sent
     if (json.delivered) toast.success(data.intent === 'demo' ? 'Demonstration request received' : 'Quote request received', { description: `Reference ${json.reference}. A specialist will contact you shortly.` });
   });
 

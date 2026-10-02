@@ -23,6 +23,8 @@
 | Search | **Algolia** (lite client), falls back to a local scorer | `src/lib/search.ts`, `scripts/algolia-sync.ts` |
 | Leads | Validated route handlers (quote, contact, portal registration) → **HubSpot** Forms API, with email/WhatsApp hand-off when not configured | `src/app/api/*/route.ts`, `src/lib/crm.ts` |
 | Toasts | **Sonner**, clinical styling | `src/app/layout.tsx` |
+| Sales tools | Quote list (several products, one request; kept in the browser), WhatsApp dock pre-filled with the product being viewed, related products, why-buy strip, sticky phone quote bar, Buying FAQ (FAQPage JSON-LD) | `src/lib/quote-list.ts`, `src/components/sales/*`, `src/components/products/product-extras.tsx`, `buying-faq.tsx` |
+| Analytics | **Vercel Web Analytics** (cookie-free) with conversion events: quotes, demos, quote-list adds, WhatsApp, calls, brochure, datasheets. See `07-customers-ceo-sales.md` | `src/lib/analytics.ts` |
 | Offline | Hand-written service worker + `/offline` emergency page | `public/sw.js`, `src/app/offline` |
 | Hosting | **Vercel** (global CDN, preview deploy per PR) | CI: `.github/workflows/ci.yml` |
 | Fonts / icons / logo | Poppins (self-hosted) + Geist Sans (`geist` package, `next/font`); Flaticon UIcons subset (~6 KB); official vector logo from the company brochure | `src/app/layout.tsx`, `src/styles/uicons`, `src/components/layout/logo.tsx` |
