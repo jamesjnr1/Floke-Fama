@@ -117,9 +117,14 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                 <p className="label">Share</p>
                 <div className="mt-4"><ShareButtons title={a.title} /></div>
               </div>
+              <div className="rounded-3xl bg-midnight p-5 text-white">
+                <p className="text-sm font-semibold leading-snug">Need equipment or support?</p>
+                <p className="mt-1.5 text-xs leading-relaxed text-white/60">Our sales engineers reply within one business day.</p>
+                <Link href="/quote" className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-brand-300 hover:text-white">Request a quote <Icon name="fi-rr-arrow-small-right" /></Link>
+              </div>
             </div>
           </aside>
-          <div className="-mx-5 min-w-0 bg-paper px-5 py-8 shadow sm:mx-0 sm:rounded-4xl-[0_30px_60px_-50px_rgb(11_21_16/0.4)] ring-1 ring-line sm:p-10 md:px-16 md:py-14">
+          <div className="-mx-5 min-w-0 bg-paper px-5 py-8 shadow-[0_30px_60px_-50px_rgb(11_21_16/0.4)] ring-1 ring-line sm:mx-0 sm:rounded-4xl sm:p-10 md:px-16 md:py-14">
             <ArticleBody blocks={a.blocks} />
           </div>
         </div>
