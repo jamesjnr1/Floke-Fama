@@ -29,7 +29,7 @@ export SANITY_STUDIO_PROJECT_ID=<project ID>
 npm run import-seed                   # products with photos, events with flyers, 8 articles, figures
 ```
 
-It takes a few minutes because it uploads about 120 images. You can run it again safely: it replaces the same documents and doesn't duplicate images.
+It takes a few minutes because it uploads about 290 images. You can run it again safely: it replaces the same documents and doesn't duplicate images.
 
 ### 3. Open the Studio
 ```bash

@@ -61,15 +61,17 @@ for p in products:
     brand = html.unescape(p['brands'][0]['name']) if p['brands'] else 'Flokefama'
     desc = paras(p['short_description']) + paras(p['description'])
     desc = list(dict.fromkeys(desc))  # the shop often repeats the same text as short and long description
-    image = None
-    if p['images']:
-        src = p['images'][0]['src']
-        dest = f'{IMG_DIR}/{slug}.webp'
+    # Every photo the shop shows for the product: the first is the main image, the rest the gallery
+    gallery = []
+    for i, im in enumerate(p['images']):
+        name_i = slug if i == 0 else f'{slug}-{i + 1}'
+        dest = f'{IMG_DIR}/{name_i}.webp'
         if not os.path.exists(dest):
-            raw = f'{HERE}/img-{slug}'
-            urllib.request.urlretrieve(src, raw)
+            raw = f'{HERE}/img-{name_i}'
+            urllib.request.urlretrieve(im['src'], raw)
             subprocess.run(['node', '-e', f"require('{ROOT}/node_modules/sharp')('{raw}').flatten({{background:'#ffffff'}}).resize({{width:900,height:900,fit:'inside',withoutEnlargement:true}}).webp({{quality:80}}).toFile('{dest}')"], check=True)
-        image = f'/images/products/{slug}.webp'
+        gallery.append(f'/images/products/{name_i}.webp')
+    image = gallery[0] if gallery else None
     shown_types = [t for t in types if t != 'Others']
     out.append({
         'slug': slug, 'name': name, 'brand': brand, 'category': cat,
@@ -77,6 +79,7 @@ for p in products:
         'summary': desc[0] if desc else name,
         'description': desc,
         'image': image,
+        'gallery': gallery[1:] or None,
         'highlights': BROCHURE.get(slug, []),
         'highlightsSource': 'brochure' if slug in BROCHURE else None,
         'specs': [], 'specsVerified': False, 'documents': [],

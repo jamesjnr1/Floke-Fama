@@ -99,72 +99,56 @@ function DateTile({ date }: { date: string }) {
   );
 }
 
-/** The next event, given room: the full flyer beside everything a guest needs to attend. */
+/** The next event: a compact card with the flyer as a thumbnail and everything a guest needs to attend. */
 function FeaturedEvent({ event: e, today }: { event: EventItem; today: string }) {
   const days = daysUntil(e.date, today);
   const invite = `${contact.whatsapp.replace(/\/\d+$/, '/')}?text=${encodeURIComponent(`${e.title}: ${longDate(e.date)}, ${e.time}, ${e.venue}. ${siteUrl}/events#${e.id}`)}`;
   const directions = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e.venue)}`;
   return (
     <Reveal>
-      <article id={e.id} className="scroll-mt-28 overflow-hidden rounded-5xl border border-line bg-canvas lg:grid lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+      <article id={e.id} className="scroll-mt-28 flex flex-col gap-6 rounded-4xl border border-line bg-canvas p-4 sm:flex-row sm:items-center md:gap-8 md:p-5">
         {e.image && (
-          <div className="relative bg-midnight">
+          <a href={e.image} target="_blank" rel="noopener noreferrer" className="block shrink-0 self-center sm:self-auto" aria-label={`Open the ${e.title} flyer`}>
             <Image
               src={e.image}
               alt={e.alt ?? ''}
               width={e.imageWidth ?? 1200}
               height={e.imageHeight ?? 1200}
-              sizes="(min-width: 1024px) 520px, 100vw"
-              className="h-full max-h-[720px] w-full object-contain"
-              priority
+              sizes="220px"
+              className="h-auto w-[180px] rounded-2xl shadow-[0_16px_32px_-18px_rgb(11_21_16/0.5)] md:w-[220px]"
             />
-          </div>
+          </a>
         )}
-        <div className="flex flex-col p-6 md:p-10">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <DateTile date={e.date} />
-            <span className="rounded-full bg-signal px-3.5 py-1.5 text-xs font-semibold text-white">
+        <div className="min-w-0 flex-1 pr-1 md:py-2 md:pr-4">
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="rounded-full bg-signal px-3 py-1 text-xs font-semibold text-white">
               {days === 0 ? 'Today' : days === 1 ? 'Tomorrow' : `In ${days} days`}
             </span>
+            {e.price && <span className="rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-700">{e.price}</span>}
           </div>
-          <h3 className="display mt-6 text-[clamp(2rem,1.4rem+2vw,3rem)]">{e.title}</h3>
-          {e.theme && (
-            <p className="mt-4 text-lg leading-snug text-ink">
-              <span className="label mr-2 !text-brand-700">Theme</span>{e.theme}
-            </p>
-          )}
-          <p className="mt-4 max-w-xl font-light leading-relaxed text-ink-3">{e.body}</p>
-          {e.more?.map((m) => <p key={m.slice(0, 24)} className="mt-2 max-w-xl text-sm font-light leading-relaxed text-ink-3">{m}</p>)}
-
-          <dl className="mt-8 grid gap-px overflow-hidden rounded-3xl border border-line bg-line sm:grid-cols-2">
-            {[
-              { icon: 'fi-rr-calendar', label: 'Date', value: longDate(e.date) },
-              { icon: 'fi-rr-clock', label: 'Time', value: e.time },
-              { icon: 'fi-rr-marker', label: 'Venue', value: e.venue },
-              ...(e.guests ? [{ icon: 'fi-rr-microphone', label: 'Ministering', value: e.guests }] : []),
-              ...(e.price ? [{ icon: 'fi-rr-ticket', label: 'Entry', value: e.price }] : []),
-            ].map((r) => (
-              <div key={r.label} className="flex gap-3 bg-paper p-4">
-                <Icon name={r.icon} className="mt-0.5 text-brand-600" />
-                <div>
-                  <dt className="text-xs text-ink-3">{r.label}</dt>
-                  <dd className="text-sm font-medium text-ink">{r.value}</dd>
-                </div>
-              </div>
-            ))}
-          </dl>
-
-          <div className="mt-8 flex flex-wrap gap-3 lg:mt-auto lg:pt-8">
-            <a href={googleCalendarUrl(e)} target="_blank" rel="noopener noreferrer" className="inline-flex h-12 items-center gap-2 rounded-full bg-brand-600 px-5 text-sm font-medium text-white transition hover:bg-brand-700">
-              <Icon name="fi-rr-calendar-plus" /> Add to Google Calendar
+          <div className="mt-4 flex items-center gap-4">
+            <DateTile date={e.date} />
+            <div className="min-w-0">
+              <h3 className="text-2xl font-bold tracking-[-0.02em] md:text-[1.75rem]">{e.title}</h3>
+              {e.theme && <p className="mt-1 text-ink-2">{e.theme}</p>}
+            </div>
+          </div>
+          <ul className="mt-4 grid gap-x-6 gap-y-2 text-sm text-ink-2 sm:grid-cols-2">
+            <li className="flex items-start gap-2"><Icon name="fi-rr-clock" className="mt-0.5 text-brand-600" /> {longDate(e.date).split(',')[0]}, {e.time}</li>
+            <li className="flex items-start gap-2"><Icon name="fi-rr-marker" className="mt-0.5 text-brand-600" /> {e.venue}</li>
+            {e.guests && <li className="flex items-start gap-2 sm:col-span-2"><Icon name="fi-rr-microphone" className="mt-0.5 text-brand-600" /> {e.guests}</li>}
+          </ul>
+          <div className="mt-5 flex flex-wrap items-center gap-2">
+            <a href={googleCalendarUrl(e)} target="_blank" rel="noopener noreferrer" className="inline-flex h-10 items-center gap-2 rounded-full bg-brand-600 px-4 text-sm font-medium text-white transition hover:bg-brand-700">
+              <Icon name="fi-rr-calendar-plus" /> Add to calendar
             </a>
-            <a href={`/events/${e.id}/calendar`} download className="inline-flex h-12 items-center gap-2 rounded-full px-5 text-sm font-medium text-ink ring-1 ring-line transition hover:ring-ink/30">
-              <Icon name="fi-rr-download" /> Apple / Outlook
+            <a href={`/events/${e.id}/calendar`} download className="inline-flex h-10 items-center rounded-full px-4 text-sm font-medium text-ink ring-1 ring-line transition hover:ring-ink/30">
+              Apple / Outlook
             </a>
-            <a href={invite} target="_blank" rel="noopener noreferrer" className="inline-flex h-12 items-center gap-2 rounded-full px-5 text-sm font-medium text-ink ring-1 ring-line transition hover:ring-ink/30">
-              <Icon name="fi-brands-whatsapp" /> Invite on WhatsApp
+            <a href={invite} target="_blank" rel="noopener noreferrer" className="inline-flex h-10 items-center gap-2 rounded-full px-4 text-sm font-medium text-ink ring-1 ring-line transition hover:ring-ink/30">
+              <Icon name="fi-brands-whatsapp" /> Invite
             </a>
-            <a href={directions} target="_blank" rel="noopener noreferrer" className="inline-flex h-12 items-center gap-2 px-2 text-sm font-medium text-brand-700 hover:text-brand-600">
+            <a href={directions} target="_blank" rel="noopener noreferrer" className="inline-flex h-10 items-center gap-1 px-2 text-sm font-medium text-brand-700 hover:text-brand-600">
               Directions <Icon name="fi-rr-arrow-small-right" />
             </a>
           </div>
@@ -176,19 +160,15 @@ function FeaturedEvent({ event: e, today }: { event: EventItem; today: string })
 
 function PastEvent({ event: e }: { event: EventItem }) {
   return (
-    <article className="overflow-hidden rounded-4xl border border-line bg-canvas md:grid md:grid-cols-2 md:items-center">
+    <article className="flex flex-col gap-5 rounded-4xl border border-line bg-canvas p-4 sm:flex-row sm:items-center md:p-5">
       {e.image && (
-        <div className="relative aspect-[16/9] bg-midnight">
-          <Image src={e.image} alt={e.alt ?? ''} fill sizes="(min-width: 768px) 640px, 100vw" className="object-contain" />
-        </div>
+        <Image src={e.image} alt={e.alt ?? ''} width={e.imageWidth ?? 1200} height={e.imageHeight ?? 1200} sizes="260px" className="h-auto w-full shrink-0 rounded-2xl sm:w-[260px]" />
       )}
-      <div className="flex flex-col p-6 md:p-8">
-        <div className="flex items-center gap-4">
-          <DateTile date={e.date} />
-          <h3 className="text-xl font-bold leading-snug tracking-[-0.02em]">{e.title}</h3>
-        </div>
-        <p className="mt-4 text-sm font-light leading-relaxed text-ink-3">{e.body}</p>
-        <ul className="mt-auto flex flex-wrap gap-x-5 gap-y-1.5 pt-5 text-sm text-ink-2">
+      <div className="min-w-0 flex-1 md:pr-4">
+        <p className="label">{longDate(e.date)}</p>
+        <h3 className="mt-2 text-xl font-bold leading-snug tracking-[-0.02em]">{e.title}</h3>
+        <p className="mt-2 text-sm font-light leading-relaxed text-ink-3">{e.body}</p>
+        <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-1.5 text-sm text-ink-2">
           <li className="flex items-center gap-2"><Icon name="fi-rr-clock" className="text-brand-600" /> {e.time}</li>
           <li className="flex items-center gap-2"><Icon name="fi-rr-marker" className="text-brand-600" /> {e.venue}</li>
           {e.guests && <li className="flex items-center gap-2"><Icon name="fi-rr-microphone" className="text-brand-600" /> {e.guests}</li>}
