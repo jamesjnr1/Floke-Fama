@@ -13,7 +13,7 @@ export default function AwardsPage() {
     <>
       <PageHero
         label="Awards"
-        title={<>Recognitions that <span className="text-accent">reflect our impact</span></>}
+        title={<>Recognitions that <span className="text-brand-600">reflect our impact</span></>}
         lead="Our commitment to excellence, innovation and service, recognized through prestigious awards and honors."
       />
       <AwardsGallery />

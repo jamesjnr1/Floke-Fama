@@ -16,21 +16,20 @@ export function ProductUniverse({ categories, products = [] }: { categories: Cat
   const image = (c: Category) => c.image ?? products.find((p) => p.category === c.slug && p.image)?.image;
 
   return (
-    <section aria-labelledby="product-universe-title" className="bg-[linear-gradient(135deg,#17402b_0%,#10301f_55%,#0b2418_100%)] py-16 text-white md:py-28">
+    <section aria-labelledby="product-universe-title" className="bg-[#eef6f1] py-16 md:py-28">
       <div className="mx-auto max-w-[1280px] px-5 md:px-16">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <SectionHeading
-            dark
             label="Solutions"
             title={
               <span id="product-universe-title">
-                Every department. <span className="text-accent">One catalogue.</span>
+                Every department. <span className="text-brand-600">One catalogue.</span>
               </span>
             }
             lead={`${products.length ? `${products.length} products across ${categories.length} departments, from analysers to hospital furniture. ` : ''}Official distributor of ${distributors.slice(0, -1).join(', ')} and ${distributors.at(-1)}, with installation, training and after-sales support on everything we supply.`}
           />
           <Reveal>
-            <Button asChild variant="glass">
+            <Button asChild>
               <Link href="/products">
                 Browse the catalogue
               </Link>
@@ -47,10 +46,10 @@ export function ProductUniverse({ categories, products = [] }: { categories: Cat
                 <Reveal delay={0.05 * i} className="h-full">
                   <Link
                     href={`/products?category=${c.slug}`}
-                    className="group flex h-full flex-col rounded-3xl border border-white/10 bg-white/[0.05] p-3 transition-[background-color,border-color,transform] duration-300 hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.08] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-300"
+                    className="group flex h-full flex-col rounded-3xl border border-line bg-paper p-3 transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-[0_20px_40px_-26px_rgb(11_21_16/0.3)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
                   >
-                    {/* A soft sage tile, not stark white: the product photos’ white backgrounds blend into it */}
-                    <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-[#dbe9e0]">
+                    {/* A soft mint tile: the product photos’ white backgrounds blend into it */}
+                    <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-[#e6f1ea]">
                       {src ? (
                         <Image
                           src={src}
@@ -64,9 +63,9 @@ export function ProductUniverse({ categories, products = [] }: { categories: Cat
                       )}
                     </div>
                     <div className="flex flex-1 flex-col px-2 pb-2 pt-4">
-                      <h3 className="text-[17px] font-semibold leading-snug text-white">{c.title}</h3>
-                      <p className="mt-1.5 text-sm leading-relaxed text-white/75">{c.description}</p>
-                      <span className="mt-auto inline-flex items-center gap-1.5 pt-4 text-sm font-medium text-brand-300">
+                      <h3 className="text-[17px] font-semibold leading-snug text-ink">{c.title}</h3>
+                      <p className="mt-1.5 text-sm leading-relaxed text-ink-3">{c.description}</p>
+                      <span className="mt-auto inline-flex items-center gap-1.5 pt-4 text-sm font-medium text-brand-700">
                         {n > 0 ? `${n} product${n === 1 ? '' : 's'}` : 'Explore'}
                       </span>
                     </div>

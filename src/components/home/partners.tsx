@@ -21,10 +21,10 @@ function logoBox(w: number, h: number, area: number, maxW: number) {
   return { width: Math.round(width), height: Math.round(height) };
 }
 
-/** "Our Partners & Clientele", as on the original site. */
-export function Partners({ heading = true }: { heading?: boolean }) {
+/** "Our Partners & Clientele", as on the original site. On the home page the logos sit in the hero, so only the figures show. */
+export function Partners({ heading = true, logos = true }: { heading?: boolean; logos?: boolean }) {
   return (
-    <section id="partners" className="scroll-mt-28 border-b border-line bg-canvas py-12 md:py-28">
+    <section id="partners" className="scroll-mt-28 border-b border-line bg-canvas py-12 md:py-20">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         {heading && (
           <Reveal className="mb-8 flex flex-col items-center text-center md:mb-14">
@@ -33,6 +33,8 @@ export function Partners({ heading = true }: { heading?: boolean }) {
           </Reveal>
         )}
 
+        {logos && (
+          <>
         {/* Official distributor */}
         <Reveal>
           <div className="grid overflow-hidden rounded-4xl border border-line bg-paper lg:grid-cols-[0.8fr_2fr]">
@@ -82,9 +84,12 @@ export function Partners({ heading = true }: { heading?: boolean }) {
           </ul>
         </Reveal>
 
+          </>
+        )}
+
         {/* The results: one balanced band (figures from the current homepage) */}
         <Reveal delay={0.1}>
-          <div className="relative isolate mt-10 overflow-hidden rounded-4xl bg-[#00703A] text-white">
+          <div className={`relative isolate overflow-hidden rounded-4xl bg-[#00703A] text-white${logos ? ' mt-10' : ''}`}>
             <div className="grid divide-y divide-white/20 md:grid-cols-3 md:divide-x md:divide-y-0">
               {metrics.slice(0, 2).map((m, i) => (
                 <div key={m.label} className="flex flex-col gap-5 p-7 md:p-10">

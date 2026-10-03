@@ -43,7 +43,7 @@ export default async function EventsPage() {
     <>
       <PageHero
         label="Events & activities"
-        title={<>Moments that <span className="text-accent">bring us together</span></>}
+        title={<>Moments that <span className="text-brand-600">bring us together</span></>}
         lead="Celebrations, community programmes and industry events from across the Flokefama family."
       />
 

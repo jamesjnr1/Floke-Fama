@@ -87,7 +87,7 @@
 @layer components {
   /* Heading/Muted Label: Geist Sans, 12px, medium, +15% tracking, uppercase */
   .label {
-    @apply font-mono text-[12px] font-medium uppercase tracking-[0.15em] text-ink-3;
+    @apply font-mono text-[12px] font-medium uppercase tracking-[0.15em] text-signal-700;
   }
   /* Display/Hero Large: Poppins semibold, -3% tracking */
   .display {
