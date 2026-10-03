@@ -306,9 +306,9 @@ export const events: EventItem[] = [
 
 /** Company statements, verbatim in substance from the current "About us" page. */
 export const purpose = [
-  { label: 'Mission', icon: 'fi-rr-award', text: 'To provide world class medical solutions to all medical facilities and laboratories in the West African sub region.' },
-  { label: 'Vision', icon: 'fi-rr-star', text: 'To have a localized industrial complex which produces all medical equipment and reagents locally and to be listed on the Ghana Stock Exchange by 2030.' },
-  { label: 'Aim', icon: 'fi-rr-bullseye', text: 'To have a production plant in Ghana to produce our reagents and some of our hospital disposables locally to boost the economy and create meaningful well paying jobs.' },
+  { label: 'Mission', icon: 'fi-rr-hand-holding-medical', text: 'To provide world class medical solutions to all medical facilities and laboratories in the West African sub region.' },
+  { label: 'Vision', icon: 'fi-rr-eye', text: 'To have a localized industrial complex which produces all medical equipment and reagents locally and to be listed on the Ghana Stock Exchange by 2030.' },
+  { label: 'Aim', icon: 'fi-rr-bullseye-arrow', text: 'To have a production plant in Ghana to produce our reagents and some of our hospital disposables locally to boost the economy and create meaningful well paying jobs.' },
 ] as const;
 
 

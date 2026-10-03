@@ -19,7 +19,7 @@ export function AwardsGallery() {
     <section className="bg-canvas pb-24 pt-24 md:pb-32 md:pt-32">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal>
-          <p className="label">Awards &amp; recognition</p>
+          <p className="label eyebrow">Awards &amp; recognition</p>
           <h2 className="display mt-4 max-w-3xl text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">We are proud to share some of the awards that celebrate our passion and progress.</h2>
         </Reveal>
         <ul className="swipe-row mt-10 gap-4 md:mt-12 md:grid-cols-6">
