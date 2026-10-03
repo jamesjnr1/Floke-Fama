@@ -28,7 +28,7 @@ export function Partners({ heading = true, logos = true }: { heading?: boolean; 
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         {heading && (
           <Reveal className="mb-8 flex flex-col items-center text-center md:mb-14">
-            <p className="label">Trusted</p>
+            <p className="label eyebrow">Trusted</p>
             <h2 className="display mt-4 max-w-3xl text-[clamp(1.9rem,1.2rem+2.4vw,3.25rem)]">Our Partners &amp; Clientele</h2>
           </Reveal>
         )}
