@@ -1,24 +1,23 @@
 /**
- * Hero centrepiece, in glossy, lit 3D. Same meaning as before:
- * - the capsule: healthcare, the field Flokefama serves;
- * - two halves, green and mint: equipment, and the reagents that keep it running (glossy granules
- *   inside the translucent mint half);
- * - orbit rings and moving light: the supply and service network, always in motion;
- * - points on the rings: the hospitals and labs it reaches;
- * - the red dot: head office, the red dot from the logo.
- * Physically based materials under a studio environment; no transmission, so it composites cleanly
- * over the hero photo. Loaded lazily in its own chunk. Returns a cleanup function.
+ * Hero centrepiece: a capsule drawn in dots (one half brand green, the other mint), turning
+ * slowly inside two orbit rings that carry light pulses out to facility nodes, a picture of
+ * the medicines and equipment Flokefama distributes. A single red node echoes the logo's dot.
+ * Lines and points only (no lights or textures), so it stays cheap on mid-range phones.
+ * Loaded lazily in its own chunk. Returns a cleanup function that disposes everything.
  */
 import { prefersReducedMotion } from '@/lib/a11y';
 import {
-  ACESFilmicToneMapping, AdditiveBlending, AmbientLight, CanvasTexture, Color, DirectionalLight, Group, InstancedMesh,
-  LatheGeometry, Matrix4, Mesh, MeshPhysicalMaterial, PerspectiveCamera, PMREMGenerator, PointLight, Quaternion, Scene,
-  SphereGeometry, Sprite, SpriteMaterial, SRGBColorSpace, TorusGeometry, Vector2, Vector3, WebGLRenderer,
+  AdditiveBlending, BufferAttribute, BufferGeometry, CanvasTexture, CapsuleGeometry, Color, Group, Line, LineBasicMaterial, Mesh,
+  MeshBasicMaterial,
+  PerspectiveCamera, Points, PointsMaterial, Scene, Sprite, SpriteMaterial, Vector3, WebGLRenderer,
 } from 'three';
-import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 
 const R = 1.05; // capsule radius
 const H = 1.15; // half-length of the straight section
+const STEP = 0.115; // dot spacing
+const GREEN_BRIGHT = new Color('#8fd1a9'); // light enough to read on the green hero
+const MINT = new Color('#e6f6ec');
+const RED = new Color('#e4283c');
 
 function glowTexture(inner: string) {
   const c = document.createElement('canvas');
@@ -33,17 +32,29 @@ function glowTexture(inner: string) {
   return new CanvasTexture(c);
 }
 
-/** One half of the capsule as a lathe profile: from the seam, up the wall, round to the pole. */
-function halfProfile(r: number) {
-  const pts = [new Vector2(r, 0), new Vector2(r, H)];
-  for (let i = 1; i <= 24; i++) {
-    const a = (i / 24) * (Math.PI / 2);
-    pts.push(new Vector2(Math.cos(a) * r, H + Math.sin(a) * r));
+/** Evenly spaced dots on the capsule surface: rings along the body, latitude rings on the caps. */
+function capsulePoints() {
+  const pts: number[] = [];
+  const ring = (y: number, r: number) => {
+    const n = Math.max(1, Math.round((Math.PI * 2 * r) / STEP));
+    const off = (Math.round(y / STEP) % 2) * 0.5; // stagger alternate rings
+    for (let i = 0; i < n; i++) {
+      const a = ((i + off) / n) * Math.PI * 2;
+      pts.push(Math.cos(a) * r, y, Math.sin(a) * r);
+    }
+  };
+  for (let y = -H; y <= H + 1e-6; y += STEP) ring(y, R);
+  const capRings = Math.round((Math.PI / 2) * R / STEP);
+  for (let k = 1; k <= capRings; k++) {
+    const t = (k / capRings) * (Math.PI / 2);
+    ring(H + Math.sin(t) * R, Math.cos(t) * R);
+    ring(-H - Math.sin(t) * R, Math.cos(t) * R);
   }
-  return pts;
+  return new Float32Array(pts);
 }
 
 export function mountCapsule(container: HTMLElement, onReady?: () => void): () => void {
+  const reduceMotion = prefersReducedMotion();
   let renderer: WebGLRenderer;
   try {
     renderer = new WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'low-power' });
@@ -51,23 +62,12 @@ export function mountCapsule(container: HTMLElement, onReady?: () => void): () =
     return () => {};
   }
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-  renderer.toneMapping = ACESFilmicToneMapping;
-  renderer.outputColorSpace = SRGBColorSpace;
   renderer.domElement.style.cssText = 'width:100%;height:100%;display:block';
   container.appendChild(renderer.domElement);
 
   const scene = new Scene();
-  const pmrem = new PMREMGenerator(renderer);
-  const env = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-  scene.environment = env;
-  const key = new DirectionalLight(0xffffff, 2);
-  key.position.set(4, 6, 5);
-  const rim = new PointLight(0x8fd1a9, 30, 20);
-  rim.position.set(-3, -3, 2);
-  scene.add(key, rim, new AmbientLight(0xffffff, 0.3));
-
   const camera = new PerspectiveCamera(36, 1, 0.1, 100);
-  camera.position.set(0, 0.3, 9.6);
+  camera.position.set(0, 0.3, 8.2);
   camera.lookAt(0, 0, 0);
   const tilt = new Group();
   tilt.rotation.z = -0.62; // lie the capsule on a diagonal
@@ -75,88 +75,89 @@ export function mountCapsule(container: HTMLElement, onReady?: () => void): () =
   const capsule = new Group();
   tilt.add(capsule);
   const disposables: { dispose: () => void }[] = [];
-  const keep = <T extends { dispose: () => void }>(d: T) => (disposables.push(d), d);
 
-  // 1. The capsule: glossy green half (equipment) over a translucent mint half (reagents)
-  const green = keep(new MeshPhysicalMaterial({ color: 0x1b6e40, roughness: 0.26, clearcoat: 1, clearcoatRoughness: 0.06, sheen: 0.3, sheenColor: new Color(0x8fd1a9) }));
-  const mint = keep(new MeshPhysicalMaterial({ color: 0xe6f6ec, roughness: 0.04, clearcoat: 1, clearcoatRoughness: 0.03, transparent: true, opacity: 0.38, depthWrite: false }));
-  const halfGeo = keep(new LatheGeometry(halfProfile(R), 64));
-  const top = new Mesh(halfGeo, green);
-  const bottom = new Mesh(halfGeo, mint);
-  bottom.rotation.x = Math.PI; // mirror to the other side of the seam
-  bottom.renderOrder = 2;
-  capsule.add(top, bottom);
-  // Seam band
-  const seam = new Mesh(keep(new TorusGeometry(R * 1.005, 0.035, 16, 96)), keep(new MeshPhysicalMaterial({ color: 0xe6f6ec, roughness: 0.15, clearcoat: 1 })));
-  seam.rotation.x = Math.PI / 2;
-  capsule.add(seam);
-  // Granules inside the mint half
-  let seed = 5;
-  const rand = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
-  const granuleGeo = keep(new SphereGeometry(1, 24, 16));
-  const granuleMat = keep(new MeshPhysicalMaterial({ color: 0x8fd1a9, roughness: 0.1, clearcoat: 1, emissive: new Color(0x2e9a5b), emissiveIntensity: 0.25 }));
-  const granuleMat2 = keep(new MeshPhysicalMaterial({ color: 0xffffff, roughness: 0.08, clearcoat: 1 }));
-  const fill = (mat: MeshPhysicalMaterial, n: number) => {
-    const im = new InstancedMesh(granuleGeo, mat, n);
-    const m = new Matrix4();
-    for (let i = 0; i < n; i++) {
-      const s = 0.1 + rand() * 0.2;
-      const y = -(s + rand() * (H + R * 0.55 - s));
-      const maxR = y < -H ? Math.sqrt(Math.max(0, R * R - (y + H) ** 2)) : R;
-      const r = rand() * Math.max(0, maxR - s - 0.05);
-      const a = rand() * Math.PI * 2;
-      m.compose(new Vector3(Math.cos(a) * r, y, Math.sin(a) * r), new Quaternion(), new Vector3(s, s, s));
-      im.setMatrixAt(i, m);
-    }
-    capsule.add(im);
-  };
-  fill(granuleMat, 26);
-  fill(granuleMat2, 16);
+  // 1. Dotted capsule, green over mint, with a brighter seam
+  const pos = capsulePoints();
+  const count = pos.length / 3;
+  const col = new Float32Array(count * 3);
+  for (let i = 0; i < count; i++) {
+    const y = pos[i * 3 + 1];
+    const c = y > 0 ? GREEN_BRIGHT : MINT;
+    col.set([c.r, c.g, c.b], i * 3);
+  }
+  const dotGeo = new BufferGeometry();
+  dotGeo.setAttribute('position', new BufferAttribute(pos, 3));
+  dotGeo.setAttribute('color', new BufferAttribute(col, 3));
+  const dotMat = new PointsMaterial({ vertexColors: true, size: 0.04, transparent: true, opacity: 0.9, depthWrite: false });
+  capsule.add(new Points(dotGeo, dotMat));
+  disposables.push(dotGeo, dotMat);
+  // Invisible inner capsule: writes depth only, so dots on the far side are hidden and the form reads as solid
+  const occGeo = new CapsuleGeometry(R * 0.97, H * 2, 12, 32);
+  const occMat = new MeshBasicMaterial({ colorWrite: false });
+  const occluder = new Mesh(occGeo, occMat);
+  occluder.renderOrder = -1;
+  capsule.add(occluder);
+  disposables.push(occGeo, occMat);
 
-  // 2. The logo's red dot: head office, a glowing red jewel on the seam facing the viewer
-  const redMat = keep(new MeshPhysicalMaterial({ color: 0xe4283c, roughness: 0.15, clearcoat: 1, emissive: new Color(0xe4283c), emissiveIntensity: 0.6 }));
-  const red = new Mesh(granuleGeo, redMat);
-  red.scale.setScalar(0.11);
-  red.position.set(0, 0, R * 1.06);
-  const redTex = keep(glowTexture('rgba(228,40,60,1)'));
-  const redGlow = new Sprite(keep(new SpriteMaterial({ map: redTex, transparent: true, blending: AdditiveBlending, depthWrite: false })));
-  redGlow.position.copy(red.position);
-  tilt.add(red, redGlow);
+  // 2. Faint outline: profile lines around the body and the seam
+  const lineMat = new LineBasicMaterial({ color: MINT, transparent: true, opacity: 0.1, depthWrite: false });
+  disposables.push(lineMat);
+  // Half silhouette from the bottom pole, up the side, to the top pole
+  const profile: Vector3[] = [];
+  for (let i = 0; i <= 16; i++) { const a = -Math.PI / 2 + (i / 16) * (Math.PI / 2); profile.push(new Vector3(Math.cos(a) * R, -H + Math.sin(a) * R, 0)); }
+  for (let i = 0; i <= 16; i++) { const a = (i / 16) * (Math.PI / 2); profile.push(new Vector3(Math.cos(a) * R, H + Math.sin(a) * R, 0)); }
+  const profileGeo = new BufferGeometry().setFromPoints(profile);
+  disposables.push(profileGeo);
+  for (let i = 0; i < 8; i++) {
+    const l = new Line(profileGeo, lineMat);
+    l.rotation.y = (i / 8) * Math.PI * 2;
+    capsule.add(l);
+  }
+  const seamGeo = new BufferGeometry().setFromPoints(Array.from({ length: 97 }, (_, k) => {
+    const a = (k / 96) * Math.PI * 2;
+    return new Vector3(Math.cos(a) * R * 1.02, 0, Math.sin(a) * R * 1.02);
+  }));
+  const seamMat = new LineBasicMaterial({ color: MINT, transparent: true, opacity: 0.45, depthWrite: false });
+  capsule.add(new Line(seamGeo, seamMat));
+  disposables.push(seamGeo, seamMat);
 
-  // 3. Two polished orbit rings (the network), beads for the facilities, lights travelling round
-  const ringMat = keep(new MeshPhysicalMaterial({ color: 0xd5ecdd, roughness: 0.12, clearcoat: 1, metalness: 0.2, transparent: true, opacity: 0.75 }));
-  const beadMat = keep(new MeshPhysicalMaterial({ color: 0xe6f6ec, roughness: 0.08, clearcoat: 1 }));
-  const pulseMat = keep(new MeshPhysicalMaterial({ color: 0xffffff, emissive: new Color(0xbff0d2), emissiveIntensity: 2 }));
-  const pulseTex = keep(glowTexture('rgba(190,240,210,1)'));
-  const pulseGlowMat = keep(new SpriteMaterial({ map: pulseTex, transparent: true, blending: AdditiveBlending, depthWrite: false }));
-  const PULSES = 2;
+  // 3. The logo's red dot: the head office, pulsing on the capsule's seam (placed below)
+  const redTex = glowTexture('rgba(228,40,60,1)');
+  const redMat = new SpriteMaterial({ map: redTex, transparent: true, blending: AdditiveBlending, depthWrite: false });
+  const red = new Sprite(redMat);
+  const redCoreGeo = new BufferGeometry().setFromPoints([new Vector3()]);
+  const redCoreMat = new PointsMaterial({ color: RED, size: 0.12, transparent: true, depthWrite: false });
+  const redCore = new Points(redCoreGeo, redCoreMat);
+  disposables.push(redTex, redMat, redCoreGeo, redCoreMat);
+
+  // 4. Two orbit rings with facility nodes and light pulses travelling round them
+  const ringMat = new LineBasicMaterial({ color: MINT, transparent: true, opacity: 0.3, depthWrite: false });
+  const nodeMat = new PointsMaterial({ color: MINT, size: 0.09, transparent: true, opacity: 0.95, blending: AdditiveBlending, depthWrite: false });
+  const pulseTex = glowTexture('rgba(190,240,210,1)');
+  const pulseMat = new PointsMaterial({ map: pulseTex, size: 0.24, transparent: true, blending: AdditiveBlending, depthWrite: false });
+  disposables.push(ringMat, nodeMat, pulseTex, pulseMat);
+  const PULSES = 3;
   const rings = [
-    { radius: 2.75, tilt: [1.2, 0, -0.25], speed: 0.06, nodes: 5 },
-    { radius: 3.15, tilt: [-0.55, 0, 0.45], speed: -0.045, nodes: 4 },
+    { radius: 2.75, tilt: [1.2, 0, -0.25], speed: 0.07, nodes: 5 },
+    { radius: 3.15, tilt: [-0.55, 0, 0.45], speed: -0.05, nodes: 4 },
   ].map(({ radius, tilt: [x, y, z], speed, nodes }) => {
     const g = new Group();
     g.rotation.set(x, y, z);
-    const ring = new Mesh(keep(new TorusGeometry(radius, 0.022, 12, 200)), ringMat);
-    ring.rotation.x = Math.PI / 2;
-    g.add(ring);
-    for (let k = 0; k < nodes; k++) {
-      const a = (k / nodes) * Math.PI * 2 + 0.4;
-      const b = new Mesh(granuleGeo, beadMat);
-      b.scale.setScalar(0.085);
-      b.position.set(Math.cos(a) * radius, 0, Math.sin(a) * radius);
-      g.add(b);
-    }
-    const pulses = Array.from({ length: PULSES }, () => {
-      const p = new Mesh(granuleGeo, pulseMat);
-      p.scale.setScalar(0.06);
-      const glow = new Sprite(pulseGlowMat);
-      glow.scale.setScalar(0.45);
-      g.add(p, glow);
-      return { p, glow };
-    });
+    const at = (a: number) => new Vector3(Math.cos(a) * radius, 0, Math.sin(a) * radius);
+    const ringGeo = new BufferGeometry().setFromPoints(Array.from({ length: 161 }, (_, k) => at((k / 160) * Math.PI * 2)));
+    const nodeGeo = new BufferGeometry().setFromPoints(Array.from({ length: nodes }, (_, k) => at((k / nodes) * Math.PI * 2 + 0.4)));
+    const pulsePos = new Float32Array(PULSES * 3);
+    const pulseGeo = new BufferGeometry();
+    pulseGeo.setAttribute('position', new BufferAttribute(pulsePos, 3));
+    g.add(new Line(ringGeo, ringMat), new Points(nodeGeo, nodeMat), new Points(pulseGeo, pulseMat));
+    disposables.push(ringGeo, nodeGeo, pulseGeo);
     scene.add(g);
-    return { radius, speed, pulses };
+    return { g, radius, speed, pulsePos, pulseGeo };
   });
+  // On the seam, facing the viewer (in the tilted frame, so it doesn't turn away with the capsule)
+  red.position.set(0, 0, R * 1.08);
+  redCore.position.copy(red.position);
+  tilt.add(red, redCore);
 
   const resize = () => {
     const { clientWidth: w, clientHeight: h } = container;
@@ -185,13 +186,13 @@ export function mountCapsule(container: HTMLElement, onReady?: () => void): () =
     tilt.rotation.y = eased.x * 0.3;
     tilt.position.y = Math.sin(t * 0.8) * 0.06;
     rings.forEach((r) => {
-      r.pulses.forEach(({ p, glow }, k) => {
+      for (let k = 0; k < PULSES; k++) {
         const a = t * r.speed * Math.PI * 2 + (k / PULSES) * Math.PI * 2;
-        p.position.set(Math.cos(a) * r.radius, 0, Math.sin(a) * r.radius);
-        glow.position.copy(p.position);
-      });
+        r.pulsePos.set([Math.cos(a) * r.radius, 0, Math.sin(a) * r.radius], k * 3);
+      }
+      r.pulseGeo.attributes.position.needsUpdate = true;
     });
-    redGlow.scale.setScalar(0.5 + 0.18 * Math.sin(t * 3));
+    red.scale.setScalar(0.45 + 0.2 * Math.sin(t * 3));
     renderer.render(scene, camera);
   };
 
@@ -220,7 +221,7 @@ export function mountCapsule(container: HTMLElement, onReady?: () => void): () =
   const motionWatch = new MutationObserver(() => setRunning(!prefersReducedMotion() && visible && !document.hidden));
   motionWatch.observe(document.documentElement, { attributes: true, attributeFilter: ['data-motion'] });
 
-  if (prefersReducedMotion()) render(1.5);
+  if (reduceMotion) render(1.5);
   else loop();
   io.observe(container);
   document.addEventListener('visibilitychange', onVisibility);
@@ -234,8 +235,6 @@ export function mountCapsule(container: HTMLElement, onReady?: () => void): () =
     window.removeEventListener('pointermove', onPointer);
     document.removeEventListener('visibilitychange', onVisibility);
     disposables.forEach((d) => d.dispose());
-    env.dispose();
-    pmrem.dispose();
     renderer.dispose();
     renderer.domElement.remove();
   };

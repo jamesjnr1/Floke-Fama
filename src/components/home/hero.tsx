@@ -1,14 +1,15 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import { HeroCapsule } from '@/components/home/hero-capsule';
 import { NetworkCanvas } from '@/components/home/network-canvas';
 import { Reveal } from '@/components/motion/reveal';
-import { PillPair } from '@/components/ui/pill-pair';
+import { Button } from '@/components/ui/button';
 
 /**
  * Hero Section: deep brand-green canvas over a faint head office photo, 12-column grid.
  * Left (span 7): the company line from flokefama.com, muted subline, and two simple actions
  * (Explore Solutions → shop, Contact Us → contact, as on the current site).
- * Right (span 5): the glossy 3D capsule in orbit rings, over a faint wireframe network.
+ * Right (span 5): 3D dotted capsule in orbit rings, over a faint wireframe network.
  */
 export function Hero() {
   return (
@@ -41,8 +42,13 @@ export function Hero() {
           <Reveal delay={0.14}>
             <p className="max-w-xl text-lg leading-relaxed text-white/75 md:text-xl">Total healthcare solutions for hospitals and laboratories across Ghana and West Africa. Saving lives since 2008.</p>
           </Reveal>
-          <Reveal delay={0.22} className="pt-2">
-            <PillPair primary={{ href: '/products', label: 'Explore Solutions' }} secondary={{ href: '/contact', label: 'Contact Us' }} />
+          <Reveal delay={0.22} className="flex flex-wrap gap-3 pt-2">
+            <Button asChild variant="outline" size="lg" className="border-transparent text-brand-800 hover:border-transparent">
+              <Link href="/products">Explore Solutions</Link>
+            </Button>
+            <Button asChild variant="glass" size="lg">
+              <Link href="/contact">Contact Us</Link>
+            </Button>
           </Reveal>
         </div>
 
