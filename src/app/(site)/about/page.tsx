@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { PurposeBlocks } from '@/components/about/purpose-blocks';
 import Image from 'next/image';
 import Link from 'next/link';
 import { CoreValues } from '@/components/about/core-values';
@@ -8,7 +9,7 @@ import { Reveal } from '@/components/motion/reveal';
 import { Button } from '@/components/ui/button';
 import { CountUp } from '@/components/motion/count-up';
 import { Icon, IconTile } from '@/components/ui/icon';
-import { brochureUrl, experienceFigures, purpose, servicesInBrief } from '@/data/seed';
+import { brochureUrl, experienceFigures, servicesInBrief } from '@/data/seed';
 import { getMetrics } from '@/lib/data';
 
 export const revalidate = 600;
@@ -25,9 +26,16 @@ export default async function AboutPage() {
     <>
       <PageHero
         label="About us"
-        title={<>Purveyor of excellence <span className="text-accent">in healthcare</span></>}
+        title={<>Purveyor of excellence <span className="text-brand-600">in healthcare</span></>}
         lead="FLOKEFAMA is recognized as one of the most reputable and trusted medical equipment suppliers in Ghana."
       />
+
+      {/* Mission, vision and aim: three bold blocks right under the header, as on the current site */}
+      <section id="mission" className="scroll-mt-28 bg-paper pt-12 md:pt-20">
+        <div className="mx-auto max-w-[1280px] px-5 md:px-10">
+          <PurposeBlocks />
+        </div>
+      </section>
 
       {/* Who we are */}
       <section id="who-we-are" className="scroll-mt-28 bg-paper py-14 md:py-32">
@@ -143,36 +151,14 @@ export default async function AboutPage() {
 
       <Impact metrics={metrics} />
 
-      {/* Mission, vision, aim */}
-      <section id="mission" className="scroll-mt-28 border-t border-line bg-paper py-14 md:py-32">
-        <div className="mx-auto max-w-[1280px] px-5 md:px-10">
-          <Reveal>
-            <p className="label">Our mission</p>
-            <h2 className="display mt-4 max-w-2xl text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">What we stand for</h2>
-          </Reveal>
-          <ul className="swipe-row mt-10 gap-4 md:mt-12 md:grid-cols-3">
-            {purpose.map((p, i) => (
-              <li key={p.label}>
-                <Reveal delay={i * 0.06} className="flex h-full flex-col rounded-3xl border border-line bg-canvas p-7">
-                  <IconTile name={p.icon} />
-                  <p className="label mt-8">Our {p.label.toLowerCase()}</p>
-                  <p className="mt-3 text-lg leading-relaxed text-ink">{p.text}</p>
-                </Reveal>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
       {/* Core values */}
-      <section id="values" className="scroll-mt-28 relative isolate overflow-hidden bg-[linear-gradient(160deg,#1b5e37_0%,#134228_55%,#0e3320_100%)] py-24 text-white md:py-32">
-        <div aria-hidden className="absolute -right-40 -top-40 -z-10 size-[640px] rounded-full bg-[radial-gradient(circle,rgb(143_209_169/0.18),transparent_65%)]" />
-        <div aria-hidden className="grid-fade absolute inset-0 -z-10 opacity-30" />
+      <section id="values" className="scroll-mt-28 relative isolate overflow-hidden bg-[#eef6f1] py-24 md:py-32">
+        <div aria-hidden className="absolute -right-40 -top-40 -z-10 size-[640px] rounded-full bg-[radial-gradient(circle,rgb(228_40_60/0.06),transparent_65%)]" />
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
           <Reveal>
-            <p className="label !text-brand-100">Our core values</p>
-            <h2 className="display mt-4 max-w-3xl text-[clamp(2rem,1.2rem+2.8vw,3.5rem)] text-white">The principles that define who we are.</h2>
-            <p className="mt-4 max-w-2xl leading-relaxed text-white/75">At Flokefama Limited, our success is built on a strong foundation of core values that guide every aspect of our operations. These principles define who we are, how we work, and the impact we strive to make in the healthcare industry.</p>
+            <p className="label">Our core values</p>
+            <h2 className="display mt-4 max-w-3xl text-[clamp(2rem,1.2rem+2.8vw,3.5rem)] text-ink">The principles that define who we are.</h2>
+            <p className="mt-4 max-w-2xl leading-relaxed text-ink-2">At Flokefama Limited, our success is built on a strong foundation of core values that guide every aspect of our operations. These principles define who we are, how we work, and the impact we strive to make in the healthcare industry.</p>
           </Reveal>
           <CoreValues />
         </div>

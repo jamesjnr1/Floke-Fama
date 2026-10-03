@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Hero } from '@/components/home/hero';
 import { Partners } from '@/components/home/partners';
 import { ProductUniverse } from '@/components/home/product-universe';
+import { PurposeBlocks } from '@/components/about/purpose-blocks';
 import { BeyondSupply } from '@/components/home/beyond-supply';
 import { Testimonials } from '@/components/home/testimonials';
 import { getCategories, getProducts } from '@/lib/data';
@@ -16,8 +17,13 @@ export default async function HomePage() {
   return (
     <>
       <Hero />
-      <Partners />
+      <Partners heading={false} logos={false} />
       <BeyondSupply />
+      <section aria-label="Our mission, vision and aim" className="bg-paper pb-16 md:pb-28">
+        <div className="mx-auto max-w-[1280px] px-5 md:px-16">
+          <PurposeBlocks />
+        </div>
+      </section>
       <ProductUniverse categories={categories} products={products} />
       <Testimonials />
     </>
