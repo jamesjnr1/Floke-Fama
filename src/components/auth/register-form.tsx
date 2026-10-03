@@ -76,7 +76,7 @@ export function RegisterForm({ onSignIn }: { onSignIn: () => void }) {
       <button
         type="submit"
         disabled={pending}
-        className="!mt-6 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand-600 text-[15px] font-medium text-white transition hover:bg-brand-700 disabled:opacity-60"
+        className="!mt-6 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-cta text-[15px] font-medium text-white transition hover:bg-cta-700 disabled:opacity-60"
       >
         {pending ? 'Sending…' : 'Create account'} 
       </button>
@@ -132,7 +132,7 @@ function Requested({ delivered, data, onSignIn }: NonNullable<Result> & { onSign
             Your registration is ready. Send it to {contact.support} by email or on WhatsApp. Everything is filled in.
           </p>
           <div className="mt-5 grid gap-2 sm:grid-cols-2">
-            <a href={send.email} className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-brand-600 px-5 text-[15px] font-medium text-white transition hover:bg-brand-700">
+            <a href={send.email} className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-cta px-5 text-[15px] font-medium text-white transition hover:bg-cta-700">
               <Icon name="fi-rr-envelope" /> Send by email
             </a>
             <a href={send.whatsapp} target="_blank" rel="noopener noreferrer" className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-line bg-paper px-5 text-[15px] font-medium text-ink transition hover:border-ink/30">
