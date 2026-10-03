@@ -1,16 +1,15 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { HeroLogos } from '@/components/home/hero-logos';
-import { HeroScene } from '@/components/home/hero-scene';
-import { NetworkCanvas } from '@/components/home/network-canvas';
 import { Reveal } from '@/components/motion/reveal';
 import { Button } from '@/components/ui/button';
 
 /**
  * Hero: the head office and its FLOKE sign in natural colour, shaded in deep brand green behind the
  * text. Left: the company line from flokefama.com and its two actions (Explore Solutions → shop,
- * Contact Us → contact). Right: the 3D pharmacy cross in its distribution rings, over the network
- * mesh (from tablet up, so on phones the partner band still shows on the first screen).
+ * Contact Us → contact). Right: a Mindray BeneHeart D3 defibrillator on a soft white stage, the kind
+ * of equipment Flokefama supplies as Mindray's official distributor (from tablet up, so on phones
+ * the partner band still shows on the first screen).
  * Bottom band: Our Partners & Clientele, visible without scrolling.
  */
 export function Hero() {
@@ -21,7 +20,6 @@ export function Hero() {
         {/* Deep green-navy shade behind the text and the lower photo; the sign and facade keep their colour */}
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgb(6_32_30/0.9)_0%,rgb(6_32_30/0.72)_42%,rgb(6_32_30/0.28)_75%,rgb(6_32_30/0.18)_100%)]" />
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(6_32_30/0.35)_0%,transparent_25%,transparent_45%,rgb(6_32_30/0.85)_80%,rgb(6_32_30/0.95)_100%)]" />
-        <NetworkCanvas className="absolute inset-0 opacity-60 [mask-image:linear-gradient(90deg,transparent_0%,transparent_40%,#000_72%)]" />
       </div>
 
       <div className="mx-auto grid w-full max-w-[1280px] flex-1 grid-cols-1 items-center gap-8 px-5 pb-10 pt-28 md:gap-12 md:px-10 md:pt-32 lg:grid-cols-12 lg:gap-16 lg:pb-12">
@@ -44,7 +42,18 @@ export function Hero() {
           </Reveal>
         </div>
         <Reveal delay={0.2} y={40} className="relative hidden sm:block lg:col-span-5">
-          <HeroScene />
+          <figure className="relative mx-auto w-full max-w-[300px] sm:max-w-[400px] lg:max-w-[480px]">
+            {/* Soft green light behind the stage, so it sits in the scene rather than on top of it */}
+            <div aria-hidden className="absolute -inset-10 rounded-full bg-[radial-gradient(circle,rgb(52_161_116/0.28),transparent_65%)] blur-2xl" />
+            <div className="relative overflow-hidden rounded-[2rem] bg-[radial-gradient(circle_at_50%_42%,#ffffff_45%,#e8eef0_100%)] p-5 shadow-[0_40px_90px_-30px_rgb(0_0_0/0.65)] ring-1 ring-white/30 md:p-7">
+              {/* The photo's white background melts into the stage (multiply) */}
+              <Image src="/images/hero-defibrillator.webp" alt="Mindray BeneHeart D3 defibrillator and patient monitor" width={1068} height={893} priority sizes="(min-width: 1024px) 440px, 360px" className="relative h-auto w-full mix-blend-multiply" />
+            </div>
+            <figcaption className="absolute -bottom-5 left-1/2 flex -translate-x-1/2 items-center gap-2 whitespace-nowrap rounded-full bg-brand-800 px-4 py-2 text-[13px] font-medium text-white shadow-[0_12px_30px_-10px_rgb(0_0_0/0.5)] ring-1 ring-white/15">
+              <span className="size-2 rounded-full bg-brand-300" aria-hidden />
+              Official Mindray distributor in Ghana
+            </figcaption>
+          </figure>
         </Reveal>
       </div>
 
