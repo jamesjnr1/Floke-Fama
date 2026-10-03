@@ -51,7 +51,7 @@ export function CommandPalette({ open, onOpenChange, state, actions, onOpenTicke
         <Dialog.Content aria-describedby={undefined} className="fixed left-1/2 top-[12vh] z-[70] w-[calc(100%-2rem)] max-w-xl -translate-x-1/2 overflow-hidden rounded-3xl border border-white/10 bg-[#111d17] text-white shadow-2xl outline-none">
           <Dialog.Title className="sr-only">Search the portal</Dialog.Title>
           <div className="flex items-center gap-3 border-b border-white/10 px-5">
-            <Icon name="fi-rr-search" className="text-white/40" />
+            <Icon name="fi-rr-search" className="text-white/60" />
             <input
               autoFocus
               value={q}
@@ -70,14 +70,14 @@ export function CommandPalette({ open, onOpenChange, state, actions, onOpenTicke
               aria-expanded
               aria-controls="palette-results"
               aria-activedescendant={results[index] ? `cmd-${results[index].id}` : undefined}
-              className="h-14 w-full bg-transparent text-[15px] outline-none placeholder:text-white/35"
+              className="h-14 w-full bg-transparent text-[15px] outline-none placeholder:text-white/60"
             />
-            <kbd className="rounded-md border border-white/10 px-1.5 py-0.5 font-mono text-[10px] text-white/40">Esc</kbd>
+            <kbd className="rounded-md border border-white/10 px-1.5 py-0.5 font-mono text-[10px] text-white/60">Esc</kbd>
           </div>
           <ul id="palette-results" role="listbox" className="max-h-[50vh] overflow-y-auto p-2">
             {results.map((c, i) => (
               <li key={`${c.group}-${c.id}`} id={`cmd-${c.id}`} role="option" aria-selected={i === index}>
-                {(i === 0 || results[i - 1].group !== c.group) && <p className="px-3 pb-1 pt-3 font-mono text-[10px] uppercase tracking-widest text-white/35">{c.group}</p>}
+                {(i === 0 || results[i - 1].group !== c.group) && <p className="px-3 pb-1 pt-3 font-mono text-[10px] uppercase tracking-widest text-white/60">{c.group}</p>}
                 <button
                   onMouseEnter={() => setIndex(i)}
                   onClick={() => run(c)}
@@ -86,13 +86,13 @@ export function CommandPalette({ open, onOpenChange, state, actions, onOpenTicke
                   <Icon name={c.icon} className="text-brand-300" />
                   <span className="min-w-0 flex-1">
                     <span className="block truncate">{c.label}</span>
-                    {c.hint && <span className="block truncate text-xs text-white/40">{c.hint}</span>}
+                    {c.hint && <span className="block truncate text-xs text-white/60">{c.hint}</span>}
                   </span>
                   {c.priority && <PriorityBadge priority={c.priority} />}
                 </button>
               </li>
             ))}
-            {results.length === 0 && <li className="px-3 py-8 text-center text-sm text-white/45">No results for “{q}”.</li>}
+            {results.length === 0 && <li className="px-3 py-8 text-center text-sm text-white/65">No results for “{q}”.</li>}
           </ul>
         </Dialog.Content>
       </Dialog.Portal>

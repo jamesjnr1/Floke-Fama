@@ -16,7 +16,7 @@ export default function ServicesPage() {
     <>
       <PageHero
         label="Products & services"
-        title={<>We go beyond just supplying <span className="text-gradient">medical equipment</span></>}
+        title={<>We go beyond just supplying <span className="text-accent">medical equipment</span></>}
         lead="End-to-end solutions, from procurement and installation to training and maintenance."
       />
       <Services />

@@ -85,7 +85,7 @@ export function Navbar() {
               const active = isActive(pathname, a);
               const itemClass = cn(
                 'relative flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-2 text-[13px] transition-colors 2xl:px-3 2xl:text-sm duration-300 focus-visible:outline-none',
-                dark ? 'text-white/70 hover:text-white' : 'text-ink-2 hover:text-ink',
+                dark ? 'text-white/80 hover:text-white' : 'text-ink-2 hover:text-ink',
                 active && (dark ? 'text-white' : 'text-ink'),
               );
               const inner = (
@@ -149,7 +149,7 @@ export function Navbar() {
                                         <span className="flex items-center gap-2 text-sm font-medium text-white">
                                           {c.label} {on && <span aria-hidden className="size-1.5 rounded-full bg-brand-400" />}
                                         </span>
-                                        <span className="block text-xs text-white/50">{c.hint}</span>
+                                        <span className="block text-xs text-white/75">{c.hint}</span>
                                       </span>
                                     </Link>
                                   </li>
@@ -189,7 +189,7 @@ export function Navbar() {
             href="/portal"
             className="group hidden items-center gap-2 whitespace-nowrap rounded-xl bg-brand-600 px-4 py-3 text-[13px] font-medium text-white 2xl:px-6 2xl:text-sm transition hover:bg-brand-700 sm:inline-flex"
           >
-            <span className="hidden 2xl:inline">Client Portal Access</span><span className="2xl:hidden">Client Portal</span> <span aria-hidden className="transition-transform duration-500 group-hover:translate-x-1">→</span>
+            <span className="hidden 2xl:inline">Client Portal Access</span><span className="2xl:hidden">Client Portal</span>
           </Link>
           <button
             type="button"

@@ -90,7 +90,7 @@ export function SalesDock() {
                 }}
                 className="flex h-12 items-center justify-center gap-2 rounded-full bg-brand-600 text-sm font-medium text-white transition hover:bg-brand-700"
               >
-                Request one quote for {items.length === 1 ? 'this item' : `all ${items.length}`} <Icon name="fi-rr-arrow-small-right" />
+                Request one quote for {items.length === 1 ? 'this item' : `all ${items.length}`}
               </Link>
               <p className="mt-2 text-center text-xs text-ink-3">A specialist replies within one business day.</p>
             </div>

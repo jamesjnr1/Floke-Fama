@@ -25,7 +25,7 @@ export default async function AboutPage() {
     <>
       <PageHero
         label="About us"
-        title={<>Purveyor of excellence <span className="text-gradient">in healthcare</span></>}
+        title={<>Purveyor of excellence <span className="text-accent">in healthcare</span></>}
         lead="FLOKEFAMA is recognized as one of the most reputable and trusted medical equipment suppliers in Ghana."
       />
 
@@ -35,7 +35,7 @@ export default async function AboutPage() {
           <Reveal>
             <p className="label">Who we are</p>
             <h2 className="display mt-4 text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">Redefining healthcare delivery in Ghana and across Africa.</h2>
-            <div className="mt-6 space-y-4 text-lg font-light leading-relaxed text-ink-3">
+            <div className="mt-6 space-y-4 text-lg leading-relaxed text-ink-3">
               <p>
                 <strong className="font-semibold text-ink">FLOKEFAMA LIMITED</strong>, founded in 2008, is a registered company specializing in delivering world-class healthcare equipment across Ghana and West Africa.
               </p>
@@ -72,7 +72,7 @@ export default async function AboutPage() {
             <h2 className="display mt-4 text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">Meet our CEO</h2>
             <p className="mt-6 text-xl font-semibold text-ink">Mr. Emmanuel Teye Kwabena Kenney</p>
             <p className="mt-1 text-[15px] text-brand-700">Chief Executive Officer, Flokefama Company Limited</p>
-            <div className="mt-6 max-w-xl space-y-4 text-lg font-light leading-relaxed text-ink-3">
+            <div className="mt-6 max-w-xl space-y-4 text-lg leading-relaxed text-ink-3">
               <p>
                 Flokefama began with a personal story. After surviving a near-death experience and an operation carried out with inadequate equipment, Mr. Kenney set out to make sure no Ghanaian has to depend on equipment that isn’t good enough. His belief is simple: “We can’t compromise on our health by using below standard medical technologies.”
               </p>
@@ -91,7 +91,7 @@ export default async function AboutPage() {
             <Reveal className="lg:col-span-7">
               <p className="label">About us</p>
               <h2 className="display mt-4 text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">Industry Experience</h2>
-              <p className="mt-6 max-w-2xl text-lg font-light leading-relaxed text-ink-3">
+              <p className="mt-6 max-w-2xl text-lg leading-relaxed text-ink-3">
                 FLOKEFAMA is recognized as one of the most reputable and trusted medical equipment suppliers in Ghana. Our years of experience have enabled us to establish strong partnerships with leading medical clients across the nation, allowing us to deliver high-quality equipment tailored to meet specific needs. Whether it’s cutting-edge technology or reliable essentials, FLOKEFAMA is committed to fulfilling all medical equipment requirements with excellence.
               </p>
             </Reveal>
@@ -114,7 +114,7 @@ export default async function AboutPage() {
               <h3 className="display text-[clamp(1.75rem,1.2rem+1.8vw,2.75rem)]">Our Services</h3>
             </Reveal>
             <Reveal delay={0.05} className="lg:col-span-7">
-              <p className="font-light leading-relaxed text-ink-3">
+              <p className="leading-relaxed text-ink-3">
                 FLOKEFAMA LTD offers an extensive range of high-quality medical equipment, services, and supplies. Our dedicated team works closely with customers to develop tailored solutions that reduce costs and enhance healthcare delivery.
               </p>
             </Reveal>
@@ -128,14 +128,14 @@ export default async function AboutPage() {
                     <span className="font-mono text-xs text-ink-3">{String(i + 1).padStart(2, '0')}</span>
                   </div>
                   <h4 className="mt-8 text-lg font-semibold tracking-[-0.01em] text-ink">{x.title}</h4>
-                  <p className="mt-2 text-[15px] font-light leading-relaxed text-ink-3">{x.text}</p>
+                  <p className="mt-2 text-[15px] leading-relaxed text-ink-3">{x.text}</p>
                 </Reveal>
               </li>
             ))}
           </ul>
           <Reveal className="mt-8">
             <Link href="/services" className="inline-flex items-center gap-1 text-sm font-medium text-brand-700">
-              See Our Products &amp; Services <Icon name="fi-rr-arrow-small-right" />
+              See Our Products &amp; Services
             </Link>
           </Reveal>
         </div>
@@ -172,7 +172,7 @@ export default async function AboutPage() {
           <Reveal>
             <p className="label !text-brand-100">Our core values</p>
             <h2 className="display mt-4 max-w-3xl text-[clamp(2rem,1.2rem+2.8vw,3.5rem)] text-white">The principles that define who we are.</h2>
-            <p className="mt-4 max-w-2xl font-light leading-relaxed text-white/75">At Flokefama Limited, our success is built on a strong foundation of core values that guide every aspect of our operations. These principles define who we are, how we work, and the impact we strive to make in the healthcare industry.</p>
+            <p className="mt-4 max-w-2xl leading-relaxed text-white/75">At Flokefama Limited, our success is built on a strong foundation of core values that guide every aspect of our operations. These principles define who we are, how we work, and the impact we strive to make in the healthcare industry.</p>
           </Reveal>
           <CoreValues />
         </div>
