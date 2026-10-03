@@ -10,33 +10,33 @@ import { cn } from '@/lib/utils';
 
 /**
  * In-vitro diagnostics, told in four chapters. Every product named here is in the
- * current flokefama.com catalogue, and each chapter shows that product's own catalogue photo
- * (the last one, a photo of Flokefama's application specialists at a client lab, from the Media Centre).
+ * current flokefama.com catalogue. Photos: Mindray's official BC-5150 and BA-88A product images, the
+ * Evident (Olympus) CX23 product image, and Flokefama's application specialists at a client lab (Media Centre).
  */
 const chapters = [
   {
     label: '01 · Haematology',
     title: 'Complete blood counts, from clinic to teaching hospital.',
     body: 'Mindray BC-5150, BC-3000plus, BC-30s and BC-20s haematology analysers.',
-    image: { src: '/images/products/auto-heamatology-analyzer-bc5150.webp', alt: 'Mindray BC-5150 auto haematology analyser', photo: false },
+    image: { src: '/images/diagnostics-bc5150.webp', alt: 'A laboratory scientist using a Mindray BC-5150 haematology analyser', photo: true, pos: '60% 50%' },
   },
   {
     label: '02 · Clinical chemistry',
     title: 'Chemistry with matched reagents.',
     body: 'Mindray semi-automated chemistry analysers, BS-230 cuvettes, reagents and controls.',
-    image: { src: '/images/products/semi-automated-chemistry-analysermindray.webp', alt: 'Mindray BA-88A semi-automated chemistry analyser', photo: false },
+    image: { src: '/images/diagnostics-ba88a.webp', alt: 'Mindray BA-88A semi-automated chemistry analyser', photo: true, pos: '50% 50%' },
   },
   {
     label: '03 · Urinalysis & microscopy',
     title: 'The everyday tests, done right.',
     body: 'UA-66 urine analysers and Olympus CX23 clinical microscopes.',
-    image: { src: '/images/products/urine-analyzer-ua-66.webp', alt: 'UA-66 urine analyser', photo: false },
+    image: { src: '/images/diagnostics-cx23.webp', alt: 'Olympus CX23 clinical microscope', photo: false, pos: '50% 50%' },
   },
   {
     label: '04 · Installed & supported',
     title: 'Calibrated on day one. Supported every day after.',
     body: 'Installation, calibration, preventive maintenance and training from engineers across six branches.',
-    image: { src: '/images/news/quality-verification-the-cornerstone-of-healthcare-excellence-in-ghana-2.webp', alt: 'Flokefama specialists with laboratory staff at a client facility', photo: true },
+    image: { src: '/images/news/quality-verification-the-cornerstone-of-healthcare-excellence-in-ghana-2.webp', alt: 'Flokefama specialists with laboratory staff at a client facility', photo: true, pos: '50% 50%' },
   },
 ];
 
@@ -133,7 +133,7 @@ export function SpecScrolly() {
 
 function Stage({ image, sizes }: { image: (typeof chapters)[number]['image']; sizes: string }) {
   return image.photo ? (
-    <Image src={image.src} alt={image.alt} fill sizes={sizes} className="object-cover" />
+    <Image src={image.src} alt={image.alt} fill sizes={sizes} className="object-cover" style={{ objectPosition: image.pos }} />
   ) : (
     <Image src={image.src} alt={image.alt} fill sizes={sizes} className="object-contain p-[8%] mix-blend-multiply" />
   );
