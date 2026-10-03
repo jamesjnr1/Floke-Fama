@@ -2,11 +2,11 @@
 
 /* ==========================================================================
    Flokefama colour system (pharmaceutical distribution)
-   Green        #007A4D / #004D3B · the brand: primary actions, highlights, brand surfaces
+   Green        #007A4D / #004D3B · the brand: highlights, brand surfaces; buttons in vivid #15843E
    Charcoal navy #17313A          · text and dark surfaces
    Off-white / cool gray          · backgrounds and panels
    Medical blue #2F80B7           · information accents: section labels, the Aim block
-   Red          #E3262E           · tiny doses only: the logo dot, cart count, alerts and errors
+   Red          #E3262E           · the Vision block, the logo-dot accents, the hero's Contact Us, alerts
    ========================================================================== */
 @theme {
   /* Two typefaces: Poppins for text, Geist Sans for labels, numerals and accents (the `font-mono` utility). */
@@ -35,6 +35,10 @@
   --color-brand-600: #007a4d;
   --color-brand-700: #006140;
   --color-brand-800: #004d3b;
+
+  /* Button green: the old site's vivid #1A9C4B, deepened just enough for AA contrast with white text */
+  --color-cta: #15843e;
+  --color-cta-700: #0f6b32;
 
   --color-surgical: #34a174;
   --color-signal: #e3262e; /* Flokefama red: small highlights and CTAs */
