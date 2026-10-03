@@ -95,6 +95,14 @@
   .label {
     @apply font-mono text-[12px] font-medium uppercase tracking-[0.15em] text-blue-700;
   }
+  /* Section eyebrow: the label led by the logo's red dot (red in small, deliberate doses) */
+  .eyebrow {
+    @apply inline-flex items-center gap-2.5;
+  }
+  .eyebrow::before {
+    content: '';
+    @apply size-1.5 shrink-0 rounded-full bg-signal;
+  }
   /* Display/Hero Large: Poppins semibold, -3% tracking */
   .display {
     @apply font-semibold tracking-[-0.03em] leading-[1.02];

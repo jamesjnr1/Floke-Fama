@@ -37,7 +37,7 @@ export default async function QuotePage({ searchParams }: { searchParams: Promis
     <div className="bg-canvas pt-20">
       <div className="mx-auto grid max-w-[1280px] gap-12 px-5 py-16 md:px-10 md:py-24 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
         <aside className="lg:sticky lg:top-32 lg:self-start">
-          <p className="label">{intent === 'demo' ? 'Demonstration' : 'Checkout'}</p>
+          <p className="label eyebrow">{intent === 'demo' ? 'Demonstration' : 'Checkout'}</p>
           <h1 className="display mt-4 text-[clamp(2rem,1.4rem+2vw,3rem)] leading-[1.1]">
             {focus ? (intent === 'demo' ? 'Book a demonstration' : 'Complete your order') : listed.length ? `Your cart: ${listed.length} ${listed.length === 1 ? 'item' : 'items'}` : 'Tell us what you need'}
           </h1>

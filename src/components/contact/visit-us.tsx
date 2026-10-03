@@ -11,7 +11,7 @@ export function VisitUs({ id = 'visit', photo = true }: { id?: string; photo?: b
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal className="flex flex-wrap items-end justify-between gap-6">
           <div>
-            <p className="label">Flokefama location</p>
+            <p className="label eyebrow">Flokefama location</p>
             <h2 className="display mt-4 text-[clamp(2rem,1.2rem+2.8vw,3.75rem)]">Find Us Here!</h2>
             <p className="mt-4 max-w-xl text-lg leading-relaxed text-ink-3">Visit Flokefama Company Limited Head Office using the interactive map below.</p>
           </div>

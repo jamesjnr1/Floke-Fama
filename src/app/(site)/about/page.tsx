@@ -41,7 +41,7 @@ export default async function AboutPage() {
       <section id="who-we-are" className="scroll-mt-28 bg-paper py-14 md:py-32">
         <div className="mx-auto grid max-w-[1280px] items-center gap-12 px-5 md:px-10 lg:grid-cols-2 lg:gap-16">
           <Reveal>
-            <p className="label">Who we are</p>
+            <p className="label eyebrow">Who we are</p>
             <h2 className="display mt-4 text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">Redefining healthcare delivery in Ghana and across Africa.</h2>
             <div className="mt-6 space-y-4 text-lg leading-relaxed text-ink-3">
               <p>
@@ -76,7 +76,7 @@ export default async function AboutPage() {
             </figure>
           </Reveal>
           <Reveal delay={0.08} className="lg:col-span-7">
-            <p className="label">Leadership</p>
+            <p className="label eyebrow">Leadership</p>
             <h2 className="display mt-4 text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">Meet our CEO</h2>
             <p className="mt-6 text-xl font-semibold text-ink">Mr. Emmanuel Teye Kwabena Kenney</p>
             <p className="mt-1 text-[15px] text-brand-700">Chief Executive Officer, Flokefama Company Limited</p>
@@ -97,7 +97,7 @@ export default async function AboutPage() {
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
           <div className="grid gap-10 lg:grid-cols-12 lg:items-center lg:gap-16">
             <Reveal className="lg:col-span-7">
-              <p className="label">About us</p>
+              <p className="label eyebrow">About us</p>
               <h2 className="display mt-4 text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">Industry Experience</h2>
               <p className="mt-6 max-w-2xl text-lg leading-relaxed text-ink-3">
                 FLOKEFAMA is recognized as one of the most reputable and trusted medical equipment suppliers in Ghana. Our years of experience have enabled us to establish strong partnerships with leading medical clients across the nation, allowing us to deliver high-quality equipment tailored to meet specific needs. Whether it’s cutting-edge technology or reliable essentials, FLOKEFAMA is committed to fulfilling all medical equipment requirements with excellence.
@@ -156,7 +156,7 @@ export default async function AboutPage() {
         <div aria-hidden className="absolute -right-40 -top-40 -z-10 size-[640px] rounded-full bg-[radial-gradient(circle,rgb(228_40_60/0.06),transparent_65%)]" />
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
           <Reveal>
-            <p className="label">Our core values</p>
+            <p className="label eyebrow">Our core values</p>
             <h2 className="display mt-4 max-w-3xl text-[clamp(2rem,1.2rem+2.8vw,3.5rem)] text-ink">The principles that define who we are.</h2>
             <p className="mt-4 max-w-2xl leading-relaxed text-ink-2">At Flokefama Limited, our success is built on a strong foundation of core values that guide every aspect of our operations. These principles define who we are, how we work, and the impact we strive to make in the healthcare industry.</p>
           </Reveal>

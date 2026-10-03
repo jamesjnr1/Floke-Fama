@@ -48,7 +48,7 @@ export function BuyingFaq() {
     <section aria-labelledby="buying-faq" className="grid gap-8 border-t border-line pb-20 pt-12 md:pb-28 lg:grid-cols-12 lg:gap-12">
       <div className="lg:col-span-4">
         <div className="lg:sticky lg:top-28">
-          <p className="label">Buying from Flokefama</p>
+          <p className="label eyebrow">Buying from Flokefama</p>
           <h2 id="buying-faq" className="mt-3 text-2xl font-bold tracking-[-0.02em] text-ink md:text-3xl">Questions before you order</h2>
           <p className="mt-3 text-sm leading-relaxed text-ink-3">Still unsure? Our sales team will help you choose the right equipment for your facility.</p>
           {/* Every way to reach sales, in one place */}
