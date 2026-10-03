@@ -66,11 +66,11 @@ export function ClientShell({ user }: { user: { name: string; email: string; fac
         <Link href="/" aria-label="Flokefama home" className="flex items-center gap-1.5">
           <LogoMark />
           <LogoWordmark className="h-[17px] text-white" />
-          <span className="ml-auto rounded-md bg-white/10 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-widest text-white/60">Care</span>
+          <span className="ml-auto rounded-md bg-white/10 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-widest text-white/75">Care</span>
         </Link>
         <div className="mt-8 rounded-2xl bg-white/[0.06] p-3">
           <p className="truncate text-sm font-medium">{facility}</p>
-          <p className="truncate text-xs text-white/50">{user.name}</p>
+          <p className="truncate text-xs text-white/75">{user.name}</p>
         </div>
         <nav aria-label="Client portal" className="mt-8">
           <ul className="space-y-1">
@@ -79,7 +79,7 @@ export function ClientShell({ user }: { user: { name: string; email: string; fac
                 <button
                   onClick={() => setView(n.id)}
                   aria-current={view === n.id ? 'page' : undefined}
-                  className={cn('relative flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition', view === n.id ? 'text-white' : 'text-white/60 hover:bg-white/[0.05] hover:text-white')}
+                  className={cn('relative flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition', view === n.id ? 'text-white' : 'text-white/75 hover:bg-white/[0.05] hover:text-white')}
                 >
                   {view === n.id && <motion.span layoutId="client-rail" className="absolute inset-0 rounded-xl bg-brand-600" />}
                   <Icon name={n.icon} className="relative" />
@@ -94,7 +94,7 @@ export function ClientShell({ user }: { user: { name: string; email: string; fac
           <Icon name="fi-rr-wrench-simple" /> Request service
         </button>
         <div className="mt-auto space-y-3 text-xs">
-          <div className="rounded-xl bg-white/[0.05] px-3 py-2 text-white/60">
+          <div className="rounded-xl bg-white/[0.05] px-3 py-2 text-white/75">
             Demo data. Requests you submit appear in the engineer portal.
             <button
               onClick={() => {
@@ -109,11 +109,11 @@ export function ClientShell({ user }: { user: { name: string; email: string; fac
               Reset demo data
             </button>
           </div>
-          <button onClick={a11y.open} className="flex items-center gap-2 text-xs text-white/55 hover:text-white"><Icon name="fi-rr-universal-access" className="text-brand-300" /> Accessibility</button>
-          <a href={contact.phoneHref} className="flex items-center gap-2 text-white/55 hover:text-white"><Icon name="fi-rr-phone-call" className="text-brand-300" /> {contact.phone}</a>
-          <Link href="/" className="flex items-center gap-2 text-white/55 hover:text-white"><Icon name="fi-rr-arrow-small-left" /> Back to flokefama site</Link>
+          <button onClick={a11y.open} className="flex items-center gap-2 text-xs text-white/75 hover:text-white"><Icon name="fi-rr-universal-access" className="text-brand-300" /> Accessibility</button>
+          <a href={contact.phoneHref} className="flex items-center gap-2 text-white/75 hover:text-white"><Icon name="fi-rr-phone-call" className="text-brand-300" /> {contact.phone}</a>
+          <Link href="/" className="flex items-center gap-2 text-white/75 hover:text-white"><Icon name="fi-rr-arrow-small-left" /> Back to flokefama site</Link>
           <form action={logout}>
-            <button type="submit" className="flex items-center gap-2 text-white/55 hover:text-white"><Icon name="fi-rr-sign-out-alt" /> Sign out</button>
+            <button type="submit" className="flex items-center gap-2 text-white/75 hover:text-white"><Icon name="fi-rr-sign-out-alt" /> Sign out</button>
           </form>
         </div>
       </aside>

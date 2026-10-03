@@ -1,10 +1,8 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { Services } from '@/components/home/services';
 import { PageHero } from '@/components/layout/page-hero';
 import { Reveal } from '@/components/motion/reveal';
-import { Button } from '@/components/ui/button';
-import { Icon, IconTile } from '@/components/ui/icon';
+import { IconTile } from '@/components/ui/icon';
 import { whyChoose } from '@/data/seed';
 
 export const metadata: Metadata = {
@@ -18,18 +16,9 @@ export default function ServicesPage() {
     <>
       <PageHero
         label="Products & services"
-        title={<>We go beyond just supplying <span className="text-gradient">medical equipment</span></>}
-        lead="At Flokefama Limited, we offer a comprehensive range of services designed to ensure efficiency, reliability, and long-term value for healthcare facilities. Our expert team provides end-to-end solutions, from procurement and installation to training and maintenance, ensuring that our clients get the most out of their investment."
-      >
-        <div className="flex flex-wrap gap-3">
-          <Button asChild variant="glow" size="lg">
-            <Link href="/products">Go to Shop <Icon name="fi-rr-arrow-small-right" /></Link>
-          </Button>
-          <Button asChild variant="glass" size="lg">
-            <Link href="/quote">Request a quote</Link>
-          </Button>
-        </div>
-      </PageHero>
+        title={<>We go beyond just supplying <span className="text-accent">medical equipment</span></>}
+        lead="End-to-end solutions, from procurement and installation to training and maintenance."
+      />
       <Services />
 
       <section id="why-choose-us" className="scroll-mt-28 border-t border-line bg-paper py-14 md:py-32">

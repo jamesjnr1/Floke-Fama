@@ -186,7 +186,7 @@ function Sheet({ asset, tickets, onLogFault, onRecord, onOpenTicket }: {
                     <span className="block font-medium text-ink">Product page & datasheet</span>
                     <span className="text-sm text-ink-3">Specifications, compatibility and documents.</span>
                   </span>
-                  <Button size="sm" variant="outline" asChild><Link href={`/products/${asset.productSlug}`} target="_blank"><Icon name="fi-rr-arrow-small-right" /> Open</Link></Button>
+                  <Button size="sm" variant="outline" asChild><Link href={`/products/${asset.productSlug}`} target="_blank"> Open</Link></Button>
                 </li>
               )}
             </ul>

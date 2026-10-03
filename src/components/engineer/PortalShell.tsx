@@ -105,19 +105,19 @@ export function PortalShell({ user }: { user: { name: string; email: string } })
         <Link href="/" className="flex items-center gap-2">
           <LogoMark />
           <span className="text-lg font-semibold tracking-[-0.02em]">Flokefama</span>
-          <span className="ml-auto rounded-md bg-white/5 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-widest text-white/40">Service</span>
+          <span className="ml-auto rounded-md bg-white/5 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-widest text-white/60">Service</span>
         </Link>
 
         <div className="mt-8 flex items-center gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.03] p-3">
           <span className="grid size-10 place-items-center rounded-xl bg-brand-600 font-semibold">{initials}</span>
           <span className="min-w-0">
             <span className="block truncate text-sm font-medium">{me}</span>
-            <span className="block truncate text-xs text-white/45">Biomedical engineer</span>
+            <span className="block truncate text-xs text-white/65">Biomedical engineer</span>
           </span>
         </div>
 
         <nav aria-label="Portal" className="mt-8">
-          <p className="font-mono text-[11px] uppercase tracking-widest text-white/35">Workspace</p>
+          <p className="font-mono text-[11px] uppercase tracking-widest text-white/60">Workspace</p>
           <ul className="mt-3 space-y-1">
             {nav.map((n) => {
               const badge = n.id === 'tickets' ? counts.tickets : n.id === 'calibration' ? counts.calibration : 0;
@@ -126,7 +126,7 @@ export function PortalShell({ user }: { user: { name: string; email: string } })
                   <button
                     onClick={() => setView(n.id)}
                     aria-current={view === n.id ? 'page' : undefined}
-                    className={cn('relative flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition', view === n.id ? 'text-white' : 'text-white/55 hover:bg-white/[0.04] hover:text-white')}
+                    className={cn('relative flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition', view === n.id ? 'text-white' : 'text-white/75 hover:bg-white/[0.04] hover:text-white')}
                   >
                     {view === n.id && <motion.span layoutId="rail-active" className="absolute inset-0 rounded-xl bg-white/[0.07] ring-1 ring-white/10" />}
                     {view === n.id && <motion.span layoutId="rail-bar" className="absolute -left-5 top-2 h-6 w-[3px] rounded-r bg-brand-500" />}
@@ -145,7 +145,7 @@ export function PortalShell({ user }: { user: { name: string; email: string } })
         </button>
 
         <div className="mt-auto space-y-3">
-          <div className="rounded-xl bg-white/[0.04] px-3 py-2 text-xs text-white/60 ring-1 ring-white/10">
+          <div className="rounded-xl bg-white/[0.04] px-3 py-2 text-xs text-white/75 ring-1 ring-white/10">
             Demo data: fictional facilities. Requests from the client portal appear here; changes are saved in this browser.
             <button
               onClick={() => {
@@ -160,15 +160,15 @@ export function PortalShell({ user }: { user: { name: string; email: string } })
               Reset demo data
             </button>
           </div>
-          <button onClick={a11y.open} className="flex items-center gap-2 text-xs text-white/55 hover:text-white"><Icon name="fi-rr-universal-access" className="text-brand-300" /> Accessibility</button>
-          <a href={contact.phoneHref} className="flex items-center gap-2 font-mono text-xs text-white/50 hover:text-white">
+          <button onClick={a11y.open} className="flex items-center gap-2 text-xs text-white/75 hover:text-white"><Icon name="fi-rr-universal-access" className="text-brand-300" /> Accessibility</button>
+          <a href={contact.phoneHref} className="flex items-center gap-2 font-mono text-xs text-white/75 hover:text-white">
             <Icon name="fi-rr-phone-call" className="text-brand-400" /> {contact.phone}
           </a>
-          <Link href="/" className="flex items-center gap-2 text-xs text-white/50 hover:text-white">
+          <Link href="/" className="flex items-center gap-2 text-xs text-white/75 hover:text-white">
             <Icon name="fi-rr-arrow-small-left" /> Back to flokefama site
           </Link>
           <form action={logout}>
-            <button type="submit" className="flex items-center gap-2 text-xs text-white/50 hover:text-white">
+            <button type="submit" className="flex items-center gap-2 text-xs text-white/75 hover:text-white">
               <Icon name="fi-rr-sign-out-alt" /> Sign out
             </button>
           </form>
@@ -190,7 +190,7 @@ export function PortalShell({ user }: { user: { name: string; email: string } })
         </div>
         <div className="-mx-1 mb-6 flex gap-1 overflow-x-auto px-1 lg:hidden">
           {nav.map((n) => (
-            <button key={n.id} onClick={() => setView(n.id)} aria-current={view === n.id ? 'page' : undefined} className={cn('shrink-0 rounded-xl px-3 py-2 text-sm', view === n.id ? 'bg-white/10 text-white' : 'text-white/55')}>
+            <button key={n.id} onClick={() => setView(n.id)} aria-current={view === n.id ? 'page' : undefined} className={cn('shrink-0 rounded-xl px-3 py-2 text-sm', view === n.id ? 'bg-white/10 text-white' : 'text-white/75')}>
               {n.label}
             </button>
           ))}
@@ -198,11 +198,11 @@ export function PortalShell({ user }: { user: { name: string; email: string } })
 
         <header className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
           <div>
-            <p className="font-mono text-[11px] uppercase tracking-widest text-white/40">{nav.find((n) => n.id === view)?.label}</p>
+            <p className="font-mono text-[11px] uppercase tracking-widest text-white/60">{nav.find((n) => n.id === view)?.label}</p>
             <h1 className="mt-1 text-3xl font-bold tracking-[-0.03em] text-white md:text-4xl">Biomedical Engineer Service Portal</h1>
           </div>
           <div className="flex items-center gap-3">
-            <button onClick={() => setPalette(true)} className="flex h-11 flex-1 items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 text-left text-sm text-white/40 transition hover:border-white/20 xl:w-72 xl:flex-none">
+            <button onClick={() => setPalette(true)} className="flex h-11 flex-1 items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 text-left text-sm text-white/60 transition hover:border-white/20 xl:w-72 xl:flex-none">
               <Icon name="fi-rr-search" />
               <span className="flex-1">Search systems, tickets…</span>
               <kbd className="hidden rounded-md border border-white/10 px-1.5 py-0.5 font-mono text-[10px] sm:inline">⌘K</kbd>

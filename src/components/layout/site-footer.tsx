@@ -21,11 +21,11 @@ const media = [
 
 export function SiteFooter() {
   return (
-    <footer className="bg-[linear-gradient(135deg,#17402b_0%,#10301f_55%,#0b2418_100%)] text-white/60">
+    <footer className="bg-[linear-gradient(135deg,#17402b_0%,#10301f_55%,#0b2418_100%)] text-white/75">
       <div className="mx-auto grid max-w-[1280px] grid-cols-2 gap-x-6 gap-y-10 px-5 py-14 md:grid-cols-2 md:gap-12 md:px-10 md:py-20 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1.2fr]">
         <div className="col-span-2 md:col-span-1">
           <Logo tone="dark" />
-          <p className="mt-5 max-w-xs text-sm font-light leading-relaxed">
+          <p className="mt-5 max-w-xs text-sm leading-relaxed">
             Revolutionizing healthcare practices in Ghana by introducing cutting-edge technologies and solutions that set new standards in medical care and patient safety.
           </p>
         </div>
@@ -40,7 +40,7 @@ export function SiteFooter() {
               <Link href={`/products?category=${c.slug}`} className="hover:text-white">{c.title}</Link>
             </li>
           ))}
-          <li><Link href="/products" className="font-medium text-brand-300 hover:text-white">Go to Shop →</Link></li>
+          <li><Link href="/products" className="font-medium text-brand-300 hover:text-white">Go to Shop </Link></li>
         </FooterCol>
         <FooterCol title="Media centre">
           {media.map((l) => (
@@ -54,15 +54,15 @@ export function SiteFooter() {
           <li><a href={`mailto:${contact.info}`} className="hover:text-white">{contact.info}</a></li>
           <li>
             <a href={maps.directions} target="_blank" rel="noopener noreferrer" className="inline-flex items-start gap-2 hover:text-white">
-              <Icon name="fi-rr-marker" className="mt-0.5 text-brand-400" /> <span>Head office, Santa Maria, Accra<span className="block text-xs text-brand-300">Get directions →</span></span>
+              <Icon name="fi-rr-marker" className="mt-0.5 text-brand-400" /> <span>Head office, Santa Maria, Accra<span className="block text-xs text-brand-300">Get directions</span></span>
             </a>
           </li>
-          <li className="text-xs leading-relaxed text-white/40">Branches: {branches.filter((b) => b.name !== 'Santa Maria').map((b) => b.name).join(' · ')}</li>
+          <li className="text-xs leading-relaxed text-white/60">Branches: {branches.filter((b) => b.name !== 'Santa Maria').map((b) => b.name).join(' · ')}</li>
         </FooterCol>
       </div>
       <div className="mx-auto flex max-w-[1280px] flex-wrap justify-between gap-4 border-t border-white/10 px-5 py-6 text-xs md:px-10">
         <p>© {new Date().getFullYear()} Flokefama Company Limited. All rights reserved.</p>
-        <p className="text-white/40">Saving lives since 2008</p>
+        <p className="text-white/60">Saving lives since 2008</p>
       </div>
     </footer>
   );
@@ -71,8 +71,8 @@ export function SiteFooter() {
 function FooterCol({ title, children, className }: { title: string; children: React.ReactNode; className?: string }) {
   return (
     <div className={className}>
-      <h2 className="label !text-white/40">{title}</h2>
-      <ul className="mt-4 space-y-2.5 text-sm font-light md:mt-5 md:space-y-3">{children}</ul>
+      <h2 className="label !text-white/60">{title}</h2>
+      <ul className="mt-4 space-y-2.5 text-sm md:mt-5 md:space-y-3">{children}</ul>
     </div>
   );
 }

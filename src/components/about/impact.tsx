@@ -51,7 +51,7 @@ export function Impact({ metrics }: { metrics: Metric[] }) {
         <Reveal className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
           <div>
             <p className="label !text-brand-300">Our impact</p>
-            <h2 className="display mt-3 max-w-3xl text-[clamp(1.9rem,1.2rem+2.4vw,3.25rem)] text-white">Equipping the labs and wards <span className="text-gradient">that care for Ghana.</span></h2>
+            <h2 className="display mt-3 max-w-3xl text-[clamp(1.9rem,1.2rem+2.4vw,3.25rem)] text-white">Equipping the labs and wards <span className="text-accent">that care for Ghana.</span></h2>
           </div>
         </Reveal>
 
@@ -62,7 +62,7 @@ export function Impact({ metrics }: { metrics: Metric[] }) {
               <div key={m.label} className="flex flex-col-reverse justify-end gap-2 bg-midnight p-5 md:p-6">
                 <dt className="text-sm leading-snug">
                   <span className="block text-white">{m.label}</span>
-                  {m.caption && <span className="text-white/45">{m.caption}</span>}
+                  {m.caption && <span className="text-white/65">{m.caption}</span>}
                 </dt>
                 <dd className="text-4xl font-bold tracking-[-0.04em] text-white md:text-5xl">
                   <CountUp value={m.value} prefix={m.prefix} suffix={m.suffix} />
@@ -86,8 +86,8 @@ export function Impact({ metrics }: { metrics: Metric[] }) {
                   )}
                 </div>
                 <h3 className="mt-4 text-lg font-bold leading-snug tracking-[-0.01em] text-white">{s.title}</h3>
-                <p className="mt-2 text-sm font-light leading-relaxed text-white/60">{s.body}</p>
-                <p className="mt-auto flex items-center gap-2 pt-4 text-xs text-white/45">
+                <p className="mt-2 text-sm leading-relaxed text-white/75">{s.body}</p>
+                <p className="mt-auto flex items-center gap-2 pt-4 text-xs text-white/65">
                   {s.source}
                   {s.href && <Icon name="fi-rr-arrow-small-right" className="ml-auto text-base text-brand-300 transition-transform group-hover:translate-x-1" />}
                 </p>

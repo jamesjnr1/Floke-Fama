@@ -13,7 +13,7 @@ export function VisitUs({ id = 'visit', photo = true }: { id?: string; photo?: b
           <div>
             <p className="label">Flokefama location</p>
             <h2 className="display mt-4 text-[clamp(2rem,1.2rem+2.8vw,3.75rem)]">Find Us Here!</h2>
-            <p className="mt-4 max-w-xl text-lg font-light leading-relaxed text-ink-3">Visit Flokefama Company Limited Head Office using the interactive map below.</p>
+            <p className="mt-4 max-w-xl text-lg leading-relaxed text-ink-3">Visit Flokefama Company Limited Head Office using the interactive map below.</p>
           </div>
         </Reveal>
 
@@ -33,7 +33,7 @@ export function VisitUs({ id = 'visit', photo = true }: { id?: string; photo?: b
               <figcaption className="absolute inset-x-0 bottom-0 p-7 text-white">
                 <p className="label flex items-center gap-2 !text-brand-300"><span className="status-dot" aria-hidden /> Head office</p>
                 <p className="mt-3 text-2xl font-bold tracking-[-0.02em]">Santa Maria, Accra</p>
-                <p className="mt-1 text-sm text-white/65">{contact.address}</p>
+                <p className="mt-1 text-sm text-white/80">{contact.address}</p>
               </figcaption>
             </figure>
           </Reveal>
@@ -93,7 +93,7 @@ export function VisitUs({ id = 'visit', photo = true }: { id?: string; photo?: b
                     <Icon name="fi-rr-arrow-small-right" className="-rotate-45 text-ink-3 opacity-0 transition group-hover:opacity-100" />
                   </span>
                   <span className="mt-3 block font-medium text-ink">{b.name}</span>
-                  <span className="block text-xs font-light text-ink-3">{b.detail}</span>
+                  <span className="block text-xs text-ink-3">{b.detail}</span>
                 </a>
               </li>
             ))}
