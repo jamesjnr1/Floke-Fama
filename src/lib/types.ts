@@ -6,6 +6,8 @@ export interface Category {
   short: string;
   description: string;
   icon: Icon;
+  /** A representative product photo for the category card; falls back to the category's first product photo. */
+  image?: string;
 }
 
 export interface Spec {
