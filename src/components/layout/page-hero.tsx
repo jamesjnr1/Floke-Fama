@@ -16,8 +16,8 @@ export function PageHero({ label, title, lead }: { label: string; title: React.R
       <div className="mx-auto max-w-[1280px] px-5 pb-12 pt-32 md:px-16 md:pb-20 md:pt-44">
         <div className="max-w-2xl lg:max-w-3xl">
           <Reveal>
-            <p className="label flex items-center gap-3">
-              <span className="status-dot" aria-hidden /> {label}
+            <p className="label eyebrow">
+              {label}
             </p>
           </Reveal>
           <Reveal delay={0.06}>

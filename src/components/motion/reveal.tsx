@@ -1,11 +1,14 @@
 'use client';
 
-import { motion, useReducedMotion, type HTMLMotionProps } from 'motion/react';
+import { motion, type HTMLMotionProps } from 'motion/react';
 
-/** Fade-and-rise when scrolled into view. Content renders visible when motion is reduced. */
+/**
+ * Fade-and-rise when scrolled into view. Reduced motion (the OS setting or the site's own switch) is
+ * handled by the MotionConfig in the accessibility provider: the rise is dropped and only a fade
+ * remains. Always rendering the same element keeps server and client in step, so content can never
+ * be left hidden at its starting opacity.
+ */
 export function Reveal({ delay = 0, y = 24, ...props }: HTMLMotionProps<'div'> & { delay?: number; y?: number }) {
-  const reduce = useReducedMotion();
-  if (reduce) return <motion.div {...props} />;
   return (
     <motion.div
       initial={{ opacity: 0, y }}

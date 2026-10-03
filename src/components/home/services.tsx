@@ -36,7 +36,7 @@ export function Services() {
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal className="flex flex-wrap items-end justify-between gap-8">
           <div className="max-w-2xl">
-            <p className="label">Our services</p>
+            <p className="label eyebrow">Our services</p>
             <h2 className="display mt-5 text-[clamp(2.25rem,1.3rem+3.4vw,4.5rem)]">
               End-to-end healthcare solutions, <span className="text-brand-600">tailored to you.</span>
             </h2>

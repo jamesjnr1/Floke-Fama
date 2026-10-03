@@ -50,7 +50,7 @@ export default async function EventsPage() {
       <section className="bg-paper py-14 md:py-24">
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
           <Reveal>
-            <p className="label">Upcoming</p>
+            <p className="label eyebrow">Upcoming</p>
             <h2 className="display mt-4 text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">What’s next.</h2>
           </Reveal>
           {upcoming.length === 0 ? (

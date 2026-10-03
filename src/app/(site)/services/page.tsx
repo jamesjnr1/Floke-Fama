@@ -24,7 +24,7 @@ export default function ServicesPage() {
       <section id="why-choose-us" className="scroll-mt-28 border-t border-line bg-paper py-14 md:py-32">
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
           <Reveal>
-            <p className="label">Why choose Flokefama?</p>
+            <p className="label eyebrow">Why choose Flokefama?</p>
             <h2 className="display mt-4 max-w-3xl text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">
               We are the Official distributor of <span className="text-brand-600">Mindray, Biozek Holland, and MR Global.</span>
             </h2>
