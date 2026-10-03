@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { AnimatePresence, LayoutGroup, motion } from 'motion/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ProductVisual } from '@/components/products/product-visual';
-import { Badge } from '@/components/ui/badge';
 import { AddToQuote } from '@/components/sales/add-to-quote';
 import { Icon } from '@/components/ui/icon';
 import { localSearch, searchProducts, searchProvider } from '@/lib/search';
@@ -155,17 +154,14 @@ function ProductCard({ product, category, wide }: { product: Product; category?:
       scroll={false}
       className="group flex h-full flex-col rounded-3xl border border-line bg-paper p-1.5 transition-all sm:rounded-4xl sm:p-2 duration-700 ease-out-expo hover:-translate-y-1 hover:border-transparent hover:shadow-[0_30px_60px_-30px_rgb(11_21_16/0.35)]"
     >
-      <ProductVisual product={product} category={category} sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" className={cn('rounded-[1.1rem] sm:rounded-[1.6rem]', wide ? 'aspect-[16/9] sm:aspect-auto sm:h-72' : 'aspect-square sm:aspect-[4/3]')} />
-      <div className="flex flex-1 items-end justify-between gap-4 px-2.5 pb-3 pt-3 sm:px-4 sm:pb-4 sm:pt-5">
-        <div>
-          <p className="label flex items-center gap-2">{product.brand}{product.newArrival && <span className="rounded-full bg-brand-600 px-2 py-0.5 text-[10px] font-medium normal-case tracking-normal text-white">New</span>}</p>
-          <h2 className="mt-1 text-sm font-semibold leading-snug tracking-tight text-ink sm:mt-1.5 sm:text-lg">{product.name}</h2>
-          <p className="mt-1 line-clamp-2 hidden text-sm text-ink-3 sm:block">{product.summary}</p>
-          {product.types?.[0] && <Badge className="mt-3 hidden sm:inline-flex">{product.types[0]}</Badge>}
-        </div>
-        <span className="hidden size-10 shrink-0 place-items-center rounded-full bg-mist text-ink transition-all sm:grid duration-500 group-hover:rotate-45 group-hover:bg-brand-600 group-hover:text-white">
-          <Icon name="fi-rr-arrow-up-right" />
-        </span>
+      <ProductVisual product={product} category={category} sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" className={cn('rounded-[1.1rem] sm:rounded-[1.6rem]', wide ? 'aspect-square sm:aspect-auto sm:h-96' : 'aspect-square')} />
+      {/* Picture first: the image takes most of the card, the text stays to two short lines */}
+      <div className="px-2.5 pb-3 pt-3 sm:px-3.5 sm:pb-4">
+        <p className="flex items-center gap-2 text-xs font-medium text-ink-3">
+          {product.brand}
+          {product.newArrival && <span className="rounded-full bg-signal px-2 py-0.5 text-[10px] font-semibold text-white">New</span>}
+        </p>
+        <h2 className="mt-1 line-clamp-2 text-sm font-semibold leading-snug tracking-tight text-ink sm:text-base">{product.name}</h2>
       </div>
     </Link>
     </div>
