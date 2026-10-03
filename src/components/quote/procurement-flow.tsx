@@ -92,7 +92,7 @@ export function ProcurementFlow({ options, initial }: { options: Option[]; initi
         {delivered ? (
           <>
             <h2 className="display mt-8 text-4xl">Request received.</h2>
-            <p className="mx-auto mt-4 max-w-md font-light text-ink-3">
+            <p className="mx-auto mt-4 max-w-md text-ink-3">
               Your reference is <strong className="font-semibold text-ink">{reference}</strong>. A Flokefama specialist will contact you within one business day.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
@@ -103,7 +103,7 @@ export function ProcurementFlow({ options, initial }: { options: Option[]; initi
         ) : (
           <>
             <h2 className="display mt-8 text-4xl">One last step.</h2>
-            <p className="mx-auto mt-4 max-w-md font-light text-ink-3">
+            <p className="mx-auto mt-4 max-w-md text-ink-3">
               Your request <strong className="font-semibold text-ink">{reference}</strong> is ready. Send it to our sales team by email or WhatsApp. Everything is filled in for you.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
@@ -204,7 +204,7 @@ export function ProcurementFlow({ options, initial }: { options: Option[]; initi
                       {values.equipment.map((e) => (
                         <li key={e}>
                           <button type="button" onClick={() => toggle(e)} aria-label={`Remove ${e}`} className="inline-flex items-center gap-1.5 rounded-full bg-midnight px-3.5 py-1.5 text-sm text-white">
-                            {e} <Icon name="fi-rr-cross-small" className="text-white/60" />
+                            {e} <Icon name="fi-rr-cross-small" className="text-white/75" />
                           </button>
                         </li>
                       ))}
@@ -279,7 +279,7 @@ export function ProcurementFlow({ options, initial }: { options: Option[]; initi
         {step < steps.length - 1 ? (
           // Distinct keys: React must swap the element, not flip type="button" → "submit" mid-click.
           <Button key="next" type="button" onClick={() => go(step + 1)}>
-            Continue <Icon name="fi-rr-arrow-small-right" />
+            Continue
           </Button>
         ) : (
           <Button key="submit" type="submit" variant="glow" disabled={formState.isSubmitting}>

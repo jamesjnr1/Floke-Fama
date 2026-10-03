@@ -43,7 +43,7 @@ export default async function EventsPage() {
     <>
       <PageHero
         label="Events & activities"
-        title={<>Moments that <span className="text-gradient">bring us together</span></>}
+        title={<>Moments that <span className="text-accent">bring us together</span></>}
         lead="Celebrations, community programmes and industry events from across the Flokefama family."
       />
 
@@ -149,7 +149,7 @@ function FeaturedEvent({ event: e, today }: { event: EventItem; today: string })
               <Icon name="fi-brands-whatsapp" /> Invite
             </a>
             <a href={directions} target="_blank" rel="noopener noreferrer" className="inline-flex h-10 items-center gap-1 px-2 text-sm font-medium text-brand-700 hover:text-brand-600">
-              Directions <Icon name="fi-rr-arrow-small-right" />
+              Directions
             </a>
           </div>
         </div>
@@ -167,7 +167,7 @@ function PastEvent({ event: e }: { event: EventItem }) {
       <div className="min-w-0 flex-1 md:pr-4">
         <p className="label">{longDate(e.date)}</p>
         <h3 className="mt-2 text-xl font-bold leading-snug tracking-[-0.02em]">{e.title}</h3>
-        <p className="mt-2 text-sm font-light leading-relaxed text-ink-3">{e.body}</p>
+        <p className="mt-2 text-sm leading-relaxed text-ink-3">{e.body}</p>
         <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-1.5 text-sm text-ink-2">
           <li className="flex items-center gap-2"><Icon name="fi-rr-clock" className="text-brand-600" /> {e.time}</li>
           <li className="flex items-center gap-2"><Icon name="fi-rr-marker" className="text-brand-600" /> {e.venue}</li>

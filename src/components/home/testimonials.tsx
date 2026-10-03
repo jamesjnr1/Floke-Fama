@@ -27,7 +27,7 @@ export function Testimonials() {
         <Reveal className="flex flex-col items-center text-center">
           <p className="label">Testimonials</p>
           <h2 className="display mt-4 max-w-3xl text-[clamp(1.9rem,1.2rem+2.4vw,3.25rem)]">Hear what our customers say.</h2>
-          <p className="mt-4 max-w-2xl text-lg font-light leading-relaxed text-ink-3">Don’t just take our word for it—hear from our satisfied customers! Here’s what they have to say about their experience with Flokefama.</p>
+          <p className="mt-4 max-w-2xl text-lg leading-relaxed text-ink-3">Don’t just take our word for it—hear from our satisfied customers! Here’s what they have to say about their experience with Flokefama.</p>
         </Reveal>
 
         <Reveal delay={0.08}>

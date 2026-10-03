@@ -1,7 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Reveal } from '@/components/motion/reveal';
-import { Icon } from '@/components/ui/icon';
 import { getArticles } from '@/lib/data';
 import { cn } from '@/lib/utils';
 
@@ -37,7 +36,7 @@ export async function NewsGrid() {
                     <h3 className="mt-3 text-xl font-bold leading-snug tracking-[-0.02em]">{a.title}</h3>
                     <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-ink-3">{a.excerpt}</p>
                     <span className="mt-auto inline-flex items-center gap-1 pt-4 text-sm font-medium text-brand-700">
-                      Read more <Icon name="fi-rr-arrow-small-right" className="transition-transform group-hover:translate-x-0.5" />
+                      Read more
                     </span>
                   </div>
                 </Link>

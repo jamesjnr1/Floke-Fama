@@ -19,7 +19,7 @@ export function BuyAssurance() {
         </li>
       ))}
       <li className="pt-1 text-sm">
-        <Link href="/services" className="inline-flex items-center gap-1 font-medium text-brand-700 hover:text-brand-600">How we support your equipment <Icon name="fi-rr-arrow-small-right" /></Link>
+        <Link href="/services" className="inline-flex items-center gap-1 font-medium text-brand-700 hover:text-brand-600">How we support your equipment</Link>
       </li>
     </ul>
   );
@@ -42,7 +42,7 @@ export function RelatedProducts({ products, category }: { products: Product[]; c
           <h2 id="related-title" className="text-2xl font-bold tracking-[-0.02em] text-ink md:text-3xl">Often requested together</h2>
           {category && (
             <Link href={`/products?category=${category.slug}`} className="inline-flex items-center gap-1 text-sm font-medium text-brand-700 hover:text-brand-600">
-              All {category.title} <Icon name="fi-rr-arrow-small-right" />
+              All {category.title}
             </Link>
           )}
         </div>
@@ -75,7 +75,7 @@ export function MobileQuoteBar({ product }: { product: Product }) {
       <div className="flex items-center gap-3">
         <AddToQuote item={{ slug: product.slug, name: product.name, brand: product.brand, image: product.image }} compact className="size-12 shrink-0 sm:size-12" />
         <Link href={`/quote?product=${product.slug}`} className="flex h-12 flex-1 items-center justify-center gap-2 rounded-full bg-brand-600 text-sm font-medium text-white">
-          Request a quote <Icon name="fi-rr-arrow-small-right" />
+          Request a quote
         </Link>
       </div>
     </div>

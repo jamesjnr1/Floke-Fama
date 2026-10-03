@@ -51,7 +51,7 @@ export function CoreValues() {
                 >
                   <Icon name={v.icon} />
                 </span>
-                <span className="font-mono text-xs text-white/45">{String(i + 1).padStart(2, '0')}</span>
+                <span className="font-mono text-xs text-white/65">{String(i + 1).padStart(2, '0')}</span>
               </div>
 
               <div className="mt-8 lg:mt-auto">
@@ -65,7 +65,7 @@ export function CoreValues() {
                       animate={{ opacity: 1, y: 0, transition: { delay: 0.15, duration: 0.5 } }}
                       exit={{ opacity: 0, transition: { duration: 0.1 } }}
                     >
-                      <p className="mt-4 max-w-xl text-[15px] font-light leading-relaxed text-white/80">{v.text}</p>
+                      <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-white/80">{v.text}</p>
                     </motion.div>
                   )}
                 </AnimatePresence>

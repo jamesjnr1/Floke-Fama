@@ -78,7 +78,7 @@ export function RegisterForm({ onSignIn }: { onSignIn: () => void }) {
         disabled={pending}
         className="!mt-6 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand-600 text-[15px] font-medium text-white transition hover:bg-brand-700 disabled:opacity-60"
       >
-        {pending ? 'Sending…' : 'Create account'} {!pending && <Icon name="fi-rr-arrow-small-right" />}
+        {pending ? 'Sending…' : 'Create account'} 
       </button>
       <p className="text-center text-xs leading-relaxed text-ink-3">
         We verify every facility before an account goes live, then email your sign-in details.

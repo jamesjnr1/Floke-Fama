@@ -129,7 +129,7 @@ export function SpecHeader({ product, categoryTitle }: { product: Product; categ
       <p className="label">{product.brand}{categoryTitle ? ` · ${categoryTitle}` : ''}</p>
       <h1 className="display mt-3 text-4xl md:text-5xl">{product.name}</h1>
       {description.map((d) => (
-        <p key={d} className="mt-4 max-w-lg font-light leading-relaxed text-ink-3">{d}</p>
+        <p key={d} className="mt-4 max-w-lg leading-relaxed text-ink-3">{d}</p>
       ))}
       {product.types?.length ? (
         <ul className="mt-6 flex flex-wrap gap-2" aria-label="Listed under">
@@ -146,7 +146,7 @@ export function SpecActions({ product }: { product: Product }) {
   return (
     <div className="flex flex-wrap gap-3">
       <Button asChild>
-        <Link href={`/quote?product=${product.slug}`}>Request a quote <Icon name="fi-rr-arrow-small-right" /></Link>
+        <Link href={`/quote?product=${product.slug}`}>Request a quote</Link>
       </Button>
       <AddToQuote item={{ slug: product.slug, name: product.name, brand: product.brand, image: product.image }} />
       <Link href={`/quote?intent=demo&product=${product.slug}`} className="inline-flex h-12 items-center px-2 text-sm font-medium text-brand-700 underline-offset-4 hover:underline">

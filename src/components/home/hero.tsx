@@ -4,7 +4,6 @@ import { HeroCapsule } from '@/components/home/hero-capsule';
 import { NetworkCanvas } from '@/components/home/network-canvas';
 import { Reveal } from '@/components/motion/reveal';
 import { Button } from '@/components/ui/button';
-import { Icon } from '@/components/ui/icon';
 
 /**
  * Hero Section: deep brand-green canvas over a faint head office photo, 12-column grid.
@@ -45,7 +44,7 @@ export function Hero() {
           </Reveal>
           <Reveal delay={0.22} className="flex flex-wrap gap-3 pt-2">
             <Button asChild variant="outline" size="lg" className="border-transparent text-brand-800 hover:border-transparent">
-              <Link href="/products">Explore Solutions <Icon name="fi-rr-arrow-small-right" /></Link>
+              <Link href="/products">Explore Solutions</Link>
             </Button>
             <Button asChild variant="glass" size="lg">
               <Link href="/contact">Contact Us</Link>

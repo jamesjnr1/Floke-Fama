@@ -122,8 +122,8 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
               </div>
               <div className="rounded-3xl bg-midnight p-5 text-white">
                 <p className="text-sm font-semibold leading-snug">Need equipment or support?</p>
-                <p className="mt-1.5 text-xs leading-relaxed text-white/60">Our sales engineers reply within one business day.</p>
-                <Link href="/quote" className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-brand-300 hover:text-white">Request a quote <Icon name="fi-rr-arrow-small-right" /></Link>
+                <p className="mt-1.5 text-xs leading-relaxed text-white/75">Our sales engineers reply within one business day.</p>
+                <Link href="/quote" className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-brand-300 hover:text-white">Request a quote</Link>
               </div>
             </div>
           </aside>
@@ -140,10 +140,10 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
             <div aria-hidden className="absolute -right-20 -top-24 -z-10 size-80 rounded-full bg-[radial-gradient(circle,rgb(46_154_91/0.35),transparent_65%)]" />
             <div>
               <p className="text-2xl font-bold tracking-[-0.02em] md:text-3xl">Looking to upgrade your facility?</p>
-              <p className="mt-2 max-w-lg text-white/65">Trusted, end-to-end medical technology solutions from Flokefama.</p>
+              <p className="mt-2 max-w-lg text-white/80">Trusted, end-to-end medical technology solutions from Flokefama.</p>
             </div>
             <div className="flex flex-wrap gap-3">
-              <Button asChild variant="glow" size="lg"><Link href="/quote">Request a quote <Icon name="fi-rr-arrow-small-right" /></Link></Button>
+              <Button asChild variant="glow" size="lg"><Link href="/quote">Request a quote</Link></Button>
               <Button asChild variant="glass" size="lg"><Link href="/contact">Contact us</Link></Button>
             </div>
           </div>
@@ -155,7 +155,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         <div className="mx-auto max-w-[1200px] px-5">
           <div className="flex items-end justify-between gap-4">
             <h2 className="text-2xl font-bold tracking-[-0.02em] text-ink md:text-3xl">More from the Media Centre</h2>
-            <Link href="/events#news" className="hidden shrink-0 items-center gap-1 text-sm font-medium text-brand-700 sm:inline-flex">All news <Icon name="fi-rr-arrow-small-right" /></Link>
+            <Link href="/events#news" className="hidden shrink-0 items-center gap-1 text-sm font-medium text-brand-700 sm:inline-flex">All news</Link>
           </div>
           <ul className="swipe-row mt-8 gap-4 md:grid-cols-3">
             {related.map((r) => (
