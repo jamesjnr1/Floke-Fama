@@ -138,7 +138,7 @@ export function Catalog({ products, categories, initialCategory, initialQuery, i
           <p className="text-lg font-medium text-ink">No matches for “{query}”</p>
           <p className="mt-2 text-sm text-ink-3">Our team sources beyond the catalogue.</p>
           <Link href={`/quote?need=${encodeURIComponent(query)}`} className="mt-5 inline-flex items-center gap-1 text-sm font-medium text-brand-600">
-            Ask us to source it <Icon name="fi-rr-arrow-small-right" />
+            Ask us to source it
           </Link>
         </div>
       )}
@@ -160,7 +160,7 @@ function ProductCard({ product, category, wide }: { product: Product; category?:
         <div>
           <p className="label flex items-center gap-2">{product.brand}{product.newArrival && <span className="rounded-full bg-brand-600 px-2 py-0.5 text-[10px] font-medium normal-case tracking-normal text-white">New</span>}</p>
           <h2 className="mt-1 text-sm font-semibold leading-snug tracking-tight text-ink sm:mt-1.5 sm:text-lg">{product.name}</h2>
-          <p className="mt-1 line-clamp-2 hidden text-sm font-light text-ink-3 sm:block">{product.summary}</p>
+          <p className="mt-1 line-clamp-2 hidden text-sm text-ink-3 sm:block">{product.summary}</p>
           {product.types?.[0] && <Badge className="mt-3 hidden sm:inline-flex">{product.types[0]}</Badge>}
         </div>
         <span className="hidden size-10 shrink-0 place-items-center rounded-full bg-mist text-ink transition-all sm:grid duration-500 group-hover:rotate-45 group-hover:bg-brand-600 group-hover:text-white">

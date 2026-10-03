@@ -55,7 +55,7 @@ export default function EsgPage() {
     <>
       <PageHero
         label="Environmental, Social & Governance (ESG)"
-        title={<>Healthcare that <span className="text-gradient">gives back</span></>}
+        title={<>Healthcare that <span className="text-accent">gives back</span></>}
         lead="How Flokefama creates value beyond supply: for patients, for communities and for Ghana’s economy."
       />
 
@@ -83,7 +83,7 @@ export default function EsgPage() {
               <p className="mt-3 max-w-3xl text-lg leading-relaxed text-ink-2">{aim.text}</p>
             </div>
             <Link href="/about#mission" className="inline-flex shrink-0 items-center gap-1 text-sm font-medium text-brand-700 hover:text-brand-600">
-              Our mission &amp; vision <Icon name="fi-rr-arrow-small-right" />
+              Our mission &amp; vision
             </Link>
           </Reveal>
         </div>

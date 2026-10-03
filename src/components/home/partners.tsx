@@ -98,7 +98,7 @@ export function Partners({ heading = true }: { heading?: boolean }) {
                 <p className="flex min-h-[clamp(2.75rem,2rem+2.4vw,4rem)] items-end text-[clamp(1.75rem,1.4rem+1.2vw,2.5rem)] font-bold leading-[1.05] tracking-[-0.03em]">Ghana Club 100</p>
                 <p className="text-[15px] leading-snug text-white/80">
                   Trusted badges &amp; associations: CEO’s Summit, partnerships and more.
-                  <Link href="/awards" className="mt-3 flex items-center gap-1 font-medium text-white transition hover:text-white/80">View our awards <Icon name="fi-rr-arrow-small-right" /></Link>
+                  <Link href="/awards" className="mt-3 flex items-center gap-1 font-medium text-white transition hover:text-white/80">View our awards</Link>
                 </p>
               </div>
             </div>

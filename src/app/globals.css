@@ -17,8 +17,8 @@
   --color-mist: #eef2ef;
   --color-line: #e1e7e3;
   --color-ink: #0b1510;
-  --color-ink-2: #3d4843;
-  --color-ink-3: #6f7a74;
+  --color-ink-2: #2b3530;
+  --color-ink-3: #4a5650;
 
   --color-midnight: #0b1510;
   --color-midnight-2: #111d17;
@@ -128,11 +128,9 @@
     background-size: 56px 56px;
     mask-image: radial-gradient(ellipse 60% 60% at 50% 0%, #000 10%, transparent 70%);
   }
-  .text-gradient {
-    background: linear-gradient(100deg, #8fd1a9 0%, #2e9a5b 45%, #d5ecdd 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+  /* Accent words in headings on dark backgrounds: one solid soft green, no gradient */
+  .text-accent {
+    color: var(--color-brand-300);
   }
 }
 

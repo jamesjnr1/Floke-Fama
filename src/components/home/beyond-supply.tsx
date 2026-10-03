@@ -2,7 +2,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Reveal } from '@/components/motion/reveal';
 import { Button } from '@/components/ui/button';
-import { Icon } from '@/components/ui/icon';
 
 /**
  * Home: the "we go beyond just supplying medical equipment" introduction from the current site,
@@ -24,7 +23,7 @@ export function BeyondSupply() {
           </p>
           <Button asChild className="mt-9">
             <Link href="/about">
-              About us <Icon name="fi-rr-arrow-small-right" />
+              About us
             </Link>
           </Button>
         </Reveal>

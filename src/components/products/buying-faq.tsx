@@ -55,27 +55,27 @@ export function BuyingFaq() {
           <div className="mt-6 overflow-hidden rounded-3xl bg-midnight text-white">
             <div className="p-5">
               <p className="text-sm font-semibold">Talk to sales</p>
-              <p className="mt-1 text-xs text-white/60">Replies within one business day</p>
+              <p className="mt-1 text-xs text-white/75">Replies within one business day</p>
             </div>
             <ul className="divide-y divide-white/10 border-t border-white/10 text-sm">
               <li>
                 <a href={`${contact.whatsapp}?text=${encodeURIComponent('Hello Flokefama, I have a question before ordering.')}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 px-5 py-3.5 transition hover:bg-white/5">
-                  <Icon name="fi-brands-whatsapp" className="text-lg text-[#25D366]" /> <span className="flex-1">WhatsApp</span> <Icon name="fi-rr-arrow-small-right" className="text-white/50" />
+                  <Icon name="fi-brands-whatsapp" className="text-lg text-[#25D366]" /> <span className="flex-1">WhatsApp</span>
                 </a>
               </li>
               <li>
                 <a href={contact.phoneHref} className="flex items-center gap-3 px-5 py-3.5 transition hover:bg-white/5">
-                  <Icon name="fi-rr-phone-call" className="text-lg text-brand-300" /> <span className="flex-1">{contact.phone}</span> <Icon name="fi-rr-arrow-small-right" className="text-white/50" />
+                  <Icon name="fi-rr-phone-call" className="text-lg text-brand-300" /> <span className="flex-1">{contact.phone}</span>
                 </a>
               </li>
               <li>
                 <a href={`mailto:${contact.sales}`} className="flex items-center gap-3 px-5 py-3.5 transition hover:bg-white/5">
-                  <Icon name="fi-rr-envelope" className="text-lg text-brand-300" /> <span className="min-w-0 flex-1 truncate">{contact.sales}</span> <Icon name="fi-rr-arrow-small-right" className="text-white/50" />
+                  <Icon name="fi-rr-envelope" className="text-lg text-brand-300" /> <span className="min-w-0 flex-1 truncate">{contact.sales}</span>
                 </a>
               </li>
             </ul>
             <Link href="/quote" className="flex items-center justify-center gap-2 bg-brand-600 px-5 py-3.5 text-sm font-medium transition hover:bg-brand-700">
-              Request a quote <Icon name="fi-rr-arrow-small-right" />
+              Request a quote
             </Link>
           </div>
         </div>
@@ -90,7 +90,7 @@ export function BuyingFaq() {
             <p className="mt-3 text-sm leading-relaxed text-ink-3">{f.a}</p>
             {f.link && (
               <Link href={f.link.href} className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-brand-700 hover:text-brand-600">
-                {f.link.label} <Icon name="fi-rr-arrow-small-right" />
+                {f.link.label}
               </Link>
             )}
           </details>

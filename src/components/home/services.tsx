@@ -41,7 +41,7 @@ export function Services() {
               End-to-end healthcare solutions, <span className="text-brand-600">tailored to you.</span>
             </h2>
           </div>
-          <p className="max-w-sm font-light leading-relaxed text-ink-3">
+          <p className="max-w-sm leading-relaxed text-ink-3">
             We provide end-to-end healthcare solutions, tailored to hospitals, labs, and organizations.
           </p>
         </Reveal>
@@ -102,10 +102,10 @@ export function Services() {
                 <div>
                   <p className="font-mono text-sm text-brand-300">Stage {String(active + 1).padStart(2, '0')} of {String(services.length).padStart(2, '0')}</p>
                   <h3 className="display mt-4 text-5xl text-white">{s.title}</h3>
-                  <p className="mt-5 max-w-xl text-lg font-light leading-relaxed text-white/75">{s.body}</p>
+                  <p className="mt-5 max-w-xl text-lg leading-relaxed text-white/75">{s.body}</p>
                   <div className="mt-8 flex gap-3">
                     <Link href="/quote" className="inline-flex h-12 items-center gap-2 rounded-xl bg-white px-6 text-[15px] font-medium text-brand-800 transition hover:bg-brand-50">
-                      Request a quote <Icon name="fi-rr-arrow-small-right" />
+                      Request a quote
                     </Link>
                     <Link href="/contact" className="glass inline-flex h-12 items-center rounded-xl px-6 text-[15px] text-white transition hover:bg-white/10">
                       Talk to an engineer
@@ -126,7 +126,7 @@ export function Services() {
               <span className="relative grid size-10 shrink-0 place-items-center rounded-full border border-brand-500 bg-paper font-mono text-xs text-brand-700">{String(i + 1).padStart(2, '0')}</span>
               <div className="pt-1.5">
                 <h3 className="text-lg font-semibold tracking-tight">{x.title}</h3>
-                <p className="mt-1 text-sm font-light leading-relaxed text-ink-3">{x.body}</p>
+                <p className="mt-1 text-sm leading-relaxed text-ink-3">{x.body}</p>
               </div>
             </li>
           ))}

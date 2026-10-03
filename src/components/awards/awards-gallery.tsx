@@ -40,7 +40,7 @@ export function AwardsGallery() {
                   <div className="mt-auto p-6 md:p-8">
                     <p className="label !text-brand-300">{a.year}</p>
                     <h3 className={cn('mt-2 font-bold tracking-[-0.02em] text-white', l.feature ? 'text-3xl md:text-5xl' : 'text-xl')}>{a.title}</h3>
-                    <p className={cn('mt-2 font-light text-white/70', l.feature ? 'max-w-lg' : 'text-sm')}>{a.body}</p>
+                    <p className={cn('mt-2 text-white/80', l.feature ? 'max-w-lg' : 'text-sm')}>{a.body}</p>
                   </div>
                 </article>
               </Reveal>
@@ -49,7 +49,7 @@ export function AwardsGallery() {
           })}
         </ul>
         <Reveal>
-          <p className="mx-auto mt-16 max-w-3xl text-center text-xl font-light leading-relaxed text-ink-3 md:text-2xl">
+          <p className="mx-auto mt-16 max-w-3xl text-center text-xl leading-relaxed text-ink-3 md:text-2xl">
             These accolades serve as a testament to the <span className="font-medium text-ink">hard work of our team</span>, the{' '}
             <span className="font-medium text-ink">quality of our solutions</span>, and the <span className="font-medium text-brand-700">positive impact we’ve made in transforming healthcare delivery across Ghana and the West African region</span>.
           </p>

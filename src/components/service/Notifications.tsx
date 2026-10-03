@@ -55,7 +55,7 @@ export function Notifications({ items, onRead, onReadAll, onOpen, tone = 'dark' 
           >
             <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
               <p className="text-sm font-semibold text-white">Notifications</p>
-              <button onClick={onReadAll} disabled={!unread} className="text-xs text-brand-300 hover:text-white disabled:text-white/30">Mark all read</button>
+              <button onClick={onReadAll} disabled={!unread} className="text-xs text-brand-300 hover:text-white disabled:text-white/60">Mark all read</button>
             </div>
             <ul className="max-h-[60vh] overflow-y-auto">
               {items.map((n) => (
@@ -70,13 +70,13 @@ export function Notifications({ items, onRead, onReadAll, onOpen, tone = 'dark' 
                   >
                     <span className={cn('mt-1.5 inline-block size-2 shrink-0 rounded-full', n.read ? 'bg-white/15' : 'bg-brand-400')} aria-hidden />
                     <span>
-                      <span className={cn('block text-sm', n.read ? 'text-white/60' : 'text-white')}>{n.text}</span>
-                      <span className="text-xs text-white/35">{fmtTime(n.at)}</span>
+                      <span className={cn('block text-sm', n.read ? 'text-white/75' : 'text-white')}>{n.text}</span>
+                      <span className="text-xs text-white/60">{fmtTime(n.at)}</span>
                     </span>
                   </button>
                 </li>
               ))}
-              {items.length === 0 && <li className="px-4 py-8 text-center text-sm text-white/45">You’re all caught up.</li>}
+              {items.length === 0 && <li className="px-4 py-8 text-center text-sm text-white/65">You’re all caught up.</li>}
             </ul>
           </motion.div>
         )}

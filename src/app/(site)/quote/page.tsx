@@ -37,10 +37,11 @@ export default async function QuotePage({ searchParams }: { searchParams: Promis
     <div className="bg-canvas pt-20">
       <div className="mx-auto grid max-w-[1280px] gap-12 px-5 py-16 md:px-10 md:py-24 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
         <aside className="lg:sticky lg:top-32 lg:self-start">
-          <p className="label">Procurement portal</p>
-          <h1 className="display mt-5 text-[clamp(2.5rem,1.4rem+3.5vw,4.5rem)]">
-            {focus ? (intent === 'demo' ? 'Book a demonstration.' : 'Request a quote.') : listed.length ? `Request a quote for ${listed.length} ${listed.length === 1 ? 'item' : 'items'}.` : 'Tell us what your facility needs.'}
+          <p className="label">{intent === 'demo' ? 'Demonstration' : 'Request a quote'}</p>
+          <h1 className="display mt-4 text-[clamp(2rem,1.4rem+2vw,3rem)] leading-[1.1]">
+            {focus ? (intent === 'demo' ? 'Book a demonstration' : 'Request a quote') : listed.length ? `Quote for ${listed.length} ${listed.length === 1 ? 'item' : 'items'}` : 'Tell us what you need'}
           </h1>
+          <p className="mt-4 max-w-sm text-lg leading-relaxed text-ink-2">Fill in the form and a sales engineer will reply within one business day.</p>
           {focus && (
             <div className="mt-8 overflow-hidden rounded-4xl border border-line bg-paper" data-testid="quote-focus">
               <div className="relative aspect-[16/10] bg-gradient-to-b from-paper to-canvas">
@@ -55,7 +56,7 @@ export default async function QuotePage({ searchParams }: { searchParams: Promis
                 <p className="mt-2 text-xl font-semibold leading-snug tracking-[-0.01em] text-ink">{focus.name}</p>
                 <p className="mt-1 text-sm text-ink-3">{focus.brand}{focus.category ? ` · ${focus.category}` : ''}</p>
                 <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm font-medium">
-                  <Link href={`/products/${focus.slug}`} className="flex items-center gap-1 text-brand-700 hover:text-brand-600">View product <Icon name="fi-rr-arrow-small-right" /></Link>
+                  <Link href={`/products/${focus.slug}`} className="flex items-center gap-1 text-brand-700 hover:text-brand-600">View product</Link>
                   <Link href="/products" className="text-ink-3 hover:text-ink">Choose another machine</Link>
                 </div>
               </div>
@@ -76,30 +77,22 @@ export default async function QuotePage({ searchParams }: { searchParams: Promis
               ))}
             </ul>
           )}
-          <p className="mt-6 max-w-sm font-light leading-relaxed text-ink-3">
-            {focus || listed.length
-              ? listed.length > 1 ? 'These items are already in your request. Confirm the details in five short steps; our sales engineers reply within one business day.' : 'This machine is already in your request. Confirm the details in five short steps; our sales engineers reply within one business day.'
-              : 'Five short steps. Your request goes straight to our sales engineers, and you’ll hear back within one business day.'}
-          </p>
-          {/* What happens after sending: answers the buyer's next question before they ask it */}
-          <ol className="mt-10 max-w-sm space-y-5 border-l border-line pl-6">
-            {[
-              { title: 'We confirm your request', body: 'A sales engineer reviews it and replies within one business day.' },
-              { title: 'You receive a tailored quote', body: 'Configuration, consumables, installation and training, priced for your facility.' },
-              { title: 'Demonstration on request', body: 'See the equipment working at your facility before you decide.' },
-              { title: 'Installed and supported', body: 'Our engineers install, calibrate and train your team, then support you through the client portal.' },
-            ].map((s, i) => (
-              <li key={s.title} className="relative">
-                <span className="absolute -left-[34px] top-0.5 grid size-5 place-items-center rounded-full bg-brand-600 font-mono text-[10px] text-white">{i + 1}</span>
-                <p className="text-sm font-semibold text-ink">{s.title}</p>
-                <p className="mt-0.5 text-sm leading-relaxed text-ink-3">{s.body}</p>
+          {/* What the buyer gets, in three plain lines */}
+          <ul className="mt-8 max-w-sm space-y-4">
+            {['A reply within one business day', 'A quote tailored to your facility', 'Installation, training and support'].map((t) => (
+              <li key={t} className="flex items-center gap-3 text-ink-2">
+                <span className="grid size-7 shrink-0 place-items-center rounded-full bg-brand-50 text-brand-700"><Icon name="fi-rr-check" className="text-sm" /></span>
+                {t}
               </li>
             ))}
-          </ol>
-          <p className="mt-8 max-w-sm text-sm text-ink-3">
-            Prefer to talk? Call <a href={contact.phoneHref} className="font-medium text-ink hover:text-brand-700">{contact.phone}</a> or{' '}
-            <a href={contact.whatsapp} target="_blank" rel="noopener noreferrer" className="font-medium text-ink hover:text-brand-700">WhatsApp us</a>.
-          </p>
+          </ul>
+          <div className="mt-10 max-w-sm border-t border-line pt-6">
+            <p className="text-sm text-ink-3">Prefer to talk?</p>
+            <div className="mt-2 flex flex-wrap gap-x-6 gap-y-2 font-medium">
+              <a href={contact.phoneHref} className="text-ink hover:text-brand-700">{contact.phone}</a>
+              <a href={contact.whatsapp} target="_blank" rel="noopener noreferrer" className="text-brand-700 hover:text-brand-600">WhatsApp us</a>
+            </div>
+          </div>
         </aside>
         <ProcurementFlow
           key={product ?? listParam ?? 'none'}

@@ -42,8 +42,8 @@ export function Overview({ state, me, onOpenTicket, onOpenAsset, onGo }: {
                 {k.alert && <span className="inline-block size-2 rounded-full bg-signal" aria-label="Needs action" />}
               </span>
               <span className="mt-6 text-4xl font-bold tracking-[-0.03em] text-white">{k.value}</span>
-              <span className="mt-1 text-sm text-white/70">{k.label}</span>
-              <span className="text-xs text-white/40">{k.hint}</span>
+              <span className="mt-1 text-sm text-white/80">{k.label}</span>
+              <span className="text-xs text-white/60">{k.hint}</span>
             </button>
           </li>
         ))}
@@ -53,7 +53,7 @@ export function Overview({ state, me, onOpenTicket, onOpenAsset, onGo }: {
         <Panel className="p-5 md:p-6">
           <div className="flex items-center justify-between">
             <SectionLabel>Work queue</SectionLabel>
-            <button onClick={() => onGo('tickets')} className="text-xs text-brand-300 hover:text-white">All tickets →</button>
+            <button onClick={() => onGo('tickets')} className="text-xs text-brand-300 hover:text-white">All tickets </button>
           </div>
           <ul className="mt-4 divide-y divide-white/[0.06]">
             {[...unassigned, ...mine].slice(0, 6).map((t) => {
@@ -61,10 +61,10 @@ export function Overview({ state, me, onOpenTicket, onOpenAsset, onGo }: {
               return (
                 <li key={t.id} className="min-w-0">
                   <button onClick={() => onOpenTicket(t.id)} className="flex w-full items-center gap-4 py-3.5 text-left transition hover:bg-white/[0.02]">
-                    <span className="w-16 shrink-0 font-mono text-xs text-white/45">{t.id}</span>
+                    <span className="w-16 shrink-0 font-mono text-xs text-white/65">{t.id}</span>
                     <span className="min-w-0 flex-1">
                       <span className="block truncate text-sm font-medium text-white">{t.title}</span>
-                      <span className="block truncate text-xs text-white/40">{asset?.facility} · {fmtTime(t.openedAt)}</span>
+                      <span className="block truncate text-xs text-white/60">{asset?.facility} · {fmtTime(t.openedAt)}</span>
                     </span>
                     <PriorityBadge priority={t.priority} />
                     <span className={cn('hidden w-24 shrink-0 text-right text-xs sm:block', ticketStatusMeta[t.status].className)}>{ticketStatusMeta[t.status].label}</span>
@@ -72,14 +72,14 @@ export function Overview({ state, me, onOpenTicket, onOpenAsset, onGo }: {
                 </li>
               );
             })}
-            {unassigned.length + mine.length === 0 && <li className="py-6 text-sm text-white/45">Nothing in your queue. Nice work.</li>}
+            {unassigned.length + mine.length === 0 && <li className="py-6 text-sm text-white/65">Nothing in your queue. Nice work.</li>}
           </ul>
         </Panel>
 
         <Panel className="flex flex-col items-center justify-center p-6">
           <SectionLabel className="self-start">Fleet health</SectionLabel>
           <Radial value={fleet} />
-          <p className="text-center text-xs text-white/40">{healthy} of {state.assets.length} systems online with no open faults</p>
+          <p className="text-center text-xs text-white/60">{healthy} of {state.assets.length} systems online with no open faults</p>
         </Panel>
       </div>
 
@@ -87,7 +87,7 @@ export function Overview({ state, me, onOpenTicket, onOpenAsset, onGo }: {
         <Panel className="p-5 md:p-6">
           <div className="flex items-center justify-between">
             <SectionLabel>Calibrations due</SectionLabel>
-            <button onClick={() => onGo('calibration')} className="text-xs text-brand-300 hover:text-white">Schedule →</button>
+            <button onClick={() => onGo('calibration')} className="text-xs text-brand-300 hover:text-white">Schedule </button>
           </div>
           <ul className="mt-4 space-y-2">
             {due.slice(0, 4).map((a) => {
@@ -98,14 +98,14 @@ export function Overview({ state, me, onOpenTicket, onOpenAsset, onGo }: {
                     <span className={cn('inline-block size-2 shrink-0 rounded-full', d < 0 ? 'bg-signal' : 'bg-brand-400')} aria-hidden />
                     <span className="min-w-0 flex-1">
                       <span className="block truncate text-sm text-white">{a.name}</span>
-                      <span className="block truncate text-xs text-white/40">{a.facility}</span>
+                      <span className="block truncate text-xs text-white/60">{a.facility}</span>
                     </span>
-                    <span className={cn('shrink-0 text-xs', d < 0 ? 'text-signal' : 'text-white/60')}>{dueLabel(a.nextCalibration)}</span>
+                    <span className={cn('shrink-0 text-xs', d < 0 ? 'text-signal' : 'text-white/75')}>{dueLabel(a.nextCalibration)}</span>
                   </button>
                 </li>
               );
             })}
-            {due.length === 0 && <li className="px-3 py-4 text-sm text-white/45">No calibrations due in the next 30 days.</li>}
+            {due.length === 0 && <li className="px-3 py-4 text-sm text-white/65">No calibrations due in the next 30 days.</li>}
           </ul>
         </Panel>
 
@@ -121,8 +121,8 @@ export function Overview({ state, me, onOpenTicket, onOpenAsset, onGo }: {
                   <button onClick={() => onOpenTicket(l.ticket)} className="flex w-full gap-3 text-left">
                     <span className="mt-1.5 inline-block size-1.5 shrink-0 rounded-full bg-brand-400" aria-hidden />
                     <span className="min-w-0">
-                      <span className="block text-sm text-white/80"><span className="font-mono text-xs text-white/45">{l.ticket}</span> {l.text}</span>
-                      <span className="text-xs text-white/35">{l.by} · {fmtTime(l.at)}</span>
+                      <span className="block text-sm text-white/80"><span className="font-mono text-xs text-white/65">{l.ticket}</span> {l.text}</span>
+                      <span className="text-xs text-white/60">{l.by} · {fmtTime(l.at)}</span>
                     </span>
                   </button>
                 </li>
@@ -142,7 +142,7 @@ export function Overview({ state, me, onOpenTicket, onOpenAsset, onGo }: {
                   <span className={s.dot} aria-hidden />
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-sm font-medium text-white">{a.name}</span>
-                    <span className="block truncate font-mono text-[11px] uppercase tracking-wider text-white/40">{a.facility} · {s.label}</span>
+                    <span className="block truncate font-mono text-[11px] uppercase tracking-wider text-white/60">{a.facility} · {s.label}</span>
                   </span>
                   <Sparkline values={a.readings} tone={s.tone} />
                 </button>
