@@ -13,9 +13,9 @@ export function AddToQuote({ item, compact, className }: { item: QuoteItem; comp
     e.preventDefault();
     e.stopPropagation();
     quoteList.toggle(item);
-    if (!added) toast.success('Added to your quote list', { description: `${item.name}. Add more, then request one quote for all of them.` });
+    if (!added) toast.success('Added to your cart', { description: `${item.name}. Add more, then check out once for all of them.` });
   };
-  const label = added ? `Remove ${item.name} from quote list` : `Add ${item.name} to quote list`;
+  const label = added ? `Remove ${item.name} from cart` : `Add ${item.name} to cart`;
 
   if (compact)
     return (
@@ -24,7 +24,7 @@ export function AddToQuote({ item, compact, className }: { item: QuoteItem; comp
         onClick={onClick}
         aria-pressed={added}
         aria-label={label}
-        title={added ? 'In your quote list' : 'Add to quote list'}
+        title={added ? 'In your cart' : 'Add to cart'}
         className={cn(
           'grid size-9 place-items-center rounded-full shadow-[0_6px_16px_-8px_rgb(11_21_16/0.5)] ring-1 transition sm:size-10',
           added ? 'bg-brand-600 text-white ring-brand-600' : 'bg-paper/95 text-ink ring-line backdrop-blur hover:bg-brand-600 hover:text-white hover:ring-brand-600',
@@ -46,7 +46,7 @@ export function AddToQuote({ item, compact, className }: { item: QuoteItem; comp
         className,
       )}
     >
-      <Icon name={added ? 'fi-rr-check' : 'fi-rr-plus'} /> {added ? 'In your quote list' : 'Add to quote list'}
+      <Icon name={added ? 'fi-rr-check' : 'fi-rr-plus'} /> {added ? 'In your cart' : 'Add to cart'}
     </button>
   );
 }

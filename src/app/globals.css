@@ -12,31 +12,35 @@
   --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
 
-  --color-canvas: #f8f9fa;
+  /* Colour system: green + warm off-white + charcoal navy dominate; red and blue are controlled accents. */
+  --color-canvas: #f7f8f5; /* warm off-white: main backgrounds */
   --color-paper: #ffffff;
-  --color-mist: #eef2ef;
-  --color-line: #e1e7e3;
-  --color-ink: #0b1510;
-  --color-ink-2: #2b3530;
-  --color-ink-3: #4a5650;
+  --color-mist: #e8eef0; /* cool gray: cards, soft panels */
+  --color-line: #dde5e8; /* cool gray borders */
+  --color-ink: #17313a; /* charcoal navy: primary text */
+  --color-ink-2: #2c4650;
+  --color-ink-3: #4b626b;
 
-  --color-midnight: #0b1510;
-  --color-midnight-2: #111d17;
-  --color-midnight-3: #17261e;
+  --color-midnight: #102a31;
+  --color-midnight-2: #16343c;
+  --color-midnight-3: #1d3f48;
 
-  /* Brand green scale from the logo (600 = logo green, 5.6:1 with white text). */
-  --color-brand-50: #eef7f1;
-  --color-brand-100: #d5ecdd;
-  --color-brand-300: #8fd1a9;
-  --color-brand-400: #52b57c;
-  --color-brand-500: #2e9a5b;
-  --color-brand-600: #257847;
-  --color-brand-700: #1b5e37;
-  --color-brand-800: #134228;
+  /* Flokefama green (600 = primary #007A4D, 800 = deep green #004D3B) */
+  --color-brand-50: #edf6f1;
+  --color-brand-100: #cfe8db;
+  --color-brand-300: #7fc9a3;
+  --color-brand-400: #34a174;
+  --color-brand-500: #008a57;
+  --color-brand-600: #007a4d;
+  --color-brand-700: #006140;
+  --color-brand-800: #004d3b;
 
-  --color-surgical: #3aa867;
-  --color-signal: #e4283c;
-  --color-signal-700: #b41d2e; /* logo red, darkened for AA text on light backgrounds */
+  --color-surgical: #34a174;
+  --color-signal: #e3262e; /* Flokefama red: small highlights and CTAs */
+  --color-signal-700: #b81d24; /* red, darkened for AA text on light backgrounds */
+  --color-blue: #2f80b7; /* medical blue: technology and diagnostics accents */
+  --color-blue-50: #eaf3f9;
+  --color-teal: #63c6b5; /* soft teal: secondary accents */
 
   --radius-4xl: 2rem;
   --radius-5xl: 2.5rem;
@@ -140,7 +144,7 @@ html[data-text='larger'] { font-size: 125%; }
 html:is([data-text='large'], [data-text='larger']) :is(h1, h2, h3, p) { overflow-wrap: break-word; }
 
 html[data-contrast='high'] {
-  --color-ink-2: #0b1510;
+  --color-ink-2: #17313a;
   --color-ink-3: #27312c;
   --color-line: #8d9992;
 }

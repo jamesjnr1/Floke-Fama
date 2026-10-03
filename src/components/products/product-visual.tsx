@@ -38,7 +38,7 @@ export function ProductVisual({ product, category, className, sizes, priority, s
             fill
             sizes={sizes}
             priority={priority}
-            className={cn('object-contain transition-transform duration-1000 ease-out-expo group-hover:scale-105', dark ? 'object-right-bottom' : 'p-[14%] mix-blend-multiply')}
+            className={cn('object-contain transition-transform duration-1000 ease-out-expo group-hover:scale-105', dark ? 'object-right-bottom' : 'p-[7%] mix-blend-multiply')}
           />
         </>
       ) : (

@@ -63,7 +63,7 @@ export function ProcurementFlow({ options, initial }: { options: Option[]; initi
     setDone({ reference: json.reference, delivered: json.delivered === true, data });
     track(data.intent === 'demo' ? 'demo_submitted' : 'quote_submitted', { items: data.equipment.length, department: data.department, delivered: json.delivered === true });
     quoteList.clear(); // the list has been sent
-    if (json.delivered) toast.success(data.intent === 'demo' ? 'Demonstration request received' : 'Quote request received', { description: `Reference ${json.reference}. A specialist will contact you shortly.` });
+    if (json.delivered) toast.success(data.intent === 'demo' ? 'Demonstration request received' : 'Order received', { description: `Reference ${json.reference}. A specialist will contact you shortly.` });
   });
 
   if (done) {
@@ -166,7 +166,7 @@ export function ProcurementFlow({ options, initial }: { options: Option[]; initi
                       className={cn('relative rounded-full px-5 py-2.5 text-sm font-medium', values.intent === intent ? 'text-white' : 'text-ink-3')}
                     >
                       {values.intent === intent && <motion.span layoutId="intent-pill" className="absolute inset-0 rounded-full bg-midnight" />}
-                      <span className="relative">{intent === 'quote' ? 'Request a quote' : 'Schedule a demonstration'}</span>
+                      <span className="relative">{intent === 'quote' ? 'Order equipment' : 'Schedule a demonstration'}</span>
                     </button>
                   ))}
                 </div>
@@ -283,7 +283,7 @@ export function ProcurementFlow({ options, initial }: { options: Option[]; initi
           </Button>
         ) : (
           <Button key="submit" type="submit" variant="glow" disabled={formState.isSubmitting}>
-            {formState.isSubmitting ? 'Sending…' : values.intent === 'demo' ? 'Request demonstration' : 'Send quote request'}
+            {formState.isSubmitting ? 'Sending…' : values.intent === 'demo' ? 'Request demonstration' : 'Place order'}
           </Button>
         )}
       </div>

@@ -22,7 +22,7 @@ export function Testimonials() {
   }, [active, paused, reduce]);
 
   return (
-    <section id="testimonials" className="scroll-mt-28 border-y border-brand-100 bg-brand-50 py-14 md:py-32">
+    <section id="testimonials" className="scroll-mt-28 border-y border-line bg-paper py-14 md:py-32">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal className="flex flex-col items-center text-center">
           <p className="label">Testimonials</p>

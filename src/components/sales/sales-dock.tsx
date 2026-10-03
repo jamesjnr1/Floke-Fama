@@ -58,11 +58,11 @@ export function SalesDock() {
             exit={{ opacity: 0, y: 12, scale: 0.97 }}
             transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
             role="dialog"
-            aria-label="Your quote list"
+            aria-label="Your cart"
             className="w-[min(360px,calc(100vw-2rem))] overflow-hidden rounded-3xl border border-line bg-paper shadow-[0_30px_60px_-20px_rgb(11_21_16/0.45)]"
           >
             <div className="flex items-center justify-between border-b border-line px-5 py-4">
-              <p className="font-semibold text-ink">Your quote list <span className="font-normal text-ink-3">({items.length})</span></p>
+              <p className="font-semibold text-ink">Your cart <span className="font-normal text-ink-3">({items.length})</span></p>
               <button type="button" onClick={() => quoteList.clear()} className="text-xs text-ink-3 hover:text-ink">Clear</button>
             </div>
             <ul className="max-h-72 divide-y divide-line overflow-y-auto">
@@ -90,9 +90,9 @@ export function SalesDock() {
                 }}
                 className="flex h-12 items-center justify-center gap-2 rounded-full bg-brand-600 text-sm font-medium text-white transition hover:bg-brand-700"
               >
-                Request one quote for {items.length === 1 ? 'this item' : `all ${items.length}`}
+                Check out {items.length === 1 ? '1 item' : `${items.length} items`}
               </Link>
-              <p className="mt-2 text-center text-xs text-ink-3">A specialist replies within one business day.</p>
+              <p className="mt-2 text-center text-xs text-ink-3">A sales engineer confirms price and delivery within one business day.</p>
             </div>
           </motion.div>
         )}
@@ -106,8 +106,8 @@ export function SalesDock() {
             aria-expanded={open}
             className="flex h-12 items-center gap-2 rounded-full bg-midnight pl-4 pr-5 text-sm font-medium text-white shadow-[0_14px_30px_-12px_rgb(11_21_16/0.7)] transition hover:bg-black"
           >
-            <Icon name="fi-rr-clipboard-list" className="text-base" />
-            Quote list
+            <Icon name="fi-rr-shopping-cart" className="text-base" />
+            Cart
             <span className="grid min-w-6 place-items-center rounded-full bg-brand-500 px-1.5 text-xs">{items.length}</span>
           </button>
         )}

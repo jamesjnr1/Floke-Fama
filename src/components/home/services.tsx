@@ -105,7 +105,7 @@ export function Services() {
                   <p className="mt-5 max-w-xl text-lg leading-relaxed text-white/75">{s.body}</p>
                   <div className="mt-8 flex gap-3">
                     <Link href="/quote" className="inline-flex h-12 items-center gap-2 rounded-xl bg-white px-6 text-[15px] font-medium text-brand-800 transition hover:bg-brand-50">
-                      Request a quote
+                      Order now
                     </Link>
                     <Link href="/contact" className="glass inline-flex h-12 items-center rounded-xl px-6 text-[15px] text-white transition hover:bg-white/10">
                       Talk to an engineer

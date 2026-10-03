@@ -146,7 +146,7 @@ export function SpecActions({ product }: { product: Product }) {
   return (
     <div className="flex flex-wrap gap-3">
       <Button asChild>
-        <Link href={`/quote?product=${product.slug}`}>Request a quote</Link>
+        <Link href={`/quote?product=${product.slug}`}>Order now</Link>
       </Button>
       <AddToQuote item={{ slug: product.slug, name: product.name, brand: product.brand, image: product.image }} />
       <Link href={`/quote?intent=demo&product=${product.slug}`} className="inline-flex h-12 items-center px-2 text-sm font-medium text-brand-700 underline-offset-4 hover:underline">
