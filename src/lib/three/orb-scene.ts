@@ -5,7 +5,7 @@
  */
 import { prefersReducedMotion } from '@/lib/a11y';
 import {
-  AdditiveBlending, BufferGeometry, EdgesGeometry, Group, IcosahedronGeometry, LineBasicMaterial, LineSegments,
+  BufferGeometry, EdgesGeometry, Group, IcosahedronGeometry, LineBasicMaterial, LineSegments,
   PerspectiveCamera, Points, PointsMaterial, Scene, Vector3, WebGLRenderer,
 } from 'three';
 
@@ -30,7 +30,7 @@ export function mountOrb(container: HTMLElement, onReady?: () => void): () => vo
   // Outer geodesic shell
   const shellSrc = new IcosahedronGeometry(2.2, 2);
   const shell = new EdgesGeometry(shellSrc);
-  const shellMat = new LineBasicMaterial({ color: 0x52b57c, transparent: true, opacity: 0.38 });
+  const shellMat = new LineBasicMaterial({ color: 0x257847, transparent: true, opacity: 0.45 });
   orb.add(new LineSegments(shell, shellMat));
 
   // Glowing nodes on the shell's vertices (deduplicated)
@@ -45,12 +45,12 @@ export function mountOrb(container: HTMLElement, onReady?: () => void): () => vo
     verts.push(v);
   }
   const dotGeo = new BufferGeometry().setFromPoints(verts);
-  const dotMat = new PointsMaterial({ color: 0x8fd1a9, size: 0.08, transparent: true, opacity: 0.95, blending: AdditiveBlending, depthWrite: false });
+  const dotMat = new PointsMaterial({ color: 0x2e9a5b, size: 0.09, transparent: true, opacity: 0.95, depthWrite: false });
   orb.add(new Points(dotGeo, dotMat));
 
   // Faint inner core, turning the other way
   const core = new EdgesGeometry(new IcosahedronGeometry(1.05, 1));
-  const coreMat = new LineBasicMaterial({ color: 0x8fd1a9, transparent: true, opacity: 0.22 });
+  const coreMat = new LineBasicMaterial({ color: 0xe4283c, transparent: true, opacity: 0.35 });
   const coreMesh = new LineSegments(core, coreMat);
   orb.add(coreMesh);
 
