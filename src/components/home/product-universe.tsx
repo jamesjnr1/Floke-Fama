@@ -15,21 +15,20 @@ export function ProductUniverse({ categories, products = [] }: { categories: Cat
   const image = (c: Category) => c.image ?? products.find((p) => p.category === c.slug && p.image)?.image;
 
   return (
-    <section aria-labelledby="product-universe-title" className="bg-[linear-gradient(135deg,#17402b_0%,#10301f_55%,#0b2418_100%)] py-16 text-white md:py-28">
+    <section aria-labelledby="product-universe-title" className="bg-[linear-gradient(180deg,#e4efe8_0%,#eef5f1_100%)] py-16 md:py-28">
       <div className="mx-auto max-w-[1280px] px-5 md:px-16">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <SectionHeading
-            dark
             label="Solutions"
             title={
               <span id="product-universe-title">
-                Every department. <span className="text-accent">One catalogue.</span>
+                Every department. <span className="text-brand-600">One catalogue.</span>
               </span>
             }
             lead={products.length ? `${products.length} products across ${categories.length} departments, from analysers to hospital furniture.` : undefined}
           />
           <Reveal>
-            <Button asChild variant="glass">
+            <Button asChild variant="dark">
               <Link href="/products">
                 Browse the catalogue
               </Link>
@@ -46,7 +45,7 @@ export function ProductUniverse({ categories, products = [] }: { categories: Cat
                 <Reveal delay={0.05 * i} className="h-full">
                   <Link
                     href={`/products?category=${c.slug}`}
-                    className="group flex h-full flex-col overflow-hidden rounded-3xl border border-white/10 bg-paper transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:shadow-[0_24px_48px_-24px_rgb(0_0_0/0.6)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
+                    className="group flex h-full flex-col overflow-hidden rounded-3xl border border-brand-100 bg-paper transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-[0_20px_40px_-24px_rgb(11_21_16/0.25)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
                   >
                     <div className="relative aspect-[4/3] border-b border-line bg-paper">
                       {src ? (
