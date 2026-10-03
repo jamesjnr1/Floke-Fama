@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Hero } from '@/components/home/hero';
 import { Partners } from '@/components/home/partners';
 import { ProductUniverse } from '@/components/home/product-universe';
-import { Diagnostics } from '@/components/home/diagnostics';
+import { ServicesOverview } from '@/components/home/services-overview';
 import { Testimonials } from '@/components/home/testimonials';
 import { getCategories, getProducts } from '@/lib/data';
 
@@ -17,7 +17,7 @@ export default async function HomePage() {
     <>
       <Hero />
       <Partners />
-      <Diagnostics />
+      <ServicesOverview />
       <ProductUniverse categories={categories} products={products} />
       <Testimonials />
     </>
