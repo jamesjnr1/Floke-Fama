@@ -6,8 +6,7 @@ import { Icon } from "@/components/ui/icon";
 
 /**
  * Home: the "we go beyond just supplying medical equipment" introduction from the current site,
- * word for word. The current site pairs it with an AI-generated render; this uses a real photo of
- * Flokefama staff stocking Mindray reagents (from the "The forgotten stage of quality" article).
+ * word for word, beside an equipment image supplied by the site owner.
  */
 export function BeyondSupply() {
   return (
@@ -51,11 +50,11 @@ export function BeyondSupply() {
           className="relative aspect-[4/3] overflow-hidden rounded-3xl lg:aspect-square"
         >
           <Image
-            src="/images/news/the-forgotten-stage-of-quality-cover.webp"
-            alt="Flokefama staff in branded lab coats stocking Mindray reagents"
+            src="/images/home-equipment.webp"
+            alt="Hospital equipment: an oxygen concentrator, a hospital bed, a patient monitor and a wheelchair"
             fill
-            sizes="(min-width: 1024px) 1000px, 100vw"
-            className="object-cover object-[30%_50%]"
+            sizes="(min-width: 1024px) 560px, 100vw"
+            className="object-cover"
           />
         </Reveal>
       </div>
