@@ -4,12 +4,13 @@ import { purpose } from '@/data/seed';
 import { cn } from '@/lib/utils';
 
 /**
- * Mission, Vision and Aim as three bold blocks: Flokefama green, Flokefama red and medical blue,
- * each with its own icon (award, star, target), as on the current flokefama.com About page.
+ * Mission, Vision and Aim as three bold blocks, as on the current flokefama.com About page, each with its
+ * own icon (award, star, target) and colour: Flokefama green, charcoal navy and medical blue. Red stays a
+ * small accent: as a full block it reads as a warning in a healthcare setting.
  */
 const tone = {
   Mission: 'bg-brand-600 text-white',
-  Vision: 'bg-signal text-white',
+  Vision: 'bg-ink text-white',
   Aim: 'bg-blue text-white',
 } as const;
 

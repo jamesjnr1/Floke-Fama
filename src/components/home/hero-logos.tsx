@@ -41,7 +41,7 @@ export function HeroLogos() {
     <div className="relative z-10 border-t border-line bg-paper text-ink">
       <div className="mx-auto flex max-w-[1280px] flex-col gap-2 px-5 py-4 md:flex-row md:items-center md:gap-8 md:px-10 md:py-5">
         <div className="shrink-0 md:w-56">
-          <p className="label !text-signal-700">Our Partners &amp; Clientele</p>
+          <p className="label">Our Partners &amp; Clientele</p>
           <p className="mt-1 text-sm text-ink-3">Official distributor · 700+ facilities served</p>
         </div>
         <div className="relative min-w-0 flex-1 overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)]">

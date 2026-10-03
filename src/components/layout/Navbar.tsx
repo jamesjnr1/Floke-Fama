@@ -32,9 +32,8 @@ const anchors: NavItem[] = [
 /** Flat list for the mobile menu. */
 const flat = anchors.flatMap((a) => a.children?.map(({ href, label }) => ({ href, label })) ?? [{ href: a.href, label: a.label }]);
 
-/** Pages that open on the dark canvas, so the header starts light-on-dark. */
 // Pages that open on a dark hero: the bar stays see-through there. Elsewhere it is solid from the start.
-const darkTop = ['/portal'];
+const darkTop = ['/', '/portal'];
 
 /** A tab stays active on its sub-pages too (e.g. /products/...). Home only matches exactly. */
 const matches = (pathname: string, href: string) => (href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(`${href}/`));
