@@ -74,7 +74,7 @@ export function ContactForm() {
       <button
         type="submit"
         disabled={pending}
-        className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-brand-600 px-6 text-[15px] font-medium text-white transition hover:bg-brand-700 disabled:opacity-60"
+        className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-cta px-6 text-[15px] font-medium text-white transition hover:bg-cta-700 disabled:opacity-60"
       >
         {pending ? 'Sending…' : 'Send message'}
       </button>
@@ -116,7 +116,7 @@ function Sent({ delivered, data, onReset }: NonNullable<Result> & { onReset: () 
           <p className="mt-5 text-2xl font-bold tracking-[-0.02em] text-ink">One last step.</p>
           <p className="mt-2 text-ink-3">Your message is ready. Send it by email to {t.inbox} or on WhatsApp. Everything is filled in.</p>
           <div className="mt-5 flex flex-wrap gap-3">
-            <a href={send.email} className="inline-flex h-12 items-center gap-2 rounded-xl bg-brand-600 px-5 text-[15px] font-medium text-white transition hover:bg-brand-700">
+            <a href={send.email} className="inline-flex h-12 items-center gap-2 rounded-xl bg-cta px-5 text-[15px] font-medium text-white transition hover:bg-cta-700">
               <Icon name="fi-rr-envelope" /> Send by email
             </a>
             <a href={send.whatsapp} target="_blank" rel="noopener noreferrer" className="inline-flex h-12 items-center gap-2 rounded-xl border border-line px-5 text-[15px] font-medium text-ink transition hover:border-ink/30">
