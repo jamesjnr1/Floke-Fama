@@ -89,7 +89,7 @@ export function Partners({ heading = true, logos = true }: { heading?: boolean; 
 
         {/* The results: one balanced band (figures from the current homepage) */}
         <Reveal delay={0.1}>
-          <div className={`relative isolate overflow-hidden rounded-4xl bg-brand-800 text-white${logos ? ' mt-10' : ''}`}>
+          <div className={`relative isolate overflow-hidden rounded-4xl bg-ink text-white${logos ? ' mt-10' : ''}`}>
             <div className="grid divide-y divide-white/20 md:grid-cols-3 md:divide-x md:divide-y-0">
               {metrics.slice(0, 2).map((m, i) => (
                 <div key={m.label} className="flex flex-col gap-5 p-7 md:p-10">
