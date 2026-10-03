@@ -19,6 +19,7 @@ export const categories: Category[] = [
     short: 'IVD',
     description: 'Biochemistry and haematology analysers with matched reagents and controls.',
     icon: 'fi-rr-microscope',
+    image: '/images/products/auto-haematology-analyzer-bc3000plus.webp',
   },
   {
     slug: 'critical-care',
@@ -26,6 +27,7 @@ export const categories: Category[] = [
     short: 'Critical care',
     description: 'Monitors, defibrillators, CTG and respiratory support for wards and theatres.',
     icon: 'fi-rr-heart-rate',
+    image: '/images/products/patient-monitor-comen.webp',
   },
   {
     slug: 'laboratory',
@@ -33,6 +35,7 @@ export const categories: Category[] = [
     short: 'Laboratory',
     description: 'Microscopy, centrifugation and the everyday instruments of a modern lab.',
     icon: 'fi-rr-flask-gear',
+    image: '/images/products/microscope-olympus-cx23.webp',
   },
   {
     slug: 'hospital-equipment',
@@ -40,6 +43,7 @@ export const categories: Category[] = [
     short: 'Hospital',
     description: 'Sterilisation, suction, beds and clinical furniture built for daily use.',
     icon: 'fi-rr-hospital',
+    image: '/images/products/examination-bed.webp',
   },
   {
     slug: 'consumables',
@@ -47,6 +51,7 @@ export const categories: Category[] = [
     short: 'Consumables',
     description: 'A continuous, reliable supply of reagents, cuvettes and disposables.',
     icon: 'fi-rr-syringe',
+    image: '/images/products/ba-88a-bulb.webp',
   },
 ];
 
