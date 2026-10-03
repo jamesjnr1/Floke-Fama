@@ -6,7 +6,7 @@ import { Reveal } from '@/components/motion/reveal';
 import { Button } from '@/components/ui/button';
 
 /**
- * Hero Section: deep brand-green canvas over a faint photo of Flokefama staff at work, 12-column grid.
+ * Hero Section: deep brand-green canvas over a faint photo of the head office and its FLOKE sign, 12-column grid.
  * Left (span 7): the company line from flokefama.com, muted subline, and two simple actions
  * (Explore Solutions → shop, Contact Us → contact, as on the current site).
  * Right (span 5): 3D dotted capsule in orbit rings, over a faint wireframe network.
@@ -17,14 +17,15 @@ export function Hero() {
       {/* Background: head office photo (pre-tinted green, faint), glow, light beam, wireframe network */}
       <div aria-hidden className="absolute inset-0 -z-10">
         <Image
-          src="/images/news/the-forgotten-stage-of-quality-cover.webp"
+          src="/images/hero-brand.webp"
           alt=""
           fill
           priority
           sizes="100vw"
-          className="object-cover object-[30%_40%] opacity-25"
+          className="object-cover object-[8%_20%] opacity-35 md:object-[50%_20%]"
         />
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgb(13_48_29/0.85)_0%,rgb(13_48_29/0.55)_45%,rgb(13_48_29/0.15)_80%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_0%,transparent_45%,rgb(13_48_29/0.85)_75%,#0d301d_100%)]" />
         <div className="absolute -right-40 -top-56 size-[860px] rounded-full bg-[radial-gradient(circle,rgb(82_181_124/0.3),transparent_62%)]" />
         <div className="absolute -bottom-72 -left-40 size-[640px] rounded-full bg-[radial-gradient(circle,rgb(10_38_22/0.8),transparent_70%)]" />
         <div className="absolute -top-20 right-[12%] h-[140%] w-40 rotate-[28deg] bg-gradient-to-b from-brand-300/25 via-brand-400/5 to-transparent blur-2xl" />
