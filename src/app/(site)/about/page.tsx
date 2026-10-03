@@ -152,7 +152,7 @@ export default async function AboutPage() {
       <Impact metrics={metrics} />
 
       {/* Core values */}
-      <section id="values" className="scroll-mt-28 relative isolate overflow-hidden bg-[#eef6f1] py-24 md:py-32">
+      <section id="values" className="scroll-mt-28 relative isolate overflow-hidden bg-canvas py-24 md:py-32">
         <div aria-hidden className="absolute -right-40 -top-40 -z-10 size-[640px] rounded-full bg-[radial-gradient(circle,rgb(228_40_60/0.06),transparent_65%)]" />
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
           <Reveal>
