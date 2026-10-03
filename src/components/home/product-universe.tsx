@@ -4,6 +4,7 @@ import { SectionHeading } from '@/components/home/section-heading';
 import { Reveal } from '@/components/motion/reveal';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
+import { distributors } from '@/data/seed';
 import type { Category, Product } from '@/lib/types';
 
 /**
@@ -26,7 +27,7 @@ export function ProductUniverse({ categories, products = [] }: { categories: Cat
                 Every department. <span className="text-accent">One catalogue.</span>
               </span>
             }
-            lead={products.length ? `${products.length} products across ${categories.length} departments, from analysers to hospital furniture.` : undefined}
+            lead={`${products.length ? `${products.length} products across ${categories.length} departments, from analysers to hospital furniture. ` : ''}Official distributor of ${distributors.slice(0, -1).join(', ')} and ${distributors.at(-1)}, with installation, training and after-sales support on everything we supply.`}
           />
           <Reveal>
             <Button asChild variant="glass">
