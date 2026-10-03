@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Hero } from '@/components/home/hero';
+import { LeadershipAwards } from '@/components/home/leadership-awards';
 import { Partners } from '@/components/home/partners';
 import { ProductUniverse } from '@/components/home/product-universe';
 import { SpecScrolly } from '@/components/home/spec-scrolly';
@@ -19,6 +20,7 @@ export default async function HomePage() {
       <Partners />
       <SpecScrolly />
       <ProductUniverse categories={categories} products={products} />
+      <LeadershipAwards />
       <Testimonials />
     </>
   );
