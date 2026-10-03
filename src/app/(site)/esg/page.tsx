@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
+import Link from 'next/link';
 import { PageHero } from '@/components/layout/page-hero';
 import { Reveal } from '@/components/motion/reveal';
 import { Icon } from '@/components/ui/icon';
@@ -11,7 +12,6 @@ export const metadata: Metadata = {
   alternates: { canonical: '/esg' },
 };
 
-const vision = purpose.find((p) => p.label === 'Vision')!;
 const aim = purpose.find((p) => p.label === 'Aim')!;
 
 /** Every item below is drawn from Flokefama’s own published news, About page and awards. */
@@ -77,34 +77,18 @@ export default function EsgPage() {
               </li>
             ))}
           </ul>
+          <Reveal className="mt-6 flex flex-col gap-3 rounded-4xl border border-line bg-canvas p-7 md:flex-row md:items-center md:justify-between md:p-9">
+            <div>
+              <p className="label flex items-center gap-2"><Icon name={aim.icon} className="text-brand-600" /> Economic · Local industry</p>
+              <p className="mt-3 max-w-3xl text-lg leading-relaxed text-ink-2">{aim.text}</p>
+            </div>
+            <Link href="/about#mission" className="inline-flex shrink-0 items-center gap-1 text-sm font-medium text-brand-700 hover:text-brand-600">
+              Our mission &amp; vision <Icon name="fi-rr-arrow-small-right" />
+            </Link>
+          </Reveal>
         </div>
       </section>
 
-      {/* Local industry: the long-term commitment */}
-      <section className="relative isolate overflow-hidden bg-[linear-gradient(160deg,#1b5e37_0%,#134228_55%,#0e3320_100%)] py-24 text-white md:py-32">
-        <div aria-hidden className="absolute -right-40 -top-40 -z-10 size-[640px] rounded-full bg-[radial-gradient(circle,rgb(143_209_169/0.18),transparent_65%)]" />
-        <div className="mx-auto grid max-w-[1280px] items-start gap-12 px-5 md:px-10 lg:grid-cols-[0.8fr_1.2fr]">
-          <Reveal>
-            <p className="label !text-brand-100">Economic · Local industry</p>
-            <h2 className="display mt-4 text-[clamp(2rem,1.2rem+2.8vw,3.5rem)] text-white">Made in Ghana, for Ghana.</h2>
-            <p className="mt-6 max-w-md text-lg font-light leading-relaxed text-white/75">Our long-term commitment goes beyond distribution: building the capacity to make what Ghana’s healthcare needs, here.</p>
-            <div className="relative mt-8 aspect-[4/3] max-w-md overflow-hidden rounded-3xl ring-1 ring-white/15">
-              <Image src="/images/head-office.webp" alt="Flokefama head office, Santa Maria, Accra" fill sizes="(min-width: 1024px) 448px, 100vw" className="object-cover" />
-            </div>
-          </Reveal>
-          <ul className="swipe-row gap-4 md:grid-cols-2">
-            {[aim, vision].map((p, i) => (
-              <li key={p.label}>
-                <Reveal delay={0.08 * (i + 1)} className="flex h-full flex-col rounded-4xl border border-white/15 bg-white/[0.08] p-7">
-                  <Icon name={p.icon} className="text-2xl text-brand-100" />
-                  <p className="label mt-8 !text-brand-100">Our {p.label.toLowerCase()}</p>
-                  <p className="mt-3 text-lg leading-relaxed text-white">{p.text}</p>
-                </Reveal>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
     </>
   );
 }
