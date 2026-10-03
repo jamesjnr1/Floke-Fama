@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Hero } from '@/components/home/hero';
 import { Partners } from '@/components/home/partners';
 import { ProductUniverse } from '@/components/home/product-universe';
-import { SpecScrolly } from '@/components/home/spec-scrolly';
+import { BeyondSupply } from '@/components/home/beyond-supply';
 import { Testimonials } from '@/components/home/testimonials';
 import { getCategories, getProducts } from '@/lib/data';
 
@@ -17,7 +17,7 @@ export default async function HomePage() {
     <>
       <Hero />
       <Partners />
-      <SpecScrolly />
+      <BeyondSupply />
       <ProductUniverse categories={categories} products={products} />
       <Testimonials />
     </>
