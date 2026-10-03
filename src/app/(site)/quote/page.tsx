@@ -16,7 +16,7 @@ const departmentFor: Record<string, string> = {
 };
 
 export const metadata: Metadata = {
-  title: 'Request a Quote or Demonstration',
+  title: 'Checkout: Order Equipment or Book a Demonstration',
   description: 'Tell us your department, equipment and timeline. A Flokefama specialist replies within one business day.',
 };
 
@@ -37,11 +37,11 @@ export default async function QuotePage({ searchParams }: { searchParams: Promis
     <div className="bg-canvas pt-20">
       <div className="mx-auto grid max-w-[1280px] gap-12 px-5 py-16 md:px-10 md:py-24 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
         <aside className="lg:sticky lg:top-32 lg:self-start">
-          <p className="label">{intent === 'demo' ? 'Demonstration' : 'Request a quote'}</p>
+          <p className="label">{intent === 'demo' ? 'Demonstration' : 'Checkout'}</p>
           <h1 className="display mt-4 text-[clamp(2rem,1.4rem+2vw,3rem)] leading-[1.1]">
-            {focus ? (intent === 'demo' ? 'Book a demonstration' : 'Request a quote') : listed.length ? `Quote for ${listed.length} ${listed.length === 1 ? 'item' : 'items'}` : 'Tell us what you need'}
+            {focus ? (intent === 'demo' ? 'Book a demonstration' : 'Complete your order') : listed.length ? `Your cart: ${listed.length} ${listed.length === 1 ? 'item' : 'items'}` : 'Tell us what you need'}
           </h1>
-          <p className="mt-4 max-w-sm text-lg leading-relaxed text-ink-2">Fill in the form and a sales engineer will reply within one business day.</p>
+          <p className="mt-4 max-w-sm text-lg leading-relaxed text-ink-2">Send your order and a sales engineer will confirm price and delivery within one business day.</p>
           {focus && (
             <div className="mt-8 overflow-hidden rounded-4xl border border-line bg-paper" data-testid="quote-focus">
               <div className="relative aspect-[16/10] bg-gradient-to-b from-paper to-canvas">
@@ -79,7 +79,7 @@ export default async function QuotePage({ searchParams }: { searchParams: Promis
           )}
           {/* What the buyer gets, in three plain lines */}
           <ul className="mt-8 max-w-sm space-y-4">
-            {['A reply within one business day', 'A quote tailored to your facility', 'Installation, training and support'].map((t) => (
+            {['Price and delivery confirmed within one business day', 'Pricing tailored to your facility', 'Installation, training and support'].map((t) => (
               <li key={t} className="flex items-center gap-3 text-ink-2">
                 <span className="grid size-7 shrink-0 place-items-center rounded-full bg-brand-50 text-brand-700"><Icon name="fi-rr-check" className="text-sm" /></span>
                 {t}

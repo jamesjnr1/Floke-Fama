@@ -16,7 +16,7 @@ export function ProductUniverse({ categories, products = [] }: { categories: Cat
   const image = (c: Category) => c.image ?? products.find((p) => p.category === c.slug && p.image)?.image;
 
   return (
-    <section aria-labelledby="product-universe-title" className="bg-[#eef6f1] py-16 md:py-28">
+    <section aria-labelledby="product-universe-title" className="bg-mist py-16 md:py-28">
       <div className="mx-auto max-w-[1280px] px-5 md:px-16">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <SectionHeading
@@ -49,7 +49,7 @@ export function ProductUniverse({ categories, products = [] }: { categories: Cat
                     className="group flex h-full flex-col rounded-3xl border border-line bg-paper p-3 transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-[0_20px_40px_-26px_rgb(11_21_16/0.3)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
                   >
                     {/* A soft mint tile: the product photos’ white backgrounds blend into it */}
-                    <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-[#e6f1ea]">
+                    <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-canvas">
                       {src ? (
                         <Image
                           src={src}

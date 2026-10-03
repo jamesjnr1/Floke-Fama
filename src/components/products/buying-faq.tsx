@@ -6,8 +6,8 @@ import { contact } from '@/data/seed';
 const faqs: { q: string; a: string; link?: { href: string; label: string } }[] = [
   {
     q: 'How do I get a price?',
-    a: 'Prices depend on the model, configuration, quantity and the service package you choose, so every order is quoted. Add products to your quote list, or press “Request a quote” on any product. A specialist replies within one business day.',
-    link: { href: '/quote', label: 'Request a quote' },
+    a: 'Prices depend on the model, configuration, quantity and the service package you choose, so every order is quoted. Add products to your cart, or press “Order now” on any product. A specialist replies within one business day.',
+    link: { href: '/quote', label: 'Order now' },
   },
   {
     q: 'Can I see the equipment working before I buy?',
@@ -29,7 +29,7 @@ const faqs: { q: string; a: string; link?: { href: string; label: string } }[] =
   },
   {
     q: 'Can you supply something that isn’t in the catalogue?',
-    a: 'Often, yes. Our team sources beyond the catalogue: tell us what you need in the quote form.',
+    a: 'Often, yes. Our team sources beyond the catalogue: tell us what you need at checkout.',
   },
   {
     q: 'Where can we find you?',
@@ -75,7 +75,7 @@ export function BuyingFaq() {
               </li>
             </ul>
             <Link href="/quote" className="flex items-center justify-center gap-2 bg-brand-600 px-5 py-3.5 text-sm font-medium transition hover:bg-brand-700">
-              Request a quote
+              Order now
             </Link>
           </div>
         </div>

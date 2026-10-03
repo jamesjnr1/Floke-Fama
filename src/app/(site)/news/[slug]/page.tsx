@@ -123,7 +123,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
               <div className="rounded-3xl bg-midnight p-5 text-white">
                 <p className="text-sm font-semibold leading-snug">Need equipment or support?</p>
                 <p className="mt-1.5 text-xs leading-relaxed text-white/75">Our sales engineers reply within one business day.</p>
-                <Link href="/quote" className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-brand-300 hover:text-white">Request a quote</Link>
+                <Link href="/quote" className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-brand-300 hover:text-white">Order now</Link>
               </div>
             </div>
           </aside>
@@ -143,7 +143,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
               <p className="mt-2 max-w-lg text-white/80">Trusted, end-to-end medical technology solutions from Flokefama.</p>
             </div>
             <div className="flex flex-wrap gap-3">
-              <Button asChild variant="glow" size="lg"><Link href="/quote">Request a quote</Link></Button>
+              <Button asChild variant="glow" size="lg"><Link href="/quote">Order now</Link></Button>
               <Button asChild variant="glass" size="lg"><Link href="/contact">Contact us</Link></Button>
             </div>
           </div>
