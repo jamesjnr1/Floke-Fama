@@ -1,21 +1,18 @@
 import Link from 'next/link';
 import { HeroLogos } from '@/components/home/hero-logos';
-import { NetworkCanvas } from '@/components/home/network-canvas';
 import { Reveal } from '@/components/motion/reveal';
 import { Button } from '@/components/ui/button';
 
 /**
- * Hero: Wild Sand with the network mesh on the right (no photo). Left: the company line from flokefama.com and its two actions (Explore Solutions → shop,
- * Contact Us → contact). The mesh shows from tablet up (on phones
- * the partner band still shows on the first screen).
+ * Hero: plain Wild Sand (no photo or 3D). Left: the company line from flokefama.com and its two actions (Explore Solutions → shop,
+ * Contact Us → contact).
  * Bottom band: Our Partners & Clientele, visible without scrolling.
  */
 export function Hero() {
   return (
     <section className="relative isolate flex min-h-[100svh] flex-col overflow-hidden bg-sand text-ink">
-      {/* Background: Wild Sand with the drifting network mesh on the right (no photo), fading out behind the text */}
+      {/* Background: plain Wild Sand, softening into white above the partner band */}
       <div aria-hidden className="absolute inset-0 -z-10 bg-sand">
-        <NetworkCanvas className="absolute inset-0 hidden sm:block [mask-image:linear-gradient(90deg,transparent_0%,transparent_38%,#000_70%)]" />
         <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent to-white" />
       </div>
 
