@@ -6,7 +6,7 @@
    Company green    #007A4D · primary buttons, accent words, links (the logo's green family)
    Deep Sea Green   #075056 · deep brand bands: Solutions, figures, footer accents, Aim block
    Wild Sand        #E4EEF0 · light surfaces: hero, page headers, soft panels
-   Blaze Orange     #FF5B04 · warm accent: the logo-dot accents, Contact buttons, Vision block (Mirage text on it)
+   Company red      #DC2430 · the logo-dot accents, Contact buttons, Vision block (white text on it)
    ========================================================================== */
 @theme {
   /* Two typefaces: Poppins for text, Geist Sans for labels, numerals and accents (the `font-mono` utility). */
@@ -39,8 +39,8 @@
   --color-cta-700: #006140;
 
   --color-surgical: #34a174;
-  --color-signal: #ff5b04; /* Blaze Orange (Mirage text on it, for contrast) */
-  --color-signal-700: #c24400; /* Blaze Orange, darkened for AA text on light backgrounds */
+  --color-signal: #dc2430; /* company red: white text on it */
+  --color-signal-700: #b81d24; /* red, darkened for AA text on light backgrounds */
   --color-blue: #075056; /* Deep Sea Green */
   --color-blue-50: #e4eef0;
   --color-blue-700: #075056; /* section labels: Deep Sea Green */

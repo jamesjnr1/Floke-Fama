@@ -5,12 +5,12 @@ import { cn } from '@/lib/utils';
 
 /**
  * Mission, Vision and Aim as three bold blocks, as on the current flokefama.com About page, in three palette
- * colours (Mirage, Blaze Orange, Deep Sea Green), each with an icon that says
+ * colours (Mirage, company red, Deep Sea Green), each with an icon that says
  * what it means: a hand offering care (mission), an eye (vision), an arrow on target (aim).
  */
 const tone = {
   Mission: { box: 'bg-midnight', head: 'text-white', body: 'text-white/85', icon: 'text-brand-300' },
-  Vision: { box: 'bg-signal', head: 'text-ink', body: 'text-ink/85', icon: 'text-ink' },
+  Vision: { box: 'bg-signal', head: 'text-white', body: 'text-white/90', icon: 'text-white' },
   Aim: { box: 'bg-sea', head: 'text-white', body: 'text-white/85', icon: 'text-brand-300' },
 } as const;
 
