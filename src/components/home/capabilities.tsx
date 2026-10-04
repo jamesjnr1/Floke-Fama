@@ -68,10 +68,7 @@ export function Capabilities() {
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
           <div>
-            <p className="flex items-center gap-3 font-mono text-[0.8125rem] uppercase tracking-[0.18em] text-brand-300">
-              <span className="h-px w-8 bg-brand-300" aria-hidden /> Core capabilities
-            </p>
-            <h2 id="capabilities-title" className="display mt-4 text-[clamp(2rem,1.3rem+2.6vw,3.5rem)] text-white">
+            <h2 id="capabilities-title" className="display text-[clamp(2rem,1.3rem+2.6vw,3.5rem)] text-white">
               Four pillars of <br className="hidden sm:block" />
               <span className="text-brand-300">medical infrastructure.</span>
             </h2>
@@ -106,7 +103,7 @@ export function Capabilities() {
                         <Image src={p.photo} alt="" fill sizes="96px" className="object-contain p-2 mix-blend-multiply" />
                       </span>
                     ) : (
-                      <span className={cn('border-l pl-2 font-mono text-[0.75rem] uppercase tracking-wider', a.tag)}>{p.tag}</span>
+                      <span className={cn('border-l pl-2 font-mono text-[0.875rem] uppercase tracking-wider', a.tag)}>{p.tag}</span>
                     )}
                   </div>
                   <div className="relative flex flex-col gap-4">
@@ -114,7 +111,7 @@ export function Capabilities() {
                     <p className="leading-relaxed text-white/75">{p.body}</p>
                     <ul className="flex flex-col gap-2 border-t border-white/10 pt-4">
                       {p.specs.map((s) => (
-                        <li key={s} className="flex items-center gap-2.5 font-mono text-[0.8125rem] text-white/70 transition-colors group-hover:text-white">
+                        <li key={s} className="flex items-center gap-2.5 font-mono text-[0.9375rem] text-white/70 transition-colors group-hover:text-white">
                           <span className={cn('size-1.5 shrink-0', a.dot)} aria-hidden />
                           {s}
                         </li>

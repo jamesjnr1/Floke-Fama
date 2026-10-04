@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils';
 export function CoreValues() {
   const [active, setActive] = useState(0);
   return (
-    <div className="mt-12 flex flex-col gap-3 lg:h-[440px] lg:flex-row" role="tablist" aria-label="Core values">
+    <div className="mt-12 flex flex-col gap-3 lg:min-h-[300px] lg:flex-row" role="tablist" aria-label="Core values">
       {coreValues.map((v, i) => {
         const on = i === active;
         return (
@@ -42,34 +42,32 @@ export function CoreValues() {
               )}
             />
             <div className="flex h-full flex-col p-6 md:p-8">
-              <div className="flex items-center justify-between gap-4">
+              {/* The value's name sits beside its symbol; the statement fills the space below */}
+              <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
                 <span
                   className={cn(
-                    'grid size-14 place-items-center rounded-2xl text-2xl transition-colors duration-500',
+                    'grid size-14 shrink-0 place-items-center rounded-2xl text-2xl transition-colors duration-500',
                     on ? 'bg-brand-600 text-white' : 'bg-brand-50 text-brand-700',
                   )}
                 >
                   <Icon name={v.icon} />
                 </span>
-                <span className="font-mono text-xs text-ink-3">{String(i + 1).padStart(2, '0')}</span>
+                <h3 className={cn('font-bold uppercase tracking-[0.06em] text-ink transition-all duration-500', on ? 'text-3xl md:text-4xl' : 'text-lg tracking-[0.03em]')}>{v.title}</h3>
               </div>
-
-              <div className="mt-8 lg:mt-auto">
-                <h3 className={cn('font-bold uppercase tracking-[0.06em] text-ink transition-all duration-500', on ? 'text-3xl md:text-4xl' : 'text-xl')}>{v.title}</h3>
-                <AnimatePresence initial={false}>
-                  {on && (
-                    <motion.div
-                      id={`value-${i}`}
-                      role="tabpanel"
-                      initial={{ opacity: 0, y: 12 }}
-                      animate={{ opacity: 1, y: 0, transition: { delay: 0.15, duration: 0.5 } }}
-                      exit={{ opacity: 0, transition: { duration: 0.1 } }}
-                    >
-                      <p className="mt-4 max-w-xl text-[1rem] leading-relaxed text-ink-2">{v.text}</p>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
+              <AnimatePresence initial={false}>
+                {on && (
+                  <motion.div
+                    id={`value-${i}`}
+                    role="tabpanel"
+                    className="mt-6 flex flex-1 flex-col"
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0, transition: { delay: 0.15, duration: 0.5 } }}
+                    exit={{ opacity: 0, transition: { duration: 0.1 } }}
+                  >
+                    <p className="text-xl leading-relaxed text-ink-2 md:text-[1.375rem]">{v.text}</p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </motion.button>
         );

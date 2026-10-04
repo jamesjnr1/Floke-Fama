@@ -14,16 +14,18 @@
   --font-mono: var(--font-jetbrains), ui-monospace, SFMono-Regular, Menlo, monospace;
 
   /* Text sizes one step up from Tailwind's defaults, so everything stays readable */
-  --text-xs: 0.8125rem;
+  --text-xs: 0.875rem;
   --text-xs--line-height: 1.5;
-  --text-sm: 0.9375rem;
+  --text-sm: 1rem;
   --text-sm--line-height: 1.55;
-  --text-base: 1.0625rem;
+  --text-base: 1.125rem;
   --text-base--line-height: 1.65;
-  --text-lg: 1.1875rem;
+  --text-lg: 1.25rem;
   --text-lg--line-height: 1.6;
-  --text-xl: 1.3125rem;
+  --text-xl: 1.375rem;
   --text-xl--line-height: 1.5;
+  --text-2xl: 1.625rem;
+  --text-2xl--line-height: 1.35;
 
   --color-canvas: #f4f8f9; /* a lighter Wild Sand: page background */
   --color-paper: #ffffff;
@@ -84,7 +86,7 @@
     scroll-behavior: smooth;
   }
   body {
-    @apply bg-canvas text-ink-2 antialiased;
+    @apply bg-canvas text-[1.0625rem] text-ink-2 antialiased;
   }
   h1, h2, h3, h4 {
     @apply text-ink;
@@ -109,7 +111,7 @@
 @layer components {
   /* Section label: Geist Sans, 12px, medium, +15% tracking, uppercase, in medical blue (red is kept for alerts and the logo dot) */
   .label {
-    @apply font-mono text-[0.8125rem] font-medium uppercase tracking-[0.12em] text-blue-700;
+    @apply font-mono text-[0.875rem] font-medium uppercase tracking-[0.1em] text-blue-700;
   }
   /* Section eyebrow: the label led by the logo's red dot (red in small, deliberate doses) */
   .eyebrow {
@@ -230,7 +232,7 @@ html[data-font='readable'] .display { letter-spacing: 0; }
    (main carries lang="en" so browsers have a dictionary); very short words never stretch a line on their own.
    Short text inside cards and list items keeps natural spacing: a 2-3 line card justifies into wide gaps. */
 @media (min-width: 768px) {
-  main p:not(.label):not(:is(li, article, dd, figcaption, button, a) p) {
+  main p.leading-relaxed:not(:is(li, article, dd, figcaption, button, a) p) {
     text-align: justify;
     text-justify: inter-word;
     hyphens: auto;

@@ -142,7 +142,7 @@ export function Overview({ state, me, onOpenTicket, onOpenAsset, onGo }: {
                   <span className={s.dot} aria-hidden />
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-sm font-medium text-white">{a.name}</span>
-                    <span className="block truncate font-mono text-[0.8125rem] uppercase tracking-wider text-white/60">{a.facility} · {s.label}</span>
+                    <span className="block truncate font-mono text-[0.9375rem] uppercase tracking-wider text-white/60">{a.facility} · {s.label}</span>
                   </span>
                   <Sparkline values={a.readings} tone={s.tone} />
                 </button>
@@ -172,7 +172,7 @@ function Radial({ value }: { value: number }) {
       <div className="absolute inset-0 grid place-items-center text-center">
         <div>
           <p className="text-4xl font-bold tracking-[-0.03em] text-white">{value}%</p>
-          <p className="font-mono text-[0.8125rem] uppercase tracking-widest text-surgical">Healthy</p>
+          <p className="font-mono text-[0.9375rem] uppercase tracking-widest text-surgical">Healthy</p>
         </div>
       </div>
     </div>
