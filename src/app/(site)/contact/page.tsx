@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { ContactForm } from '@/components/contact/contact-form';
 import { VisitUs } from '@/components/contact/visit-us';
-import { PageHero } from '@/components/layout/page-hero';
+import { StoryPanels } from '@/components/layout/story-panels';
 import { Icon } from '@/components/ui/icon';
 import { contact } from '@/data/seed';
 
@@ -23,7 +23,7 @@ const details = [
 export default function ContactPage() {
   return (
     <>
-      <PageHero label="Contact" title={<>Get in touch <span className="text-brand-600">with us</span></>} lead="We’re here to provide total healthcare solutions. Reach out to us anytime." />
+      <StoryPanels label="Contact" title={<>Get in touch <span className="text-brand-600">with us</span></>} lead="We’re here to provide total healthcare solutions. Reach out to us anytime." />
 
       <section className="bg-canvas py-12 md:py-28">
         <div className="mx-auto grid max-w-[1280px] gap-12 px-5 md:px-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">

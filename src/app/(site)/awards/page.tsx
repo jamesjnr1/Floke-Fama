@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { AwardsGallery } from '@/components/awards/awards-gallery';
-import { PageHero } from '@/components/layout/page-hero';
+import { StoryPanels } from '@/components/layout/story-panels';
 
 export const metadata: Metadata = {
   title: 'Awards',
@@ -11,10 +11,11 @@ export const metadata: Metadata = {
 export default function AwardsPage() {
   return (
     <>
-      <PageHero
+      <StoryPanels
         label="Awards"
         title={<>Recognitions that <span className="text-brand-600">reflect our impact</span></>}
         lead="Our commitment to excellence, innovation and service, recognized through prestigious awards and honors."
+        panels={[{ kind: 'colour', tone: 'red', title: 'Ranked No.1 in the healthcare sector.', text: 'First among healthcare companies at the 21st Ghana Club 100 Awards.' }]}
       />
       <AwardsGallery />
     </>

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { PageHero } from '@/components/layout/page-hero';
+import { StoryPanels } from '@/components/layout/story-panels';
 import { Reveal } from '@/components/motion/reveal';
 import { Icon } from '@/components/ui/icon';
 import { purpose } from '@/data/seed';
@@ -53,10 +53,11 @@ const pillars = [
 export default function EsgPage() {
   return (
     <>
-      <PageHero
+      <StoryPanels
         label="Environmental, Social & Governance (ESG)"
         title={<>Healthcare that <span className="text-brand-600">gives back</span></>}
         lead="How Flokefama creates value beyond supply: for patients, for communities and for Ghana’s economy."
+        panels={[{ kind: 'photo', image: '/images/news/the-forgotten-stage-of-quality-cover.webp', position: '60% 35%', title: 'Value beyond supply.', text: 'Patient safety, community, education, local industry and governance.' }]}
       />
 
       <section className="bg-paper py-14 md:py-32">
