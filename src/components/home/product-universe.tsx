@@ -18,7 +18,7 @@ export function ProductUniverse({ categories, products = [] }: { categories: Cat
   return (
     <section aria-labelledby="product-universe-title" className="relative isolate overflow-hidden bg-navy py-16 md:py-28">
       {/* Navy with a soft lift of light blue: calm; Yellow accent words, product photos on white tiles */}
-      <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(90%_70%_at_15%_0%,rgb(155_204_208/0.12),transparent_60%),linear-gradient(180deg,#24508f,#1e4380)]" />
+      <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(90%_70%_at_15%_0%,rgb(155_204_208/0.12),transparent_60%),linear-gradient(180deg,color-mix(in_srgb,var(--color-navy)_88%,white),var(--color-navy))]" />
       <div className="mx-auto max-w-[1280px] px-5 md:px-16">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <SectionHeading

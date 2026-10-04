@@ -21,8 +21,8 @@ export function Hero() {
         <div className="absolute inset-y-0 right-0 hidden w-[58%] sm:block">
           <Image src="/images/hero-microscope.webp" alt="" fill priority sizes="58vw" className="object-cover object-[30%_50%]" />
         </div>
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,#9bccd0_0%,#9bccd0_44%,rgb(155_204_208/0.85)_52%,rgb(155_204_208/0.4)_63%,rgb(155_204_208/0.1)_78%,rgb(155_204_208/0)_100%)]" />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(155_204_208/0.55)_0%,rgb(155_204_208/0)_20%,rgb(155_204_208/0)_74%,#ffffff_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,var(--color-sky)_0%,var(--color-sky)_44%,color-mix(in_srgb,var(--color-sky)_85%,transparent)_52%,color-mix(in_srgb,var(--color-sky)_40%,transparent)_63%,color-mix(in_srgb,var(--color-sky)_10%,transparent)_78%,transparent_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,color-mix(in_srgb,var(--color-sky)_55%,transparent)_0%,transparent_20%,transparent_74%,#ffffff_100%)]" />
       </div>
 
       <div className="mx-auto grid w-full max-w-[1280px] flex-1 grid-cols-1 items-center gap-8 px-5 pb-10 pt-28 md:gap-12 md:px-10 md:pt-32 lg:grid-cols-12 lg:gap-16 lg:pb-10">

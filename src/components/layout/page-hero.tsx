@@ -13,7 +13,7 @@ export function PageHero({ label, title, lead }: { label: string; title: React.R
         <div className="absolute inset-y-0 right-0 w-full md:w-[62%]">
           <Image src="/images/news/the-forgotten-stage-of-quality-cover.webp" alt="" fill priority sizes="62vw" className="object-cover object-[60%_35%]" />
         </div>
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,#b1d8b8_0%,#b1d8b8_38%,rgb(177_216_184/0.85)_52%,rgb(177_216_184/0.45)_72%,rgb(177_216_184/0.3)_100%)] max-md:bg-[rgb(177_216_184/0.85)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,var(--color-mint)_0%,var(--color-mint)_38%,color-mix(in_srgb,var(--color-mint)_85%,transparent)_52%,color-mix(in_srgb,var(--color-mint)_45%,transparent)_72%,color-mix(in_srgb,var(--color-mint)_30%,transparent)_100%)] max-md:bg-[color-mix(in_srgb,var(--color-mint)_85%,transparent)]" />
         <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-mint/80 to-transparent" />
       </div>
       <div className="mx-auto max-w-[1280px] px-5 pb-12 pt-32 md:px-16 md:pb-20 md:pt-44">
