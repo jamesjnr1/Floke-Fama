@@ -12,7 +12,7 @@ type Errors = Partial<Record<keyof RegisterInput, string>>;
 type Result = { delivered: boolean; data: RegisterInput } | null;
 
 const field =
-  'h-12 w-full rounded-xl border border-line bg-paper px-4 text-[1rem] text-ink outline-none transition placeholder:text-ink-3/70 focus:border-brand-500 focus:ring-4 focus:ring-brand-100 aria-[invalid=true]:border-signal';
+  'h-12 w-full rounded-xl border border-line bg-paper px-4 text-[1.125rem] text-ink outline-none transition placeholder:text-ink-3/70 focus:border-brand-500 focus:ring-4 focus:ring-brand-100 aria-[invalid=true]:border-signal';
 
 /**
  * Client portal registration. Flokefama verifies every facility before an account goes live, so this sends an
@@ -76,7 +76,7 @@ export function RegisterForm({ onSignIn }: { onSignIn: () => void }) {
       <button
         type="submit"
         disabled={pending}
-        className="!mt-6 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-cta text-[1rem] font-medium text-white transition hover:bg-cta-700 disabled:opacity-60"
+        className="!mt-6 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-cta text-[1.125rem] font-medium text-white transition hover:bg-cta-700 disabled:opacity-60"
       >
         {pending ? 'Sending…' : 'Create account'} 
       </button>
@@ -121,21 +121,21 @@ function Requested({ delivered, data, onSignIn }: NonNullable<Result> & { onSign
       {delivered ? (
         <>
           <p className="mt-5 text-xl font-semibold tracking-[-0.02em] text-ink">Registration received.</p>
-          <p className="mt-2 text-[1rem] leading-relaxed text-ink-3">
+          <p className="mt-2 text-[1.125rem] leading-relaxed text-ink-3">
             Thank you, {data.name.split(' ')[0]}. We’ll verify {data.facility} and email your sign-in details to {data.email}.
           </p>
         </>
       ) : (
         <>
           <p className="mt-5 text-xl font-semibold tracking-[-0.02em] text-ink">One last step.</p>
-          <p className="mt-2 text-[1rem] leading-relaxed text-ink-3">
+          <p className="mt-2 text-[1.125rem] leading-relaxed text-ink-3">
             Your registration is ready. Send it to {contact.support} by email or on WhatsApp. Everything is filled in.
           </p>
           <div className="mt-5 grid gap-2 sm:grid-cols-2">
-            <a href={send.email} className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-cta px-5 text-[1rem] font-medium text-white transition hover:bg-cta-700">
+            <a href={send.email} className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-cta px-5 text-[1.125rem] font-medium text-white transition hover:bg-cta-700">
               <Icon name="fi-rr-envelope" /> Send by email
             </a>
-            <a href={send.whatsapp} target="_blank" rel="noopener noreferrer" className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-line bg-paper px-5 text-[1rem] font-medium text-ink transition hover:border-ink/30">
+            <a href={send.whatsapp} target="_blank" rel="noopener noreferrer" className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-line bg-paper px-5 text-[1.125rem] font-medium text-ink transition hover:border-ink/30">
               <Icon name="fi-brands-whatsapp" /> WhatsApp
             </a>
           </div>

@@ -291,7 +291,7 @@ export function ProcurementFlow({ options, initial }: { options: Option[]; initi
   );
 }
 
-const inputCls = 'h-12 w-full rounded-2xl border border-line bg-canvas px-4 text-[1rem] text-ink outline-none transition focus:border-brand-500 focus:bg-paper focus:ring-4 focus:ring-brand-100';
+const inputCls = 'h-12 w-full rounded-2xl border border-line bg-canvas px-4 text-[1.125rem] text-ink outline-none transition focus:border-brand-500 focus:bg-paper focus:ring-4 focus:ring-brand-100';
 
 function Field({ label, error, className, children }: { label: string; error?: string; className?: string; children: React.ReactNode }) {
   return (
@@ -411,7 +411,7 @@ function EquipmentPicker({ options, selected, onToggle }: { options: Option[]; s
                     onPointerMove={() => setActive(i)}
                     className={cn('flex cursor-pointer items-center gap-3 rounded-2xl px-3 py-2.5 text-sm', i === active ? 'bg-mist' : '', on ? 'text-ink' : 'text-ink-2')}
                   >
-                    <span className={cn('grid size-5 shrink-0 place-items-center rounded-md border text-[0.75rem]', on ? 'border-brand-600 bg-brand-600 text-white' : 'border-line')}>
+                    <span className={cn('grid size-5 shrink-0 place-items-center rounded-md border text-[0.875rem]', on ? 'border-brand-600 bg-brand-600 text-white' : 'border-line')}>
                       {on && <Icon name="fi-rr-check" />}
                       {r.custom && !on && <Icon name="fi-rr-plus" className="text-ink-3" />}
                     </span>

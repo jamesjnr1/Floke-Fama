@@ -13,8 +13,7 @@ export async function NewsGrid() {
     <section id="news" className="scroll-mt-28 border-t border-line bg-canvas py-12 md:py-28">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal>
-          <p className="label eyebrow">Media centre · What’s new</p>
-          <h2 className="display mt-4 text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">News, Blog &amp; Press</h2>
+          <h2 className="display text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">News, Blog &amp; Press</h2>
         </Reveal>
         <ul className="swipe-row mt-10 gap-4 md:mt-12 md:grid-cols-2 lg:grid-cols-3">
           {articles.map((a, i) => (
