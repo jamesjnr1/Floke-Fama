@@ -104,10 +104,10 @@ export function Services() {
                   <h3 className="display mt-4 text-5xl text-white">{s.title}</h3>
                   <p className="mt-5 max-w-xl text-lg leading-relaxed text-white/75">{s.body}</p>
                   <div className="mt-8 flex gap-3">
-                    <Link href="/quote" className="inline-flex h-12 items-center gap-2 rounded-xl bg-white px-6 text-[15px] font-medium text-brand-800 transition hover:bg-brand-50">
+                    <Link href="/quote" className="inline-flex h-12 items-center gap-2 rounded-xl bg-white px-6 text-[0.9375rem] font-medium text-brand-800 transition hover:bg-brand-50">
                       Order now
                     </Link>
-                    <Link href="/contact" className="glass inline-flex h-12 items-center rounded-xl px-6 text-[15px] text-white transition hover:bg-white/10">
+                    <Link href="/contact" className="glass inline-flex h-12 items-center rounded-xl px-6 text-[0.9375rem] text-white transition hover:bg-white/10">
                       Talk to an engineer
                     </Link>
                   </div>

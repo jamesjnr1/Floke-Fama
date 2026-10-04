@@ -97,7 +97,7 @@ export function Catalog({ products, categories, initialCategory, initialQuery, i
               className="h-full w-full bg-transparent text-sm text-ink outline-none placeholder:text-ink-3"
               type="search"
             />
-            <kbd className="hidden rounded-md border border-line px-1.5 py-0.5 text-[10px] text-ink-3 sm:block">⌘K</kbd>
+            <kbd className="hidden rounded-md border border-line px-1.5 py-0.5 text-[0.625rem] text-ink-3 sm:block">⌘K</kbd>
           </label>
         </div>
       </div>
@@ -159,7 +159,7 @@ function ProductCard({ product, category, wide }: { product: Product; category?:
       <div className="px-2.5 pb-3 pt-3 sm:px-3.5 sm:pb-4">
         <p className="flex items-center gap-2 text-xs font-medium text-ink-3">
           {product.brand}
-          {product.newArrival && <span className="rounded-full bg-signal px-2 py-0.5 text-[10px] font-semibold text-white">New</span>}
+          {product.newArrival && <span className="rounded-full bg-signal px-2 py-0.5 text-[0.625rem] font-semibold text-white">New</span>}
         </p>
         <h2 className="mt-1 line-clamp-2 text-sm font-semibold leading-snug tracking-tight text-ink sm:text-base">{product.name}</h2>
       </div>
