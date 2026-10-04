@@ -23,7 +23,7 @@ export function LoginForm({ next, demo, notice }: { next?: string; demo: Demo[];
   };
 
   const field =
-    'h-12 w-full rounded-xl border border-line bg-paper px-4 text-[0.9375rem] text-ink outline-none transition placeholder:text-ink-3/70 focus:border-brand-500 focus:ring-4 focus:ring-brand-100';
+    'h-12 w-full rounded-xl border border-line bg-paper px-4 text-[1rem] text-ink outline-none transition placeholder:text-ink-3/70 focus:border-brand-500 focus:ring-4 focus:ring-brand-100';
 
   return (
     <div className="mt-8">
@@ -68,7 +68,7 @@ export function LoginForm({ next, demo, notice }: { next?: string; demo: Demo[];
         <button
           type="submit"
           disabled={pending}
-          className="!mt-6 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand-600 text-[0.9375rem] font-medium text-white transition hover:bg-brand-700 disabled:opacity-60"
+          className="!mt-6 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand-600 text-[1rem] font-medium text-white transition hover:bg-brand-700 disabled:opacity-60"
         >
           {pending ? 'Signing in…' : 'Sign in'} 
         </button>
@@ -76,7 +76,7 @@ export function LoginForm({ next, demo, notice }: { next?: string; demo: Demo[];
 
       {demo.length > 0 && (
         <div className="mt-8">
-          <p className="flex items-center gap-3 font-mono text-[0.6875rem] uppercase tracking-widest text-ink-3">
+          <p className="flex items-center gap-3 font-mono text-[0.8125rem] uppercase tracking-widest text-ink-3">
             <span className="h-px flex-1 bg-line" aria-hidden /> Demo access · preview only <span className="h-px flex-1 bg-line" aria-hidden />
           </p>
           <div className="mt-4 grid gap-2 sm:grid-cols-2">
@@ -89,7 +89,7 @@ export function LoginForm({ next, demo, notice }: { next?: string; demo: Demo[];
                 className="rounded-xl border border-dashed border-line px-4 py-3 text-left transition hover:border-brand-400 hover:bg-brand-50 disabled:opacity-60"
               >
                 <span className="block text-sm font-medium text-ink">{d.label}</span>
-                <span className="block truncate font-mono text-[0.6875rem] text-ink-3">{d.email}</span>
+                <span className="block truncate font-mono text-[0.8125rem] text-ink-3">{d.email}</span>
               </button>
             ))}
           </div>

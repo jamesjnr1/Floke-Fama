@@ -37,7 +37,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
           <h1 className="text-[clamp(26px,18px+1.6vw,40px)] font-semibold leading-[1.1] tracking-[-0.02em] text-white">
             {toEngineer ? 'Every system, every visit, one workspace.' : 'Your equipment, serviced and on record.'}
           </h1>
-          <p className="mt-3 hidden text-[0.9375rem] leading-relaxed text-white/75 sm:block">
+          <p className="mt-3 hidden text-[1rem] leading-relaxed text-white/75 sm:block">
             {toEngineer
               ? 'The service portal for Flokefama field and workshop engineers.'
               : 'Raise service requests, follow your engineer and download calibration certificates for every installed system.'}
