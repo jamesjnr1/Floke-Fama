@@ -25,14 +25,11 @@ const solid: Record<Tone, string> = {
 /** Our services: a 3 × 2 grid of cells divided by thin gridlines. A cell turns dark on hover. */
 export function Services() {
   return (
-    <section id="services" className="gridlines-light relative scroll-mt-20 bg-canvas py-14 md:py-28">
+    <section id="services" className="relative scroll-mt-20 bg-canvas py-14 md:py-28">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
           <div>
-            <p className="flex items-center gap-3 font-mono text-[0.8125rem] uppercase tracking-[0.18em] text-blue-700">
-              <span className="h-px w-8 bg-blue-700" aria-hidden /> Our services
-            </p>
-            <h2 className="display mt-4 text-[clamp(2rem,1.3rem+2.6vw,3.5rem)]">
+            <h2 className="display text-[clamp(2rem,1.3rem+2.6vw,3.5rem)]">
               End-to-end healthcare <br className="hidden sm:block" />
               <span className="text-brand-600">solutions, not just supply.</span>
             </h2>

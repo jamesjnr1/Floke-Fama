@@ -50,8 +50,7 @@ export default async function EventsPage() {
       <section className="bg-paper py-14 md:py-24">
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
           <Reveal>
-            <p className="label eyebrow">Upcoming</p>
-            <h2 className="display mt-4 text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">What’s next.</h2>
+            <h2 className="display text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">What’s next.</h2>
           </Reveal>
           {upcoming.length === 0 ? (
             <Reveal delay={0.06}>
@@ -92,9 +91,9 @@ function DateTile({ date }: { date: string }) {
   const { day, month, year } = dateParts(date);
   return (
     <div className="w-20 shrink-0 overflow-hidden rounded-2xl border border-line bg-paper text-center shadow-[0_10px_24px_-16px_rgb(11_21_16/0.35)]" aria-label={`${day} ${month} ${year}`}>
-      <p className="bg-brand-600 py-1.5 font-mono text-[0.8125rem] font-medium uppercase tracking-[0.2em] text-white">{month}</p>
+      <p className="bg-brand-600 py-1.5 font-mono text-[0.9375rem] font-medium uppercase tracking-[0.2em] text-white">{month}</p>
       <p className="pt-2.5 text-[2.125rem] font-bold leading-none tracking-[-0.03em] text-ink">{day}</p>
-      <p className="pb-2.5 pt-1 font-mono text-[0.8125rem] text-ink-3">{year}</p>
+      <p className="pb-2.5 pt-1 font-mono text-[0.9375rem] text-ink-3">{year}</p>
     </div>
   );
 }

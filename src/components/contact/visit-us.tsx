@@ -11,8 +11,7 @@ export function VisitUs({ id = 'visit', photo = true }: { id?: string; photo?: b
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal className="flex flex-wrap items-end justify-between gap-6">
           <div>
-            <p className="label eyebrow">Flokefama location</p>
-            <h2 className="display mt-4 text-[clamp(2rem,1.2rem+2.8vw,3.75rem)]">Find Us Here!</h2>
+            <h2 className="display text-[clamp(2rem,1.2rem+2.8vw,3.75rem)]">Find Us Here!</h2>
             <p className="mt-4 max-w-xl text-lg leading-relaxed text-ink-3">Visit Flokefama Company Limited Head Office using the interactive map below.</p>
           </div>
         </Reveal>
@@ -31,8 +30,7 @@ export function VisitUs({ id = 'visit', photo = true }: { id?: string; photo?: b
               />
               <div aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-t from-midnight from-15% via-midnight/75 via-40% to-transparent to-70%" />
               <figcaption className="absolute inset-x-0 bottom-0 p-7 text-white">
-                <p className="label flex items-center gap-2 !text-brand-300"><span className="status-dot" aria-hidden /> Head office</p>
-                <p className="mt-3 text-2xl font-bold tracking-[-0.02em]">Santa Maria, Accra</p>
+                <p className="text-2xl font-bold tracking-[-0.02em]">Santa Maria, Accra</p>
                 <p className="mt-1 text-sm text-white/80">{contact.address}</p>
               </figcaption>
             </figure>

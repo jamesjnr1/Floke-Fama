@@ -2,10 +2,10 @@ import Image from 'next/image';
 import { Reveal } from '@/components/motion/reveal';
 
 /**
- * Page header shared by the inner pages: information only (label, title, one short line) on Wild Sand, with
+ * Page header shared by the inner pages: information only (title and one short line) on Wild Sand, with
  * Flokefama staff at work faded in on the right. Mirage text, accent words in the company green. No buttons: actions live in the page content.
  */
-export function PageHero({ label, title, lead }: { label: string; title: React.ReactNode; lead?: string }) {
+export function PageHero({ title, lead }: { /** Kept for the callers; the small label above the title is no longer shown. */ label?: string; title: React.ReactNode; lead?: string }) {
   return (
     <section className="relative isolate overflow-hidden bg-sand text-ink">
       <div aria-hidden className="absolute inset-0 -z-10">
@@ -18,13 +18,8 @@ export function PageHero({ label, title, lead }: { label: string; title: React.R
       </div>
       <div className="mx-auto max-w-[1280px] px-5 pb-12 pt-32 md:px-16 md:pb-20 md:pt-44">
         <div className="max-w-2xl lg:max-w-3xl">
-          <Reveal>
-            <p className="label eyebrow">
-              {label}
-            </p>
-          </Reveal>
           <Reveal delay={0.06}>
-            <h1 className="display mt-5 text-[clamp(2.25rem,1.2rem+3.4vw,4rem)] uppercase leading-[0.98] text-ink [&_span]:!text-brand-600">{title}</h1>
+            <h1 className="display text-[clamp(2.25rem,1.2rem+3.4vw,4rem)] uppercase leading-[0.98] text-ink [&_span]:!text-brand-600">{title}</h1>
           </Reveal>
           {lead && (
             <Reveal delay={0.12}>

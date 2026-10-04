@@ -25,8 +25,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
       <section className="relative overflow-hidden">
         <div className="grid-fade-light absolute inset-0" />
         <div className="relative mx-auto max-w-[1280px] px-5 pb-10 pt-16 md:px-10 md:pt-24">
-          <p className="label eyebrow">Our Products</p>
-          <h1 className="display mt-5 text-[clamp(2.25rem,0.6rem+4.6vw,4.75rem)]">
+          <h1 className="display text-[clamp(2.25rem,0.6rem+4.6vw,4.75rem)]">
             <span className="sm:whitespace-nowrap">Clinical-grade equipment.</span>{' '}
             <span className="block text-brand-600 sm:whitespace-nowrap">Instantly searchable.</span>
           </h1>
@@ -48,7 +47,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
                   className="flex items-center justify-between gap-3 rounded-2xl border border-line bg-paper px-4 py-3 text-sm text-ink transition hover:border-brand-300 hover:bg-brand-50"
                 >
                   <span>{t}</span>
-                  <span className="shrink-0 font-mono text-xs text-ink-3">{n} {n === 1 ? 'product' : 'products'}</span>
+                  <span className="shrink-0 text-xs text-ink-3">{n} {n === 1 ? 'product' : 'products'}</span>
                 </Link>
               </li>
             ))}

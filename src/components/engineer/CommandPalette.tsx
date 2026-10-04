@@ -70,14 +70,14 @@ export function CommandPalette({ open, onOpenChange, state, actions, onOpenTicke
               aria-expanded
               aria-controls="palette-results"
               aria-activedescendant={results[index] ? `cmd-${results[index].id}` : undefined}
-              className="h-14 w-full bg-transparent text-[1rem] outline-none placeholder:text-white/60"
+              className="h-14 w-full bg-transparent text-[1.125rem] outline-none placeholder:text-white/60"
             />
-            <kbd className="rounded-md border border-white/10 px-1.5 py-0.5 font-mono text-[0.75rem] text-white/60">Esc</kbd>
+            <kbd className="rounded-md border border-white/10 px-1.5 py-0.5 font-mono text-[0.875rem] text-white/60">Esc</kbd>
           </div>
           <ul id="palette-results" role="listbox" className="max-h-[50vh] overflow-y-auto p-2">
             {results.map((c, i) => (
               <li key={`${c.group}-${c.id}`} id={`cmd-${c.id}`} role="option" aria-selected={i === index}>
-                {(i === 0 || results[i - 1].group !== c.group) && <p className="px-3 pb-1 pt-3 font-mono text-[0.75rem] uppercase tracking-widest text-white/60">{c.group}</p>}
+                {(i === 0 || results[i - 1].group !== c.group) && <p className="px-3 pb-1 pt-3 font-mono text-[0.875rem] uppercase tracking-widest text-white/60">{c.group}</p>}
                 <button
                   onMouseEnter={() => setIndex(i)}
                   onClick={() => run(c)}

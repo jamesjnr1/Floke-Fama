@@ -19,8 +19,7 @@ export function AwardsGallery() {
     <section className="bg-canvas pb-24 pt-24 md:pb-32 md:pt-32">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal>
-          <p className="label eyebrow">Awards &amp; recognition</p>
-          <h2 className="display mt-4 max-w-3xl text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">We are proud to share some of the awards that celebrate our passion and progress.</h2>
+          <h2 className="display max-w-3xl text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">We are proud to share some of the awards that celebrate our passion and progress.</h2>
         </Reveal>
         <ul className="swipe-row mt-10 gap-4 md:mt-12 md:grid-cols-6">
           {awards.map((a, i) => {
@@ -57,7 +56,7 @@ export function AwardsGallery() {
           <dl className="mx-auto mt-8 flex w-fit divide-x divide-line rounded-full border border-line bg-paper py-2.5">
             {companyFigures.map((f) => (
               <div key={f.label} className="flex items-baseline gap-1 whitespace-nowrap px-3 md:gap-2 md:px-7">
-                <dt className="text-sm text-ink-3 md:text-[1rem]">{f.label}</dt>
+                <dt className="text-sm text-ink-3 md:text-[1.125rem]">{f.label}</dt>
                 <dd className="order-first text-xl font-bold tracking-[-0.03em] text-brand-600 md:text-3xl">
                   <CountUp value={f.value} suffix={f.suffix} />
                 </dd>
