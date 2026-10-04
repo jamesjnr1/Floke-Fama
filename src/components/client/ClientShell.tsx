@@ -66,7 +66,7 @@ export function ClientShell({ user }: { user: { name: string; email: string; fac
         <Link href="/" aria-label="Flokefama home" className="flex items-center gap-1.5">
           <LogoMark />
           <LogoWordmark className="h-[17px] text-white" />
-          <span className="ml-auto rounded-md bg-white/10 px-1.5 py-0.5 font-mono text-[0.75rem] uppercase tracking-widest text-white/75">Care</span>
+          <span className="ml-auto rounded-md bg-white/10 px-1.5 py-0.5 font-mono text-[0.875rem] uppercase tracking-widest text-white/75">Care</span>
         </Link>
         <div className="mt-8 rounded-2xl bg-white/[0.06] p-3">
           <p className="truncate text-sm font-medium">{facility}</p>
@@ -84,7 +84,7 @@ export function ClientShell({ user }: { user: { name: string; email: string; fac
                   {view === n.id && <motion.span layoutId="client-rail" className="absolute inset-0 rounded-xl bg-brand-600" />}
                   <Icon name={n.icon} className="relative" />
                   <span className="relative flex-1 text-left">{n.label}</span>
-                  {n.id === 'requests' && openCount > 0 && <span className="relative rounded-full bg-white/15 px-1.5 font-mono text-[0.75rem]">{openCount}</span>}
+                  {n.id === 'requests' && openCount > 0 && <span className="relative rounded-full bg-white/15 px-1.5 font-mono text-[0.875rem]">{openCount}</span>}
                 </button>
               </li>
             ))}

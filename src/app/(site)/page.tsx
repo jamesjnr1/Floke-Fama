@@ -16,13 +16,13 @@ export default function HomePage() {
     <>
       <Hero />
       <Partners heading={false} logos={false} />
-      <Capabilities />
       <BeyondSupply />
       <section aria-label="Our mission, vision and aim" className="bg-canvas py-16 md:py-24">
         <div className="mx-auto max-w-[1280px] px-5 md:px-16">
           <PurposeBlocks />
         </div>
       </section>
+      <Capabilities />
       <Testimonials />
     </>
   );

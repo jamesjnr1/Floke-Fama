@@ -84,7 +84,7 @@ export function Navbar() {
             {anchors.map((a) => {
               const active = isActive(pathname, a);
               const itemClass = cn(
-                'relative flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-2 text-[0.875rem] transition-colors 2xl:px-3 2xl:text-sm duration-300 focus-visible:outline-none',
+                'relative flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-2 text-[1rem] transition-colors 2xl:px-3 2xl:text-sm duration-300 focus-visible:outline-none',
                 dark ? 'text-white/80 hover:text-white' : 'text-ink-2 hover:text-ink',
                 active && (dark ? 'text-white' : 'text-ink'),
               );
@@ -180,14 +180,14 @@ export function Navbar() {
         <div className="flex items-center gap-3">
           <Link
             href="/quote"
-            className="hidden items-center whitespace-nowrap rounded-xl border border-white/15 px-3.5 py-3 text-[0.875rem] font-medium text-white 2xl:px-4 2xl:text-sm transition hover:border-white/30 hover:bg-white/[0.06] xl:inline-flex"
+            className="hidden items-center whitespace-nowrap rounded-xl border border-white/15 px-3.5 py-3 text-[1rem] font-medium text-white 2xl:px-4 2xl:text-sm transition hover:border-white/30 hover:bg-white/[0.06] xl:inline-flex"
           >
             <Icon name="fi-rr-shopping-cart" className="mr-2 text-base" /> Cart
           </Link>
           {/* CTA Button: padding 12px 24px, brand green, radius 12px */}
           <Link
             href="/portal"
-            className="group hidden items-center gap-2 whitespace-nowrap rounded-xl bg-cta px-4 py-3 text-[0.875rem] font-semibold text-white 2xl:px-6 2xl:text-sm transition hover:bg-cta-700 sm:inline-flex"
+            className="group hidden items-center gap-2 whitespace-nowrap rounded-xl bg-cta px-4 py-3 text-[1rem] font-semibold text-white 2xl:px-6 2xl:text-sm transition hover:bg-cta-700 sm:inline-flex"
           >
             <span className="hidden 2xl:inline">Client Portal Access</span><span className="2xl:hidden">Client Portal</span>
           </Link>

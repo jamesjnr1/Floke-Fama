@@ -7,6 +7,7 @@ import { ProductVisual } from '@/components/products/product-visual';
 import { AddToQuote } from '@/components/sales/add-to-quote';
 import { BedDouble, FlaskConical, Headset, HeartPulse, LayoutGrid, List, type LucideIcon, Microscope, Search, ShieldCheck, TestTube, Wrench } from 'lucide-react';
 import { Icon } from '@/components/ui/icon';
+import { useQuoteList } from '@/lib/quote-list';
 import { localSearch, searchProducts, searchProvider } from '@/lib/search';
 import type { Category, Product } from '@/lib/types';
 import { cn } from '@/lib/utils';
@@ -105,7 +106,7 @@ export function Catalog({ products, categories, initialCategory, initialQuery, i
             >
               <T.icon className={cn('size-5', T.color)} strokeWidth={1.7} aria-hidden />
               {t.title}
-              <span className={cn('px-1.5 py-0.5 font-mono text-[0.75rem]', active ? 'bg-brand-600 text-white' : 'bg-mist text-ink-3')}>{String(countIn(t.slug)).padStart(2, '0')}</span>
+              <span className={cn('px-1.5 py-0.5 text-[0.875rem]', active ? 'bg-brand-600 text-white' : 'bg-mist text-ink-3')}>{String(countIn(t.slug)).padStart(2, '0')}</span>
               {active && <motion.span layoutId="cat-line" className="absolute inset-x-0 -bottom-px h-0.5 bg-brand-600" transition={{ type: 'spring', bounce: 0.15, duration: 0.5 }} />}
             </button>
           );
@@ -126,11 +127,11 @@ export function Catalog({ products, categories, initialCategory, initialQuery, i
               className="h-full w-full bg-transparent text-base text-ink outline-none placeholder:text-ink-3"
               type="search"
             />
-            <kbd className="hidden border border-line px-1.5 py-0.5 font-mono text-[0.75rem] text-ink-3 sm:block">⌘K</kbd>
+            <kbd className="hidden border border-line px-1.5 py-0.5 text-[0.875rem] text-ink-3 sm:block">⌘K</kbd>
           </label>
           <div className="flex items-center gap-3">
             <label className="flex h-12 flex-1 items-center gap-3 lg:flex-none">
-              <span className="font-mono text-[0.8125rem] uppercase tracking-wider text-ink-3">Sort</span>
+              <span className=" text-[0.9375rem] text-ink-3">Sort</span>
               <select value={sort} onChange={(e) => setSort(e.target.value as typeof sort)} className="h-12 flex-1 border border-line bg-paper px-3 text-base text-ink outline-none focus:border-brand-500 lg:w-44">
                 <option value="az">Name (A–Z)</option>
                 <option value="za">Name (Z–A)</option>
@@ -152,7 +153,7 @@ export function Catalog({ products, categories, initialCategory, initialQuery, i
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3 py-5" aria-live="polite">
-        <p className="flex flex-wrap items-center gap-2 font-mono text-[0.8125rem] uppercase tracking-wider text-ink-3">
+        <p className="flex flex-wrap items-center gap-2 text-[0.9375rem] text-ink-3">
           <span><span className="text-ink">{sorted.length}</span> {sorted.length === 1 ? 'item' : 'items'} found{category ? ` in ${catBySlug.get(category)?.title}` : ''}</span>
           {type && (
             <button type="button" onClick={() => setType(null)} className="inline-flex items-center gap-1.5 bg-brand-50 px-3 py-1 font-sans text-xs font-medium normal-case tracking-normal text-brand-700 ring-1 ring-brand-100 hover:bg-brand-100" aria-label={`Remove filter: ${type}`}>
@@ -213,19 +214,36 @@ const tabIcons: Record<string, { icon: LucideIcon; color: string }> = {
 
 /** A catalogue cell: reference, photo, brand · type, name, a short spec sheet, then Add to cart and Details. */
 function ProductCard({ product, category, code, list }: { product: Product; category?: Category; code: string; list: boolean }) {
+  const inCart = useQuoteList().some((x) => x.slug === product.slug);
   const rows = [
     { label: 'Type', value: product.types?.[0] ?? category?.title ?? '' },
     { label: 'Department', value: category?.short ?? '' },
     { label: 'Support', value: 'Installation & training' },
   ].filter((r) => r.value);
   const note = product.highlights[0];
+  // Hover, keyboard focus or "in your cart" colours the card: deep Mirage with soft-green accents
   return (
-    <div className={cn('group flex h-full flex-col p-5 transition-colors duration-500 hover:bg-canvas sm:p-6', list && 'md:grid md:grid-cols-[220px_minmax(0,1fr)_minmax(0,0.8fr)] md:gap-8')}>
+    <div
+      data-on={inCart || undefined}
+      className={cn(
+        'group/card flex h-full flex-col p-5 transition-colors duration-500 sm:p-6',
+        'hover:bg-[#10191e] focus-within:bg-[#10191e] data-[on]:bg-[#10191e]',
+        list && 'md:grid md:grid-cols-[240px_minmax(0,1fr)_minmax(0,0.8fr)] md:items-start md:gap-8',
+      )}
+    >
       <div className={cn(list && 'md:row-span-2')}>
         <div className="flex items-center justify-between">
-          <span className="font-mono text-[0.8125rem] text-ink-3">{code}</span>
-          {product.newArrival && (
-            <span className="flex items-center gap-1.5 border border-signal/30 bg-[#fdecec] px-2 py-1 font-mono text-[0.75rem] uppercase tracking-wider text-signal-700"><span className="size-1.5 bg-signal" aria-hidden />New</span>
+          <span className="text-sm font-medium text-ink-3 transition-colors group-hover/card:text-brand-300 group-focus-within/card:text-brand-300 group-data-[on]/card:text-brand-300">{code}</span>
+          {inCart ? (
+            <span className="flex items-center gap-1.5 border border-brand-300/40 bg-brand-300/10 px-2 py-1 text-xs font-semibold text-brand-300">
+              <span className="size-1.5 bg-brand-300" aria-hidden />In your cart
+            </span>
+          ) : (
+            product.newArrival && (
+              <span className="flex items-center gap-1.5 border border-signal/30 bg-[#fdecec] px-2 py-1 text-xs font-semibold text-signal-700">
+                <span className="size-1.5 bg-signal" aria-hidden />New
+              </span>
+            )
           )}
         </div>
         <Link href={`/products/${product.slug}`} scroll={false} tabIndex={-1} aria-hidden className="mt-4 block">
@@ -233,25 +251,28 @@ function ProductCard({ product, category, code, list }: { product: Product; cate
         </Link>
       </div>
       <div className="mt-5 flex flex-col md:mt-0">
-        <p className={cn('font-mono text-[0.8125rem] uppercase tracking-wider text-brand-700', !list && 'mt-0')}>
+        <p className="text-sm font-semibold text-brand-700 transition-colors group-hover/card:text-brand-300 group-focus-within/card:text-brand-300 group-data-[on]/card:text-brand-300">
           {product.brand} · {category?.short}
         </p>
-        <h2 className="mt-2 text-lg font-bold leading-snug tracking-[-0.01em] text-ink">
-          <Link href={`/products/${product.slug}`} scroll={false} className="hover:text-brand-700">{product.name}</Link>
+        <h2 className="mt-1.5 text-xl font-bold leading-snug tracking-[-0.01em] text-ink transition-colors group-hover/card:text-white group-focus-within/card:text-white group-data-[on]/card:text-white">
+          <Link href={`/products/${product.slug}`} scroll={false} className="outline-none">{product.name}</Link>
         </h2>
-        {note && <p className="mt-2 line-clamp-2 text-[1rem] leading-relaxed text-ink-3">{note}</p>}
+        {note && <p className="mt-2 line-clamp-2 text-base leading-relaxed text-ink-3 transition-colors group-hover/card:text-white/75 group-focus-within/card:text-white/75 group-data-[on]/card:text-white/75">{note}</p>}
       </div>
-      <dl className={cn('mb-5 mt-5 space-y-2.5 border-t border-line pt-4 font-mono text-[0.8125rem]', list && 'md:my-0 md:border-t-0 md:pt-0')}>
+      <dl className={cn('my-5 space-y-2.5 border-t border-line pt-4 text-[1.0625rem] transition-colors group-hover/card:border-white/10 group-focus-within/card:border-white/10 group-data-[on]/card:border-white/10', list && 'md:my-0 md:border-t-0 md:pt-0')}>
         {rows.map((r) => (
           <div key={r.label} className="flex items-baseline justify-between gap-4">
-            <dt className="text-ink-3">{r.label}</dt>
-            <dd className="text-right font-semibold text-ink">{r.value}</dd>
+            <dt className="text-ink-3 transition-colors group-hover/card:text-white/60 group-focus-within/card:text-white/60 group-data-[on]/card:text-white/60">{r.label}</dt>
+            <dd className="text-right font-semibold text-ink transition-colors group-hover/card:text-brand-300 group-focus-within/card:text-brand-300 group-data-[on]/card:text-brand-300">{r.value}</dd>
           </div>
         ))}
       </dl>
-      <div className={cn('mt-auto flex items-center justify-between gap-3 border-t border-line pt-4', list && 'md:col-start-3 md:mt-4')}>
-        <AddToQuote item={{ slug: product.slug, name: product.name, brand: product.brand, image: product.image }} className="h-11 rounded-md" />
-        <Link href={`/products/${product.slug}`} scroll={false} className="text-base font-semibold text-ink underline-offset-4 hover:text-brand-700 hover:underline">
+      <div className={cn('mt-auto flex items-center justify-between gap-3 border-t border-line pt-4 transition-colors group-hover/card:border-white/10 group-focus-within/card:border-white/10 group-data-[on]/card:border-white/10', list && 'md:col-start-3 md:mt-4')}>
+        <AddToQuote
+          item={{ slug: product.slug, name: product.name, brand: product.brand, image: product.image }}
+          className="h-11 rounded-md text-base group-hover/card:text-brand-300 group-hover/card:ring-brand-300/50 group-focus-within/card:text-brand-300 group-focus-within/card:ring-brand-300/50 group-data-[on]/card:bg-transparent group-data-[on]/card:text-brand-300 group-data-[on]/card:ring-brand-300/50"
+        />
+        <Link href={`/products/${product.slug}`} scroll={false} className="text-base font-semibold text-ink underline-offset-4 transition-colors hover:underline group-hover/card:text-brand-300 group-focus-within/card:text-brand-300 group-data-[on]/card:text-brand-300">
           Details
         </Link>
       </div>

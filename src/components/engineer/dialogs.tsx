@@ -45,7 +45,7 @@ export function LogFaultDialog({ open, onOpenChange, assets, defaultAssetId, onS
           <textarea required autoFocus value={description} onChange={(e) => setDescription(e.target.value)} rows={3} placeholder="e.g. Error code E-21 on start-up" className={cn(fieldClass, 'py-2.5')} />
         </Field>
         <fieldset>
-          <legend className="font-mono text-[0.8125rem] uppercase tracking-widest text-white/75">Priority</legend>
+          <legend className="font-mono text-[0.9375rem] uppercase tracking-widest text-white/75">Priority</legend>
           <div className="mt-2 grid grid-cols-3 gap-2">
             {(['critical', 'high', 'routine'] as const).map((p) => (
               <button key={p} type="button" aria-pressed={priority === p} onClick={() => setPriority(p)} className={cn('rounded-xl border px-3 py-2 text-sm capitalize transition', priority === p ? 'border-brand-500 bg-brand-500/15 text-white' : 'border-white/10 text-white/75 hover:border-white/25')}>
@@ -130,7 +130,7 @@ export function CalibrationDialog({ asset, onOpenChange, onSubmit }: {
         className="space-y-4"
       >
         <fieldset>
-          <legend className="font-mono text-[0.8125rem] uppercase tracking-widest text-white/75">Result</legend>
+          <legend className="font-mono text-[0.9375rem] uppercase tracking-widest text-white/75">Result</legend>
           <div className="mt-2 grid grid-cols-2 gap-2">
             {(['Pass', 'Adjusted'] as const).map((r) => (
               <button key={r} type="button" aria-pressed={result === r} onClick={() => setResult(r)} className={cn('rounded-xl border px-3 py-2.5 text-sm transition', result === r ? 'border-brand-500 bg-brand-500/15 text-white' : 'border-white/10 text-white/75 hover:border-white/25')}>

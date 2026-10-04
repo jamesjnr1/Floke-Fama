@@ -9,8 +9,7 @@ export default function OfflinePage() {
   return (
     <div className="bg-canvas pt-20">
       <div className="mx-auto max-w-3xl px-5 py-12 md:py-28">
-        <p className="label eyebrow">You’re offline</p>
-        <h1 className="display mt-5 text-5xl md:text-6xl">Support is still one call away.</h1>
+        <h1 className="display text-5xl md:text-6xl">Support is still one call away.</h1>
         <p className="mt-6 text-ink-3">
           Your connection dropped. Pages you’ve already opened, including product spec sheets, remain available. For urgent equipment faults, contact our biomedical support team directly.
         </p>
