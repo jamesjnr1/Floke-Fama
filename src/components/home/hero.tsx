@@ -18,10 +18,10 @@ export function Hero() {
         middle, and softening into white above the partner band.
       */}
       <div aria-hidden className="absolute inset-0 -z-10 bg-sand">
-        <div className="absolute inset-y-0 right-0 hidden w-[70%] sm:block">
-          <Image src="/images/hero-microscope.webp" alt="" fill priority sizes="70vw" className="object-cover object-[22%_50%]" />
+        <div className="absolute inset-y-0 right-0 hidden w-[58%] sm:block">
+          <Image src="/images/hero-microscope.webp" alt="" fill priority sizes="58vw" className="object-cover object-[30%_50%]" />
         </div>
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,#e4eef0_0%,#e4eef0_32%,rgb(228_238_240/0.9)_42%,rgb(228_238_240/0.5)_56%,rgb(228_238_240/0.12)_74%,rgb(228_238_240/0)_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,#e4eef0_0%,#e4eef0_44%,rgb(228_238_240/0.85)_52%,rgb(228_238_240/0.4)_63%,rgb(228_238_240/0.1)_78%,rgb(228_238_240/0)_100%)]" />
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(228_238_240/0.55)_0%,rgb(228_238_240/0)_20%,rgb(228_238_240/0)_74%,#ffffff_100%)]" />
       </div>
 
