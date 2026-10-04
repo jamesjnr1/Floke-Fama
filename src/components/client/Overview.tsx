@@ -37,7 +37,7 @@ export function Overview({ name, assets, tickets, onOpenTicket, onOpenAsset, onR
   return (
     <div className="space-y-6">
       {/* Greeting + primary action */}
-      <div className="flex flex-col justify-between gap-4 rounded-3xl bg-[linear-gradient(135deg,#0a6a70,#075056)] p-6 text-white md:flex-row md:items-center md:p-8">
+      <div className="flex flex-col justify-between gap-4 rounded-3xl bg-[linear-gradient(135deg,#136442,#00492c)] p-6 text-white md:flex-row md:items-center md:p-8">
         <div>
           <p className="text-sm text-white/80">{hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'}, {name}</p>
           <p className="mt-1 text-2xl font-semibold tracking-[-0.02em] md:text-3xl">

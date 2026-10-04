@@ -66,7 +66,7 @@ export function TicketsView({ state, me, selectedId, onSelect, dispatch, onResol
             <span className="sr-only">Filter tickets</span>
             <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Filter tickets…" className="w-full bg-transparent text-sm text-white outline-none placeholder:text-white/60" />
           </label>
-          <button onClick={onLogFault} className="grid size-10 shrink-0 place-items-center rounded-xl bg-brand-600 text-white hover:bg-brand-700" aria-label="Log new fault">
+          <button onClick={onLogFault} className="grid size-10 shrink-0 place-items-center rounded-xl bg-yellow text-midnight hover:bg-[#fcc843]" aria-label="Log new fault">
             <Icon name="fi-rr-plus" />
           </button>
         </div>

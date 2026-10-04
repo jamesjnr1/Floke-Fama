@@ -109,7 +109,7 @@ export function PortalShell({ user }: { user: { name: string; email: string } })
         </Link>
 
         <div className="mt-8 flex items-center gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.03] p-3">
-          <span className="grid size-10 place-items-center rounded-xl bg-brand-600 font-semibold">{initials}</span>
+          <span className="grid size-10 place-items-center rounded-xl bg-yellow font-semibold text-midnight">{initials}</span>
           <span className="min-w-0">
             <span className="block truncate text-sm font-medium">{me}</span>
             <span className="block truncate text-xs text-white/65">Biomedical engineer</span>
@@ -181,7 +181,7 @@ export function PortalShell({ user }: { user: { name: string; email: string } })
         <div className="mb-5 flex items-center justify-between lg:hidden">
           <Link href="/" className="flex items-center gap-2"><LogoMark /><span className="font-semibold">Service Portal</span></Link>
           <div className="flex items-center gap-2">
-            <button onClick={() => setFault({ open: true })} className="grid size-10 place-items-center rounded-xl bg-brand-600" aria-label="Log equipment fault"><Icon name="fi-rr-plus" /></button>
+            <button onClick={() => setFault({ open: true })} className="grid size-10 place-items-center rounded-xl bg-yellow text-midnight" aria-label="Log equipment fault"><Icon name="fi-rr-plus" /></button>
             <button onClick={a11y.open} className="grid size-10 place-items-center rounded-xl border border-white/10" aria-label="Accessibility options"><Icon name="fi-rr-universal-access" /></button>
             <form action={logout}>
               <button type="submit" className="grid size-10 place-items-center rounded-xl border border-white/10" aria-label="Sign out"><Icon name="fi-rr-sign-out-alt" /></button>

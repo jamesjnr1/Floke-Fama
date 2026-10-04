@@ -24,7 +24,7 @@ export function PriorityBadge({ priority }: { priority: Priority }) {
 export function PrimaryButton({ className, ...props }: React.ComponentProps<'button'>) {
   return (
     <button
-      className={cn('inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/60', className)}
+      className={cn('inline-flex items-center justify-center gap-2 rounded-xl bg-yellow px-4 py-2.5 text-sm font-semibold text-midnight transition hover:bg-[#fcc843] disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/60', className)}
       {...props}
     />
   );

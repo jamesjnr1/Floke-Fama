@@ -81,7 +81,7 @@ export function ClientShell({ user }: { user: { name: string; email: string; fac
                   aria-current={view === n.id ? 'page' : undefined}
                   className={cn('relative flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition', view === n.id ? 'text-white' : 'text-white/75 hover:bg-white/[0.05] hover:text-white')}
                 >
-                  {view === n.id && <motion.span layoutId="client-rail" className="absolute inset-0 rounded-xl bg-brand-600" />}
+                  {view === n.id && <motion.span layoutId="client-rail" className="absolute inset-0 rounded-xl bg-white/15" />}
                   <Icon name={n.icon} className="relative" />
                   <span className="relative flex-1 text-left">{n.label}</span>
                   {n.id === 'requests' && openCount > 0 && <span className="relative rounded-full bg-white/15 px-1.5 font-mono text-[10px]">{openCount}</span>}
