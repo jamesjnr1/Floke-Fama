@@ -1,28 +1,22 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import { HeroLogos } from '@/components/home/hero-logos';
+import { NetworkCanvas } from '@/components/home/network-canvas';
 import { Reveal } from '@/components/motion/reveal';
 import { Button } from '@/components/ui/button';
 
 /**
- * Hero: Wild Sand, with the microscope photo dissolving into it on the right. Left: the company line from flokefama.com and its two actions (Explore Solutions → shop,
- * Contact Us → contact). Right: a laboratory microscope in blue light, filling the right side and fading into the background (from tablet up, so on phones
+ * Hero: Wild Sand with the network mesh on the right (no photo). Left: the company line from flokefama.com and its two actions (Explore Solutions → shop,
+ * Contact Us → contact). The mesh shows from tablet up (on phones
  * the partner band still shows on the first screen).
  * Bottom band: Our Partners & Clientele, visible without scrolling.
  */
 export function Hero() {
   return (
     <section className="relative isolate flex min-h-[100svh] flex-col overflow-hidden bg-sand text-ink">
-      {/*
-        Background: Wild Sand from the palette. The photo is mostly light and cool, so it dissolves into it cleanly: solid behind the text, easing out across the
-        middle, and softening into white above the partner band.
-      */}
+      {/* Background: Wild Sand with the drifting network mesh on the right (no photo), fading out behind the text */}
       <div aria-hidden className="absolute inset-0 -z-10 bg-sand">
-        <div className="absolute inset-y-0 right-0 hidden w-[58%] sm:block">
-          <Image src="/images/hero-microscope.webp" alt="" fill priority sizes="58vw" className="object-cover object-[30%_50%]" />
-        </div>
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,#e4eef0_0%,#e4eef0_44%,rgb(228_238_240/0.85)_52%,rgb(228_238_240/0.4)_63%,rgb(228_238_240/0.1)_78%,rgb(228_238_240/0)_100%)]" />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(228_238_240/0.55)_0%,rgb(228_238_240/0)_20%,rgb(228_238_240/0)_74%,#ffffff_100%)]" />
+        <NetworkCanvas className="absolute inset-0 hidden sm:block [mask-image:linear-gradient(90deg,transparent_0%,transparent_38%,#000_70%)]" />
+        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent to-white" />
       </div>
 
       <div className="mx-auto grid w-full max-w-[1280px] flex-1 grid-cols-1 items-center gap-8 px-5 pb-10 pt-28 md:gap-12 md:px-10 md:pt-32 lg:grid-cols-12 lg:gap-16 lg:pb-10">
