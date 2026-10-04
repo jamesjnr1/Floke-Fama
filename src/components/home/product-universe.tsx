@@ -16,23 +16,23 @@ export function ProductUniverse({ categories, products = [] }: { categories: Cat
   const image = (c: Category) => c.image ?? products.find((p) => p.category === c.slug && p.image)?.image;
 
   return (
-    <section aria-labelledby="product-universe-title" className="relative isolate overflow-hidden bg-blue py-16 md:py-28">
-      {/* Medical blue with a soft lift of light, so the band has depth without noise */}
-      <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(90%_70%_at_15%_0%,rgb(255_255_255/0.14),transparent_60%),linear-gradient(180deg,#2f80b7,#2a74a7)]" />
+    <section aria-labelledby="product-universe-title" className="relative isolate overflow-hidden bg-brand-800 py-16 md:py-28">
+      {/* Deep brand green with a soft lift of light: calm, and the cards read without white panels */}
+      <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(90%_70%_at_15%_0%,rgb(127_201_163/0.14),transparent_60%),linear-gradient(180deg,#0b5a44,#004d3b)]" />
       <div className="mx-auto max-w-[1280px] px-5 md:px-16">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <SectionHeading
-            onBlue
+            dark
             label="Solutions"
             title={
               <span id="product-universe-title">
-                Every department. <span className="text-white/75">One catalogue.</span>
+                Every department. <span className="text-brand-300">One catalogue.</span>
               </span>
             }
             lead={`${products.length ? `${products.length} products across ${categories.length} departments, from analysers to hospital furniture. ` : ''}Official distributor of ${distributors.slice(0, -1).join(', ')} and ${distributors.at(-1)}, with installation, training and after-sales support on everything we supply.`}
           />
           <Reveal>
-            <Button asChild className="bg-white text-blue-700 hover:bg-blue-50">
+            <Button asChild variant="glass">
               <Link href="/products">
                 Browse the catalogue
               </Link>
@@ -49,10 +49,10 @@ export function ProductUniverse({ categories, products = [] }: { categories: Cat
                 <Reveal delay={0.05 * i} className="h-full">
                   <Link
                     href={`/products?category=${c.slug}`}
-                    className="group flex h-full flex-col rounded-3xl bg-paper p-3 shadow-[0_18px_40px_-24px_rgb(8_38_66/0.55)] transition-[box-shadow,transform] duration-300 hover:-translate-y-1 hover:shadow-[0_28px_50px_-24px_rgb(8_38_66/0.65)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                    className="group flex h-full flex-col rounded-3xl bg-white/[0.07] p-3 ring-1 ring-white/10 transition-[background-color,transform] duration-300 hover:-translate-y-1 hover:bg-white/[0.11] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                   >
-                    {/* A pale blue tile: the product photos’ white backgrounds blend into it */}
-                    <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-blue-50">
+                    {/* A soft mint tile (not white): the product photos’ white backgrounds blend into it */}
+                    <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-[#dcebe3]">
                       {src ? (
                         <Image
                           src={src}
@@ -62,13 +62,13 @@ export function ProductUniverse({ categories, products = [] }: { categories: Cat
                           className="object-contain p-6 mix-blend-multiply transition-transform duration-500 group-hover:scale-[1.04]"
                         />
                       ) : (
-                        <Icon name={c.icon} className="absolute inset-0 m-auto size-fit text-5xl text-blue/60" />
+                        <Icon name={c.icon} className="absolute inset-0 m-auto size-fit text-5xl text-brand-600/60" />
                       )}
                     </div>
                     <div className="flex flex-1 flex-col px-2 pb-2 pt-4">
-                      <h3 className="text-[17px] font-semibold leading-snug text-ink">{c.title}</h3>
-                      <p className="mt-1.5 text-sm leading-relaxed text-ink-3">{c.description}</p>
-                      <span className="mt-auto inline-flex items-center gap-1.5 pt-4 text-sm font-medium text-blue-700">
+                      <h3 className="text-[17px] font-semibold leading-snug text-white">{c.title}</h3>
+                      <p className="mt-1.5 text-sm leading-relaxed text-white/75">{c.description}</p>
+                      <span className="mt-auto inline-flex items-center gap-1.5 pt-4 text-sm font-medium text-brand-300">
                         {n > 0 ? `${n} product${n === 1 ? '' : 's'}` : 'Explore'}
                       </span>
                     </div>
