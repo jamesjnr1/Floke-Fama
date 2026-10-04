@@ -30,7 +30,7 @@ export function mountOrb(container: HTMLElement, onReady?: () => void): () => vo
   // Outer geodesic shell
   const shellSrc = new IcosahedronGeometry(2.2, 2);
   const shell = new EdgesGeometry(shellSrc);
-  const shellMat = new LineBasicMaterial({ color: 0xd6ecfa, transparent: true, opacity: 0.4 });
+  const shellMat = new LineBasicMaterial({ color: 0xbfe0f0, transparent: true, opacity: 0.38 });
   orb.add(new LineSegments(shell, shellMat));
 
   // Glowing nodes on the shell's vertices (deduplicated)
@@ -50,7 +50,7 @@ export function mountOrb(container: HTMLElement, onReady?: () => void): () => vo
 
   // Faint inner core, turning the other way
   const core = new EdgesGeometry(new IcosahedronGeometry(1.05, 1));
-  const coreMat = new LineBasicMaterial({ color: 0x9fe3d4, transparent: true, opacity: 0.55 });
+  const coreMat = new LineBasicMaterial({ color: 0x7fc9a3, transparent: true, opacity: 0.7 });
   const coreMesh = new LineSegments(core, coreMat);
   orb.add(coreMesh);
 
