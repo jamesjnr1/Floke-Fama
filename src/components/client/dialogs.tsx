@@ -191,7 +191,7 @@ export function EquipmentSheet({ asset, tickets, onClose, onRequest, onOpenTicke
           </div>
 
           <section>
-            <h3 className="text-[0.9375rem] font-semibold">Service history</h3>
+            <h3 className="text-[1rem] font-semibold">Service history</h3>
             <ul className="mt-3 divide-y divide-line rounded-2xl border border-line">
               {history.map((t) => (
                 <li key={t.id}>
@@ -210,7 +210,7 @@ export function EquipmentSheet({ asset, tickets, onClose, onRequest, onOpenTicke
           </section>
 
           <section>
-            <h3 className="text-[0.9375rem] font-semibold">Calibration certificates</h3>
+            <h3 className="text-[1rem] font-semibold">Calibration certificates</h3>
             <ul className="mt-3 divide-y divide-line rounded-2xl border border-line">
               {asset.certificates.map((c) => (
                 <li key={c.id} className="flex items-center gap-3 px-4 py-3">

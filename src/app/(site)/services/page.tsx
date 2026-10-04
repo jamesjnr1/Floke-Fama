@@ -2,7 +2,8 @@ import type { Metadata } from 'next';
 import { Services } from '@/components/home/services';
 import { PageHero } from '@/components/layout/page-hero';
 import { Reveal } from '@/components/motion/reveal';
-import { IconTile } from '@/components/ui/icon';
+import { Globe, Headset, Link2, MapPin } from 'lucide-react';
+import { ToneIcon } from '@/components/ui/tone-icon';
 import { whyChoose } from '@/data/seed';
 
 export const metadata: Metadata = {
@@ -10,6 +11,13 @@ export const metadata: Metadata = {
   description: 'Medical equipment sales, installation, maintenance, calibration, repairs and training, from the official distributor of Mindray, Biozek Holland and MR Global.',
   alternates: { canonical: '/services' },
 };
+
+const why = [
+  { icon: Link2, tone: 'green' },
+  { icon: Globe, tone: 'blue' },
+  { icon: Headset, tone: 'red' },
+  { icon: MapPin, tone: 'amber' },
+] as const;
 
 export default function ServicesPage() {
   return (
@@ -21,7 +29,7 @@ export default function ServicesPage() {
       />
       <Services />
 
-      <section id="why-choose-us" className="scroll-mt-28 border-t border-line bg-paper py-14 md:py-32">
+      <section id="why-choose-us" className="scroll-mt-28 border-t border-line bg-paper py-14 md:py-28">
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
           <Reveal>
             <p className="label eyebrow">Why choose Flokefama?</p>
@@ -29,13 +37,13 @@ export default function ServicesPage() {
               We are the Official distributor of <span className="text-brand-600">Mindray, Biozek Holland, and MR Global.</span>
             </h2>
           </Reveal>
-          <ul className="swipe-row mt-10 gap-4 md:mt-12 md:grid-cols-2 lg:grid-cols-4">
+          <ul className="mt-10 grid gap-px border border-line bg-line sm:grid-cols-2 md:mt-12 lg:grid-cols-4">
             {whyChoose.map((w, i) => (
-              <li key={w.title}>
-                <Reveal delay={i * 0.06} className="h-full rounded-3xl border border-line bg-canvas p-7">
-                  <IconTile name={w.icon} />
-                  <h3 className="mt-8 text-xl font-bold tracking-[-0.02em]">{w.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-ink-3">{w.body}</p>
+              <li key={w.title} className="bg-paper">
+                <Reveal delay={i * 0.06} className="flex h-full flex-col p-7 lg:p-8">
+                  <ToneIcon icon={why[i].icon} tone={why[i].tone} />
+                  <h3 className="mt-7 text-xl font-bold leading-snug tracking-[-0.02em]">{w.title}</h3>
+                  <p className="mt-2 leading-relaxed text-ink-3">{w.body}</p>
                 </Reveal>
               </li>
             ))}

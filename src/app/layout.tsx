@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { GeistSans } from 'geist/font/sans';
-import localFont from 'next/font/local';
+import { JetBrains_Mono, Plus_Jakarta_Sans } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
 import { Toaster } from 'sonner';
 import { AccessibilityProvider } from '@/components/layout/accessibility';
@@ -11,18 +10,9 @@ import { allowIndexing, siteUrl } from '@/lib/utils';
 import '@/styles/uicons/uicons.css';
 import './globals.css';
 
-/** Poppins (self-hosted): the main typeface for headings and body text. */
-const poppins = localFont({
-  src: [
-    { path: '../fonts/poppins-300.woff2', weight: '300', style: 'normal' },
-    { path: '../fonts/poppins-400.woff2', weight: '400', style: 'normal' },
-    { path: '../fonts/poppins-500.woff2', weight: '500', style: 'normal' },
-    { path: '../fonts/poppins-600.woff2', weight: '600', style: 'normal' },
-    { path: '../fonts/poppins-700.woff2', weight: '700', style: 'normal' },
-  ],
-  variable: '--font-poppins',
-  display: 'swap',
-});
+/** Plus Jakarta Sans: headings, body and navigation. JetBrains Mono: technical labels, specs, badges and numbers. */
+const jakarta = Plus_Jakarta_Sans({ subsets: ['latin'], weight: ['400', '500', '600', '700', '800'], variable: '--font-jakarta', display: 'swap' });
+const jetbrains = JetBrains_Mono({ subsets: ['latin'], weight: ['400', '500', '600'], variable: '--font-jetbrains', display: 'swap' });
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -51,7 +41,7 @@ const organizationLd = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en-GH" className={`${poppins.variable} ${GeistSans.variable}`} suppressHydrationWarning>
+    <html lang="en-GH" className={`${jakarta.variable} ${jetbrains.variable}`} suppressHydrationWarning>
       <head>
         {/* Apply saved accessibility preferences before first paint */}
         <script dangerouslySetInnerHTML={{ __html: a11yBootScript }} />

@@ -9,7 +9,7 @@ export function Card({ children, className }: { children: React.ReactNode; class
 export function CardTitle({ children, action }: { children: React.ReactNode; action?: React.ReactNode }) {
   return (
     <div className="flex items-center justify-between gap-3">
-      <h2 className="text-[0.9375rem] font-semibold text-ink">{children}</h2>
+      <h2 className="text-[1rem] font-semibold text-ink">{children}</h2>
       {action}
     </div>
   );
@@ -30,4 +30,4 @@ export const urgency: Record<Priority, { label: string; hint: string; className:
 };
 
 export const inputClass =
-  'w-full rounded-xl border border-line bg-paper px-3.5 text-[0.9375rem] text-ink outline-none transition placeholder:text-ink-3/60 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15';
+  'w-full rounded-xl border border-line bg-paper px-3.5 text-[1rem] text-ink outline-none transition placeholder:text-ink-3/60 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15';
