@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { HeartPulse, Mail, MapPin, Phone } from 'lucide-react';
+import { ArrowUpRight, HeartPulse, Mail, MapPin, Phone } from 'lucide-react';
 import { Logo } from '@/components/layout/logo';
 import { contact, maps } from '@/data/seed';
 
@@ -84,8 +84,9 @@ export function SiteFooter() {
             <div className="flex flex-col gap-4 border border-[#54cdd6]/20 bg-gradient-to-br from-[#16262d] to-[#0b3b40] p-6">
               <HeartPulse className="size-7 text-brand-300" strokeWidth={1.6} aria-hidden />
               <p className="text-lg font-bold leading-snug text-white">Get a technical proposal for your facility.</p>
-              <Link href="/quote" className="bg-cta px-4 py-3 text-center text-base font-semibold text-white transition-colors hover:bg-cta-700">
+              <Link href="/quote" className="group flex items-center justify-between gap-4 bg-cta px-5 py-3.5 text-base font-semibold text-white transition-colors hover:bg-cta-700">
                 Start Request
+                <ArrowUpRight className="size-5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden />
               </Link>
             </div>
           </div>

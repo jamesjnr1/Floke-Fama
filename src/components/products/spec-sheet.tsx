@@ -145,7 +145,7 @@ export function SpecHeader({ product, categoryTitle }: { product: Product; categ
 export function SpecActions({ product }: { product: Product }) {
   return (
     <div className="flex flex-wrap gap-3">
-      <Button asChild>
+      <Button asChild arrow="up-right">
         <Link href={`/quote?product=${product.slug}`}>Order now</Link>
       </Button>
       <AddToQuote item={{ slug: product.slug, name: product.name, brand: product.brand, image: product.image }} />
