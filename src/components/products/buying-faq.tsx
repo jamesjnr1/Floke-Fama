@@ -74,7 +74,7 @@ export function BuyingFaq() {
                 </a>
               </li>
             </ul>
-            <Link href="/quote" className="flex items-center justify-center gap-2 bg-cta px-5 py-3.5 text-sm font-medium transition hover:bg-cta-700">
+            <Link href="/quote" className="flex items-center justify-center gap-2 bg-lime px-5 py-3.5 text-sm font-semibold text-ink transition hover:bg-[#a9ff82]">
               Order now
             </Link>
           </div>

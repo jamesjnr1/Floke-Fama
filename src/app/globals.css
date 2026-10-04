@@ -1,52 +1,54 @@
 @import 'tailwindcss';
 
 /* ==========================================================================
-   Flokefama colour system (pharmaceutical distribution)
-   Green        #007A4D / #004D3B · the brand: highlights, brand surfaces; buttons in vivid #15843E
-   Charcoal navy #17313A          · text and dark surfaces
-   Off-white / cool gray          · backgrounds and panels
-   Medical blue #2F80B7           · information accents: section labels, the Aim block
-   Red          #E3262E           · the Vision block, the logo-dot accents, the hero's Contact Us, alerts
+   Flokefama palette
+   Move Green   #0F3B27 · the brand: text, primary buttons, dark surfaces (nav, footer, bands)
+   Signal Lime  #92FF5F · bright accent on dark green: accent words, dots, highlights
+   Soft White   #F7F9F7 · page background
+   Orange       #FF7036 · warm accent: the logo dot, secondary buttons, alerts
+   Ice          #BFF2F0 · cool light surfaces: hero and page headers
+   Mint         #CFF1D2 · soft green surfaces: tiles, chips, quiet panels
    ========================================================================== */
 @theme {
   /* Two typefaces: Poppins for text, Geist Sans for labels, numerals and accents (the `font-mono` utility). */
   --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
 
-  /* Colour system: green + warm off-white + charcoal navy dominate; red and blue are controlled accents. */
-  --color-canvas: #f7f8f5; /* warm off-white: main backgrounds */
+  --color-canvas: #f7f9f7; /* Soft White */
   --color-paper: #ffffff;
-  --color-mist: #e8eef0; /* cool gray: cards, soft panels */
-  --color-line: #dde5e8; /* cool gray borders */
-  --color-ink: #17313a; /* charcoal navy: primary text */
-  --color-ink-2: #2c4650;
-  --color-ink-3: #4b626b;
+  --color-mist: #e9f6ea; /* a whisper of Mint for soft panels */
+  --color-line: #d9e6dc;
+  --color-ink: #0f3b27; /* Move Green: primary text */
+  --color-ink-2: #2b5140;
+  --color-ink-3: #4d6a5c;
 
-  --color-midnight: #102a31;
-  --color-midnight-2: #16343c;
-  --color-midnight-3: #1d3f48;
+  --color-midnight: #0f3b27; /* Move Green: dark surfaces */
+  --color-midnight-2: #134830;
+  --color-midnight-3: #1a5a3c;
 
-  /* Flokefama green (600 = primary #007A4D, 800 = deep green #004D3B) */
-  --color-brand-50: #edf6f1;
-  --color-brand-100: #cfe8db;
-  --color-brand-300: #7fc9a3;
-  --color-brand-400: #34a174;
-  --color-brand-500: #008a57;
-  --color-brand-600: #007a4d;
-  --color-brand-700: #006140;
-  --color-brand-800: #004d3b;
+  /* Green scale built around Move Green; 300 is Signal Lime (accent on dark) */
+  --color-brand-50: #eef9ef;
+  --color-brand-100: #cff1d2; /* Mint */
+  --color-brand-300: #92ff5f; /* Signal Lime */
+  --color-brand-400: #4cc96e;
+  --color-brand-500: #23784a;
+  --color-brand-600: #1a6340;
+  --color-brand-700: #134d32;
+  --color-brand-800: #0f3b27; /* Move Green */
 
-  /* Button green: the old site's vivid #1A9C4B, deepened just enough for AA contrast with white text */
-  --color-cta: #15843e;
-  --color-cta-700: #0f6b32;
+  --color-cta: #0f3b27; /* primary buttons: Move Green, white text */
+  --color-cta-700: #1a5a3c;
 
-  --color-surgical: #34a174;
-  --color-signal: #e3262e; /* Flokefama red: small highlights and CTAs */
-  --color-signal-700: #b81d24; /* red, darkened for AA text on light backgrounds */
-  --color-blue: #2f80b7; /* medical blue: technology and diagnostics accents */
-  --color-blue-50: #eaf3f9;
-  --color-blue-700: #236a9c; /* medical blue, darkened for AA text: section labels */
-  --color-teal: #63c6b5; /* soft teal: secondary accents */
+  --color-surgical: #4cc96e;
+  --color-signal: #ff7036; /* Orange: warm accent and secondary buttons (dark text on it) */
+  --color-signal-700: #b9461a; /* Orange, darkened for AA text on light backgrounds */
+  --color-blue: #0f3b27; /* legacy accent slot, now Move Green */
+  --color-blue-50: #eef9ef;
+  --color-blue-700: #1a6340; /* section labels */
+  --color-teal: #bff2f0; /* Ice */
+  --color-ice: #bff2f0;
+  --color-mint: #cff1d2;
+  --color-lime: #92ff5f;
 
   --radius-4xl: 2rem;
   --radius-5xl: 2.5rem;
@@ -61,8 +63,8 @@
   }
   --animate-status-pulse: status-pulse 2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
   @keyframes status-pulse {
-    0% { box-shadow: 0 0 0 0 rgb(58 168 103 / 0.55); }
-    100% { box-shadow: 0 0 0 8px rgb(58 168 103 / 0); }
+    0% { box-shadow: 0 0 0 0 rgb(76 201 110 / 0.55); }
+    100% { box-shadow: 0 0 0 8px rgb(76 201 110 / 0); }
   }
 }
 
@@ -79,7 +81,7 @@
     text-wrap: balance;
   }
   ::selection {
-    @apply bg-brand-300 text-midnight;
+    @apply bg-lime text-midnight;
   }
   :focus-visible {
     @apply outline-2 outline-offset-2 outline-brand-500;
