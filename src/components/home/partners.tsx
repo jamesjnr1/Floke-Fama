@@ -77,7 +77,7 @@ export function Partners({ heading = true, logos = true }: { heading?: boolean; 
                   <span className="flex h-12 items-center justify-center sm:h-20">
                     <Image src={c.logo} alt="" width={box.width} height={box.height} style={{ width: box.width, height: box.height }} className="max-h-11 max-w-full object-contain sm:max-h-none" />
                   </span>
-                  <span className="text-[11px] leading-tight text-ink-2 sm:text-[13px]">{c.name}</span>
+                  <span className="text-[0.6875rem] leading-tight text-ink-2 sm:text-[0.8125rem]">{c.name}</span>
                 </li>
               );
             })}
@@ -96,12 +96,12 @@ export function Partners({ heading = true, logos = true }: { heading?: boolean; 
                   <p className="text-[clamp(2.75rem,2rem+2.4vw,4rem)] font-bold leading-none tracking-[-0.04em]">
                     <CountUp value={m.value} suffix={m.suffix} />
                   </p>
-                  <p className="max-w-[16rem] text-[15px] leading-snug text-white/80">{i === 0 ? 'Hospitals and medical laboratories served, and counting' : 'Successful system integrations'}</p>
+                  <p className="max-w-[16rem] text-[0.9375rem] leading-snug text-white/80">{i === 0 ? 'Hospitals and medical laboratories served, and counting' : 'Successful system integrations'}</p>
                 </div>
               ))}
               <div className="flex flex-col gap-5 p-7 md:p-10">
                 <p className="flex min-h-[clamp(2.75rem,2rem+2.4vw,4rem)] items-end text-[clamp(1.75rem,1.4rem+1.2vw,2.5rem)] font-bold leading-[1.05] tracking-[-0.03em]">Ghana Club 100</p>
-                <p className="text-[15px] leading-snug text-white/80">
+                <p className="text-[0.9375rem] leading-snug text-white/80">
                   Trusted badges &amp; associations: CEO’s Summit, partnerships and more.
                   <Link href="/awards" className="mt-3 flex items-center gap-1 font-medium text-white transition hover:text-white/80">View our awards</Link>
                 </p>

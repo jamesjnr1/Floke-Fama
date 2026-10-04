@@ -55,10 +55,10 @@ export function AccessPanel({ next, demo, notice, engineer, initialMode }: {
       )}
 
       <div role={engineer ? undefined : 'tabpanel'} className={engineer ? 'lg:mt-12' : 'mt-8'}>
-        <h2 className="text-[32px] font-semibold leading-tight tracking-[-0.02em] text-ink">
+        <h2 className="text-[2rem] font-semibold leading-tight tracking-[-0.02em] text-ink">
           {mode === 'signin' ? 'Welcome back' : 'Create an account'}
         </h2>
-        <p className="mt-2 text-[15px] text-ink-3">
+        <p className="mt-2 text-[0.9375rem] text-ink-3">
           {engineer
             ? 'Sign in to the engineer service portal.'
             : mode === 'signin'

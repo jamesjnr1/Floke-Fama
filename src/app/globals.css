@@ -97,7 +97,7 @@
 @layer components {
   /* Section label: Geist Sans, 12px, medium, +15% tracking, uppercase, in medical blue (red is kept for alerts and the logo dot) */
   .label {
-    @apply font-mono text-[12px] font-medium uppercase tracking-[0.15em] text-blue-700;
+    @apply font-mono text-[0.75rem] font-medium uppercase tracking-[0.15em] text-blue-700;
   }
   /* Section eyebrow: the label led by the logo's red dot (red in small, deliberate doses) */
   .eyebrow {
@@ -190,4 +190,16 @@ html[data-font='readable'] .display { letter-spacing: 0; }
   html:is([data-text='large'], [data-text='larger'], [data-font='readable']) header nav[aria-label='Primary'] { display: none !important; }
   html:is([data-text='large'], [data-text='larger'], [data-font='readable']) header button[aria-controls='mobile-nav'] { display: block !important; }
   html:is([data-text='large'], [data-text='larger'], [data-font='readable']) #mobile-nav { display: flex !important; }
+}
+
+/* Paragraph copy spreads to the full line width (justified) on tablet and up. Hyphenation keeps the spacing even
+   (main carries lang="en" so browsers have a dictionary); very short words never stretch a line on their own.
+   Short text inside cards and list items keeps natural spacing: a 2-3 line card justifies into wide gaps. */
+@media (min-width: 768px) {
+  main p:not(.label):not(:is(li, article, dd, figcaption, button, a) p) {
+    text-align: justify;
+    text-justify: inter-word;
+    hyphens: auto;
+    hyphenate-limit-chars: 6 3 2;
+  }
 }

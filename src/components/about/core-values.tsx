@@ -65,7 +65,7 @@ export function CoreValues() {
                       animate={{ opacity: 1, y: 0, transition: { delay: 0.15, duration: 0.5 } }}
                       exit={{ opacity: 0, transition: { duration: 0.1 } }}
                     >
-                      <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-ink-2">{v.text}</p>
+                      <p className="mt-4 max-w-xl text-[0.9375rem] leading-relaxed text-ink-2">{v.text}</p>
                     </motion.div>
                   )}
                 </AnimatePresence>

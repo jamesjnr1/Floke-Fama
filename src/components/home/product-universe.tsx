@@ -66,7 +66,7 @@ export function ProductUniverse({ categories, products = [] }: { categories: Cat
                       )}
                     </div>
                     <div className="flex flex-1 flex-col px-2 pb-2 pt-4">
-                      <h3 className="text-[17px] font-semibold leading-snug text-white">{c.title}</h3>
+                      <h3 className="text-[1.0625rem] font-semibold leading-snug text-white">{c.title}</h3>
                       <p className="mt-1.5 text-sm leading-relaxed text-white/75">{c.description}</p>
                       <span className="mt-auto inline-flex items-center gap-1.5 pt-4 text-sm font-medium text-brand-300">
                         {n > 0 ? `${n} product${n === 1 ? '' : 's'}` : 'Explore'}

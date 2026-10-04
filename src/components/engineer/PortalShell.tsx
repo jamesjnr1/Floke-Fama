@@ -105,7 +105,7 @@ export function PortalShell({ user }: { user: { name: string; email: string } })
         <Link href="/" className="flex items-center gap-2">
           <LogoMark />
           <span className="text-lg font-semibold tracking-[-0.02em]">Flokefama</span>
-          <span className="ml-auto rounded-md bg-white/5 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-widest text-white/60">Service</span>
+          <span className="ml-auto rounded-md bg-white/5 px-1.5 py-0.5 font-mono text-[0.625rem] uppercase tracking-widest text-white/60">Service</span>
         </Link>
 
         <div className="mt-8 flex items-center gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.03] p-3">
@@ -117,7 +117,7 @@ export function PortalShell({ user }: { user: { name: string; email: string } })
         </div>
 
         <nav aria-label="Portal" className="mt-8">
-          <p className="font-mono text-[11px] uppercase tracking-widest text-white/60">Workspace</p>
+          <p className="font-mono text-[0.6875rem] uppercase tracking-widest text-white/60">Workspace</p>
           <ul className="mt-3 space-y-1">
             {nav.map((n) => {
               const badge = n.id === 'tickets' ? counts.tickets : n.id === 'calibration' ? counts.calibration : 0;
@@ -132,7 +132,7 @@ export function PortalShell({ user }: { user: { name: string; email: string } })
                     {view === n.id && <motion.span layoutId="rail-bar" className="absolute -left-5 top-2 h-6 w-[3px] rounded-r bg-brand-500" />}
                     <Icon name={n.icon} className={cn('relative', view === n.id && 'text-brand-400')} />
                     <span className="relative flex-1 text-left">{n.label}</span>
-                    {badge > 0 && <span className={cn('relative rounded-full px-1.5 font-mono text-[10px]', n.id === 'calibration' ? 'bg-signal/20 text-white' : 'bg-white/10 text-white/80')}>{badge}</span>}
+                    {badge > 0 && <span className={cn('relative rounded-full px-1.5 font-mono text-[0.625rem]', n.id === 'calibration' ? 'bg-signal/20 text-white' : 'bg-white/10 text-white/80')}>{badge}</span>}
                   </button>
                 </li>
               );
@@ -198,14 +198,14 @@ export function PortalShell({ user }: { user: { name: string; email: string } })
 
         <header className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
           <div>
-            <p className="font-mono text-[11px] uppercase tracking-widest text-white/60">{nav.find((n) => n.id === view)?.label}</p>
+            <p className="font-mono text-[0.6875rem] uppercase tracking-widest text-white/60">{nav.find((n) => n.id === view)?.label}</p>
             <h1 className="mt-1 text-3xl font-bold tracking-[-0.03em] text-white md:text-4xl">Biomedical Engineer Service Portal</h1>
           </div>
           <div className="flex items-center gap-3">
             <button onClick={() => setPalette(true)} className="flex h-11 flex-1 items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 text-left text-sm text-white/60 transition hover:border-white/20 xl:w-72 xl:flex-none">
               <Icon name="fi-rr-search" />
               <span className="flex-1">Search systems, tickets…</span>
-              <kbd className="hidden rounded-md border border-white/10 px-1.5 py-0.5 font-mono text-[10px] sm:inline">⌘K</kbd>
+              <kbd className="hidden rounded-md border border-white/10 px-1.5 py-0.5 font-mono text-[0.625rem] sm:inline">⌘K</kbd>
             </button>
             <Notifications items={state.notifications.filter((n) => n.audience === 'engineer')} onRead={(id) => rawDispatch({ type: 'read', id })} onReadAll={() => rawDispatch({ type: 'readAll', audience: 'engineer' })} onOpen={onNotification} />
           </div>
