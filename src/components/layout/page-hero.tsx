@@ -3,7 +3,7 @@ import { Reveal } from '@/components/motion/reveal';
 
 /**
  * Page header shared by the inner pages: information only (label, title, one short line) on Mint, with
- * Flokefama staff at work faded in on the right. Navy text, accent words in Deep Green. No buttons: actions live in the page content.
+ * Flokefama staff at work faded in on the right. Dark navy text, accent words in the company green. No buttons: actions live in the page content.
  */
 export function PageHero({ label, title, lead }: { label: string; title: React.ReactNode; lead?: string }) {
   return (

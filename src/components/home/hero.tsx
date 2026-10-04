@@ -5,7 +5,7 @@ import { Reveal } from '@/components/motion/reveal';
 import { Button } from '@/components/ui/button';
 
 /**
- * Hero: Light Blue, with the microscope photo dissolving into it on the right. Left: the company line from flokefama.com and its two actions (Explore Solutions → shop,
+ * Hero: pale blue, with the microscope photo dissolving into it on the right. Left: the company line from flokefama.com and its two actions (Explore Solutions → shop,
  * Contact Us → contact). Right: a laboratory microscope in blue light, filling the right side and fading into the background (from tablet up, so on phones
  * the partner band still shows on the first screen).
  * Bottom band: Our Partners & Clientele, visible without scrolling.
@@ -14,7 +14,7 @@ export function Hero() {
   return (
     <section className="relative isolate flex min-h-[100svh] flex-col overflow-hidden bg-sky text-ink">
       {/*
-        Background: Light Blue from the palette. The photo is mostly light and cool, so it dissolves into it cleanly: solid behind the text, easing out across the
+        Background: pale blue (--color-sky). The photo is mostly light and cool, so it dissolves into it cleanly: solid behind the text, easing out across the
         middle, and softening into white above the partner band.
       */}
       <div aria-hidden className="absolute inset-0 -z-10 bg-sky">

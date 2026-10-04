@@ -1,56 +1,56 @@
 @import 'tailwindcss';
 
 /* ==========================================================================
-   Flokefama palette (final). Calm, balanced, with clear text colours per background.
-   Deep Green  #00492C · the company colour: nav, footer, Solutions band, primary buttons, accent words
-   Navy        #1E4380 · headings and body text, section labels, figures band, Aim block
-   Light Blue  #9BCCD0 · the hero (it matches the cool microscope photo)
-   Mint        #B1D8B8 · page headers, tiles and soft panels
-   Yellow      #FBBA16 · highlights on dark green and navy (Deep Green text when yellow is the background)
-   Red         #E22028 · small accents: dots, Contact Us, the Vision block (always white text)
-   Text rules: navy or deep green on white, mint, light blue and yellow; white on deep green, navy and red.
+   Flokefama palette (final): Navy & Green. Calm and balanced, with clear text colours per background.
+   Navy          #14304F / #1D3D63 · nav, footer, figures band, Solutions band, Aim block; #1B2B44 for text
+   Company green #00754A · primary buttons, accent words, the Mission block
+   Red           #D92B30 · small accents: dots, Contact Us, the Vision block (always white text)
+   Gold          #F2C14E · highlights on navy: accent words, Client Portal button (navy text on it)
+   Pale blue     #E3EDF6 · the hero background (matches the cool microscope photo)
+   Pale mint     #E3EFE9 · page headers
+   Text rules: dark navy on white and the pale backgrounds; white on navy, green and red; navy on gold.
    ========================================================================== */
 @theme {
   /* Two typefaces: Poppins for text, Geist Sans for labels, numerals and accents (the `font-mono` utility). */
   --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
 
-  --color-canvas: #f6f9f7; /* calm off-white page background */
+  --color-canvas: #f5f7fa; /* calm off-white page background */
   --color-paper: #ffffff;
-  --color-mist: #e6f2e8; /* a light Mint for soft panels */
-  --color-line: #d5e4da;
-  --color-ink: #1e4380; /* Navy: headings and body text */
-  --color-ink-2: #34548a;
-  --color-ink-3: #56709b;
+  --color-mist: #eaf0f6; /* soft panels */
+  --color-line: #dce3ec;
+  --color-ink: #1b2b44; /* dark navy: headings and body text */
+  --color-ink-2: #3a4a63;
+  --color-ink-3: #5e6b80;
 
-  --color-midnight: #00492c; /* Deep Green: nav, footer and dark surfaces */
-  --color-midnight-2: #0a5636;
-  --color-midnight-3: #136442;
+  --color-midnight: #14304f; /* Navy: nav, footer and dark surfaces */
+  --color-midnight-2: #1a3a5e;
+  --color-midnight-3: #224670;
 
-  /* Deep Green scale; 300 is Yellow, the accent on dark surfaces */
-  --color-brand-50: #eaf4ec;
-  --color-brand-100: #b1d8b8; /* Mint */
-  --color-brand-300: #fbba16; /* Yellow: accent words and highlights on dark */
-  --color-brand-400: #2f8a5c;
-  --color-brand-500: #006b40;
-  --color-brand-600: #00492c; /* Deep Green */
-  --color-brand-700: #003a23;
-  --color-brand-800: #00492c;
+  /* Company green scale; 300 is Gold, the accent on navy */
+  --color-brand-50: #eaf6f0;
+  --color-brand-100: #cdebdd;
+  --color-brand-300: #f2c14e; /* Gold: accent words and highlights on navy */
+  --color-brand-400: #2ba36e;
+  --color-brand-500: #008a57;
+  --color-brand-600: #00754a; /* company green */
+  --color-brand-700: #005e3b;
+  --color-brand-800: #14304f;
 
-  --color-cta: #00492c; /* primary buttons: Deep Green, white text */
-  --color-cta-700: #003a23;
+  --color-cta: #00754a; /* primary buttons: company green, white text */
+  --color-cta-700: #005e3b;
 
-  --color-surgical: #2f8a5c;
-  --color-signal: #e22028; /* Red: white text on it */
-  --color-signal-700: #b8161d; /* Red, darkened for AA text on light backgrounds */
-  --color-blue: #1e4380; /* Navy */
-  --color-blue-50: #e8eef7;
-  --color-blue-700: #1e4380; /* section labels */
-  --color-teal: #9bccd0;
-  --color-navy: #1e4380;
-  --color-sky: #9bccd0; /* Light Blue */
-  --color-mint: #b1d8b8; /* Mint */
-  --color-yellow: #fbba16; /* Yellow */
+  --color-surgical: #2ba36e;
+  --color-signal: #d92b30; /* Red: white text on it */
+  --color-signal-700: #b3201f; /* Red, darkened for AA text on light backgrounds */
+  --color-blue: #1d3d63;
+  --color-blue-50: #eaf0f6;
+  --color-blue-700: #2e5e99; /* section labels */
+  --color-teal: #e3edf6;
+  --color-navy: #1d3d63; /* Solutions band, Aim block */
+  --color-sky: #e3edf6; /* hero background */
+  --color-mint: #e3efe9; /* page headers */
+  --color-yellow: #f2c14e; /* Gold buttons on navy (navy text) */
 
   --radius-4xl: 2rem;
   --radius-5xl: 2.5rem;
