@@ -1,54 +1,52 @@
 @import 'tailwindcss';
 
 /* ==========================================================================
-   Flokefama palette
-   Move Green   #0F3B27 · the brand: text, primary buttons, dark surfaces (nav, footer, bands)
-   Signal Lime  #92FF5F · bright accent on dark green: accent words, dots, highlights
-   Soft White   #F7F9F7 · page background
-   Orange       #FF7036 · warm accent: the logo dot, secondary buttons, alerts
-   Ice          #BFF2F0 · cool light surfaces: hero and page headers
-   Mint         #CFF1D2 · soft green surfaces: tiles, chips, quiet panels
+   Flokefama palette: four base colours with the company green
+   Mirage           #16232A · text and the nav
+   Company green    #007A4D · primary buttons, accent words, links (the logo's green family)
+   Deep Sea Green   #075056 · deep brand bands: Solutions, figures, footer accents, Aim block
+   Wild Sand        #E4EEF0 · light surfaces: hero, page headers, soft panels
+   Blaze Orange     #FF5B04 · warm accent: the logo-dot accents, Contact buttons, Vision block (Mirage text on it)
    ========================================================================== */
 @theme {
   /* Two typefaces: Poppins for text, Geist Sans for labels, numerals and accents (the `font-mono` utility). */
   --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
 
-  --color-canvas: #f7f9f7; /* Soft White */
+  --color-canvas: #f4f8f9; /* a lighter Wild Sand: page background */
   --color-paper: #ffffff;
-  --color-mist: #e9f6ea; /* a whisper of Mint for soft panels */
-  --color-line: #d9e6dc;
-  --color-ink: #0f3b27; /* Move Green: primary text */
-  --color-ink-2: #2b5140;
-  --color-ink-3: #4d6a5c;
+  --color-mist: #e4eef0; /* Wild Sand: soft panels */
+  --color-line: #d5e1e4;
+  --color-ink: #16232a; /* Mirage: primary text */
+  --color-ink-2: #33444b;
+  --color-ink-3: #56676e;
 
-  --color-midnight: #0f3b27; /* Move Green: dark surfaces */
-  --color-midnight-2: #134830;
-  --color-midnight-3: #1a5a3c;
+  --color-midnight: #16232a; /* Mirage: nav and dark surfaces */
+  --color-midnight-2: #1d2e36;
+  --color-midnight-3: #263a43;
 
-  /* Green scale built around Move Green; 300 is Signal Lime (accent on dark) */
-  --color-brand-50: #eef9ef;
-  --color-brand-100: #cff1d2; /* Mint */
-  --color-brand-300: #92ff5f; /* Signal Lime */
-  --color-brand-400: #4cc96e;
-  --color-brand-500: #23784a;
-  --color-brand-600: #1a6340;
-  --color-brand-700: #134d32;
-  --color-brand-800: #0f3b27; /* Move Green */
+  /* Company green scale; 800 is Deep Sea Green, the deep brand surface */
+  --color-brand-50: #e8f5ee;
+  --color-brand-100: #cdeadb;
+  --color-brand-300: #7fd1a5; /* light green: accent words on dark */
+  --color-brand-400: #34a174;
+  --color-brand-500: #008a57;
+  --color-brand-600: #007a4d; /* company green */
+  --color-brand-700: #006140;
+  --color-brand-800: #075056; /* Deep Sea Green */
 
-  --color-cta: #0f3b27; /* primary buttons: Move Green, white text */
-  --color-cta-700: #1a5a3c;
+  --color-cta: #007a4d; /* primary buttons: company green, white text */
+  --color-cta-700: #006140;
 
-  --color-surgical: #4cc96e;
-  --color-signal: #ff7036; /* Orange: warm accent and secondary buttons (dark text on it) */
-  --color-signal-700: #b9461a; /* Orange, darkened for AA text on light backgrounds */
-  --color-blue: #0f3b27; /* legacy accent slot, now Move Green */
-  --color-blue-50: #eef9ef;
-  --color-blue-700: #1a6340; /* section labels */
-  --color-teal: #bff2f0; /* Ice */
-  --color-ice: #bff2f0;
-  --color-mint: #cff1d2;
-  --color-lime: #92ff5f;
+  --color-surgical: #34a174;
+  --color-signal: #ff5b04; /* Blaze Orange (Mirage text on it, for contrast) */
+  --color-signal-700: #c24400; /* Blaze Orange, darkened for AA text on light backgrounds */
+  --color-blue: #075056; /* Deep Sea Green */
+  --color-blue-50: #e4eef0;
+  --color-blue-700: #075056; /* section labels: Deep Sea Green */
+  --color-teal: #075056;
+  --color-sand: #e4eef0; /* Wild Sand */
+  --color-sea: #075056; /* Deep Sea Green */
 
   --radius-4xl: 2rem;
   --radius-5xl: 2.5rem;
@@ -81,7 +79,7 @@
     text-wrap: balance;
   }
   ::selection {
-    @apply bg-lime text-midnight;
+    @apply bg-brand-100 text-midnight;
   }
   :focus-visible {
     @apply outline-2 outline-offset-2 outline-brand-500;
