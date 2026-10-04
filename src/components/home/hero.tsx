@@ -5,25 +5,25 @@ import { Reveal } from '@/components/motion/reveal';
 import { Button } from '@/components/ui/button';
 
 /**
- * Hero: a calm deep green-navy background. Left: the company line from flokefama.com and its two actions (Explore Solutions → shop,
+ * Hero: a deep navy background with the microscope photo blended in on the right. Left: the company line from flokefama.com and its two actions (Explore Solutions → shop,
  * Contact Us → contact). Right: a laboratory microscope in blue light, filling the right side and fading into the background (from tablet up, so on phones
  * the partner band still shows on the first screen).
  * Bottom band: Our Partners & Clientele, visible without scrolling.
  */
 export function Hero() {
   return (
-    <section className="relative isolate flex min-h-[100svh] flex-col overflow-hidden bg-midnight text-white">
+    <section className="relative isolate flex min-h-[100svh] flex-col overflow-hidden bg-[#071a2e] text-white">
       {/*
-        Background: a calm deep green-navy, with the microscope photo on the right fading out over a long, even
-        distance (left, top and bottom), so there is no visible edge. A light tint of the same colour ties the
-        photo's blue into the background.
+        Background: a deep navy taken from the microscope photo's own shadows, so the photo dissolves into the
+        same colour. The photo fills the right side; same-colour gradients (not masks) blend it into the navy:
+        solid behind the text, easing out across the middle, and darkening softly under the nav and above the band.
       */}
-      <div aria-hidden className="absolute inset-0 -z-10 bg-[linear-gradient(110deg,#0a2420_0%,#0d2b2c_45%,#0e2a36_100%)]">
-        <div className="absolute inset-y-0 right-0 hidden w-[68%] sm:block [mask-composite:intersect] [mask-image:linear-gradient(to_left,#000_40%,rgb(0_0_0/0.7)_65%,transparent_100%),linear-gradient(to_top,transparent_0%,#000_30%),linear-gradient(to_bottom,transparent_0%,#000_28%)] [-webkit-mask-composite:source-in]">
-          <Image src="/images/hero-microscope.webp" alt="" fill priority sizes="68vw" className="object-cover object-[22%_50%] brightness-[1.12]" />
-          <div className="absolute inset-0 bg-[#0d2b2c] opacity-10 mix-blend-multiply" />
+      <div aria-hidden className="absolute inset-0 -z-10 bg-[#071a2e]">
+        <div className="absolute inset-y-0 right-0 hidden w-[72%] sm:block">
+          <Image src="/images/hero-microscope.webp" alt="" fill priority sizes="72vw" className="object-cover object-[22%_50%]" />
         </div>
-        <div className="absolute -left-40 top-1/3 size-[620px] rounded-full bg-[radial-gradient(circle,rgb(0_122_77/0.18),transparent_65%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,#071a2e_0%,#071a2e_30%,rgb(7_26_46/0.82)_44%,rgb(7_26_46/0.35)_62%,rgb(7_26_46/0.08)_82%,rgb(7_26_46/0.08)_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(7_26_46/0.75)_0%,rgb(7_26_46/0)_22%,rgb(7_26_46/0)_68%,#071a2e_100%)]" />
       </div>
 
       <div className="mx-auto grid w-full max-w-[1280px] flex-1 grid-cols-1 items-center gap-8 px-5 pb-10 pt-28 md:gap-12 md:px-10 md:pt-32 lg:grid-cols-12 lg:gap-16 lg:pb-10">
