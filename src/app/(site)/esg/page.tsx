@@ -53,7 +53,7 @@ const pillars = [
 export default function EsgPage() {
   return (
     <>
-      <PageHero
+      <PageHero image="/images/news/the-forgotten-stage-of-quality-cover.webp" imagePosition="60% 35%"
         label="Environmental, Social & Governance (ESG)"
         title={<>Healthcare that <span className="text-brand-600">gives back</span></>}
         lead="How Flokefama creates value beyond supply: for patients, for communities and for Ghana’s economy."

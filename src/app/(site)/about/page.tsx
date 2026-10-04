@@ -24,7 +24,7 @@ export default async function AboutPage() {
   const metrics = await getMetrics();
   return (
     <>
-      <PageHero
+      <PageHero image="/images/office-team.webp" imagePosition="40% 30%"
         label="About us"
         title={<>Purveyor of excellence <span className="text-brand-600">in healthcare</span></>}
         lead="FLOKEFAMA is recognized as one of the most reputable and trusted medical equipment suppliers in Ghana."

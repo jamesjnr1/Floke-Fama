@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function AwardsPage() {
   return (
     <>
-      <PageHero
+      <PageHero image="/images/news/quality-verification-the-cornerstone-of-healthcare-excellence-in-ghana-2.webp" imagePosition="50% 35%"
         label="Awards"
         title={<>Recognitions that <span className="text-brand-600">reflect our impact</span></>}
         lead="Our commitment to excellence, innovation and service, recognized through prestigious awards and honors."
