@@ -79,7 +79,7 @@ export default async function AboutPage() {
             <p className="label eyebrow">Leadership</p>
             <h2 className="display mt-4 text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">Meet our CEO</h2>
             <p className="mt-6 text-xl font-semibold text-ink">Mr. Emmanuel Teye Kwabena Kenney</p>
-            <p className="mt-1 text-[15px] text-brand-700">Chief Executive Officer, Flokefama Company Limited</p>
+            <p className="mt-1 text-[0.9375rem] text-brand-700">Chief Executive Officer, Flokefama Company Limited</p>
             <div className="mt-6 max-w-xl space-y-4 text-lg leading-relaxed text-ink-3">
               <p>
                 Flokefama began with a personal story. After surviving a near-death experience and an operation carried out with inadequate equipment, Mr. Kenney set out to make sure no Ghanaian has to depend on equipment that isn’t good enough. His belief is simple: “We can’t compromise on our health by using below standard medical technologies.”
@@ -107,7 +107,7 @@ export default async function AboutPage() {
               <dl className="grid grid-cols-2 gap-6 lg:grid-cols-1 lg:gap-0 lg:divide-y lg:divide-line">
                 {experienceFigures.map((f) => (
                   <div key={f.label} className="flex flex-col-reverse gap-2 border-t border-line pt-5 lg:flex-row-reverse lg:items-center lg:justify-end lg:gap-6 lg:border-t-0 lg:py-7 lg:first:pt-0 lg:last:pb-0">
-                    <dt className="text-[15px] text-ink-3 lg:text-lg">{f.label}</dt>
+                    <dt className="text-[0.9375rem] text-ink-3 lg:text-lg">{f.label}</dt>
                     <dd className="text-[clamp(3rem,2rem+3vw,4.5rem)] font-bold leading-none tracking-[-0.04em] text-brand-600 lg:min-w-[2.2ch]">
                       <CountUp value={f.value} />
                     </dd>
@@ -136,7 +136,7 @@ export default async function AboutPage() {
                     <span className="font-mono text-xs text-ink-3">{String(i + 1).padStart(2, '0')}</span>
                   </div>
                   <h4 className="mt-8 text-lg font-semibold tracking-[-0.01em] text-ink">{x.title}</h4>
-                  <p className="mt-2 text-[15px] leading-relaxed text-ink-3">{x.text}</p>
+                  <p className="mt-2 text-[0.9375rem] leading-relaxed text-ink-3">{x.text}</p>
                 </Reveal>
               </li>
             ))}

@@ -22,7 +22,7 @@ function Runs({ runs }: { runs: Run[] }) {
 export function ArticleBody({ blocks }: { blocks: Block[] }) {
   const firstP = blocks.findIndex((b) => b.type === 'p');
   return (
-    <div className="text-[17px] leading-[1.85] text-ink-2 md:text-lg [&>*+*]:mt-6">
+    <div className="text-[1.0625rem] leading-[1.85] text-ink-2 md:text-lg [&>*+*]:mt-6">
       {blocks.map((b, i) => {
         switch (b.type) {
           case 'h':
