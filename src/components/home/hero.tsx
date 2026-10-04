@@ -19,9 +19,9 @@ export function Hero() {
         photo's blue into the background.
       */}
       <div aria-hidden className="absolute inset-0 -z-10 bg-[linear-gradient(110deg,#0a2420_0%,#0d2b2c_45%,#0e2a36_100%)]">
-        <div className="absolute inset-y-0 right-0 hidden w-[68%] sm:block [mask-composite:intersect] [mask-image:linear-gradient(to_left,#000_30%,rgb(0_0_0/0.55)_60%,transparent_100%),linear-gradient(to_top,transparent_0%,#000_30%),linear-gradient(to_bottom,transparent_0%,#000_28%)] [-webkit-mask-composite:source-in]">
-          <Image src="/images/hero-microscope.webp" alt="" fill priority sizes="68vw" className="object-cover object-[22%_50%] opacity-90" />
-          <div className="absolute inset-0 bg-[#0d2b2c] opacity-25 mix-blend-multiply" />
+        <div className="absolute inset-y-0 right-0 hidden w-[68%] sm:block [mask-composite:intersect] [mask-image:linear-gradient(to_left,#000_40%,rgb(0_0_0/0.7)_65%,transparent_100%),linear-gradient(to_top,transparent_0%,#000_30%),linear-gradient(to_bottom,transparent_0%,#000_28%)] [-webkit-mask-composite:source-in]">
+          <Image src="/images/hero-microscope.webp" alt="" fill priority sizes="68vw" className="object-cover object-[22%_50%] brightness-[1.12]" />
+          <div className="absolute inset-0 bg-[#0d2b2c] opacity-10 mix-blend-multiply" />
         </div>
         <div className="absolute -left-40 top-1/3 size-[620px] rounded-full bg-[radial-gradient(circle,rgb(0_122_77/0.18),transparent_65%)]" />
       </div>
