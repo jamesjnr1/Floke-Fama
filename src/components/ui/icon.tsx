@@ -19,7 +19,7 @@ export function IconTile({ name, className, size = 'md' }: { name: string; class
     <span
       className={cn(
         'relative grid shrink-0 place-items-center text-white',
-        'bg-[linear-gradient(150deg,#1a5a3c_0%,#134830_55%,#0f3b27_100%)]',
+        'bg-[linear-gradient(150deg,#0a6a70_0%,#075056_55%,#053c41_100%)]',
         'shadow-[inset_0_2px_1px_rgb(255_255_255/0.45),inset_0_-6px_12px_rgb(11_21_16/0.35),0_14px_24px_-10px_rgb(37_120_71/0.7)]',
         'before:pointer-events-none before:absolute before:inset-x-1.5 before:top-1 before:h-[45%] before:rounded-t-[inherit] before:bg-gradient-to-b before:from-white/40 before:to-transparent',
         sizes[size],
