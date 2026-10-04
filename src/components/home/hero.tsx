@@ -1,16 +1,8 @@
 import Link from 'next/link';
-import { Award, BadgeCheck, Trophy } from 'lucide-react';
 import { HeroLogos } from '@/components/home/hero-logos';
 import { MachineSlideshow } from '@/components/home/machine-slideshow';
 import { Reveal } from '@/components/motion/reveal';
 import { Button } from '@/components/ui/button';
-
-/** Recognition, from the Awards page and the press. */
-const trust = [
-  { icon: Award, label: 'Ghana Club 100', sub: 'No.1 in Healthcare', tone: 'text-[#f5b82e]' },
-  { icon: BadgeCheck, label: 'Forbes Africa', sub: 'Featured 2026', tone: 'text-[#ff6b6b]' },
-  { icon: Trophy, label: 'Mindray', sub: 'Best in IVD 2026', tone: 'text-brand-300' },
-];
 
 /**
  * Hero (the FLOKE_BOLT layout in the Flokefama colours): a deep Mirage → Deep Sea field with a faint ECG trace;
@@ -50,25 +42,12 @@ export function Hero() {
           </Reveal>
 
           <Reveal delay={0.14} className="flex flex-wrap gap-3">
-            <Button asChild size="lg">
+            <Button asChild size="lg" arrow="up-right">
               <Link href="/products">Explore Solutions</Link>
             </Button>
-            <Button asChild size="lg" variant="red">
+            <Button asChild size="lg" variant="red" arrow="right">
               <Link href="/contact">Contact Us</Link>
             </Button>
-          </Reveal>
-
-          {/* Recognition: three cells divided by hairlines */}
-          <Reveal delay={0.24}>
-            <ul className="grid grid-cols-3 gap-px border border-white/10 bg-white/10">
-              {trust.map(({ icon: Ico, label, sub, tone }) => (
-                <li key={label} className="flex flex-col gap-2 bg-[#121d23]/90 px-4 py-4 sm:px-5">
-                  <Ico className={`size-5 ${tone}`} strokeWidth={2} aria-hidden />
-                  <span className="text-base font-bold leading-tight text-white sm:text-lg">{label}</span>
-                  <span className="text-sm text-white/70">{sub}</span>
-                </li>
-              ))}
-            </ul>
           </Reveal>
         </div>
 
