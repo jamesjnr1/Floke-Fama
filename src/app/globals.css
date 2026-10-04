@@ -1,56 +1,57 @@
 @import 'tailwindcss';
 
 /* ==========================================================================
-   Flokefama palette (final): Navy & Green. Calm and balanced, with clear text colours per background.
-   Navy          #14304F / #1D3D63 · nav, footer, figures band, Solutions band, Aim block; #1B2B44 for text
-   Company green #00754A · primary buttons, accent words, the Mission block
-   Red           #D92B30 · small accents: dots, Contact Us, the Vision block (always white text)
-   Gold          #F2C14E · highlights on navy: accent words, Client Portal button (navy text on it)
-   Pale blue     #E3EDF6 · the hero background (matches the cool microscope photo)
-   Pale mint     #E3EFE9 · page headers
-   Text rules: dark navy on white and the pale backgrounds; white on navy, green and red; navy on gold.
+   Flokefama palette
+   Bottle Green    #003223 · text, nav, footer, dark bands, primary buttons, the Mission block
+   Eggshell White  #F5EBE1 · hero and page-header backgrounds, warm soft panels
+   Salad Green     #8CC850 · fresh accent on Bottle Green: accent words, highlights, Client Portal (Bottle Green text on it)
+   Pumpkin Orange  #FF6400 · Contact Us and secondary buttons, the Aim block (white text)
+   Red             #E22028 · the logo-dot accents and the Vision block (white text)
+   Text rules: Bottle Green on white and Eggshell; white on Bottle Green, Orange and Red; Bottle Green on Salad Green.
    ========================================================================== */
 @theme {
   /* Two typefaces: Poppins for text, Geist Sans for labels, numerals and accents (the `font-mono` utility). */
   --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
 
-  --color-canvas: #f5f7fa; /* calm off-white page background */
+  --color-canvas: #fbf7f2; /* a lighter Eggshell: page background */
   --color-paper: #ffffff;
-  --color-mist: #eaf0f6; /* soft panels */
-  --color-line: #dce3ec;
-  --color-ink: #1b2b44; /* dark navy: headings and body text */
-  --color-ink-2: #3a4a63;
-  --color-ink-3: #5e6b80;
+  --color-mist: #f5ebe1; /* Eggshell: soft panels */
+  --color-line: #eadfd2;
+  --color-ink: #003223; /* Bottle Green: text */
+  --color-ink-2: #24493c;
+  --color-ink-3: #50685e;
 
-  --color-midnight: #14304f; /* Navy: nav, footer and dark surfaces */
-  --color-midnight-2: #1a3a5e;
-  --color-midnight-3: #224670;
+  --color-midnight: #003223; /* Bottle Green: nav, footer and dark surfaces */
+  --color-midnight-2: #0a4030;
+  --color-midnight-3: #144d3b;
 
-  /* Company green scale; 300 is Gold, the accent on navy */
-  --color-brand-50: #eaf6f0;
-  --color-brand-100: #cdebdd;
-  --color-brand-300: #f2c14e; /* Gold: accent words and highlights on navy */
-  --color-brand-400: #2ba36e;
-  --color-brand-500: #008a57;
-  --color-brand-600: #00754a; /* company green */
-  --color-brand-700: #005e3b;
-  --color-brand-800: #14304f;
+  /* Green scale from Salad Green to Bottle Green; 300 is Salad Green, the accent on dark */
+  --color-brand-50: #f1f8e8;
+  --color-brand-100: #dcefc8;
+  --color-brand-300: #8cc850; /* Salad Green */
+  --color-brand-400: #6aae34;
+  --color-brand-500: #4c8f26;
+  --color-brand-600: #3b7a1f; /* deepened Salad Green: accent words on light (AA for large text) */
+  --color-brand-700: #2c5f17;
+  --color-brand-800: #003223; /* Bottle Green */
 
-  --color-cta: #00754a; /* primary buttons: company green, white text */
-  --color-cta-700: #005e3b;
+  --color-cta: #003223; /* primary buttons: Bottle Green, white text */
+  --color-cta-700: #0a4030;
 
-  --color-surgical: #2ba36e;
-  --color-signal: #d92b30; /* Red: white text on it */
-  --color-signal-700: #b3201f; /* Red, darkened for AA text on light backgrounds */
-  --color-blue: #1d3d63;
-  --color-blue-50: #eaf0f6;
-  --color-blue-700: #2e5e99; /* section labels */
-  --color-teal: #e3edf6;
-  --color-navy: #1d3d63; /* Solutions band, Aim block */
-  --color-sky: #e3edf6; /* hero background */
-  --color-mint: #e3efe9; /* page headers */
-  --color-yellow: #f2c14e; /* Gold buttons on navy (navy text) */
+  --color-surgical: #6aae34;
+  --color-signal: #e22028; /* Red: white text on it */
+  --color-signal-700: #b8161d; /* Red, darkened for AA text on light backgrounds */
+  --color-orange: #ff6400; /* Pumpkin Orange: white text on it */
+  --color-orange-700: #d95400;
+  --color-blue: #003223;
+  --color-blue-50: #f5ebe1;
+  --color-blue-700: #3b7a1f; /* section labels */
+  --color-teal: #f5ebe1;
+  --color-navy: #003223; /* Solutions band */
+  --color-sky: #f5ebe1; /* hero background: Eggshell */
+  --color-mint: #f5ebe1; /* page headers: Eggshell */
+  --color-yellow: #8cc850; /* Salad Green buttons on Bottle Green (Bottle Green text) */
 
   --radius-4xl: 2rem;
   --radius-5xl: 2.5rem;

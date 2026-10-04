@@ -187,7 +187,7 @@ export function Navbar() {
           {/* CTA Button: padding 12px 24px, brand green, radius 12px */}
           <Link
             href="/portal"
-            className="group hidden items-center gap-2 whitespace-nowrap rounded-xl bg-yellow px-4 py-3 text-[13px] font-semibold text-midnight 2xl:px-6 2xl:text-sm transition hover:bg-[#fcc843] sm:inline-flex"
+            className="group hidden items-center gap-2 whitespace-nowrap rounded-xl bg-yellow px-4 py-3 text-[13px] font-semibold text-midnight 2xl:px-6 2xl:text-sm transition hover:bg-[#a3d470] sm:inline-flex"
           >
             <span className="hidden 2xl:inline">Client Portal Access</span><span className="2xl:hidden">Client Portal</span>
           </Link>

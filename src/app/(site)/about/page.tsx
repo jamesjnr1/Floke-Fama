@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { CoreValues } from '@/components/about/core-values';
 import { Impact } from '@/components/about/impact';
-import { StoryPanels } from '@/components/layout/story-panels';
+import { PageHero } from '@/components/layout/page-hero';
 import { Reveal } from '@/components/motion/reveal';
 import { Button } from '@/components/ui/button';
 import { CountUp } from '@/components/motion/count-up';
@@ -24,14 +24,10 @@ export default async function AboutPage() {
   const metrics = await getMetrics();
   return (
     <>
-      <StoryPanels
+      <PageHero
         label="About us"
         title={<>Purveyor of excellence <span className="text-brand-600">in healthcare</span></>}
         lead="FLOKEFAMA is recognized as one of the most reputable and trusted medical equipment suppliers in Ghana."
-        panels={[
-          { kind: 'photo', image: '/images/head-office.webp', position: '50% 35%', title: 'Together, we do great things.', text: 'From our head office in Santa Maria, Accra, and branches in Korle-bu, Okaishie, Kumasi, Aflao and Techiman.' },
-          { kind: 'colour', tone: 'navy', title: 'Saving lives since 2008.', text: 'Official distributor of Mindray, Biozek Holland and MR Global.' },
-        ]}
       />
 
       {/* Mission, vision and aim: three bold blocks right under the header, as on the current site */}

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
-import { StoryPanels } from '@/components/layout/story-panels';
+import { PageHero } from '@/components/layout/page-hero';
 import { NewsGrid } from '@/components/media/news-grid';
 import { Reveal } from '@/components/motion/reveal';
 import { Icon } from '@/components/ui/icon';
@@ -41,7 +41,7 @@ export default async function EventsPage() {
 
   return (
     <>
-      <StoryPanels
+      <PageHero
         label="Events & activities"
         title={<>Moments that <span className="text-brand-600">bring us together</span></>}
         lead="Celebrations, community programmes and industry events from across the Flokefama family."

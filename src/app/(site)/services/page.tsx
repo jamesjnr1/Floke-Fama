@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Services } from '@/components/home/services';
-import { StoryPanels } from '@/components/layout/story-panels';
+import { PageHero } from '@/components/layout/page-hero';
 import { Reveal } from '@/components/motion/reveal';
 import { IconTile } from '@/components/ui/icon';
 import { whyChoose } from '@/data/seed';
@@ -14,14 +14,10 @@ export const metadata: Metadata = {
 export default function ServicesPage() {
   return (
     <>
-      <StoryPanels
+      <PageHero
         label="Products & services"
         title={<>We go beyond just supplying <span className="text-brand-600">medical equipment</span></>}
         lead="End-to-end solutions, from procurement and installation to training and maintenance."
-        panels={[
-          { kind: 'photo', image: '/images/news/flokefama-celebrates-customer-service-week-cover.webp', position: '50% 30%', title: 'Our own engineers, from installation to aftercare.', text: 'Installation, calibration, training and maintenance for every system we supply.' },
-          { kind: 'colour', tone: 'green', title: 'One partner for the whole life of your equipment.' },
-        ]}
       />
       <Services />
 

@@ -4,7 +4,7 @@ import { fmtDate, type Asset, type Certificate } from '@/lib/service/store';
 /** Builds a printable calibration certificate and downloads it as an HTML file. */
 export function downloadCertificate(asset: Asset, c: Certificate) {
   const html = `<!doctype html><meta charset="utf-8"><title>${c.id}</title>
-<style>body{font:15px/1.5 system-ui,sans-serif;max-width:640px;margin:48px auto;color:#1b2b44}h1{color:#00754a;margin:0}table{width:100%;border-collapse:collapse;margin-top:24px}td{padding:8px;border-bottom:1px solid #dde5e0}td:first-child{color:#5b6b62;width:40%}.note{margin-top:32px;font-size:12px;color:#5b6b62}</style>
+<style>body{font:15px/1.5 system-ui,sans-serif;max-width:640px;margin:48px auto;color:#003223}h1{color:#3b7a1f;margin:0}table{width:100%;border-collapse:collapse;margin-top:24px}td{padding:8px;border-bottom:1px solid #dde5e0}td:first-child{color:#5b6b62;width:40%}.note{margin-top:32px;font-size:12px;color:#5b6b62}</style>
 <h1>Calibration certificate</h1><p>Flokefama Company Limited · ${contact.phone}</p>
 <table>
 <tr><td>Certificate</td><td>${c.id}</td></tr><tr><td>Date</td><td>${fmtDate(c.date)}</td></tr>
