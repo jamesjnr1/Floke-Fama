@@ -64,7 +64,7 @@ export default async function AboutPage() {
             </div>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button asChild><a href={brochureUrl} download>Download Our Brochure <Icon name="fi-rr-download" /></a></Button>
-              <Button asChild variant="outline"><Link href="/services">See Our Products &amp; Services</Link></Button>
+              <Button asChild variant="outline" arrow="right"><Link href="/services">See Our Products &amp; Services</Link></Button>
             </div>
           </Reveal>
           <Reveal delay={0.1}>
@@ -77,7 +77,7 @@ export default async function AboutPage() {
       </section>
 
       {/* Leadership. Portrait from the current site's media library; text from the CEO profile supplied by Flokefama. */}
-      <section id="ceo" className="gridlines-light scroll-mt-28 border-t border-line bg-paper py-14 md:py-24">
+      <section id="ceo" className="scroll-mt-28 border-t border-line bg-paper py-14 md:py-24">
         <div className="mx-auto grid max-w-[1280px] gap-10 px-5 md:px-10 lg:grid-cols-12 lg:gap-16">
           <Reveal className="lg:col-span-5">
             <div className="lg:sticky lg:top-28">

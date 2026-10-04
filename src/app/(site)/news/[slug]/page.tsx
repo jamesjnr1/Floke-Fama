@@ -143,8 +143,8 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
               <p className="mt-2 max-w-lg text-white/80">Trusted, end-to-end medical technology solutions from Flokefama.</p>
             </div>
             <div className="flex flex-wrap gap-3">
-              <Button asChild variant="glow" size="lg"><Link href="/quote">Order now</Link></Button>
-              <Button asChild variant="glass" size="lg"><Link href="/contact">Contact us</Link></Button>
+              <Button asChild variant="glow" size="lg" arrow="up-right"><Link href="/quote">Order now</Link></Button>
+              <Button asChild variant="glass" size="lg" arrow="right"><Link href="/contact">Contact us</Link></Button>
             </div>
           </div>
         </div>

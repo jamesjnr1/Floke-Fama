@@ -21,7 +21,7 @@ export function BeyondSupply() {
             <strong className="font-semibold text-ink-2">end-to-end solutions</strong>, from procurement and installation to training and maintenance, ensuring that our clients get the most out of
             their investment.
           </p>
-          <Button asChild className="mt-9">
+          <Button asChild arrow="right" className="mt-9">
             <Link href="/about">
               About us
             </Link>

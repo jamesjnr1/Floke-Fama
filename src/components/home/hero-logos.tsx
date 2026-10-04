@@ -19,36 +19,34 @@ const logos = [
 ];
 
 /**
- * Our Partners & Clientele, across the bottom of the hero, as on FLOKE_BOLT: one slow, continuous row between
- * two hairlines, but with the real logos (large, on white tiles) instead of names. Hover pauses the row.
+ * Our Clients & Partners, under the hero: a white band with the real logos moving in one slow row from edge to
+ * edge (no boxes, no fade). Hover pauses the row.
  */
 export function HeroLogos() {
   const row = (hidden: boolean) =>
     logos.map((l) => {
-      const b = l.logo ? box(l.w, l.h, 11000, 200, 88) : null;
+      const b = l.logo ? box(l.w, l.h, 12500, 240, 96) : null;
       return (
-        <li key={`${l.name}${hidden ? '-2' : ''}`} aria-hidden={hidden || undefined} className="shrink-0 px-3 md:px-4">
-          <div className="flex h-28 w-56 items-center justify-center rounded-md bg-white px-5 ring-2 ring-transparent transition duration-300 hover:-translate-y-1 hover:ring-brand-300 md:h-32 md:w-64">
-            {l.logo && b ? (
-              <Image src={l.logo} alt={hidden ? '' : l.name} width={b.width} height={b.height} style={{ width: b.width, height: b.height }} className="max-w-full object-contain" />
-            ) : (
-              <span className="text-3xl font-extrabold tracking-[-0.03em] text-ink">{l.name}</span>
-            )}
-          </div>
+        <li key={`${l.name}${hidden ? '-2' : ''}`} aria-hidden={hidden || undefined} className="flex h-28 shrink-0 items-center px-8 md:h-32 md:px-12">
+          {l.logo && b ? (
+            <Image src={l.logo} alt={hidden ? '' : l.name} width={b.width} height={b.height} style={{ width: b.width, height: b.height }} className="object-contain transition-transform duration-300 hover:scale-105" />
+          ) : (
+            <span className="whitespace-nowrap text-4xl font-extrabold tracking-[-0.03em] text-ink">{l.name}</span>
+          )}
         </li>
       );
     });
 
   return (
-    <div className="relative bg-[linear-gradient(90deg,#0f1a1f,#0d2a2c_50%,#0f1a1f)] py-8 md:py-10">
-      <h2 className="sr-only">Our Partners &amp; Clientele</h2>
-      <div className="mx-auto max-w-[1280px] px-5 md:px-10">
-        <div className="relative overflow-hidden border-y border-white/10 py-7 [mask-image:linear-gradient(90deg,transparent,#000_5%,#000_95%,transparent)]">
-          <ul className="flex w-max animate-marquee hover:[animation-play-state:paused]">
-            {row(false)}
-            {row(true)}
-          </ul>
-        </div>
+    <div className="border-y border-line bg-white py-10 text-ink md:py-14">
+      <h2 className="mx-auto max-w-[1280px] px-5 text-[clamp(1.75rem,1.3rem+1.4vw,2.5rem)] font-bold tracking-[-0.03em] md:px-10">
+        Our Clients &amp; Partners
+      </h2>
+      <div className="mt-6 overflow-hidden md:mt-8">
+        <ul className="flex w-max animate-marquee hover:[animation-play-state:paused]">
+          {row(false)}
+          {row(true)}
+        </ul>
       </div>
     </div>
   );

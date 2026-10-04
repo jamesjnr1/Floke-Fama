@@ -12,7 +12,7 @@ export default function NotFound() {
           <h1 className="display text-5xl md:text-7xl">Page not found.</h1>
           <p className="mx-auto mt-4 max-w-md text-ink-3">This page doesn’t exist or has moved. Try the catalogue or the homepage.</p>
           <div className="mt-8 flex justify-center gap-3">
-            <Button asChild><Link href="/products">Browse products</Link></Button>
+            <Button asChild arrow="right"><Link href="/products">Browse products</Link></Button>
             <Button asChild variant="outline"><Link href="/">Home</Link></Button>
           </div>
         </div>
