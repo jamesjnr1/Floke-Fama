@@ -78,7 +78,7 @@ export function Impact({ metrics }: { metrics: Metric[] }) {
             const card = (
               <>
                 <div className="flex items-start justify-between gap-4">
-                  <p className="label !text-[0.6875rem] !text-brand-300">{s.kicker}</p>
+                  <p className="label !text-[0.8125rem] !text-brand-300">{s.kicker}</p>
                   {s.logo && (
                     <span className="grid h-10 w-14 shrink-0 place-items-center rounded-xl bg-white p-1.5">
                       <Image src={s.logo.src} alt="" width={s.logo.w} height={s.logo.h} className="h-full w-auto object-contain" />

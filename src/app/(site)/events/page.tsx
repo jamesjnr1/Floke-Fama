@@ -92,9 +92,9 @@ function DateTile({ date }: { date: string }) {
   const { day, month, year } = dateParts(date);
   return (
     <div className="w-20 shrink-0 overflow-hidden rounded-2xl border border-line bg-paper text-center shadow-[0_10px_24px_-16px_rgb(11_21_16/0.35)]" aria-label={`${day} ${month} ${year}`}>
-      <p className="bg-brand-600 py-1.5 font-mono text-[0.6875rem] font-medium uppercase tracking-[0.2em] text-white">{month}</p>
+      <p className="bg-brand-600 py-1.5 font-mono text-[0.8125rem] font-medium uppercase tracking-[0.2em] text-white">{month}</p>
       <p className="pt-2.5 text-[2.125rem] font-bold leading-none tracking-[-0.03em] text-ink">{day}</p>
-      <p className="pb-2.5 pt-1 font-mono text-[0.6875rem] text-ink-3">{year}</p>
+      <p className="pb-2.5 pt-1 font-mono text-[0.8125rem] text-ink-3">{year}</p>
     </div>
   );
 }

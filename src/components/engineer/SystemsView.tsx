@@ -39,8 +39,8 @@ export function SystemsView({ state, onOpenAsset }: { state: EngineerState; onOp
             <li key={a.id} className="min-w-0">
               <button onClick={() => onOpenAsset(a.id)} className="w-full rounded-[20px] border border-white/[0.06] bg-white/[0.03] p-5 text-left transition hover:border-white/15 hover:bg-white/[0.05]">
                 <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-2 font-mono text-[0.6875rem] uppercase tracking-widest text-white/75"><span className={s.dot} /> {s.label}</span>
-                  <span className="font-mono text-[0.6875rem] text-white/60">{a.id}</span>
+                  <span className="flex items-center gap-2 font-mono text-[0.8125rem] uppercase tracking-widest text-white/75"><span className={s.dot} /> {s.label}</span>
+                  <span className="font-mono text-[0.8125rem] text-white/60">{a.id}</span>
                 </div>
                 <p className="mt-4 text-lg font-semibold text-white">{a.name}</p>
                 <p className="text-sm text-white/65">{a.facility} · {a.location}</p>

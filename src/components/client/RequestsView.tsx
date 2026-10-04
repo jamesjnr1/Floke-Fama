@@ -53,7 +53,7 @@ export function RequestsView({ assets, tickets, selectedId, onSelect, onRequest,
                 <button onClick={() => select(t.id)} aria-current={on ? 'true' : undefined} className={cn('w-full rounded-2xl border p-4 text-left transition', on ? 'border-brand-600 bg-brand-50/60' : 'border-line bg-paper hover:border-ink/20')}>
                   <span className="flex items-center justify-between gap-2">
                     <span className="font-mono text-xs text-ink-3">{t.id} · {fmtTime(t.openedAt)}</span>
-                    <span className={cn('rounded-full px-2 py-0.5 text-[0.6875rem] font-medium', statusStyle[t.status])}>{clientSteps[t.status]}</span>
+                    <span className={cn('rounded-full px-2 py-0.5 text-[0.8125rem] font-medium', statusStyle[t.status])}>{clientSteps[t.status]}</span>
                   </span>
                   <span className="mt-2 block font-medium text-ink">{a?.name}</span>
                   <span className="mt-0.5 block truncate text-sm text-ink-3">{t.description}</span>
@@ -106,7 +106,7 @@ function Detail({ ticket: t, asset, dispatch }: { ticket: Ticket; asset?: Asset;
               <span className={cn('flex size-8 items-center justify-center rounded-full text-sm', done ? 'bg-brand-600 text-white' : active ? 'bg-brand-50 text-brand-700 ring-2 ring-brand-600' : 'bg-mist text-ink-3')}>
                 {done ? <Icon name="fi-rr-check" /> : i + 1}
               </span>
-              <span className={cn('mt-2 block text-[0.6875rem] leading-tight sm:text-xs', done || active ? 'text-ink' : 'text-ink-3')}>{clientSteps[s.status]}</span>
+              <span className={cn('mt-2 block text-[0.8125rem] leading-tight sm:text-xs', done || active ? 'text-ink' : 'text-ink-3')}>{clientSteps[s.status]}</span>
             </li>
           );
         })}
@@ -173,11 +173,11 @@ function Detail({ ticket: t, asset, dispatch }: { ticket: Ticket; asset?: Asset;
 
       {/* Updates & messages */}
       <section className="mt-8">
-        <h3 className="text-[0.9375rem] font-semibold text-ink">Updates</h3>
+        <h3 className="text-[1rem] font-semibold text-ink">Updates</h3>
         <ol className="mt-3 space-y-3">
           {[...t.log].reverse().map((l, i) => (
             <li key={`${l.at}-${i}`} className="flex gap-3">
-              <span className={cn('mt-1 grid size-6 shrink-0 place-items-center rounded-full text-[0.6875rem]', l.kind === 'note' ? 'bg-mist text-ink-2' : 'bg-brand-600 text-white')}>
+              <span className={cn('mt-1 grid size-6 shrink-0 place-items-center rounded-full text-[0.8125rem]', l.kind === 'note' ? 'bg-mist text-ink-2' : 'bg-brand-600 text-white')}>
                 <Icon name={l.kind === 'note' ? 'fi-rr-comment' : l.kind === 'part' ? 'fi-rr-box-open' : 'fi-rr-check'} />
               </span>
               <span className="min-w-0">

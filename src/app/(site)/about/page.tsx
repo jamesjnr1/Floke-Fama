@@ -8,7 +8,9 @@ import { PageHero } from '@/components/layout/page-hero';
 import { Reveal } from '@/components/motion/reveal';
 import { Button } from '@/components/ui/button';
 import { CountUp } from '@/components/motion/count-up';
-import { Icon, IconTile } from '@/components/ui/icon';
+import { Cog, Gauge, GraduationCap, Settings, ShieldCheck, ShoppingCart } from 'lucide-react';
+import { Icon } from '@/components/ui/icon';
+import { ToneIcon } from '@/components/ui/tone-icon';
 import { brochureUrl, experienceFigures, servicesInBrief } from '@/data/seed';
 import { getMetrics } from '@/lib/data';
 
@@ -19,6 +21,15 @@ export const metadata: Metadata = {
   description: 'Founded in 2008, Flokefama delivers world-class healthcare equipment across Ghana and West Africa. Our story, mission, vision and core values.',
   alternates: { canonical: '/about' },
 };
+
+const briefIcons = [
+  { icon: ShoppingCart, tone: 'green' },
+  { icon: Settings, tone: 'teal' },
+  { icon: ShieldCheck, tone: 'blue' },
+  { icon: Cog, tone: 'amber' },
+  { icon: Gauge, tone: 'red' },
+  { icon: GraduationCap, tone: 'teal' },
+] as const;
 
 export default async function AboutPage() {
   const metrics = await getMetrics();
@@ -66,27 +77,54 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      {/* Leadership. Portrait from the current site's media library; facts and quotes from published
-          interviews and press (Graphic Online, Citi Newsroom, Ghana CEO Summit, EMY Africa) and his podcast. */}
-      <section id="ceo" className="scroll-mt-28 border-t border-line bg-paper py-14 md:py-24">
-        <div className="mx-auto grid max-w-[1280px] items-center gap-10 px-5 md:px-10 lg:grid-cols-12 lg:gap-16">
+      {/* Leadership. Portrait from the current site's media library; text from the CEO profile supplied by Flokefama. */}
+      <section id="ceo" className="gridlines-light scroll-mt-28 border-t border-line bg-paper py-14 md:py-24">
+        <div className="mx-auto grid max-w-[1280px] gap-10 px-5 md:px-10 lg:grid-cols-12 lg:gap-16">
           <Reveal className="lg:col-span-5">
-            <figure className="relative mx-auto aspect-[4/5] max-w-md overflow-hidden rounded-5xl bg-[#e9e6e3] lg:max-w-none">
-              <Image src="/images/ceo-emmanuel-kenney.webp" alt="Mr. Emmanuel Teye Kwabena Kenney, Chief Executive Officer of Flokefama" fill sizes="(min-width: 1024px) 40vw, 100vw" className="object-cover object-top" />
-            </figure>
+            <div className="lg:sticky lg:top-28">
+              <figure className="relative mx-auto aspect-[4/5] max-w-md overflow-hidden bg-[#e9e6e3] lg:max-w-none">
+                <Image src="/images/ceo-emmanuel-kenney.webp" alt="Mr. Emmanuel Kenney, Founder and Chief Executive Officer of Flokefama" fill sizes="(min-width: 1024px) 40vw, 100vw" className="object-cover object-top" />
+                <span aria-hidden className="absolute left-0 top-0 size-8 border-l-2 border-t-2 border-brand-600" />
+                <span aria-hidden className="absolute bottom-0 right-0 size-8 border-b-2 border-r-2 border-signal" />
+              </figure>
+              <blockquote className="mx-auto mt-6 max-w-md border-l-2 border-signal pl-5 text-lg font-semibold leading-snug text-ink lg:max-w-none">
+                “Better healthcare should not be a privilege; it should be accessible, efficient and delivered with dignity and excellence.”
+              </blockquote>
+            </div>
           </Reveal>
           <Reveal delay={0.08} className="lg:col-span-7">
             <p className="label eyebrow">Leadership</p>
             <h2 className="display mt-4 text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">Meet our CEO</h2>
-            <p className="mt-6 text-xl font-semibold text-ink">Mr. Emmanuel Teye Kwabena Kenney</p>
-            <p className="mt-1 text-[0.9375rem] text-brand-700">Chief Executive Officer, Flokefama Company Limited</p>
-            <div className="mt-6 max-w-xl space-y-4 text-lg leading-relaxed text-ink-3">
+            <p className="mt-6 text-2xl font-bold tracking-[-0.02em] text-ink">Mr. Emmanuel Kenney</p>
+            <p className="mt-1 font-mono text-sm uppercase tracking-wider text-brand-700">Founder &amp; Chief Executive Officer, Flokefama Company Limited</p>
+            <div className="mt-6 space-y-4 text-lg leading-relaxed text-ink-3">
+              <p>Behind Flokefama’s vision is Mr. Emmanuel Kenney, a Ghanaian entrepreneur and business leader whose journey into the healthcare industry is deeply personal.</p>
               <p>
-                Flokefama began with a personal story. After surviving a near-death experience and an operation carried out with inadequate equipment, Mr. Kenney set out to make sure no Ghanaian has to depend on equipment that isn’t good enough. His belief is simple: “We can’t compromise on our health by using below standard medical technologies.”
+                Mr. Kenney brings a strong combination of academic preparation, leadership experience and entrepreneurial vision to his role as Chief Executive Officer. He is a graduate of Sanford Business School in the United States of America, where he developed a strong foundation in business management and leadership. He is also an alumnus of the prestigious St. Augustine’s College, Cape Coast, an institution renowned for academic excellence, discipline and leadership development.
               </p>
               <p>
-                With more than 16 years in in-vitro diagnostics, he is an alumnus of St. Augustine’s College and Stanford Graduate School of Business, the host of the <span className="font-medium text-ink">Diagnostics and Beyond</span> podcast, and was named Man of the Year in Health at the 2024 EMY Africa Awards.
+                As the Founder and Chief Executive Officer of Flokefama Company Limited, Mr. Kenney has built the company around a simple but powerful conviction: better healthcare should not be a privilege, it should be accessible, efficient and delivered with dignity and excellence.
               </p>
+              <p>
+                His passion for healthcare was shaped in part by his own experience with surgery. Having personally experienced the challenges and difficulties associated with surgical care, he came away with a determination that others should not have to go through the same experience where better systems, technology and equipment could make a difference. That experience became one of the driving forces behind his commitment to improving healthcare delivery through access to modern medical equipment, technology and innovative solutions. Today, he leads Flokefama in providing world-class healthcare equipment and solutions across Ghana and West Africa.
+              </p>
+              <p>
+                Since its establishment in 2008, Flokefama has grown into a multiple award-winning company, including Ghana Club 100 company, and has a reputation for quality, reliability and innovation in the healthcare sector. Under Mr. Kenney’s leadership, the company has also championed partnerships with academic and professional institutions to help develop industry-ready engineers and technical professionals capable of supporting and transforming Ghana’s healthcare infrastructure.
+              </p>
+            </div>
+            <div className="mt-10 border border-line bg-canvas p-6 md:p-8">
+              <h3 className="flex items-center gap-3 text-xl font-bold tracking-[-0.02em]">
+                <span className="size-2 bg-signal" aria-hidden /> Business with a Purpose
+              </h3>
+              <div className="mt-4 space-y-4 leading-relaxed text-ink-3">
+                <p>
+                  Many a CEO will do business for money and prestige, but there are rare ones like Mr. Kenney who do it for the welfare of society and for a better healthcare system. His vision goes beyond selling medical equipment. He is passionate about helping healthcare institutions gain access to the technology, expertise and systems they need to provide safer, more efficient and more dignified care.
+                </p>
+                <p>For Mr. Kenney, business success is measured not only by financial performance, but also by the lives improved, the healthcare systems strengthened and the difference made in society.</p>
+                <p>
+                  His leadership continues to position Flokefama not simply as a healthcare equipment company, but as a partner in building a stronger, more responsive and technology-driven healthcare system for Ghana and the wider West African region.
+                </p>
+              </div>
             </div>
           </Reveal>
         </div>
@@ -107,7 +145,7 @@ export default async function AboutPage() {
               <dl className="grid grid-cols-2 gap-6 lg:grid-cols-1 lg:gap-0 lg:divide-y lg:divide-line">
                 {experienceFigures.map((f) => (
                   <div key={f.label} className="flex flex-col-reverse gap-2 border-t border-line pt-5 lg:flex-row-reverse lg:items-center lg:justify-end lg:gap-6 lg:border-t-0 lg:py-7 lg:first:pt-0 lg:last:pb-0">
-                    <dt className="text-[0.9375rem] text-ink-3 lg:text-lg">{f.label}</dt>
+                    <dt className="text-[1rem] text-ink-3 lg:text-lg">{f.label}</dt>
                     <dd className="text-[clamp(3rem,2rem+3vw,4.5rem)] font-bold leading-none tracking-[-0.04em] text-brand-600 lg:min-w-[2.2ch]">
                       <CountUp value={f.value} />
                     </dd>
@@ -132,11 +170,11 @@ export default async function AboutPage() {
               <li key={x.title}>
                 <Reveal delay={Math.min(i, 5) * 0.05} className="group flex h-full flex-col rounded-4xl border border-line bg-paper p-7 transition duration-500 ease-out-expo hover:-translate-y-1 hover:border-brand-300 hover:shadow-[0_30px_60px_-34px_rgb(11_21_16/0.35)]">
                   <div className="flex items-start justify-between">
-                    <IconTile name={x.icon} />
+                    <ToneIcon icon={briefIcons[i].icon} tone={briefIcons[i].tone} />
                     <span className="font-mono text-xs text-ink-3">{String(i + 1).padStart(2, '0')}</span>
                   </div>
                   <h4 className="mt-8 text-lg font-semibold tracking-[-0.01em] text-ink">{x.title}</h4>
-                  <p className="mt-2 text-[0.9375rem] leading-relaxed text-ink-3">{x.text}</p>
+                  <p className="mt-2 text-[1rem] leading-relaxed text-ink-3">{x.text}</p>
                 </Reveal>
               </li>
             ))}
