@@ -9,9 +9,21 @@
    Company red      #DC2430 · the logo-dot accents, Contact buttons, Vision block (white text on it)
    ========================================================================== */
 @theme {
-  /* Two typefaces: Poppins for text, Geist Sans for labels, numerals and accents (the `font-mono` utility). */
-  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  /* Two typefaces: Plus Jakarta Sans for headings, body and navigation; JetBrains Mono for technical labels, specs and badges. */
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Text sizes one step up from Tailwind's defaults, so everything stays readable */
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: 1.5;
+  --text-sm: 0.9375rem;
+  --text-sm--line-height: 1.55;
+  --text-base: 1.0625rem;
+  --text-base--line-height: 1.65;
+  --text-lg: 1.1875rem;
+  --text-lg--line-height: 1.6;
+  --text-xl: 1.3125rem;
+  --text-xl--line-height: 1.5;
 
   --color-canvas: #f4f8f9; /* a lighter Wild Sand: page background */
   --color-paper: #ffffff;
@@ -97,7 +109,7 @@
 @layer components {
   /* Section label: Geist Sans, 12px, medium, +15% tracking, uppercase, in medical blue (red is kept for alerts and the logo dot) */
   .label {
-    @apply font-mono text-[0.75rem] font-medium uppercase tracking-[0.15em] text-blue-700;
+    @apply font-mono text-[0.8125rem] font-medium uppercase tracking-[0.12em] text-blue-700;
   }
   /* Section eyebrow: the label led by the logo's red dot (red in small, deliberate doses) */
   .eyebrow {
@@ -107,9 +119,9 @@
     content: '';
     @apply size-1.5 shrink-0 rounded-full bg-signal;
   }
-  /* Display/Hero Large: Poppins semibold, -3% tracking */
+  /* Display: Plus Jakarta Sans bold, tight tracking */
   .display {
-    @apply font-semibold tracking-[-0.03em] leading-[1.02];
+    @apply font-bold tracking-[-0.035em] leading-[1.05];
   }
   /* Phones: a stack of cards becomes one horizontal swipe row (saves scrolling). md+: the element's own grid. */
   .swipe-row {
@@ -138,6 +150,28 @@
       linear-gradient(90deg, rgb(255 255 255 / 0.04) 1px, transparent 1px);
     background-size: 56px 56px;
     mask-image: radial-gradient(ellipse 70% 60% at 65% 40%, #000 15%, transparent 75%);
+  }
+  /* Thin technical gridlines (tech + healthcare), on dark and on light surfaces */
+  .gridlines-dark {
+    background-image:
+      linear-gradient(rgb(127 209 165 / 0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(127 209 165 / 0.07) 1px, transparent 1px);
+    background-size: 64px 64px;
+  }
+  .gridlines-light {
+    background-image:
+      linear-gradient(rgb(22 35 42 / 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(22 35 42 / 0.045) 1px, transparent 1px);
+    background-size: 64px 64px;
+  }
+  /* The hero's ECG trace draws itself, then repeats */
+  .ecg-path {
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: ecg 5s linear infinite;
+  }
+  @keyframes ecg {
+    to { stroke-dashoffset: -1000; }
   }
   .grid-fade-light {
     background-image:

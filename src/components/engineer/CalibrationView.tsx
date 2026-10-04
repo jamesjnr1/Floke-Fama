@@ -33,7 +33,7 @@ export function CalibrationView({ state, onRecord, onOpenAsset }: { state: Engin
             <thead>
               <tr className="border-b border-white/[0.06] text-left">
                 {['System', 'Facility', 'Last', 'Next due', 'Interval', ''].map((h) => (
-                  <th key={h} scope="col" className="px-5 py-3 font-mono text-[0.6875rem] font-normal uppercase tracking-widest text-white/60">{h}</th>
+                  <th key={h} scope="col" className="px-5 py-3 font-mono text-[0.8125rem] font-normal uppercase tracking-widest text-white/60">{h}</th>
                 ))}
               </tr>
             </thead>
@@ -44,7 +44,7 @@ export function CalibrationView({ state, onRecord, onOpenAsset }: { state: Engin
                   <tr key={a.id} className="transition hover:bg-white/[0.02]">
                     <td className="px-5 py-4">
                       <button onClick={() => onOpenAsset(a.id)} className="text-left font-medium text-white hover:text-brand-300">{a.name}</button>
-                      <span className="block font-mono text-[0.6875rem] text-white/60">{a.serial}</span>
+                      <span className="block font-mono text-[0.8125rem] text-white/60">{a.serial}</span>
                     </td>
                     <td className="px-5 py-4 text-white/75">{a.facility}<span className="block text-xs text-white/60">{a.location}</span></td>
                     <td className="px-5 py-4 text-white/75">{fmtDate(a.lastCalibration)}</td>

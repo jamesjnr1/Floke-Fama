@@ -12,7 +12,7 @@ type Errors = Partial<Record<keyof ContactInput, string>>;
 type Result = { delivered: boolean; data: ContactInput } | null;
 
 const field =
-  'h-12 w-full rounded-xl border border-line bg-paper px-4 text-[0.9375rem] text-ink outline-none transition placeholder:text-ink-3/60 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15 aria-[invalid=true]:border-signal';
+  'h-12 w-full rounded-xl border border-line bg-paper px-4 text-[1rem] text-ink outline-none transition placeholder:text-ink-3/60 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15 aria-[invalid=true]:border-signal';
 
 /**
  * A simple message form. Delivered to the CRM when it is connected; otherwise the visitor sends
@@ -74,7 +74,7 @@ export function ContactForm() {
       <button
         type="submit"
         disabled={pending}
-        className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-cta px-6 text-[0.9375rem] font-medium text-white transition hover:bg-cta-700 disabled:opacity-60"
+        className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-cta px-6 text-[1rem] font-medium text-white transition hover:bg-cta-700 disabled:opacity-60"
       >
         {pending ? 'Sending…' : 'Send message'}
       </button>
@@ -116,10 +116,10 @@ function Sent({ delivered, data, onReset }: NonNullable<Result> & { onReset: () 
           <p className="mt-5 text-2xl font-bold tracking-[-0.02em] text-ink">One last step.</p>
           <p className="mt-2 text-ink-3">Your message is ready. Send it by email to {t.inbox} or on WhatsApp. Everything is filled in.</p>
           <div className="mt-5 flex flex-wrap gap-3">
-            <a href={send.email} className="inline-flex h-12 items-center gap-2 rounded-xl bg-cta px-5 text-[0.9375rem] font-medium text-white transition hover:bg-cta-700">
+            <a href={send.email} className="inline-flex h-12 items-center gap-2 rounded-xl bg-cta px-5 text-[1rem] font-medium text-white transition hover:bg-cta-700">
               <Icon name="fi-rr-envelope" /> Send by email
             </a>
-            <a href={send.whatsapp} target="_blank" rel="noopener noreferrer" className="inline-flex h-12 items-center gap-2 rounded-xl border border-line px-5 text-[0.9375rem] font-medium text-ink transition hover:border-ink/30">
+            <a href={send.whatsapp} target="_blank" rel="noopener noreferrer" className="inline-flex h-12 items-center gap-2 rounded-xl border border-line px-5 text-[1rem] font-medium text-ink transition hover:border-ink/30">
               <Icon name="fi-brands-whatsapp" /> Send on WhatsApp
             </a>
           </div>

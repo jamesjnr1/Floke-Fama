@@ -190,16 +190,6 @@ export const coreValues = [
   { title: 'Respect', icon: 'fi-rr-hands-heart', text: 'Valuing people by fostering professionalism, inclusivity, and strong relationships. We uphold unmatched customer service by treating every client, partner, and team member with care, attentiveness, and responsiveness.' },
 ] as const;
 
-/** Services, as listed on the current Services and About pages. */
-export const serviceList = [
-  { icon: 'fi-rr-box-open', title: 'Medical Equipment Sales', body: 'We supply a wide range of high-quality medical equipment to meet the diverse needs of hospitals, clinics, and laboratories.' },
-  { icon: 'fi-rr-settings', title: 'Equipment Installation & Commissioning', body: 'Ensuring proper installation and setup is crucial for the efficiency and longevity of medical equipment. Seamless setup and optimal functionality.' },
-  { icon: 'fi-rr-shield-check', title: 'Technical Support & Equipment Maintenance', body: 'To ensure continuous, uninterrupted operation: regular maintenance to keep equipment in peak condition, minimizing downtime.' },
-  { icon: 'fi-rr-chart-line-up', title: 'Calibration Services', body: 'Accuracy is critical in medical diagnostics and treatment. Precise calibration for accuracy and reliability.' },
-  { icon: 'fi-rr-tool-box', title: 'Equipment Repairs & Spare Parts Supply', body: 'Medical equipment is a major investment, and breakdowns can significantly impact healthcare delivery. Efficient repair services to minimize operational disruptions.' },
-  { icon: 'fi-rr-graduation-cap', title: 'Training & Capacity Building', body: 'We believe in empowering healthcare professionals with the knowledge and skills they need to operate medical equipment effectively. Comprehensive programs and ongoing support to optimize equipment utilization.' },
-] as const;
-
 /** "Our Services" on the current About page: the six services in one line each. */
 export const servicesInBrief = [
   { icon: 'fi-rr-box-open', title: 'Medical Equipment Sales', text: 'Providing top-of-the-line medical equipment to meet diverse healthcare needs.' },

@@ -172,7 +172,7 @@ function TicketDetail({ ticket: t, state, me, dispatch, onResolve, onOpenAsset }
             return (
               <li key={s.status} className="min-w-0">
                 <span className={cn('block h-1.5 rounded-full', st === 'done' ? 'bg-surgical' : st === 'active' ? 'bg-brand-400 shadow-[0_0_12px_rgb(82_181_124/0.7)]' : 'bg-white/10')} />
-                <span className={cn('mt-2 block truncate text-[0.6875rem]', st === 'pending' ? 'text-white/60' : 'text-white/80')}>{s.label}</span>
+                <span className={cn('mt-2 block truncate text-[0.8125rem]', st === 'pending' ? 'text-white/60' : 'text-white/80')}>{s.label}</span>
               </li>
             );
           })}
@@ -186,7 +186,7 @@ function TicketDetail({ ticket: t, state, me, dispatch, onResolve, onOpenAsset }
         {/* Next action */}
         {t.status !== 'resolved' && (
           <div className="mt-6 flex flex-wrap items-center gap-2 rounded-2xl border border-white/[0.06] bg-black/20 p-3">
-            <span className="mr-auto pl-1 font-mono text-[0.6875rem] uppercase tracking-widest text-white/60">Next step</span>
+            <span className="mr-auto pl-1 font-mono text-[0.8125rem] uppercase tracking-widest text-white/60">Next step</span>
             {(t.status === 'new' || (!mine && t.status !== 'onsite')) && (
               <PrimaryButton onClick={() => dispatch({ type: 'assign', id: t.id, engineer: me })}>
                 <Icon name="fi-rr-user-add" /> {t.status === 'new' ? 'Assign to me' : 'Take over'}
@@ -225,7 +225,7 @@ function TicketDetail({ ticket: t, state, me, dispatch, onResolve, onOpenAsset }
             <ol className="mt-3 space-y-3">
               {[...t.log].reverse().map((l, i) => (
                 <li key={`${l.at}-${i}`} className="flex gap-3">
-                  <span className={cn('mt-1 grid size-6 shrink-0 place-items-center rounded-full text-[0.6875rem]', l.kind === 'note' ? 'bg-white/10 text-white' : l.kind === 'part' ? 'bg-brand-500/20 text-brand-300' : 'bg-brand-600 text-white')}>
+                  <span className={cn('mt-1 grid size-6 shrink-0 place-items-center rounded-full text-[0.8125rem]', l.kind === 'note' ? 'bg-white/10 text-white' : l.kind === 'part' ? 'bg-brand-500/20 text-brand-300' : 'bg-brand-600 text-white')}>
                     <Icon name={l.kind === 'note' ? 'fi-rr-comment' : l.kind === 'part' ? 'fi-rr-box-open' : 'fi-rr-check'} />
                   </span>
                   <span className="min-w-0">

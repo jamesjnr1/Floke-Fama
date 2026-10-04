@@ -1,136 +1,61 @@
-'use client';
-
-import { AnimatePresence, motion, useInView, useReducedMotion } from 'motion/react';
-import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
+import { Cog, Gauge, GraduationCap, Settings, ShoppingCart, Wrench } from 'lucide-react';
 import { Reveal } from '@/components/motion/reveal';
-import { Icon } from '@/components/ui/icon';
-import { serviceList as services } from '@/data/seed';
+import { ToneIcon, type Tone } from '@/components/ui/tone-icon';
 import { cn } from '@/lib/utils';
 
-/**
- * Our services as one lifecycle: six stages on a rail. Selecting a stage (hover, focus or tap)
- * opens it in the panel below; the rail fills up to it. Cycles on its own until someone interacts.
- */
+/** The six services, worded as on the current Services page. */
+const services = [
+  { icon: ShoppingCart, tone: 'green', title: 'Medical Equipment Sales', body: 'We supply a wide range of high-quality medical equipment to meet the diverse needs of hospitals, clinics, and laboratories.' },
+  { icon: Settings, tone: 'teal', title: 'Equipment Installation & Commissioning', body: 'Ensuring proper installation and setup is crucial for the efficiency and longevity of medical equipment.' },
+  { icon: Wrench, tone: 'blue', title: 'Technical Support & Maintenance', body: 'To ensure continuous, uninterrupted operation of all deployed medical systems and instruments.' },
+  { icon: Gauge, tone: 'red', title: 'Calibration Services', body: 'Accuracy is critical in medical diagnostics and treatment. Precise calibration for accuracy and reliability.' },
+  { icon: Cog, tone: 'amber', title: 'Equipment Repairs & Spare Parts', body: 'Medical equipment is a major investment. We minimise breakdown impact with efficient repairs and genuine spare parts supply.' },
+  { icon: GraduationCap, tone: 'teal', title: 'Training & Capacity Building', body: 'We empower healthcare professionals with the knowledge and skills they need to operate medical equipment effectively.' },
+] as const satisfies readonly { icon: unknown; tone: Tone; title: string; body: string }[];
+
+/** Hover fill per tone: the icon box turns solid, white icon. */
+const solid: Record<Tone, string> = {
+  green: 'group-hover:bg-brand-500 group-hover:border-brand-500',
+  teal: 'group-hover:bg-[#0d9ba8] group-hover:border-[#0d9ba8]',
+  blue: 'group-hover:bg-[#0074bb] group-hover:border-[#0074bb]',
+  red: 'group-hover:bg-signal group-hover:border-signal',
+  amber: 'group-hover:bg-[#e8ab00] group-hover:border-[#e8ab00]',
+};
+
+/** Our services: a 3 × 2 grid of cells divided by thin gridlines. A cell turns dark on hover. */
 export function Services() {
-  const [active, setActive] = useState(0);
-  const [touched, setTouched] = useState(false);
-  const reduce = useReducedMotion();
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { amount: 0.4 });
-  const s = services[active];
-
-  useEffect(() => {
-    if (touched || reduce || !inView) return;
-    const id = setTimeout(() => setActive((i) => (i + 1) % services.length), 4500);
-    return () => clearTimeout(id);
-  }, [active, touched, reduce, inView]);
-
-  const pick = (i: number) => {
-    setTouched(true);
-    setActive(i);
-  };
-
   return (
-    <section id="services" className="scroll-mt-20 border-y border-line bg-paper py-14 md:py-32">
+    <section id="services" className="gridlines-light relative scroll-mt-20 bg-canvas py-14 md:py-28">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
-        <Reveal className="flex flex-wrap items-end justify-between gap-8">
-          <div className="max-w-2xl">
-            <p className="label eyebrow">Our services</p>
-            <h2 className="display mt-5 text-[clamp(2.25rem,1.3rem+3.4vw,4.5rem)]">
-              End-to-end healthcare solutions, <span className="text-brand-600">tailored to you.</span>
+        <Reveal className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
+          <div>
+            <p className="flex items-center gap-3 font-mono text-[0.8125rem] uppercase tracking-[0.18em] text-blue-700">
+              <span className="h-px w-8 bg-blue-700" aria-hidden /> Our services
+            </p>
+            <h2 className="display mt-4 text-[clamp(2rem,1.3rem+2.6vw,3.5rem)]">
+              End-to-end healthcare <br className="hidden sm:block" />
+              <span className="text-brand-600">solutions, not just supply.</span>
             </h2>
           </div>
-          <p className="max-w-sm leading-relaxed text-ink-3">
-            We provide end-to-end healthcare solutions, tailored to hospitals, labs, and organizations.
+          <p className="max-w-md leading-relaxed text-ink-3">
+            We go beyond supplying medical equipment: from procurement and installation to training and maintenance, so our clients get the most out of their investment.
           </p>
         </Reveal>
 
-        {/* Desktop: lifecycle rail + detail panel */}
-        <div ref={ref} className="mt-16 hidden lg:block">
-          <div className="relative">
-            <div aria-hidden className="absolute left-[calc(100%/12)] right-[calc(100%/12)] top-6 h-px bg-line" />
-            <motion.div
-              aria-hidden
-              className="absolute left-[calc(100%/12)] top-6 h-px origin-left bg-brand-500"
-              animate={{ width: `${(active / (services.length - 1)) * (1000 / 12)}%` }}
-              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            />
-            <ol className="relative grid grid-cols-6" role="tablist" aria-label="Service lifecycle">
-              {services.map((x, i) => {
-                const on = i === active;
-                const done = i < active;
-                return (
-                  <li key={x.title} className="flex justify-center">
-                    <button
-                      role="tab"
-                      aria-selected={on}
-                      aria-controls="service-panel"
-                      onClick={() => pick(i)}
-                      onMouseEnter={() => pick(i)}
-                      onFocus={() => pick(i)}
-                      className="group flex flex-col items-center gap-4 px-2 text-center focus-visible:outline-none"
-                    >
-                      <span
-                        className={cn(
-                          'relative grid size-12 place-items-center rounded-full border font-mono text-sm transition-all duration-500',
-                          on ? 'scale-110 border-brand-600 bg-brand-600 text-white shadow-[0_0_0_8px_rgb(37_120_71/0.12)]' : done ? 'border-brand-500 bg-paper text-brand-700' : 'border-line bg-paper text-ink-3 group-hover:border-ink/30',
-                          'group-focus-visible:ring-4 group-focus-visible:ring-brand-500/30',
-                        )}
-                      >
-                        {String(i + 1).padStart(2, '0')}
-                      </span>
-                      <span className={cn('max-w-[11rem] text-sm font-medium leading-snug transition-colors', on ? 'text-ink' : 'text-ink-3 group-hover:text-ink')}>{x.title}</span>
-                    </button>
-                  </li>
-                );
-              })}
-            </ol>
-          </div>
-
-          <div id="service-panel" role="tabpanel" className="relative mt-12 overflow-hidden rounded-5xl bg-brand-800 bg-[linear-gradient(120deg,#18512f_0%,#0f3520_70%)] text-white">
-            <div aria-hidden className="absolute -right-24 -top-24 size-[420px] rounded-full bg-[radial-gradient(circle,rgb(82_181_124/0.22),transparent_65%)]" />
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={active}
-                initial={{ opacity: 0, y: 14 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                className="relative grid grid-cols-[1fr_auto] items-center gap-10 p-12"
-              >
-                <div>
-                  <p className="font-mono text-sm text-brand-300">Stage {String(active + 1).padStart(2, '0')} of {String(services.length).padStart(2, '0')}</p>
-                  <h3 className="display mt-4 text-5xl text-white">{s.title}</h3>
-                  <p className="mt-5 max-w-xl text-lg leading-relaxed text-white/75">{s.body}</p>
-                  <div className="mt-8 flex gap-3">
-                    <Link href="/quote" className="inline-flex h-12 items-center gap-2 rounded-xl bg-white px-6 text-[0.9375rem] font-medium text-brand-800 transition hover:bg-brand-50">
-                      Order now
-                    </Link>
-                    <Link href="/contact" className="glass inline-flex h-12 items-center rounded-xl px-6 text-[0.9375rem] text-white transition hover:bg-white/10">
-                      Talk to an engineer
-                    </Link>
-                  </div>
+        <ul className="mt-12 grid gap-px border border-line bg-line md:grid-cols-2 lg:grid-cols-3">
+          {services.map((s, i) => (
+            <li key={s.title} className="group bg-canvas transition-colors duration-500 hover:bg-[#10191e]">
+              <Reveal delay={(i % 3) * 0.05} className="flex h-full flex-col gap-5 p-7 lg:p-10">
+                <div className="flex items-start justify-between">
+                  <ToneIcon icon={s.icon} tone={s.tone} className={cn('group-hover:text-white', solid[s.tone])} />
+                  <span className="font-mono text-sm text-ink-3 transition-colors group-hover:text-brand-300">{String(i + 1).padStart(2, '0')}</span>
                 </div>
-                <Icon name={s.icon} className="text-[11rem] leading-none text-brand-300/25" />
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        </div>
-
-        {/* Mobile: vertical lifecycle */}
-        <ol className="mt-12 lg:hidden">
-          {services.map((x, i) => (
-            <li key={x.title} className="relative flex gap-5 pb-8 last:pb-0">
-              {i < services.length - 1 && <span aria-hidden className="absolute left-5 top-11 h-[calc(100%-2.75rem)] w-px bg-line" />}
-              <span className="relative grid size-10 shrink-0 place-items-center rounded-full border border-brand-500 bg-paper font-mono text-xs text-brand-700">{String(i + 1).padStart(2, '0')}</span>
-              <div className="pt-1.5">
-                <h3 className="text-lg font-semibold tracking-tight">{x.title}</h3>
-                <p className="mt-1 text-sm leading-relaxed text-ink-3">{x.body}</p>
-              </div>
+                <h3 className="text-xl font-bold leading-snug tracking-[-0.02em] text-ink transition-colors group-hover:text-white lg:text-[1.375rem]">{s.title}</h3>
+                <p className="leading-relaxed text-ink-3 transition-colors group-hover:text-white/75">{s.body}</p>
+              </Reveal>
             </li>
           ))}
-        </ol>
+        </ul>
       </div>
     </section>
   );

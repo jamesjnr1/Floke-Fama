@@ -57,7 +57,7 @@ export function AwardsGallery() {
           <dl className="mx-auto mt-8 flex w-fit divide-x divide-line rounded-full border border-line bg-paper py-2.5">
             {companyFigures.map((f) => (
               <div key={f.label} className="flex items-baseline gap-1 whitespace-nowrap px-3 md:gap-2 md:px-7">
-                <dt className="text-sm text-ink-3 md:text-[0.9375rem]">{f.label}</dt>
+                <dt className="text-sm text-ink-3 md:text-[1rem]">{f.label}</dt>
                 <dd className="order-first text-xl font-bold tracking-[-0.03em] text-brand-600 md:text-3xl">
                   <CountUp value={f.value} suffix={f.suffix} />
                 </dd>
