@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 
 /**
  * Hero: the head office and its FLOKE sign behind a calm green tint, deeper behind the text. Left: the company line from flokefama.com and its two actions (Explore Solutions → shop,
- * Contact Us → contact). Right: a Mindray cart ultrasound system, cut out and standing in the hero (from tablet up, so on phones
+ * Contact Us → contact). Right: a laboratory microscope in blue light, filling the right side and fading into the background (from tablet up, so on phones
  * the partner band still shows on the first screen).
  * Bottom band: Our Partners & Clientele, visible without scrolling.
  */
@@ -22,6 +22,10 @@ export function Hero() {
         <div className="absolute inset-0 bg-[#0f3a2f] mix-blend-color opacity-35" />
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgb(10_36_30/0.85)_0%,rgb(10_36_30/0.55)_45%,rgb(10_36_30/0.15)_80%)]" />
         <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#0c2722] to-transparent" />
+        {/* Microscope in blue light: fills the right side and fades straight into the background (towards the text, the nav and the band) */}
+        <div className="absolute inset-y-0 right-0 hidden w-[62%] sm:block [mask-composite:intersect] [mask-image:linear-gradient(to_left,#000_45%,transparent_100%),linear-gradient(to_top,transparent_0%,#000_22%),linear-gradient(to_bottom,transparent_0px,#000_150px)] [-webkit-mask-composite:source-in]">
+          <Image src="/images/hero-microscope.webp" alt="" fill priority sizes="62vw" className="object-cover object-[22%_50%]" />
+        </div>
       </div>
 
       <div className="mx-auto grid w-full max-w-[1280px] flex-1 grid-cols-1 items-center gap-8 px-5 pb-10 pt-28 md:gap-12 md:px-10 md:pt-32 lg:grid-cols-12 lg:gap-16 lg:pb-10">
@@ -45,13 +49,6 @@ export function Hero() {
             </Button>
           </Reveal>
         </div>
-        <Reveal delay={0.2} y={40} className="relative hidden sm:block lg:col-span-5">
-          <div className="relative mx-auto flex h-[340px] justify-center sm:h-[400px] lg:h-[min(600px,calc(100svh_-_272px))]">
-            {/* Soft light behind the machine, so it sits in the scene */}
-            <div aria-hidden className="absolute inset-x-[-10%] inset-y-[5%] rounded-full bg-[radial-gradient(closest-side,rgb(127_201_163/0.22),transparent)] blur-2xl" />
-            <Image src="/images/hero-ultrasound-cart.webp" alt="Mindray ultrasound system" width={623} height={1100} priority sizes="(min-width: 1024px) 400px, 270px" className="relative h-full w-auto drop-shadow-[0_30px_40px_rgb(0_0_0/0.45)]" />
-          </div>
-        </Reveal>
       </div>
 
       <HeroLogos />
