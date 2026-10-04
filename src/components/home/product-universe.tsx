@@ -18,7 +18,7 @@ export function ProductUniverse({ categories, products = [] }: { categories: Cat
   return (
     <section aria-labelledby="product-universe-title" className="relative isolate overflow-hidden bg-brand-800 py-16 md:py-28">
       {/* Deep brand green with a soft lift of light: calm, and the cards read without white panels */}
-      <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(90%_70%_at_15%_0%,rgb(127_201_163/0.14),transparent_60%),linear-gradient(180deg,#0b5a44,#004d3b)]" />
+      <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(90%_70%_at_15%_0%,rgb(127_209_165/0.1),transparent_60%),linear-gradient(180deg,#0a5d63,#075056)]" />
       <div className="mx-auto max-w-[1280px] px-5 md:px-16">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <SectionHeading
@@ -52,7 +52,7 @@ export function ProductUniverse({ categories, products = [] }: { categories: Cat
                     className="group flex h-full flex-col rounded-3xl bg-white/[0.07] p-3 ring-1 ring-white/10 transition-[background-color,transform] duration-300 hover:-translate-y-1 hover:bg-white/[0.11] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                   >
                     {/* A soft mint tile (not white): the product photos’ white backgrounds blend into it */}
-                    <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-[#dcebe3]">
+                    <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-sand">
                       {src ? (
                         <Image
                           src={src}

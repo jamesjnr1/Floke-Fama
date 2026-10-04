@@ -4,14 +4,14 @@ import { purpose } from '@/data/seed';
 import { cn } from '@/lib/utils';
 
 /**
- * Mission, Vision and Aim as three bold blocks, as on the current flokefama.com About page, in the three
- * logo-and-palette colours (Flokefama green, Flokefama red, medical blue), each with an icon that says
+ * Mission, Vision and Aim as three bold blocks, as on the current flokefama.com About page, in three palette
+ * colours (Mirage, Blaze Orange, Deep Sea Green), each with an icon that says
  * what it means: a hand offering care (mission), an eye (vision), an arrow on target (aim).
  */
 const tone = {
-  Mission: 'bg-brand-600 text-white',
-  Vision: 'bg-signal text-white',
-  Aim: 'bg-blue text-white',
+  Mission: { box: 'bg-midnight', head: 'text-white', body: 'text-white/85', icon: 'text-brand-300' },
+  Vision: { box: 'bg-signal', head: 'text-ink', body: 'text-ink/85', icon: 'text-ink' },
+  Aim: { box: 'bg-sea', head: 'text-white', body: 'text-white/85', icon: 'text-brand-300' },
 } as const;
 
 export function PurposeBlocks({ className }: { className?: string }) {
@@ -20,12 +20,12 @@ export function PurposeBlocks({ className }: { className?: string }) {
       {purpose.map((p, i) => {
         return (
           <li key={p.label}>
-            <Reveal delay={i * 0.08} className={cn('flex h-full flex-col items-center rounded-3xl px-7 py-10 text-center md:px-9 md:py-14', tone[p.label])}>
-              <Icon name={p.icon} className="text-5xl text-white" />
-              <h3 className="mt-6 text-[clamp(2rem,1.4rem+1.6vw,2.75rem)] font-semibold leading-[1.05] tracking-[-0.02em] text-white">
+            <Reveal delay={i * 0.08} className={cn('flex h-full flex-col items-center rounded-3xl px-7 py-10 text-center md:px-9 md:py-14', tone[p.label].box)}>
+              <Icon name={p.icon} className={cn('text-5xl', tone[p.label].icon)} />
+              <h3 className={cn('mt-6 text-[clamp(2rem,1.4rem+1.6vw,2.75rem)] font-semibold leading-[1.05] tracking-[-0.02em]', tone[p.label].head)}>
                 Our {p.label}
               </h3>
-              <p className="mt-5 max-w-sm text-[17px] leading-relaxed text-white/90">{p.text}</p>
+              <p className={cn('mt-5 max-w-sm text-[17px] leading-relaxed', tone[p.label].body)}>{p.text}</p>
             </Reveal>
           </li>
         );

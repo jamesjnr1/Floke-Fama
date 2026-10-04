@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   robots: allowIndexing ? undefined : { index: false, follow: false },
 };
 
-export const viewport: Viewport = { themeColor: '#004d3b', width: 'device-width', initialScale: 1 };
+export const viewport: Viewport = { themeColor: '#16232a', width: 'device-width', initialScale: 1 };
 
 const organizationLd = {
   '@context': 'https://schema.org',
