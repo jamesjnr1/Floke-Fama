@@ -10,7 +10,7 @@ export const fieldClass =
   'w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 text-sm text-white outline-none transition placeholder:text-white/60 focus:border-brand-400 focus:ring-4 focus:ring-brand-500/20';
 
 export function SectionLabel({ children, className }: { children: React.ReactNode; className?: string }) {
-  return <h2 className={cn('font-mono text-[11px] uppercase tracking-widest text-white/60', className)}>{children}</h2>;
+  return <h2 className={cn('font-mono text-[0.6875rem] uppercase tracking-widest text-white/60', className)}>{children}</h2>;
 }
 
 export function Panel({ children, className }: { children: React.ReactNode; className?: string }) {
@@ -18,7 +18,7 @@ export function Panel({ children, className }: { children: React.ReactNode; clas
 }
 
 export function PriorityBadge({ priority }: { priority: Priority }) {
-  return <span className={cn('rounded-full px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-widest ring-1', priorityStyle[priority])}>{priority}</span>;
+  return <span className={cn('rounded-full px-2.5 py-0.5 font-mono text-[0.625rem] uppercase tracking-widest ring-1', priorityStyle[priority])}>{priority}</span>;
 }
 
 export function PrimaryButton({ className, ...props }: React.ComponentProps<'button'>) {
@@ -70,7 +70,7 @@ export function PortalDialog({ open, onOpenChange, title, description, children 
 export function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="grid gap-1.5 text-sm">
-      <span className="font-mono text-[11px] uppercase tracking-widest text-white/75">{label}</span>
+      <span className="font-mono text-[0.6875rem] uppercase tracking-widest text-white/75">{label}</span>
       {children}
     </label>
   );

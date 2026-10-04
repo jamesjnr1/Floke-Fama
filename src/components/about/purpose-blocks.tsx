@@ -25,7 +25,7 @@ export function PurposeBlocks({ className }: { className?: string }) {
               <h3 className={cn('mt-6 text-[clamp(2rem,1.4rem+1.6vw,2.75rem)] font-semibold leading-[1.05] tracking-[-0.02em]', tone[p.label].head)}>
                 Our {p.label}
               </h3>
-              <p className={cn('mt-5 max-w-sm text-[17px] leading-relaxed', tone[p.label].body)}>{p.text}</p>
+              <p className={cn('mt-5 max-w-sm text-[1.0625rem] leading-relaxed', tone[p.label].body)}>{p.text}</p>
             </Reveal>
           </li>
         );

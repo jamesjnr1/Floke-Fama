@@ -39,7 +39,11 @@ export function AccessibilityProvider({ children }: { children: React.ReactNode 
   useEffect(() => {
     try {
       const saved = JSON.parse(localStorage.getItem(A11Y_KEY) ?? 'null') as A11ySettings | null;
-      if (saved) setSettings({ ...defaultA11y, ...saved });
+      if (saved) {
+        const next = { ...defaultA11y, ...saved };
+        setSettings(next);
+        applyA11y(next); // re-apply after hydration, which can reset the <html> attributes set before first paint
+      }
     } catch {
       /* storage unavailable */
     }
