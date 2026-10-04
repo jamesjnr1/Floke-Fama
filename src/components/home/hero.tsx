@@ -1,13 +1,12 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { HeroLogos } from '@/components/home/hero-logos';
-import { HeroUltrasound } from '@/components/home/hero-ultrasound';
 import { Reveal } from '@/components/motion/reveal';
 import { Button } from '@/components/ui/button';
 
 /**
  * Hero: the head office and its FLOKE sign behind a calm green tint, deeper behind the text. Left: the company line from flokefama.com and its two actions (Explore Solutions → shop,
- * Contact Us → contact). Right: the 3D dotted portable ultrasound (from tablet up, so on phones
+ * Contact Us → contact). Right: a Mindray cart ultrasound system, cut out and standing in the hero (from tablet up, so on phones
  * the partner band still shows on the first screen).
  * Bottom band: Our Partners & Clientele, visible without scrolling.
  */
@@ -47,7 +46,11 @@ export function Hero() {
           </Reveal>
         </div>
         <Reveal delay={0.2} y={40} className="relative hidden sm:block lg:col-span-5">
-          <HeroUltrasound />
+          <div className="relative mx-auto flex h-[340px] justify-center sm:h-[400px] lg:h-[min(600px,calc(100svh_-_272px))]">
+            {/* Soft light behind the machine, so it sits in the scene */}
+            <div aria-hidden className="absolute inset-x-[-10%] inset-y-[5%] rounded-full bg-[radial-gradient(closest-side,rgb(127_201_163/0.22),transparent)] blur-2xl" />
+            <Image src="/images/hero-ultrasound-cart.webp" alt="Mindray ultrasound system" width={623} height={1100} priority sizes="(min-width: 1024px) 400px, 270px" className="relative h-full w-auto drop-shadow-[0_30px_40px_rgb(0_0_0/0.45)]" />
+          </div>
         </Reveal>
       </div>
 
