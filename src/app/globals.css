@@ -9,9 +9,10 @@
    Red          #E3262E           · the Vision block, the logo-dot accents, the hero's Contact Us, alerts
    ========================================================================== */
 @theme {
-  /* Two typefaces: Poppins for text, Geist Sans for labels, numerals and accents (the `font-mono` utility). */
-  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  /* One typeface, Manrope, in different weights: hero 800, section headings 700, buttons 600,
+     navigation 500/600, body 400/500, figures 700/800. `font-mono` (labels, numerals) maps to it too. */
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
 
   /* Colour system: green + warm off-white + charcoal navy dominate; red and blue are controlled accents. */
   --color-canvas: #f7f8f5; /* warm off-white: main backgrounds */
@@ -75,7 +76,7 @@
     @apply bg-canvas text-ink-2 antialiased;
   }
   h1, h2, h3, h4 {
-    @apply text-ink;
+    @apply font-bold text-ink;
     text-wrap: balance;
   }
   ::selection {
@@ -95,9 +96,9 @@
 }
 
 @layer components {
-  /* Section label: Geist Sans, 12px, medium, +15% tracking, uppercase, in medical blue (red is kept for alerts and the logo dot) */
+  /* Section label: Manrope 12px semibold, +15% tracking, uppercase, in medical blue (red is kept for alerts and the logo dot) */
   .label {
-    @apply font-mono text-[12px] font-medium uppercase tracking-[0.15em] text-blue-700;
+    @apply font-mono text-[12px] font-semibold uppercase tracking-[0.15em] text-blue-700;
   }
   /* Section eyebrow: the label led by the logo's red dot (red in small, deliberate doses) */
   .eyebrow {
@@ -107,9 +108,9 @@
     content: '';
     @apply size-1.5 shrink-0 rounded-full bg-signal;
   }
-  /* Display/Hero Large: Poppins semibold, -3% tracking */
+  /* Section headings: Manrope bold, -3% tracking */
   .display {
-    @apply font-semibold tracking-[-0.03em] leading-[1.02];
+    @apply font-bold tracking-[-0.03em] leading-[1.02];
   }
   /* Phones: a stack of cards becomes one horizontal swipe row (saves scrolling). md+: the element's own grid. */
   .swipe-row {

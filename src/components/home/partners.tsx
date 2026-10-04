@@ -93,7 +93,7 @@ export function Partners({ heading = true, logos = true }: { heading?: boolean; 
             <div className="grid divide-y divide-white/20 md:grid-cols-3 md:divide-x md:divide-y-0">
               {metrics.slice(0, 2).map((m, i) => (
                 <div key={m.label} className="flex flex-col gap-5 p-7 md:p-10">
-                  <p className="text-[clamp(2.75rem,2rem+2.4vw,4rem)] font-bold leading-none tracking-[-0.04em]">
+                  <p className="text-[clamp(2.75rem,2rem+2.4vw,4rem)] font-extrabold leading-none tracking-[-0.04em]">
                     <CountUp value={m.value} suffix={m.suffix} />
                   </p>
                   <p className="max-w-[16rem] text-[15px] leading-snug text-white/80">{i === 0 ? 'Hospitals and medical laboratories served, and counting' : 'Successful system integrations'}</p>

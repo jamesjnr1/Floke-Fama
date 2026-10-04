@@ -64,7 +64,7 @@ export function Impact({ metrics }: { metrics: Metric[] }) {
                   <span className="block text-white">{m.label}</span>
                   {m.caption && <span className="text-white/65">{m.caption}</span>}
                 </dt>
-                <dd className="text-4xl font-bold tracking-[-0.04em] text-white md:text-5xl">
+                <dd className="text-4xl font-extrabold tracking-[-0.04em] text-white md:text-5xl">
                   <CountUp value={m.value} prefix={m.prefix} suffix={m.suffix} />
                 </dd>
               </div>

@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from 'next';
-import { GeistSans } from 'geist/font/sans';
 import localFont from 'next/font/local';
 import { Analytics } from '@vercel/analytics/next';
 import { Toaster } from 'sonner';
@@ -11,16 +10,10 @@ import { allowIndexing, siteUrl } from '@/lib/utils';
 import '@/styles/uicons/uicons.css';
 import './globals.css';
 
-/** Poppins (self-hosted): the main typeface for headings and body text. */
-const poppins = localFont({
-  src: [
-    { path: '../fonts/poppins-300.woff2', weight: '300', style: 'normal' },
-    { path: '../fonts/poppins-400.woff2', weight: '400', style: 'normal' },
-    { path: '../fonts/poppins-500.woff2', weight: '500', style: 'normal' },
-    { path: '../fonts/poppins-600.woff2', weight: '600', style: 'normal' },
-    { path: '../fonts/poppins-700.woff2', weight: '700', style: 'normal' },
-  ],
-  variable: '--font-poppins',
+/** Manrope (self-hosted variable font, 200–800): the one typeface for the whole site; hierarchy comes from weight. */
+const manrope = localFont({
+  src: [{ path: '../fonts/manrope-variable.woff2', weight: '200 800', style: 'normal' }],
+  variable: '--font-manrope',
   display: 'swap',
 });
 
@@ -51,7 +44,7 @@ const organizationLd = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en-GH" className={`${poppins.variable} ${GeistSans.variable}`} suppressHydrationWarning>
+    <html lang="en-GH" className={manrope.variable} suppressHydrationWarning>
       <head>
         {/* Apply saved accessibility preferences before first paint */}
         <script dangerouslySetInnerHTML={{ __html: a11yBootScript }} />

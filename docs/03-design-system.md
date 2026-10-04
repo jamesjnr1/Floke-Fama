@@ -37,11 +37,16 @@ Hover states always go **darker** (`brand-700`), never lighter, so white text st
 ## Typography
 | Style | Spec | Implementation |
 |---|---|---|
-| Text (headings + body) | **Poppins** (self-hosted, `src/fonts/`, 300–700) | `font-sans` (default) |
-| Display/Hero Large | Poppins Semibold, −3% tracking, uppercase for page slogans | `.display` |
-| Labels, numerals, accents | **Geist Sans**, 12px, Medium, +15% tracking, uppercase | `.label` / `font-mono` utility |
+| Everything | **Manrope** (self-hosted variable font, `src/fonts/manrope-variable.woff2`, 200–800) | `font-sans` (default); `font-mono` maps to it too |
+| Hero heading | Manrope 800, −3.5% tracking | `font-extrabold` |
+| Section headings | Manrope 700, −3% tracking | `.display`, h1–h4 default |
+| Body | Manrope 400 / 500 | default / `font-medium` |
+| Buttons | Manrope 600 | `Button` component |
+| Navigation | Manrope 500, active 600 | Navbar |
+| Figures / statistics | Manrope 700 / 800 | `font-bold` / `font-extrabold` |
+| Section labels | Manrope 600, 12px, +15% tracking, uppercase, led by the red logo dot | `.label.eyebrow` |
 
-Only these two typefaces are used. (The `font-mono` utility is mapped to Geist Sans.)
+One typeface only; hierarchy comes from weight, not from mixing fonts.
 
 **Logo:** the official Flokefama logo as vector paths (`src/components/layout/logo.tsx`), taken from the company brochure on flokefama.com, so it is exact and needs no font. Logo green #00703A, red #ED1C24; the "FLOKE FAMA" lettering is white on dark backgrounds and logo green on light ones.
 
@@ -54,7 +59,7 @@ Only these two typefaces are used. (The `font-mono` utility is mapped to Geist S
 
 **Component map:** `Navbar.tsx` (Global Header) · `home/testimonials.tsx` · `contact/visit-us.tsx` (head office photo, greyscale live map, directions, branches) · `contact/get-in-touch.tsx` + `contact-form.tsx` (in the footer) · `awards/awards-gallery.tsx` · `home/hero-capsule.tsx` + `lib/three/capsule-scene.ts` (hero 3D capsule) · `about/impact.tsx` · `about/core-values.tsx` · `home/services.tsx` (service lifecycle rail) · `engineer/*` (service portal app) · `page-hero.tsx` (shared dark page header) · `media/news-grid.tsx` (Newsroom) · `hero.tsx` (Hero Section) · `partners.tsx` (Partners & Clientele) · `BentoGrid.tsx` (Insights Deck) · `client-portal/tickets.tsx` + `inventory.tsx` (Client portal) · `app/login/page.tsx` + `auth/login-form.tsx` (split-screen sign-in: tinted head office photo, light form panel) · `engineer/PortalShell.tsx` (Engineer Portal Shell + Sidebar Rail) · `engineer/AssetStatusList.tsx` (System Status Rail) · `engineer/TimelineTracker.tsx` (Interactive Timeline Block) · `engineer/QuickActions.tsx` (Terminal Button + Radial Efficiency Chart).
 
-**Social flyers** already use the brand green and red and Poppins, so they match the site.
+**Social flyers** use the brand green and red; set their text in Manrope to match the site.
 
 
 The rules that make the website, flyers and brochures look like one flagship healthcare brand. Every token below is a CSS custom property in `site/assets/css/styles.css`.
@@ -81,19 +86,6 @@ The rules that make the website, flyers and brochures look like one flagship hea
 | Glass | `rgba(255,255,255,.06)` + `.12` border + `backdrop-filter: blur()` | Cards, pills and nav on dark |
 
 Signature gradient text (on dark): `linear-gradient(100deg, #7FE0A8, #3FBF7F, #B9F2D2)`.
-
-## Typography: Poppins only
-Self-hosted in `site/assets/fonts/` (weights 300, 400, 500, 600, 700; ~8 KB each).
-
-| Role | Weight | Size (mobile → desktop) | Tracking |
-|---|---|---|---|
-| Hero display | 600 | 42 → 84 px | -0.04em |
-| Section title (h2) | 600 | 32 → 54 px | -0.025em |
-| Card title (h3) | 600 | 18 → 22 px | -0.015em |
-| Lead / body | **300** / 400 | 17–20 / 16–17 px | 0 |
-| Eyebrow | 500, uppercase | 13 px | 0.16em, with a 24 px gradient rule |
-
-Light (300) body copy against heavy (600) headings is what gives Poppins its premium feel. Don't use 700 for headings; it looks generic.
 
 ## Icons: Flaticon UIcons
 - Use the **Regular Rounded** set (`fi-rr-*`) for UI and **Brands** (`fi-brands-*`) for social. Browse at https://www.flaticon.com/uicons.

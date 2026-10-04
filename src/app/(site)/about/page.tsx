@@ -108,7 +108,7 @@ export default async function AboutPage() {
                 {experienceFigures.map((f) => (
                   <div key={f.label} className="flex flex-col-reverse gap-2 border-t border-line pt-5 lg:flex-row-reverse lg:items-center lg:justify-end lg:gap-6 lg:border-t-0 lg:py-7 lg:first:pt-0 lg:last:pb-0">
                     <dt className="text-[15px] text-ink-3 lg:text-lg">{f.label}</dt>
-                    <dd className="text-[clamp(3rem,2rem+3vw,4.5rem)] font-bold leading-none tracking-[-0.04em] text-brand-600 lg:min-w-[2.2ch]">
+                    <dd className="text-[clamp(3rem,2rem+3vw,4.5rem)] font-extrabold leading-none tracking-[-0.04em] text-brand-600 lg:min-w-[2.2ch]">
                       <CountUp value={f.value} />
                     </dd>
                   </div>

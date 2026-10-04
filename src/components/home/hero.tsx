@@ -34,7 +34,7 @@ export function Hero() {
       <div className="mx-auto grid w-full max-w-[1280px] flex-1 grid-cols-1 items-center gap-8 px-5 pb-10 pt-28 md:gap-12 md:px-10 md:pt-32 lg:grid-cols-12 lg:items-start lg:gap-16 lg:pb-8 lg:pt-[calc(138px_+_max(100vw,160svh)*0.1036)]">
         <div className="flex flex-col gap-6 lg:col-span-7 lg:gap-5">
           <Reveal delay={0.06}>
-            <h1 className="text-[clamp(42px,min(16px+4.2vw,8svh),80px)] font-bold lg:max-xl:text-[52px] leading-[1.02] tracking-[-0.035em] text-white">
+            <h1 className="text-[clamp(42px,min(16px+4.2vw,8svh),80px)] font-extrabold lg:max-xl:text-[52px] leading-[1.02] tracking-[-0.035em] text-white">
               Ghana’s No.1 <span className="block text-brand-300">
                 Healthcare Company<span className="text-signal">.</span>
               </span>
