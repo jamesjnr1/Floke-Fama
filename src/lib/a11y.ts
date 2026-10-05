@@ -25,4 +25,4 @@ export const prefersReducedMotion = () =>
   document.documentElement.dataset.motion === 'reduce' || matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /** Runs in <head> before first paint, so saved preferences never flash. */
-export const a11yBootScript = `try{var s=JSON.parse(localStorage.getItem('${A11Y_KEY}')||'null');if(s){var d=document.documentElement.dataset;d.text=s.text||'standard';d.contrast=s.contrast?'high':'';d.motion=s.motion?'reduce':'';d.links=s.links?'underline':'';d.font=s.font?'readable':'';}}catch(e){}`;
+export const a11yBootScript = `try{var s=JSON.parse(localStorage.getItem('${A11Y_KEY}')||'null');if(s){var d=document.documentElement.dataset;d.text=s.text||'standard';d.contrast=s.contrast?'high':'';d.motion=s.motion?'reduce':'';d.links=s.links?'underline':'';d.font=s.font?'readable':'';}}catch(e){}if('IntersectionObserver' in window)document.documentElement.setAttribute('data-reveal-ready','');`;

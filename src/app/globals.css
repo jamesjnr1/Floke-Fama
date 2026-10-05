@@ -249,3 +249,19 @@ html[data-font='readable'] .display { letter-spacing: 0; }
     hyphenate-limit-chars: 6 3 2;
   }
 }
+
+/* Reveal: fade-and-rise when scrolled into view (components/motion/reveal.tsx). CSS only, so it never
+   competes with scrolling. Hidden only once the page script has marked the document ready. */
+html[data-reveal-ready] [data-reveal]:not([data-shown]) {
+  opacity: 0;
+  transform: translate3d(0, var(--reveal-y, 16px), 0);
+}
+[data-reveal] {
+  transition:
+    opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0s),
+    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0s);
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-reveal-ready] [data-reveal]:not([data-shown]) { opacity: 1; transform: none; }
+}
+html[data-motion='reduce'] [data-reveal]:not([data-shown]) { opacity: 1 !important; transform: none !important; }
