@@ -188,8 +188,7 @@ export default async function AboutPage() {
       <Branches />
 
       {/* Core values */}
-      <section id="values" className="scroll-mt-28 relative isolate overflow-hidden bg-canvas py-24 md:py-32">
-        <div aria-hidden className="absolute -right-40 -top-40 -z-10 size-[640px] rounded-full bg-[radial-gradient(circle,rgb(228_40_60/0.06),transparent_65%)]" />
+      <section id="values" className="scroll-mt-28 bg-canvas py-20 md:py-28">
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
           <Reveal>
             <h2 className="display max-w-3xl text-[clamp(2rem,1.2rem+2.8vw,3.5rem)] text-ink">The principles that define who we are.</h2>
