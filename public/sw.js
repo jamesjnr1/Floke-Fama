@@ -1,10 +1,11 @@
 /* Flokefama service worker: offline resilience for spotty connectivity.
  * - Precaches the offline page (with emergency support contacts) and the brand shell.
  * - Pages: network-first, falling back to the cached copy, then /offline.
- * - Static assets and product images: cache-first (hashed filenames never go stale).
+ * - Hashed build files (/_next/static): cache-first, they never go stale.
+ * - Images: served from the cache for speed, refreshed in the background, so a replaced photo shows on the next visit.
  * Bump VERSION to invalidate old caches on deploy.
  */
-const VERSION = 'v2';
+const VERSION = 'v3';
 // Signed-in areas are never cached: private data must not survive sign-out on shared hospital machines.
 const PRIVATE = ['/portal', '/engineer', '/login'];
 const PAGE_CACHE = `pages-${VERSION}`;
@@ -42,15 +43,22 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  if (url.pathname.startsWith('/_next/static/') || url.pathname.startsWith('/_next/image') || url.pathname.startsWith('/images/')) {
-    event.respondWith(
-      caches.match(request).then(
-        (hit) => hit || fetch(request).then((res) => {
-          const copy = res.clone();
-          if (res.ok) caches.open(ASSET_CACHE).then((c) => c.put(request, copy));
-          return res;
-        }),
-      ),
-    );
+  const save = (res) => {
+    if (res.ok) {
+      const copy = res.clone();
+      caches.open(ASSET_CACHE).then((c) => c.put(request, copy));
+    }
+    return res;
+  };
+
+  if (url.pathname.startsWith('/_next/static/')) {
+    event.respondWith(caches.match(request).then((hit) => hit || fetch(request).then(save)));
+    return;
+  }
+
+  if (url.pathname.startsWith('/_next/image') || url.pathname.startsWith('/images/')) {
+    const fresh = fetch(request).then(save);
+    event.waitUntil(fresh.catch(() => {}));
+    event.respondWith(caches.match(request).then((hit) => hit || fresh));
   }
 });
