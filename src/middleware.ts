@@ -1,11 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { roleHome, SESSION_COOKIE, verifySession, type Role } from '@/lib/auth/session';
+import { roleAreas, roleHome, SESSION_COOKIE, sessionCookie, signedInAreas, signSession, verifySession } from '@/lib/auth/session';
 
-/** Protected areas and the role allowed into each. */
-const areas: { prefix: string; role: Role }[] = [
-  { prefix: '/portal', role: 'client' },
-  { prefix: '/engineer', role: 'engineer' },
-];
+const within = (pathname: string, prefix: string) => pathname === prefix || pathname.startsWith(`${prefix}/`);
 
 export async function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
@@ -16,8 +12,9 @@ export async function middleware(request: NextRequest) {
     return session ? NextResponse.redirect(new URL(roleHome[session.role], request.url)) : NextResponse.next();
   }
 
-  const area = areas.find((a) => pathname === a.prefix || pathname.startsWith(`${a.prefix}/`));
-  if (!area) return NextResponse.next();
+  const area = roleAreas.find((a) => within(pathname, a.prefix));
+  const needsSignIn = area || signedInAreas.some((p) => within(pathname, p));
+  if (!needsSignIn) return NextResponse.next();
 
   if (!session) {
     const login = new URL('/login', request.url);
@@ -26,12 +23,16 @@ export async function middleware(request: NextRequest) {
     res.cookies.delete(SESSION_COOKIE); // clear expired or tampered cookies
     return res;
   }
-  // Each role only sees its own area.
-  if (session.role !== area.role) return NextResponse.redirect(new URL(roleHome[session.role], request.url));
+  // Each role's own area (client portal, engineer portal) is closed to other roles.
+  if (area && session.role !== area.role) return NextResponse.redirect(new URL(roleHome[session.role], request.url));
 
+  // Activity renews the session (sliding expiry), so it only ends after an hour without use.
   const res = NextResponse.next();
+  const { exp: _exp, ...user } = session;
+  void _exp;
+  res.cookies.set(SESSION_COOKIE, await signSession(user), sessionCookie);
   res.headers.set('Cache-Control', 'private, no-store');
   return res;
 }
 
-export const config = { matcher: ['/login', '/portal/:path*', '/engineer/:path*'] };
+export const config = { matcher: ['/login', '/portal/:path*', '/engineer/:path*', '/checkout/:path*', '/quote/:path*', '/account/:path*'] };
