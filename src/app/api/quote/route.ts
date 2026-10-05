@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getSession } from '@/lib/auth/server';
 import { submitToCrm } from '@/lib/crm';
 import { quoteSchema, type QuoteInput } from '@/lib/quote-schema';
 
@@ -8,6 +9,8 @@ import { quoteSchema, type QuoteInput } from '@/lib/quote-schema';
  * hands the request to the visitor's email or WhatsApp, so no request is ever lost.
  */
 export async function POST(request: Request) {
+  // Quote and order requests need a signed-in account.
+  if (!(await getSession())) return NextResponse.json({ error: 'Please sign in to send a request.' }, { status: 401 });
   const body = await request.json().catch(() => null);
   const parsed = quoteSchema.safeParse(body);
   if (!parsed.success) {

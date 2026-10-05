@@ -7,6 +7,8 @@ import { CreditCard, Landmark, Lock, Minus, Plus, ShieldCheck, Smartphone, Trash
 import { useState } from 'react';
 import { contact } from '@/data/seed';
 import { track } from '@/lib/analytics';
+import { useSession } from '@/lib/auth/use-session';
+import { saveOrder } from '@/lib/orders';
 import { orderReference, startPayment, type CheckoutOrder, type PaymentMethod } from '@/lib/payments';
 import { quoteHref, quoteList, useQuoteList } from '@/lib/quote-list';
 import { cn } from '@/lib/utils';
@@ -25,6 +27,7 @@ const methods: { id: PaymentMethod; label: string; hint: string; icon: typeof Sm
 /** Checkout: the cart goes straight here. Contact and delivery, a payment method, then Pay securely. */
 export function Checkout() {
   const items = useQuoteList();
+  const { user } = useSession();
   const [method, setMethod] = useState<PaymentMethod>('momo');
   const [network, setNetwork] = useState(networks[0]);
   const [paying, setPaying] = useState<CheckoutOrder | null>(null);
@@ -46,6 +49,7 @@ export function Checkout() {
     track('checkout_pay', { items: units, method });
     const result = await startPayment(order);
     setBusy(false);
+    if (user) saveOrder(order, user.email);
     if (result.status === 'redirect') window.location.href = result.url;
     else setPaying(order);
   };
@@ -69,10 +73,10 @@ export function Checkout() {
               <span className="grid size-8 place-items-center rounded-full bg-brand-600 text-sm text-white">1</span> Contact &amp; delivery
             </h2>
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
-              <label className="block"><span className="mb-1.5 block text-sm font-medium text-ink-2">Full name</span><input name="name" required autoComplete="name" className={field} /></label>
-              <label className="block"><span className="mb-1.5 block text-sm font-medium text-ink-2">Hospital / organisation</span><input name="organisation" required autoComplete="organization" className={field} /></label>
-              <label className="block"><span className="mb-1.5 block text-sm font-medium text-ink-2">Phone</span><input name="phone" required type="tel" autoComplete="tel" placeholder="+233" className={field} /></label>
-              <label className="block"><span className="mb-1.5 block text-sm font-medium text-ink-2">Email</span><input name="email" required type="email" autoComplete="email" className={field} /></label>
+              <label className="block"><span className="mb-1.5 block text-sm font-medium text-ink-2">Full name</span><input key={`name-${user ? 1 : 0}`} name="name" defaultValue={user?.name} required autoComplete="name" className={field} /></label>
+              <label className="block"><span className="mb-1.5 block text-sm font-medium text-ink-2">Hospital / organisation</span><input key={`organisation-${user ? 1 : 0}`} name="organisation" defaultValue={user?.facility} required autoComplete="organization" className={field} /></label>
+              <label className="block"><span className="mb-1.5 block text-sm font-medium text-ink-2">Phone</span><input key={`phone-${user ? 1 : 0}`} name="phone" defaultValue={user?.phone} required type="tel" autoComplete="tel" placeholder="+233" className={field} /></label>
+              <label className="block"><span className="mb-1.5 block text-sm font-medium text-ink-2">Email</span><input key={`email-${user ? 1 : 0}`} name="email" defaultValue={user?.email} required type="email" autoComplete="email" className={field} /></label>
               <label className="block"><span className="mb-1.5 block text-sm font-medium text-ink-2">Region</span>
                 <select name="region" required defaultValue="Greater Accra" className={field}>{regions.map((r) => <option key={r}>{r}</option>)}</select>
               </label>
@@ -206,6 +210,10 @@ export function Checkout() {
                   <Link href={quoteHref(items)} className="flex h-12 items-center justify-center bg-brand-600 font-semibold text-white hover:bg-brand-700">Send order to sales</Link>
                   <a href={contact.phoneHref} className="flex h-12 items-center justify-center border border-line font-semibold text-ink hover:border-ink/30">Call {contact.phone}</a>
                 </div>
+                <p className="mt-4 text-center text-sm text-ink-3">
+                  Saved to your hospital dashboard.{' '}
+                  <Link href="/portal?view=orders" className="font-medium text-brand-700 hover:underline">View your orders</Link>
+                </p>
               </div>
             </motion.div>
           </motion.div>

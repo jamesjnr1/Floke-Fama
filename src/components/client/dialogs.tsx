@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import { inputClass, statusStyle, urgency } from '@/components/client/ui';
 import { Icon, IconTile } from '@/components/ui/icon';
 import { downloadCertificate } from '@/lib/service/certificate';
-import { assetStatus, clientSteps, dueLabel, daysUntil, fmtDate, fmtTime, type Asset, type Priority, type Ticket } from '@/lib/service/store';
+import { addMonths, assetStatus, clientSteps, newAssetId, dueLabel, daysUntil, fmtDate, fmtTime, type Asset, type Priority, type Ticket } from '@/lib/service/store';
 import { cn } from '@/lib/utils';
 
 function Shell({ open, onOpenChange, title, description, children, wide }: {
@@ -228,6 +228,136 @@ export function EquipmentSheet({ asset, tickets, onClose, onRequest, onOpenTicke
           </section>
         </div>
       )}
+    </Shell>
+  );
+}
+
+export interface CatalogueItem { slug: string; name: string; brand: string; image?: string }
+const OTHER = '__other';
+const intervals = [3, 6, 12];
+
+/** Register a system the facility owns, so its service, calibration and warranty can be followed here. */
+export function AddEquipmentDialog({ open, onOpenChange, products, facility, onAdd }: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  products: CatalogueItem[];
+  facility: string;
+  onAdd: (asset: Asset) => void;
+}) {
+  const [slug, setSlug] = useState('');
+  const [name, setName] = useState('');
+  const [brand, setBrand] = useState('');
+  const [serial, setSerial] = useState('');
+  const [location, setLocation] = useState('');
+  const [installed, setInstalled] = useState('');
+  const [every, setEvery] = useState(6);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  useEffect(() => {
+    if (open) {
+      setSlug('');
+      setName('');
+      setBrand('');
+      setSerial('');
+      setLocation('');
+      setInstalled(new Date().toISOString().slice(0, 10));
+      setEvery(6);
+      setErrors({});
+    }
+  }, [open]);
+  const product = products.find((p) => p.slug === slug);
+  // "AUTO HEAMATOLOGY ANALYZER BC5150" → "Auto Heamatology Analyzer BC5150" (model codes stay upper case)
+  const tidy = (n: string) => n.split(/(\s+|[()])/).map((w) => (/\d/.test(w) ? w.toUpperCase() : w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())).join('');
+
+  return (
+    <Shell open={open} onOpenChange={onOpenChange} title="Add equipment" description="Register a system at your facility. You can then request service for it and keep its calibration certificates here.">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          const err: Record<string, string> = {};
+          if (!slug) err.slug = 'Choose the system.';
+          if (slug === OTHER && name.trim().length < 2) err.name = 'Enter the system name.';
+          if (serial.trim().length < 2) err.serial = 'Enter the serial number on the label.';
+          if (location.trim().length < 2) err.location = 'Where is it? e.g. Main laboratory';
+          if (!installed) err.installed = 'Enter the installation date.';
+          setErrors(err);
+          if (Object.keys(err).length) return;
+          const at = new Date(`${installed}T09:00:00`);
+          // Next calibration: the first interval after today, counted from installation.
+          let next = addMonths(at, every);
+          while (next < new Date()) next = addMonths(next, every);
+          onAdd({
+            id: newAssetId(),
+            name: product ? tidy(product.name) : name.trim(),
+            brand: product ? product.brand : brand.trim() || 'Other',
+            productSlug: product?.slug,
+            image: product?.image,
+            serial: serial.trim().toUpperCase(),
+            facility,
+            location: location.trim(),
+            readings: [50, 52, 51, 53, 52, 54, 53, 55, 54, 56],
+            installed: at.toISOString(),
+            warrantyUntil: addMonths(at, 12).toISOString(),
+            lastCalibration: addMonths(next, -every).toISOString(),
+            nextCalibration: next.toISOString(),
+            intervalMonths: every,
+            certificates: [],
+          });
+          onOpenChange(false);
+        }}
+        className="space-y-5"
+        noValidate
+      >
+        <label className="grid gap-1.5">
+          <span className="text-sm font-medium text-ink-2">System</span>
+          <select value={slug} onChange={(e) => setSlug(e.target.value)} aria-invalid={Boolean(errors.slug)} className={cn(inputClass, 'h-12')}>
+            <option value="">Choose from the Flokefama catalogue…</option>
+            {products.map((p) => <option key={p.slug} value={p.slug}>{tidy(p.name)} · {p.brand}</option>)}
+            <option value={OTHER}>Other (not in the list)</option>
+          </select>
+          {errors.slug && <span role="alert" className="text-xs text-signal-700">{errors.slug}</span>}
+        </label>
+        {slug === OTHER && (
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label className="grid gap-1.5">
+              <span className="text-sm font-medium text-ink-2">System name</span>
+              <input value={name} onChange={(e) => setName(e.target.value)} aria-invalid={Boolean(errors.name)} placeholder="e.g. Blood bank refrigerator" className={cn(inputClass, 'h-12')} />
+              {errors.name && <span role="alert" className="text-xs text-signal-700">{errors.name}</span>}
+            </label>
+            <label className="grid gap-1.5">
+              <span className="text-sm font-medium text-ink-2">Brand</span>
+              <input value={brand} onChange={(e) => setBrand(e.target.value)} placeholder="e.g. Mindray" className={cn(inputClass, 'h-12')} />
+            </label>
+          </div>
+        )}
+        <div className="grid gap-4 sm:grid-cols-2">
+          <label className="grid gap-1.5">
+            <span className="text-sm font-medium text-ink-2">Serial number</span>
+            <input value={serial} onChange={(e) => setSerial(e.target.value)} aria-invalid={Boolean(errors.serial)} placeholder="On the rating label" className={cn(inputClass, 'h-12')} />
+            {errors.serial && <span role="alert" className="text-xs text-signal-700">{errors.serial}</span>}
+          </label>
+          <label className="grid gap-1.5">
+            <span className="text-sm font-medium text-ink-2">Location</span>
+            <input value={location} onChange={(e) => setLocation(e.target.value)} aria-invalid={Boolean(errors.location)} placeholder="e.g. Main laboratory" className={cn(inputClass, 'h-12')} />
+            {errors.location && <span role="alert" className="text-xs text-signal-700">{errors.location}</span>}
+          </label>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <label className="grid gap-1.5">
+            <span className="text-sm font-medium text-ink-2">Installed on</span>
+            <input type="date" value={installed} max={new Date().toISOString().slice(0, 10)} onChange={(e) => setInstalled(e.target.value)} aria-invalid={Boolean(errors.installed)} className={cn(inputClass, 'h-12')} />
+            {errors.installed && <span role="alert" className="text-xs text-signal-700">{errors.installed}</span>}
+          </label>
+          <label className="grid gap-1.5">
+            <span className="text-sm font-medium text-ink-2">Calibrate every</span>
+            <select value={every} onChange={(e) => setEvery(Number(e.target.value))} className={cn(inputClass, 'h-12')}>
+              {intervals.map((m) => <option key={m} value={m}>{m} months</option>)}
+            </select>
+          </label>
+        </div>
+        <button type="submit" className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand-600 font-semibold text-white hover:bg-brand-700">
+          <Icon name="fi-rr-plus" /> Add to my equipment
+        </button>
+      </form>
     </Shell>
   );
 }

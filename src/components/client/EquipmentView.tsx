@@ -13,16 +13,21 @@ const label: Record<AssetStatus, { text: string; dot: string }> = {
 };
 
 /** Installed equipment: health, warranty and calibration for every system at the facility. */
-export function EquipmentView({ assets, tickets, onOpenAsset }: { assets: Asset[]; tickets: Ticket[]; onOpenAsset: (id: string) => void }) {
+export function EquipmentView({ assets, tickets, onOpenAsset, onAdd }: { assets: Asset[]; tickets: Ticket[]; onOpenAsset: (id: string) => void; onAdd: () => void }) {
   const [q, setQ] = useState('');
   const list = assets.filter((a) => `${a.name} ${a.brand} ${a.location} ${a.serial}`.toLowerCase().includes(q.trim().toLowerCase()));
   return (
     <div>
-      <label className="flex h-11 max-w-md items-center gap-2 rounded-xl border border-line bg-paper px-3.5 focus-within:border-brand-500">
+      <div className="flex flex-wrap items-center gap-3">
+      <label className="flex h-11 min-w-0 max-w-md flex-1 items-center gap-2 rounded-xl border border-line bg-paper px-3.5 focus-within:border-brand-500">
         <Icon name="fi-rr-search" className="text-ink-3" />
         <span className="sr-only">Search equipment</span>
         <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by name, location or serial…" className="w-full bg-transparent text-sm text-ink outline-none placeholder:text-ink-3/70" />
       </label>
+      <button onClick={onAdd} className="inline-flex h-11 items-center gap-2 rounded-xl bg-brand-600 px-4 text-sm font-semibold text-white hover:bg-brand-700">
+        <Icon name="fi-rr-plus" /> Add equipment
+      </button>
+      </div>
       <ul className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {list.map((a) => {
           const st = label[assetStatus(a, tickets)];
@@ -51,7 +56,11 @@ export function EquipmentView({ assets, tickets, onOpenAsset }: { assets: Asset[
             </li>
           );
         })}
-        {list.length === 0 && <li className="rounded-3xl border border-dashed border-line p-8 text-center text-sm text-ink-3">No equipment matches “{q}”.</li>}
+        {list.length === 0 && (
+          <li className="rounded-3xl border border-dashed border-line p-8 text-center text-sm text-ink-3 sm:col-span-2 xl:col-span-3">
+            {assets.length === 0 ? <>No equipment yet. <button onClick={onAdd} className="font-medium text-brand-700 hover:underline">Add your first system</button></> : <>No equipment matches “{q}”.</>}
+          </li>
+        )}
       </ul>
     </div>
   );
