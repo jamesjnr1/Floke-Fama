@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Icon } from '@/components/ui/icon';
-import { contact } from '@/data/seed';
+import { getSite } from '@/lib/site';
 import { getEvents } from '@/lib/data';
 import { daysUntil, googleCalendarUrl, longDate } from '@/lib/events';
 import { siteUrl } from '@/lib/utils';
@@ -22,6 +22,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
 /** One event: everything a guest needs, with the flyer beside it. Upcoming events add calendar, invite and directions. */
 export default async function EventPage({ params }: { params: Promise<{ id: string }> }) {
+  const { contact } = await getSite();
   const { id } = await params;
   const e = (await getEvents()).find((x) => x.id === id);
   if (!e) notFound();

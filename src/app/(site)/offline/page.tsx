@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
 import { Icon } from '@/components/ui/icon';
-import { branches, contact } from '@/data/seed';
+import { getSite } from '@/lib/site';
 
 export const metadata: Metadata = { title: 'Offline', robots: { index: false } };
 
 /** Served by the service worker when there is no connection. Emergency contacts always work offline. */
-export default function OfflinePage() {
+export default async function OfflinePage() {
+  const { branches, contact } = await getSite();
   return (
     <div className="bg-canvas pt-20">
       <div className="mx-auto max-w-3xl px-5 py-12 md:py-28">

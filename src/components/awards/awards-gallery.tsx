@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import { Reveal } from '@/components/motion/reveal';
-import { awards } from '@/data/seed';
+import { getSite } from '@/lib/site';
 import { cn } from '@/lib/utils';
 
 /** Bento spans for five awards on a 6-column grid: feature + two stacked, then a 2 + 4 row. */
@@ -13,7 +13,8 @@ const layout = [
 ];
 
 /** The actual awards, photographed: the No.1 healthcare ranking leads. */
-export function AwardsGallery() {
+export async function AwardsGallery() {
+  const { awards } = await getSite();
   return (
     <section className="bg-canvas pb-24 pt-24 md:pb-32 md:pt-32">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">

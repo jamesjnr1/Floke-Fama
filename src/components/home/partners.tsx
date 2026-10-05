@@ -3,7 +3,8 @@ import Link from 'next/link';
 import { Reveal } from '@/components/motion/reveal';
 import { CountUp } from '@/components/motion/count-up';
 import { Icon } from '@/components/ui/icon';
-import { clients, metrics, technologyPartners } from '@/data/seed';
+import { metrics } from '@/data/seed';
+import { getSite } from '@/lib/site';
 
 /**
  * Optical sizing: every logo gets the same visual area, so a wide wordmark and a round
@@ -22,7 +23,8 @@ function logoBox(w: number, h: number, area: number, maxW: number) {
 }
 
 /** "Our Partners & Clientele", as on the original site. On the home page the logos sit in the hero, so only the figures show. */
-export function Partners({ heading = true, logos = true }: { heading?: boolean; logos?: boolean }) {
+export async function Partners({ heading = true, logos = true }: { heading?: boolean; logos?: boolean }) {
+  const { clients, technologyPartners } = await getSite();
   return (
     <section id="partners" className="scroll-mt-28 border-b border-line bg-canvas py-12 md:py-20">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
@@ -66,7 +68,7 @@ export function Partners({ heading = true, logos = true }: { heading?: boolean; 
             <p className="min-w-0 text-right text-xs text-ink-3">700+ hospitals &amp; laboratories, including</p>
           </div>
           <ul className="mt-5 grid grid-cols-3 gap-2 sm:gap-3 lg:grid-cols-6">
-            {clients.map((c) => {
+            {clients.filter((c): c is typeof c & { logo: string } => Boolean(c.logo)).map((c) => {
               const box = logoBox(c.w, c.h, 4200, 150);
               return (
                 <li

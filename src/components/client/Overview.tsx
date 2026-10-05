@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Card, CardTitle, statusBar, statusStyle, tag } from '@/components/client/ui';
 import { Icon } from '@/components/ui/icon';
-import { contact } from '@/data/seed';
+import { useSite } from '@/components/site-provider';
 import { assetImage, assetStatus, clientSteps, daysUntil, dueLabel, fmtTime, isOpen, statusSteps, stepIndex, type Asset, type AssetStatus, type Ticket } from '@/lib/service/store';
 import { cn } from '@/lib/utils';
 
@@ -29,6 +29,7 @@ export function Overview({ name, facility, assets, tickets, orders, onOpenTicket
   onRequest: () => void;
   onGo: (v: 'requests' | 'equipment' | 'certificates' | 'orders') => void;
 }) {
+  const { contact } = useSite();
   const open = tickets.filter(isOpen).sort((a, b) => stepIndex(b.status) - stepIndex(a.status));
   const enRoute = open.filter((t) => t.status === 'travelling' || t.status === 'onsite');
   const urgent = open.filter((t) => t.priority === 'critical').length;

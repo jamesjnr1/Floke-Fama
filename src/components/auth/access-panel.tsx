@@ -4,7 +4,7 @@ import { LayoutGroup, motion } from 'motion/react';
 import { useEffect, useState } from 'react';
 import { LoginForm } from '@/components/auth/login-form';
 import { SignupForm } from '@/components/auth/signup-form';
-import { contact } from '@/data/seed';
+import { useSite } from '@/components/site-provider';
 import { cn } from '@/lib/utils';
 
 type Mode = 'signin' | 'register';
@@ -21,6 +21,7 @@ export function AccessPanel({ next, demo, notice, engineer, initialMode }: {
   engineer: boolean;
   initialMode: Mode;
 }) {
+  const { contact } = useSite();
   const [mode, setMode] = useState<Mode>(engineer ? 'signin' : initialMode);
 
   // Keep the URL shareable (?mode=register) without a navigation.

@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
 import { Services } from '@/components/home/services';
-import { PageHero } from '@/components/layout/page-hero';
+import { SitePageHero } from '@/components/layout/site-page-hero';
 import { Reveal } from '@/components/motion/reveal';
 import { Globe, Headset, Link2, MapPin } from 'lucide-react';
 import { ToneIcon } from '@/components/ui/tone-icon';
-import { whyChoose } from '@/data/seed';
+import { getSite } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: 'Products & Services',
@@ -19,16 +19,11 @@ const why = [
   { icon: MapPin, tone: 'amber' },
 ] as const;
 
-export default function ServicesPage() {
+export default async function ServicesPage() {
+  const { whyChoose } = await getSite();
   return (
     <>
-      <PageHero
-        image="/images/headers/services.webp"
-        position="50% 40%"
-        label="Products & services"
-        title={<>We go beyond just supplying <span className="text-brand-600">medical equipment</span></>}
-        lead="End-to-end solutions, from procurement and installation to training and maintenance."
-      />
+      <SitePageHero page="services" />
       <Services />
 
       <section id="why-choose-us" className="scroll-mt-28 border-t border-line bg-paper py-14 md:py-28">

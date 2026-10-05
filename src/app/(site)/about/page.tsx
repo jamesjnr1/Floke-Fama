@@ -5,14 +5,15 @@ import Link from 'next/link';
 import { Branches } from '@/components/about/branches';
 import { CoreValues } from '@/components/about/core-values';
 import { Impact } from '@/components/about/impact';
-import { PageHero } from '@/components/layout/page-hero';
+import { SitePageHero } from '@/components/layout/site-page-hero';
 import { Reveal } from '@/components/motion/reveal';
 import { Button } from '@/components/ui/button';
 import { CountUp } from '@/components/motion/count-up';
 import { Cog, Gauge, GraduationCap, Settings, ShieldCheck, ShoppingCart } from 'lucide-react';
 import { Icon } from '@/components/ui/icon';
 import { ToneIcon } from '@/components/ui/tone-icon';
-import { brochureUrl, experienceFigures, servicesInBrief } from '@/data/seed';
+import { brochureUrl, experienceFigures } from '@/data/seed';
+import { getSite } from '@/lib/site';
 import { getMetrics } from '@/lib/data';
 
 export const revalidate = 600;
@@ -33,14 +34,11 @@ const briefIcons = [
 ] as const;
 
 export default async function AboutPage() {
+  const { servicesInBrief, ceo } = await getSite();
   const metrics = await getMetrics();
   return (
     <>
-      <PageHero
-        label="About us"
-        title={<>Purveyor of excellence <span className="text-brand-600">in healthcare</span></>}
-        lead="FLOKEFAMA is a multiple award-winning company and one of the most trusted medical equipment suppliers in Ghana."
-      />
+      <SitePageHero page="about" />
 
       {/* Mission, vision and aim: three bold blocks right under the header, as on the current site */}
       <section id="mission" className="scroll-mt-28 bg-paper pt-12 md:pt-20">
@@ -92,22 +90,10 @@ export default async function AboutPage() {
           </Reveal>
           <Reveal delay={0.08} className="lg:col-span-7">
             <h2 className="display text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">Meet our CEO</h2>
-            <p className="mt-6 text-2xl font-bold tracking-[-0.02em] text-ink">Mr. Emmanuel Kenney</p>
-            <p className="mt-1 font-mono text-sm uppercase tracking-wider text-brand-700">Founder &amp; Chief Executive Officer, Flokefama Company Limited</p>
+            <p className="mt-6 text-2xl font-bold tracking-[-0.02em] text-ink">{ceo.name}</p>
+            <p className="mt-1 font-mono text-sm uppercase tracking-wider text-brand-700">{ceo.role}</p>
             <div className="mt-6 space-y-4 text-lg leading-relaxed text-ink-3">
-              <p>Behind Flokefama’s vision is Mr. Emmanuel Kenney, a Ghanaian entrepreneur and business leader whose journey into the healthcare industry is deeply personal.</p>
-              <p>
-                Mr. Kenney brings a strong combination of academic preparation, leadership experience and entrepreneurial vision to his role as Chief Executive Officer. He is a graduate of Sanford Business School in the United States of America, where he developed a strong foundation in business management and leadership. He is also an alumnus of the prestigious St. Augustine’s College, Cape Coast, an institution renowned for academic excellence, discipline and leadership development.
-              </p>
-              <p>
-                As the Founder and Chief Executive Officer of Flokefama Company Limited, Mr. Kenney has built the company around a simple but powerful conviction: better healthcare should not be a privilege, it should be accessible, efficient and delivered with dignity and excellence.
-              </p>
-              <p>
-                His passion for healthcare was shaped in part by his own experience with surgery. Having personally experienced the challenges and difficulties associated with surgical care, he came away with a determination that others should not have to go through the same experience where better systems, technology and equipment could make a difference. That experience became one of the driving forces behind his commitment to improving healthcare delivery through access to modern medical equipment, technology and innovative solutions. Today, he leads Flokefama in providing world-class healthcare equipment and solutions across Ghana and West Africa.
-              </p>
-              <p>
-                Since its establishment in 2008, Flokefama has grown into a multiple award-winning company, including Ghana Club 100 company, and has a reputation for quality, reliability and innovation in the healthcare sector. Under Mr. Kenney’s leadership, the company has also championed partnerships with academic and professional institutions to help develop industry-ready engineers and technical professionals capable of supporting and transforming Ghana’s healthcare infrastructure.
-              </p>
+              {ceo.bio.map((t) => <p key={t.slice(0, 40)}>{t}</p>)}
             </div>
             <div className="mt-10 border border-line bg-canvas p-6 md:p-8">
               <h3 className="flex items-center gap-3 text-xl font-bold tracking-[-0.02em]">

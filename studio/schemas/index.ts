@@ -201,4 +201,174 @@ export const article = defineType({
   preview: { select: { title: 'title', subtitle: 'date', media: 'cover' } },
 });
 
-export const schemaTypes = [category, product, event, article, metric, milestone];
+/* ---------- Site content: everything else on the website, in one document ---------- */
+
+const iconField = defineField({ name: 'icon', type: 'string', description: 'Flaticon UIcon class, e.g. fi-rr-microscope', validation: (r) => r.regex(/^fi-rr-[a-z0-9-]+$/) });
+const textItem = (name: string, title: string, textName = 'text') =>
+  defineArrayMember({
+    type: 'object',
+    name,
+    title,
+    fields: [defineField({ name: 'title', type: 'string', validation: (r) => r.required() }), iconField, defineField({ name: textName, title: 'Text', type: 'text', rows: 3 })],
+    preview: { select: { title: 'title', subtitle: textName } },
+  });
+const logo = (name: string) =>
+  defineArrayMember({
+    type: 'object',
+    name,
+    fields: [
+      defineField({ name: 'name', type: 'string', validation: (r) => r.required() }),
+      defineField({ name: 'logo', type: 'image', description: 'Transparent PNG or a logo on white' }),
+      defineField({ name: 'role', type: 'string', description: 'Optional, e.g. Official distributor' }),
+    ],
+    preview: { select: { title: 'name', subtitle: 'role', media: 'logo' } },
+  });
+const header = (name: string, title: string) =>
+  defineField({
+    name,
+    title,
+    type: 'object',
+    options: { collapsible: true, collapsed: true },
+    fields: [
+      defineField({ name: 'title', type: 'string', description: 'First part of the heading' }),
+      defineField({ name: 'highlight', type: 'string', description: 'Words shown in green after the heading' }),
+      defineField({ name: 'lead', title: 'Intro line', type: 'text', rows: 2 }),
+      defineField({ name: 'image', title: 'Header photo', type: 'image', options: { hotspot: true }, description: 'Wide photo; shown on the right, fading into the dark background' }),
+    ],
+  });
+
+export const siteContent = defineType({
+  name: 'siteContent',
+  title: 'Site content',
+  type: 'document',
+  groups: [
+    { name: 'contact', title: 'Contact & branches', default: true },
+    { name: 'logos', title: 'Partners & clients' },
+    { name: 'home', title: 'Home' },
+    { name: 'about', title: 'About' },
+    { name: 'services', title: 'Services' },
+    { name: 'awards', title: 'Awards' },
+    { name: 'faq', title: 'Buying FAQ' },
+    { name: 'esg', title: 'ESG' },
+    { name: 'headers', title: 'Page headers' },
+  ],
+  fields: [
+    defineField({
+      name: 'contact',
+      type: 'object',
+      group: 'contact',
+      fields: [
+        defineField({ name: 'phone', title: 'Phone (also WhatsApp)', type: 'string', description: 'e.g. +233 53 339 2863', validation: (r) => r.required() }),
+        defineField({ name: 'info', title: 'General email', type: 'string' }),
+        defineField({ name: 'sales', title: 'Sales email', type: 'string' }),
+        defineField({ name: 'support', title: 'Support email', type: 'string' }),
+        defineField({ name: 'address', type: 'string' }),
+        defineField({ name: 'lat', title: 'Head office latitude', type: 'number' }),
+        defineField({ name: 'lng', title: 'Head office longitude', type: 'number' }),
+        defineField({ name: 'mapEmbed', title: 'Google Maps embed link', type: 'url', description: 'Google Maps → Share → Embed a map → copy the src link' }),
+      ],
+    }),
+    defineField({
+      name: 'branches',
+      type: 'array',
+      group: 'contact',
+      of: [defineArrayMember({ type: 'object', name: 'branch', fields: [defineField({ name: 'name', type: 'string' }), defineField({ name: 'detail', title: 'Where', type: 'string' })], preview: { select: { title: 'name', subtitle: 'detail' } } })],
+    }),
+    defineField({ name: 'technologyPartners', title: 'Technology partners (brands we distribute)', type: 'array', group: 'logos', of: [logo('partner')] }),
+    defineField({ name: 'clients', title: 'Clients (logo strip)', type: 'array', group: 'logos', of: [logo('client')] }),
+    defineField({
+      name: 'hero',
+      title: 'Home headline',
+      type: 'object',
+      group: 'home',
+      fields: [
+        defineField({ name: 'title', type: 'string', description: 'e.g. Ghana’s No.1' }),
+        defineField({ name: 'highlight', type: 'string', description: 'Second line, in green, e.g. Healthcare Company' }),
+        defineField({ name: 'lead', title: 'Intro line', type: 'text', rows: 2 }),
+      ],
+    }),
+    defineField({
+      name: 'testimonials',
+      type: 'array',
+      group: 'home',
+      of: [defineArrayMember({ type: 'object', name: 'testimonial', fields: [defineField({ name: 'quote', type: 'text', rows: 3 }), defineField({ name: 'name', type: 'string' }), defineField({ name: 'role', type: 'string' })], preview: { select: { title: 'name', subtitle: 'role' } } })],
+    }),
+    defineField({
+      name: 'purpose',
+      title: 'Mission, vision and aim',
+      type: 'array',
+      group: 'about',
+      of: [defineArrayMember({ type: 'object', name: 'statement', fields: [defineField({ name: 'label', type: 'string', options: { list: ['Mission', 'Vision', 'Aim'] } }), iconField, defineField({ name: 'text', type: 'text', rows: 3 })], preview: { select: { title: 'label', subtitle: 'text' } } })],
+    }),
+    defineField({ name: 'coreValues', title: 'Core values', type: 'array', group: 'about', of: [textItem('value', 'Value')] }),
+    defineField({ name: 'servicesInBrief', title: 'Our services (About page)', type: 'array', group: 'about', of: [textItem('service', 'Service')] }),
+    defineField({ name: 'ceo', title: 'CEO', type: 'object', group: 'about', fields: [defineField({ name: 'name', type: 'string' }), defineField({ name: 'role', type: 'string' }), defineField({ name: 'bio', title: 'Biography paragraphs', type: 'array', of: [{ type: 'text' }] })] }),
+    defineField({ name: 'whyChoose', title: 'Why choose Flokefama', type: 'array', group: 'services', of: [textItem('reason', 'Reason', 'body')] }),
+    defineField({
+      name: 'awards',
+      type: 'array',
+      group: 'awards',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'award',
+          fields: [
+            defineField({ name: 'title', type: 'string', validation: (r) => r.required() }),
+            defineField({ name: 'year', type: 'string' }),
+            defineField({ name: 'body', title: 'Text', type: 'text', rows: 2 }),
+            defineField({ name: 'image', title: 'Photo of the award', type: 'image' }),
+            defineField({ name: 'alt', title: 'Photo description', type: 'string' }),
+          ],
+          preview: { select: { title: 'title', subtitle: 'year', media: 'image' } },
+        }),
+      ],
+    }),
+    defineField({
+      name: 'faqs',
+      title: 'Questions',
+      type: 'array',
+      group: 'faq',
+      of: [defineArrayMember({ type: 'object', name: 'faq', fields: [defineField({ name: 'q', title: 'Question', type: 'string' }), defineField({ name: 'a', title: 'Answer', type: 'text', rows: 3 }), defineField({ name: 'linkLabel', title: 'Link text (optional)', type: 'string' }), defineField({ name: 'linkHref', title: 'Link address (optional)', type: 'string', description: 'e.g. /quote' })], preview: { select: { title: 'q', subtitle: 'a' } } })],
+    }),
+    defineField({
+      name: 'esgPillars',
+      title: 'ESG pillars',
+      type: 'array',
+      group: 'esg',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'pillar',
+          fields: [
+            defineField({ name: 'label', type: 'string', description: 'e.g. Social · Community' }),
+            iconField,
+            defineField({ name: 'title', type: 'string' }),
+            defineField({ name: 'body', title: 'Text', type: 'text', rows: 3 }),
+            defineField({ name: 'image', type: 'image', options: { hotspot: true } }),
+            defineField({ name: 'alt', title: 'Photo description', type: 'string' }),
+          ],
+          preview: { select: { title: 'title', subtitle: 'label', media: 'image' } },
+        }),
+      ],
+    }),
+    defineField({
+      name: 'pageHeaders',
+      title: 'Page headers',
+      type: 'object',
+      group: 'headers',
+      description: 'The dark banner at the top of each page. Leave a field empty to keep the current text or photo.',
+      fields: [
+        header('about', 'About'),
+        header('services', 'Products & Services'),
+        header('shop', 'Shop (use {count} for the number of products)'),
+        header('events', 'Events & Activities'),
+        header('awards', 'Awards'),
+        header('esg', 'ESG'),
+        header('contact', 'Contact'),
+      ],
+    }),
+  ],
+  preview: { prepare: () => ({ title: 'Site content' }) },
+});
+
+export const schemaTypes = [category, product, event, article, metric, milestone, siteContent];

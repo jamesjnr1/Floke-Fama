@@ -8,7 +8,7 @@ import { useForm, type FieldPath } from 'react-hook-form';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
-import { contact } from '@/data/seed';
+import { useSite } from '@/components/site-provider';
 import { track } from '@/lib/analytics';
 import { composeLinks } from '@/lib/compose';
 import { quoteList } from '@/lib/quote-list';
@@ -27,6 +27,7 @@ const steps: { title: string; hint: string; fields: FieldPath<QuoteInput>[] }[] 
 ];
 
 export function ProcurementFlow({ options, initial }: { options: Option[]; initial: Partial<QuoteInput> }) {
+  const { contact } = useSite();
   const [step, setStep] = useState(0);
   const [dir, setDir] = useState(1);
   const [done, setDone] = useState<{ reference: string; delivered: boolean; data: QuoteInput } | null>(null);
@@ -70,6 +71,7 @@ export function ProcurementFlow({ options, initial }: { options: Option[]; initi
     const { reference, delivered, data } = done;
     const label = data.intent === 'demo' ? 'Demonstration request' : 'Quote request';
     const send = composeLinks({
+      whatsapp: contact.whatsapp,
       to: contact.sales,
       subject: `${label} ${reference}: ${data.facility}`,
       body: [

@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { clients, technologyPartners } from '@/data/seed';
+import { getSite } from '@/lib/site';
 
 /** Same visual area for every logo, so a wide wordmark and a round crest read as the same size. */
 function box(w: number, h: number, area: number, maxW: number, maxH: number) {
@@ -13,16 +13,13 @@ function box(w: number, h: number, area: number, maxW: number, maxH: number) {
   return { width: Math.round(width), height: Math.round(height) };
 }
 
-const logos = [
-  ...technologyPartners.map((p) => ({ name: p.name, logo: p.logo, w: p.w, h: p.h })),
-  ...clients.map((c) => ({ name: c.name, logo: c.logo as string | null, w: c.w, h: c.h })),
-];
-
 /**
  * Our Clients & Partners, under the hero: a white band with the real logos moving in one slow row from edge to
  * edge (no boxes, no fade). Hover pauses the row.
  */
-export function HeroLogos() {
+export async function HeroLogos() {
+  const { technologyPartners, clients } = await getSite();
+  const logos = [...technologyPartners, ...clients].map((l) => ({ name: l.name, logo: l.logo, w: l.w, h: l.h }));
   const row = (hidden: boolean) =>
     logos.map((l) => {
       const b = l.logo ? box(l.w, l.h, 9000, 210, 80) : null;

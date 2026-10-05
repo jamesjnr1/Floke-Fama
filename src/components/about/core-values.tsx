@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Icon } from '@/components/ui/icon';
-import { coreValues } from '@/data/seed';
+import { useSite } from '@/components/site-provider';
 import { cn } from '@/lib/utils';
 
 /**
@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils';
  * Phones stack all four, open.
  */
 export function CoreValues() {
+  const { coreValues } = useSite();
   const [active, setActive] = useState(0);
   return (
     <div className="mt-12 flex flex-col gap-3 lg:h-[330px] lg:flex-row" role="tablist" aria-label="Core values">

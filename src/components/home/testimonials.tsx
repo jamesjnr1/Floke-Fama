@@ -3,13 +3,14 @@
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { useEffect, useState } from 'react';
 import { Reveal } from '@/components/motion/reveal';
-import { testimonials } from '@/data/seed';
+import { useSite } from '@/components/site-provider';
 import { cn } from '@/lib/utils';
 
 const initials = (name: string) => name.replace(/^Dr\.\s*/, '').split(' ').map((p) => p[0]).slice(0, 2).join('');
 
 /** Testimonials from the current site: one quote in the spotlight, the speakers as a selector. */
 export function Testimonials() {
+  const { testimonials } = useSite();
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const reduce = useReducedMotion();
@@ -19,7 +20,7 @@ export function Testimonials() {
     if (paused || reduce) return;
     const id = setTimeout(() => setActive((i) => (i + 1) % testimonials.length), 8000);
     return () => clearTimeout(id);
-  }, [active, paused, reduce]);
+  }, [active, paused, reduce, testimonials.length]);
 
   return (
     <section id="testimonials" className="scroll-mt-28 border-y border-line bg-paper py-14 md:py-32">

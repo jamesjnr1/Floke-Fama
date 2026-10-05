@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { Card } from '@/components/client/ui';
 import { Icon } from '@/components/ui/icon';
-import { contact } from '@/data/seed';
+import { useSite } from '@/components/site-provider';
 import { orderStatusLabel, type SavedOrder } from '@/lib/orders';
 import { fmtDate } from '@/lib/service/store';
 import { cn } from '@/lib/utils';
@@ -12,6 +12,7 @@ const methodLabel = { momo: 'Mobile Money', card: 'Card', bank: 'Bank transfer' 
 
 /** Orders the facility placed at checkout, with what was ordered and where it is going. */
 export function OrdersView({ orders }: { orders: SavedOrder[] }) {
+  const { contact } = useSite();
   if (orders.length === 0)
     return (
       <Card className="grid place-items-center p-10 text-center">
