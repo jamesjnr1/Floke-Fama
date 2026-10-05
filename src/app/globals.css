@@ -9,8 +9,8 @@
    Company red      #DC2430 · the logo-dot accents, Contact buttons, Vision block (white text on it)
    ========================================================================== */
 @theme {
-  /* One grotesk typeface (Space Grotesk) everywhere; `font-mono` labels use it too, so nothing switches to a code font. */
-  --font-sans: var(--font-grotesk), ui-sans-serif, system-ui, sans-serif;
+  /* Plus Jakarta Sans is the main typeface; Space Grotesk (the `font-mono` utility) sets small labels and figures. */
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-grotesk), ui-sans-serif, system-ui, sans-serif;
 
   /* Text sizes one step up from Tailwind's defaults, so everything stays readable */
