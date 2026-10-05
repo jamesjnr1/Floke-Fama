@@ -12,16 +12,16 @@ const health: Record<AssetStatus, { label: string; dot: string; text: string }> 
   online: { label: 'Operational', dot: 'bg-[#0b8a58]', text: 'text-[#0b6b45]' },
   attention: { label: 'Service requested', dot: 'bg-[#d39a1c]', text: 'text-[#7a5200]' },
   maintenance: { label: 'Engineer on site', dot: 'bg-[#2f6fa8]', text: 'text-[#1f5585]' },
+  installing: { label: 'Awaiting installation', dot: 'bg-[#7c6bc4]', text: 'text-[#4f3f9a]' },
 };
 
 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 /** Overview: the facility at a glance. Every figure is derived from live service-desk data. */
-export function Overview({ name, facility, assets, tickets, orders, onOpenTicket, onOpenAsset, onRequest, onAddEquipment, onGo }: {
+export function Overview({ name, facility, assets, tickets, orders, onOpenTicket, onOpenAsset, onRequest, onGo }: {
   name: string;
   facility: string;
   orders: number;
-  onAddEquipment: () => void;
   assets: Asset[];
   tickets: Ticket[];
   onOpenTicket: (id: string) => void;
@@ -34,7 +34,9 @@ export function Overview({ name, facility, assets, tickets, orders, onOpenTicket
   const urgent = open.filter((t) => t.priority === 'critical').length;
   const statuses = assets.map((a) => assetStatus(a, tickets));
   const operational = statuses.filter((s) => s === 'online').length;
-  const schedule = [...assets].sort((a, b) => a.nextCalibration.localeCompare(b.nextCalibration));
+  const installing = statuses.filter((s) => s === 'installing').length;
+  const inService = assets.length - installing;
+  const schedule = assets.filter((a) => !a.installation).sort((a, b) => a.nextCalibration.localeCompare(b.nextCalibration));
   const due = schedule.filter((a) => daysUntil(a.nextCalibration) <= 30);
   const activity = tickets
     .flatMap((t) => t.log.map((l) => ({ ...l, ticket: t })))
@@ -57,9 +59,15 @@ export function Overview({ name, facility, assets, tickets, orders, onOpenTicket
         <a href={contact.phoneHref} className="inline-flex h-11 items-center gap-2 rounded-lg border border-line bg-paper px-4 text-sm font-medium text-ink transition hover:border-ink/30">
           <Icon name="fi-rr-phone-call" className="text-ink-3" /> Call support
         </a>
-        <button onClick={assets.length ? onRequest : onAddEquipment} className="inline-flex h-11 items-center gap-2 rounded-lg bg-brand-600 px-5 text-sm font-semibold text-white transition hover:bg-[#006b42]">
-          <Icon name={assets.length ? 'fi-rr-wrench-simple' : 'fi-rr-plus'} /> {assets.length ? 'Request service' : 'Add equipment'}
-        </button>
+        {assets.length ? (
+          <button onClick={onRequest} className="inline-flex h-11 items-center gap-2 rounded-lg bg-brand-600 px-5 text-sm font-semibold text-white transition hover:bg-[#006b42]">
+            <Icon name="fi-rr-wrench-simple" /> Request service
+          </button>
+        ) : (
+          <Link href="/products" className="inline-flex h-11 items-center gap-2 rounded-lg bg-brand-600 px-5 text-sm font-semibold text-white transition hover:bg-[#006b42]">
+            <Icon name="fi-rr-shopping-cart" /> Shop equipment
+          </Link>
+        )}
       </div>
     </div>
   );
@@ -68,12 +76,12 @@ export function Overview({ name, facility, assets, tickets, orders, onOpenTicket
   if (assets.length === 0)
     return (
       <div className="space-y-8">
-        {header(`Welcome to the ${facility} dashboard. Add the systems at your facility to request service, follow the engineer and keep every calibration certificate in one place.`)}
+        {header(`Welcome to the ${facility} dashboard. Equipment you buy from Flokefama appears here by itself: we install it, look after it and keep every certificate in one place.`)}
         <ol className="grid divide-y divide-line overflow-hidden rounded-xl border border-line bg-paper md:grid-cols-3 md:divide-x md:divide-y-0">
           {[
-            { n: '01', title: 'Add your equipment', body: 'Analysers, monitors, autoclaves: anything at your facility, with its serial number and location.', action: <button onClick={onAddEquipment} className="text-sm font-semibold text-brand-700 hover:underline">Add equipment →</button> },
-            { n: '02', title: 'Request service', body: 'Tell us what’s wrong. The nearest engineer is assigned and you follow every step here.', action: <a href={contact.phoneHref} className="text-sm font-semibold text-brand-700 hover:underline">Urgent? Call {contact.phone}</a> },
-            { n: '03', title: 'Order and check out', body: 'Buy equipment and consumables for your facility. Your orders appear under Orders.', action: <Link href="/products" className="text-sm font-semibold text-brand-700 hover:underline">Shop equipment →</Link> },
+            { n: '01', title: 'Buy equipment', body: 'Order from the Flokefama shop and check out. Each machine is added to your equipment automatically.', action: <Link href="/products" className="text-sm font-semibold text-brand-700 hover:underline">Shop equipment →</Link> },
+            { n: '02', title: 'We install it', body: 'Our engineers deliver, install, commission and train your staff. You follow the job here and get the installation certificate.', action: <button onClick={() => onGo('orders')} className="text-sm font-semibold text-brand-700 hover:underline">Your orders →</button> },
+            { n: '03', title: 'We look after it', body: 'Request service in a few clicks, follow the engineer, and keep warranty, calibration dates and certificates in one place.', action: <a href={contact.phoneHref} className="text-sm font-semibold text-brand-700 hover:underline">Already own Flokefama equipment? Call {contact.phone}</a> },
           ].map((s) => (
             <li key={s.n} className="flex flex-col p-7">
               <span className="font-mono text-sm text-ink-3">{s.n}</span>
@@ -108,10 +116,10 @@ export function Overview({ name, facility, assets, tickets, orders, onOpenTicket
     },
     {
       label: 'Systems operational',
-      value: `${operational}`,
-      suffix: ` / ${assets.length}`,
-      note: operational === assets.length ? 'All systems running' : `${assets.length - operational} need${assets.length - operational === 1 ? 's' : ''} attention`,
-      tone: operational === assets.length ? 'text-[#0b6b45]' : 'text-[#7a5200]',
+      value: inService ? `${operational}` : String(installing),
+      suffix: inService ? ` / ${inService}` : ' being installed',
+      note: installing ? `${installing} awaiting installation` : operational === inService ? 'All systems running' : `${inService - operational} need${inService - operational === 1 ? 's' : ''} attention`,
+      tone: installing ? 'text-[#4f3f9a]' : operational === inService ? 'text-[#0b6b45]' : 'text-[#7a5200]',
       go: 'equipment' as const,
     },
     {
@@ -215,7 +223,7 @@ export function Overview({ name, facility, assets, tickets, orders, onOpenTicket
             </div>
             <div className="px-6 pt-5">
               <div className="flex h-2 overflow-hidden rounded-[2px] bg-[#e7ebe9]" aria-hidden>
-                {(['online', 'attention', 'maintenance'] as const).map((k) => {
+                {(['online', 'attention', 'maintenance', 'installing'] as const).map((k) => {
                   const n = statuses.filter((s) => s === k).length;
                   return n ? <span key={k} className={health[k].dot} style={{ width: `${(n / assets.length) * 100}%` }} /> : null;
                 })}
@@ -250,6 +258,7 @@ export function Overview({ name, facility, assets, tickets, orders, onOpenTicket
               <button onClick={() => onGo('certificates')} className="text-sm font-medium text-ink-2 hover:text-ink">Certificates →</button>
             </div>
             <ul className="divide-y divide-line px-6 py-1">
+              {schedule.length === 0 && <li className="py-4 text-sm text-ink-3">Calibrations are scheduled when the engineer installs your equipment.</li>}
               {schedule.slice(0, 4).map((a) => {
                 const d = daysUntil(a.nextCalibration);
                 const dt = new Date(a.nextCalibration);

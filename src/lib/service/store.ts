@@ -11,7 +11,7 @@ import { useCallback, useEffect, useReducer, useState } from 'react';
 
 export type Priority = 'critical' | 'high' | 'routine';
 export type TicketStatus = 'new' | 'assigned' | 'travelling' | 'onsite' | 'resolved';
-export type AssetStatus = 'online' | 'maintenance' | 'attention';
+export type AssetStatus = 'online' | 'maintenance' | 'attention' | 'installing';
 
 export interface LogEntry { at: string; by: string; text: string; kind: 'system' | 'note' | 'status' | 'part' }
 export interface Part { name: string; qty: number }
@@ -31,6 +31,8 @@ export interface Ticket {
   parts: Part[];
   resolution?: string;
   resolvedAt?: string;
+  /** 'installation': delivery and commissioning of newly bought equipment (created by a purchase). */
+  kind?: 'installation';
   /** Who raised it: a facility contact (client portal), an engineer, or the system (scheduled PM). */
   requestedBy?: string;
   contactPhone?: string;
@@ -56,12 +58,21 @@ export interface Asset {
   nextCalibration: string;
   intervalMonths: number;
   certificates: Certificate[];
+  /** Set while newly bought equipment awaits delivery and installation (the order it came from). */
+  installation?: { order: string };
 }
 
 export type Audience = 'engineer' | 'client';
 export interface Notification { id: string; at: string; text: string; audience: Audience; ticketId?: string; assetId?: string; read: boolean }
 
-export interface ServiceState { version: number; tickets: Ticket[]; assets: Asset[]; notifications: Notification[] }
+export interface ServiceState {
+  version: number;
+  tickets: Ticket[];
+  assets: Asset[];
+  notifications: Notification[];
+  /** Order references already turned into equipment, so a purchase is only registered once. */
+  purchases?: string[];
+}
 /** @deprecated use ServiceState */
 export type EngineerState = ServiceState;
 
@@ -129,6 +140,7 @@ export const assetImage = (a: Asset) => a.image ?? (a.productSlug ? `/images/pro
 
 export const isOpen = (t: Ticket) => t.status !== 'resolved';
 export function assetStatus(asset: Asset, tickets: Ticket[]): AssetStatus {
+  if (asset.installation) return 'installing';
   const open = tickets.filter((t) => t.assetId === asset.id && isOpen(t));
   if (open.some((t) => t.status === 'onsite')) return 'maintenance';
   if (open.some((t) => t.priority !== 'routine')) return 'attention';
@@ -261,6 +273,7 @@ export type Action =
   | { type: 'rate'; id: string; rating: number; feedback?: string }
   | { type: 'calibrate'; assetId: string; result: Certificate['result']; notes?: string }
   | { type: 'addAsset'; asset: Asset }
+  | { type: 'purchase'; order: string; facility: string; items: { slug: string; name: string; brand: string; image?: string; qty: number }[] }
   | { type: 'read'; id: string }
   | { type: 'readAll'; audience: Audience };
 
@@ -300,6 +313,20 @@ export function reducer(actor: Actor) {
         return patch(action.id, (t) => ({ ...t, parts: [...t.parts, action.part], log: [...t.log, entry(`Part used: ${action.part.qty} × ${action.part.name}`, 'part')] }));
       case 'resolve': {
         let next = patch(action.id, (t) => ({ ...t, status: 'resolved', resolution: action.summary, resolvedAt: now, log: [...t.log, entry('Resolved')] }));
+        if (ticket?.kind === 'installation') {
+          // Installed and commissioned: the warranty and the calibration schedule start today.
+          const asset = next.assets.find((a) => a.id === ticket.assetId);
+          const cert: Certificate = { id: `COM-${Math.floor(100 + Math.random() * 899)}`, date: now, result: 'Pass', engineer: me, notes: 'Installation and commissioning' };
+          next = {
+            ...next,
+            assets: next.assets.map((a) =>
+              a.id === ticket.assetId
+                ? { ...a, installation: undefined, installed: now, warrantyUntil: iso(addMonths(new Date(), 12)), lastCalibration: now, nextCalibration: iso(addMonths(new Date(), a.intervalMonths)), certificates: [cert, ...a.certificates] }
+                : a,
+            ),
+          };
+          return notify(next, `${asset?.name ?? 'Your equipment'} is installed and commissioned. Its warranty runs for 12 months and the installation certificate is ready.`, { assetId: ticket.assetId });
+        }
         if (action.calibrated && ticket) next = reducer(actor)(next, { type: 'calibrate', assetId: ticket.assetId, result: 'Pass', notes: `After ${ticket.id}` });
         return notify(next, `${label} is resolved. Your service report is ready, please rate the visit.`, { ticketId: action.id });
       }
@@ -335,6 +362,34 @@ export function reducer(actor: Actor) {
         });
         const asset = state.assets.find((a) => a.id === action.assetId);
         return notify({ ...state, assets }, `New calibration certificate for ${asset?.name}.`, { assetId: action.assetId });
+      }
+      case 'purchase': {
+        if (state.purchases?.includes(action.order)) return state;
+        const assets: Asset[] = [];
+        const tickets: Ticket[] = [];
+        let n = Math.max(1000, ...state.tickets.map((t) => Number(t.id.split('-')[1]) || 0));
+        for (const item of action.items)
+          for (let k = 0; k < item.qty; k++) {
+            const id = uid('AS');
+            assets.push({
+              id, name: item.name, brand: item.brand, productSlug: item.slug, image: item.image, serial: 'Recorded at installation',
+              facility: action.facility, location: 'Set at installation', readings: [50, 52, 51, 53, 52, 54, 53, 55, 54, 56],
+              installed: now, warrantyUntil: iso(addMonths(new Date(), 12)), lastCalibration: now, nextCalibration: iso(addMonths(new Date(), 6)),
+              intervalMonths: 6, certificates: [], installation: { order: action.order },
+            });
+            n += 1;
+            tickets.push({
+              id: `TK-${n}`, assetId: id, kind: 'installation', title: `${item.name}: delivery, installation and commissioning`,
+              description: `Deliver, install and commission the ${item.name} bought on order ${action.order}, then train the users.`,
+              priority: 'routine', status: 'new', openedAt: now, parts: [], requestedBy: 'Flokefama sales',
+              log: [{ at: now, by: 'System', text: `Installation booked from order ${action.order}`, kind: 'system' }],
+            });
+          }
+        if (!assets.length) return { ...state, purchases: [...(state.purchases ?? []), action.order] };
+        let next: ServiceState = { ...state, assets: [...state.assets, ...assets], tickets: [...tickets, ...state.tickets], purchases: [...(state.purchases ?? []), action.order] };
+        next = notify(next, `${assets.length} new system${assets.length === 1 ? '' : 's'} to install at ${action.facility} (order ${action.order}).`, { ticketId: tickets[0].id });
+        // Tell the hospital too
+        return { ...next, notifications: [{ id: uid('N'), at: now, text: `Order ${action.order}: ${assets.length === 1 ? assets[0].name : `${assets.length} systems`} added to your equipment. Our engineers will deliver, install and commission ${assets.length === 1 ? 'it' : 'them'}.`, audience: 'client', read: false, ticketId: tickets[0].id }, ...next.notifications] };
       }
       case 'addAsset':
         return notify({ ...state, assets: [...state.assets, action.asset] },
