@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
  */
 export function Hero() {
   return (
-    <section className="relative isolate overflow-hidden bg-[linear-gradient(135deg,#10191e_0%,#16232a_40%,#0b3b40_72%,#10191e_100%)] text-white">
+    <section className="relative isolate flex min-h-[100svh] flex-col overflow-hidden bg-[linear-gradient(135deg,#10191e_0%,#16232a_40%,#0b3b40_72%,#10191e_100%)] text-white">
       {/* Soft glows as gradients (no CSS blur filters, which are costly while scrolling) */}
       <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(40%_50%_at_85%_40%,rgb(0_138_87/0.16),transparent_70%),radial-gradient(30%_40%_at_30%_70%,rgb(13_155_168/0.1),transparent_70%)]" />
 
@@ -25,7 +25,7 @@ export function Hero() {
         />
       </svg>
 
-      <div className="mx-auto grid max-w-[1280px] items-center gap-12 px-5 pb-14 pt-32 md:px-10 md:pt-36 lg:grid-cols-12 lg:gap-12 lg:pb-16">
+      <div className="mx-auto grid w-full max-w-[1280px] flex-1 items-center gap-10 px-5 pb-10 pt-28 md:px-10 md:pt-32 lg:grid-cols-12 lg:gap-12 lg:pb-8">
         <div className="flex flex-col gap-7 lg:col-span-7">
           <Reveal>
             <h1 className="text-[clamp(2.5rem,1.4rem+3.2vw,4rem)] font-extrabold leading-[1.05] tracking-[-0.035em] text-white">
