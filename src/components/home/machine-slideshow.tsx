@@ -37,7 +37,7 @@ export function MachineSlideshow() {
       <div aria-hidden className="absolute -bottom-2 -right-2 size-10 border-b-2 border-r-2 border-signal" />
 
       <Link href={`/products/${m.slug}`} className="group block overflow-hidden bg-white" aria-label={`${m.brand} ${m.name}: view product`}>
-        <div className="relative h-[clamp(220px,calc(100svh-540px),420px)] bg-[radial-gradient(90%_70%_at_50%_40%,#fff_0%,#eef3f4_70%,#e4eef0_100%)]">
+        <div className="relative h-[clamp(220px,calc(100svh-540px),420px)] bg-white">
           <AnimatePresence mode="popLayout" initial={false}>
             <motion.div
               key={m.slug}
@@ -47,7 +47,7 @@ export function MachineSlideshow() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             >
-              <Image src={`/images/products/${m.slug}.webp`} alt={`${m.brand} ${m.name}`} fill priority={i === 0} sizes="(min-width: 1024px) 480px, 90vw" className="object-contain p-8 mix-blend-multiply" />
+              <Image src={`/images/products/${m.slug}.webp`} alt={`${m.brand} ${m.name}`} fill priority={i === 0} sizes="(min-width: 1024px) 480px, 90vw" className="object-contain p-8" />
             </motion.div>
           </AnimatePresence>
         </div>
