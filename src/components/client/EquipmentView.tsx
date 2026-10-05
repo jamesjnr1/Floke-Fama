@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { useState } from 'react';
 import { Icon, IconTile } from '@/components/ui/icon';
 import { assetImage, assetStatus, daysUntil, dueLabel, isOpen, type Asset, type AssetStatus, type Ticket } from '@/lib/service/store';
@@ -10,10 +11,11 @@ const label: Record<AssetStatus, { text: string; dot: string }> = {
   online: { text: 'Operational', dot: 'bg-[#0b8a58]' },
   attention: { text: 'Service requested', dot: 'bg-[#d39a1c]' },
   maintenance: { text: 'Engineer on site', dot: 'bg-[#2f6fa8]' },
+  installing: { text: 'Awaiting installation', dot: 'bg-[#7c6bc4]' },
 };
 
 /** Installed equipment: health, warranty and calibration for every system at the facility. */
-export function EquipmentView({ assets, tickets, onOpenAsset, onAdd }: { assets: Asset[]; tickets: Ticket[]; onOpenAsset: (id: string) => void; onAdd: () => void }) {
+export function EquipmentView({ assets, tickets, onOpenAsset }: { assets: Asset[]; tickets: Ticket[]; onOpenAsset: (id: string) => void }) {
   const [q, setQ] = useState('');
   const list = assets.filter((a) => `${a.name} ${a.brand} ${a.location} ${a.serial}`.toLowerCase().includes(q.trim().toLowerCase()));
   return (
@@ -24,9 +26,9 @@ export function EquipmentView({ assets, tickets, onOpenAsset, onAdd }: { assets:
         <span className="sr-only">Search equipment</span>
         <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by name, location or serial…" className="w-full bg-transparent text-sm text-ink outline-none placeholder:text-ink-3/70" />
       </label>
-      <button onClick={onAdd} className="inline-flex h-11 items-center gap-2 rounded-xl bg-brand-600 px-4 text-sm font-semibold text-white hover:bg-brand-700">
-        <Icon name="fi-rr-plus" /> Add equipment
-      </button>
+      <Link href="/products" className="inline-flex h-11 items-center gap-2 rounded-lg border border-line bg-paper px-4 text-sm font-medium text-ink hover:border-ink/30">
+        <Icon name="fi-rr-shopping-cart" className="text-ink-3" /> Buy equipment
+      </Link>
       </div>
       <ul className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {list.map((a) => {
@@ -47,8 +49,8 @@ export function EquipmentView({ assets, tickets, onOpenAsset, onAdd }: { assets:
                   <p className="text-xs text-ink-3">{a.brand} · {a.location}</p>
                   <p className="mt-0.5 font-semibold text-ink">{a.name}</p>
                   <dl className="mt-3 grid grid-cols-3 gap-2 text-xs">
-                    <div><dt className="text-ink-3">Calibration</dt><dd className={cn('mt-0.5 font-medium', cal < 0 ? 'text-signal-700' : 'text-ink')}>{dueLabel(a.nextCalibration).replace('Due in ', 'In ')}</dd></div>
-                    <div><dt className="text-ink-3">Warranty</dt><dd className="mt-0.5 font-medium text-ink">{warranty ? 'Active' : 'Ended'}</dd></div>
+                    <div><dt className="text-ink-3">Calibration</dt><dd className={cn('mt-0.5 font-medium', !a.installation && cal < 0 ? 'text-signal-700' : 'text-ink')}>{a.installation ? 'After install' : dueLabel(a.nextCalibration).replace('Due in ', 'In ')}</dd></div>
+                    <div><dt className="text-ink-3">Warranty</dt><dd className="mt-0.5 font-medium text-ink">{a.installation ? 'Starts at install' : warranty ? 'Active' : 'Ended'}</dd></div>
                     <div><dt className="text-ink-3">Open requests</dt><dd className="mt-0.5 font-medium text-ink">{open}</dd></div>
                   </dl>
                 </div>
@@ -58,7 +60,7 @@ export function EquipmentView({ assets, tickets, onOpenAsset, onAdd }: { assets:
         })}
         {list.length === 0 && (
           <li className="rounded-xl border border-dashed border-line p-8 text-center text-sm text-ink-3 sm:col-span-2 xl:col-span-3">
-            {assets.length === 0 ? <>No equipment yet. <button onClick={onAdd} className="font-medium text-brand-700 hover:underline">Add your first system</button></> : <>No equipment matches “{q}”.</>}
+            {assets.length === 0 ? <>No equipment yet. Machines you buy from Flokefama appear here automatically. <Link href="/products" className="font-medium text-brand-700 hover:underline">Shop equipment</Link></> : <>No equipment matches “{q}”.</>}
           </li>
         )}
       </ul>
