@@ -37,7 +37,7 @@ export function MachineSlideshow() {
       <div aria-hidden className="absolute -bottom-2 -right-2 size-10 border-b-2 border-r-2 border-signal" />
 
       <Link href={`/products/${m.slug}`} className="group block overflow-hidden bg-white" aria-label={`${m.brand} ${m.name}: view product`}>
-        <div className="relative aspect-[4/3.4] bg-[radial-gradient(90%_70%_at_50%_40%,#fff_0%,#eef3f4_70%,#e4eef0_100%)]">
+        <div className="relative h-[clamp(220px,calc(100svh-540px),420px)] bg-[radial-gradient(90%_70%_at_50%_40%,#fff_0%,#eef3f4_70%,#e4eef0_100%)]">
           <AnimatePresence mode="popLayout" initial={false}>
             <motion.div
               key={m.slug}
@@ -51,7 +51,7 @@ export function MachineSlideshow() {
             </motion.div>
           </AnimatePresence>
         </div>
-        <div className="flex items-center justify-between gap-4 bg-[#121d23] px-5 py-4">
+        <div className="flex items-center justify-between gap-4 bg-[#121d23] px-5 py-3">
           <div className="min-w-0">
             <p className="text-sm font-semibold text-brand-300">{m.brand}</p>
             <p className="truncate text-lg font-bold text-white">{m.name}</p>
@@ -60,7 +60,7 @@ export function MachineSlideshow() {
         </div>
       </Link>
 
-      <div className="mt-4 flex justify-center gap-2" role="tablist" aria-label="Choose a machine">
+      <div className="mt-3 flex justify-center gap-2" role="tablist" aria-label="Choose a machine">
         {machines.map((x, n) => (
           <button
             key={x.slug}

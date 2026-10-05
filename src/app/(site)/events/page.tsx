@@ -42,6 +42,8 @@ export default async function EventsPage() {
   return (
     <>
       <PageHero
+        image="/images/news/quality-verification-the-cornerstone-of-healthcare-excellence-in-ghana-1.webp"
+        position="50% 40%"
         label="Events & activities"
         title={<>Moments that <span className="text-brand-600">bring us together</span></>}
         lead="Celebrations, community programmes and industry events from across the Flokefama family."
