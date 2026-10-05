@@ -65,7 +65,7 @@ export function SalesDock() {
               <p className="font-semibold text-ink">Your cart <span className="font-normal text-ink-3">({items.length})</span></p>
               <button type="button" onClick={() => quoteList.clear()} className="text-xs text-ink-3 hover:text-ink">Clear</button>
             </div>
-            <ul data-lenis-prevent className="max-h-72 divide-y divide-line overflow-y-auto">
+            <ul className="max-h-72 divide-y divide-line overflow-y-auto">
               {items.map((x) => (
                 <li key={x.slug} className="flex items-center gap-3 px-5 py-3">
                   <span className="relative size-11 shrink-0 overflow-hidden rounded-xl border border-line bg-canvas">
