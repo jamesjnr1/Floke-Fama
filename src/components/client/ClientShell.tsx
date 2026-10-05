@@ -5,7 +5,7 @@ import { motion } from 'motion/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { CertificatesView } from '@/components/client/CertificatesView';
-import { AddEquipmentDialog, EquipmentSheet, RequestDialog, type CatalogueItem } from '@/components/client/dialogs';
+import { EquipmentSheet, RequestDialog, type CatalogueItem } from '@/components/client/dialogs';
 import { EquipmentView } from '@/components/client/EquipmentView';
 import { OrdersView } from '@/components/client/OrdersView';
 import { Overview } from '@/components/client/Overview';
@@ -19,6 +19,9 @@ import { logout } from '@/lib/auth/actions';
 import { useOrders } from '@/lib/orders';
 import { CLIENT_FACILITY, isOpen, nextTicketId, useServiceStore, type Action, type Notification } from '@/lib/service/store';
 import { cn } from '@/lib/utils';
+
+/** "AUTO HEAMATOLOGY ANALYZER BC5150" → "Auto Heamatology Analyzer BC5150" (model codes stay upper case). */
+const tidyName = (n: string) => n.split(/(\s+|[()])/).map((w) => (/\d/.test(w) ? w.toUpperCase() : w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())).join('');
 
 type View = 'overview' | 'requests' | 'equipment' | 'certificates' | 'orders';
 const nav: { id: View; label: string; icon: string }[] = [
@@ -34,7 +37,6 @@ export function ClientShell({ user, products }: { user: { name: string; email: s
   const facility = user.facility ?? CLIENT_FACILITY;
   const isDemo = facility === CLIENT_FACILITY;
   const orders = useOrders(user.email);
-  const [adding, setAdding] = useState(false);
   const actor = useMemo(() => ({ name: user.name, role: 'client' as const, facility }), [user.name, facility]);
   const a11y = useAccessibility();
   const { state, dispatch: rawDispatch, ready, reset } = useServiceStore(actor);
@@ -69,12 +71,30 @@ export function ClientShell({ user, products }: { user: { name: string; email: s
   const openAsset = useCallback((id: string) => setAssetId(id), []);
   const onNotification = (n: Notification) => (n.ticketId ? openTicket(n.ticketId) : n.assetId ? openAsset(n.assetId) : undefined);
   const openCount = tickets.filter(isOpen).length;
+  const installed = useMemo(() => assets.filter((a) => !a.installation), [assets]);
   const request = (assetId?: string) => {
-    if (assets.length === 0) {
-      toast('Add your equipment first', { description: 'Then choose it when you request service.' });
-      setAdding(true);
-    } else setRequesting({ open: true, assetId });
+    if (installed.length === 0)
+      toast(assets.length ? 'Your equipment is being installed' : 'No equipment yet', {
+        description: assets.length
+          ? 'You can request service once our engineers have installed and commissioned it.'
+          : 'Equipment you buy from Flokefama appears here automatically. Already own Flokefama equipment? Call us to add it.',
+      });
+    else setRequesting({ open: true, assetId });
   };
+
+  // Behind the scenes: every order placed at checkout becomes this facility's equipment (awaiting installation),
+  // with an installation job for the engineers. Consumables are skipped. Each order is registered once.
+  useEffect(() => {
+    if (!ready) return;
+    for (const o of orders) {
+      if (state.purchases?.includes(o.reference)) continue;
+      const items = o.items.flatMap((x) => {
+        const p = products.find((c) => c.slug === x.slug);
+        return p && p.category !== 'consumables' ? [{ slug: p.slug, name: tidyName(p.name), brand: p.brand, image: p.image, qty: x.qty }] : [];
+      });
+      rawDispatch({ type: 'purchase', order: o.reference, facility, items });
+    }
+  }, [ready, orders, state.purchases, products, facility, rawDispatch]);
 
   return (
     <div className="flex min-h-svh bg-[#f5f6f4] text-ink">
@@ -188,9 +208,9 @@ export function ClientShell({ user, products }: { user: { name: string; email: s
             <div className="grid grid-cols-2 gap-3 xl:grid-cols-4" aria-busy="true">{[0, 1, 2, 3].map((i) => <div key={i} className="h-32 animate-pulse rounded-xl bg-mist" />)}</div>
           ) : (
             <>
-              {view === 'overview' && <Overview name={user.name} facility={facility} orders={orders.length} onAddEquipment={() => setAdding(true)} assets={assets} tickets={tickets} onOpenTicket={openTicket} onOpenAsset={openAsset} onRequest={() => request()} onGo={setView} />}
+              {view === 'overview' && <Overview name={user.name} facility={facility} orders={orders.length} assets={assets} tickets={tickets} onOpenTicket={openTicket} onOpenAsset={openAsset} onRequest={() => request()} onGo={setView} />}
               {view === 'requests' && <RequestsView assets={assets} tickets={tickets} selectedId={ticketId} onSelect={setTicketId} onRequest={() => request()} dispatch={dispatch} />}
-              {view === 'equipment' && <EquipmentView assets={assets} tickets={tickets} onOpenAsset={openAsset} onAdd={() => setAdding(true)} />}
+              {view === 'equipment' && <EquipmentView assets={assets} tickets={tickets} onOpenAsset={openAsset} />}
               {view === 'certificates' && <CertificatesView assets={assets} onOpenAsset={openAsset} />}
               {view === 'orders' && <OrdersView orders={orders} />}
             </>
@@ -212,21 +232,10 @@ export function ClientShell({ user, products }: { user: { name: string; email: s
         }}
         onOpenTicket={openTicket}
       />
-      <AddEquipmentDialog
-        open={adding}
-        onOpenChange={setAdding}
-        products={products}
-        facility={facility}
-        onAdd={(asset) => {
-          rawDispatch({ type: 'addAsset', asset });
-          toast.success(`${asset.name} added`, { description: 'You can now request service for it.' });
-          setView('equipment');
-        }}
-      />
       <RequestDialog
         open={requesting.open}
         onOpenChange={(open) => setRequesting((r) => ({ ...r, open }))}
-        assets={assets}
+        assets={installed}
         defaultAssetId={requesting.assetId}
         onSubmit={(v) => {
           const id = nextTicketId(state);

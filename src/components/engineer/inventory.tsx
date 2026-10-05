@@ -15,6 +15,7 @@ const health = {
   online: { label: 'Online', tone: 'green' as const },
   maintenance: { label: 'In service', tone: 'neutral' as const },
   attention: { label: 'Needs attention', tone: 'red' as const },
+  installing: { label: 'To install', tone: 'neutral' as const },
 };
 
 /** Documentation view: every installed system; opening one shows its records. */
