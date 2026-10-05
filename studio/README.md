@@ -6,6 +6,15 @@ Where the Flokefama team edits the website without a developer: products and pho
 
 | In the Studio | Appears on |
 |---|---|
+| **Site content → Contact & branches** | Phone (also WhatsApp), emails, address, map, branches: header menu, footer, Contact, checkout, both portals |
+| **Site content → Partners & clients** | Logo strip under the home hero and the partners section |
+| **Site content → Home** | Home headline and intro line, testimonials |
+| **Site content → About** | Mission, vision and aim, core values, services in brief, CEO name, title and biography |
+| **Site content → Services** | Why choose Flokefama |
+| **Site content → Awards** | Awards page and gallery |
+| **Site content → Buying FAQ** | FAQ on the Shop page |
+| **Site content → ESG** | ESG pillars |
+| **Site content → Page headers** | Heading, green words, intro line and photo at the top of About, Services, Shop, Events, Awards, ESG and Contact |
 | Shop → Products, New arrivals, Categories | Shop, product pages, home |
 | Events → Upcoming, Past | Events & Activities (with calendar invites and WhatsApp sharing) |
 | News, Blog & Press | News grid and article pages |
@@ -32,6 +41,14 @@ npm run import-seed                   # products with photos, events with flyers
 ```
 
 It takes a few minutes because it uploads about 290 images. You can run it again safely: it replaces the same documents and doesn't duplicate images.
+
+Site content (everything except products, events and articles) has its own import, which leaves the rest alone:
+
+```bash
+npm run import-site                   # resets Site content to the website's built-in text
+```
+
+An empty field in Site content never blanks the website: it shows the built-in text instead.
 
 ### 3. Open the Studio
 ```bash

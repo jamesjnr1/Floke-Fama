@@ -3,13 +3,15 @@ import { HeroLogos } from '@/components/home/hero-logos';
 import { MachineSlideshow } from '@/components/home/machine-slideshow';
 import { Reveal } from '@/components/motion/reveal';
 import { Button } from '@/components/ui/button';
+import { getSite } from '@/lib/site';
 
 /**
  * Hero (the FLOKE_BOLT layout in the Flokefama colours): a deep Mirage → Deep Sea field with a faint ECG trace;
  * the company line and its two actions on the left, a slideshow of Flokefama machines on the right, and the
  * Partners & Clientele band across the bottom.
  */
-export function Hero() {
+export async function Hero() {
+  const { hero } = await getSite();
   return (
     <section className="relative isolate flex min-h-[100svh] flex-col overflow-hidden bg-[linear-gradient(135deg,#10191e_0%,#16232a_40%,#0b3b40_72%,#10191e_100%)] text-white">
       {/* Soft glows as gradients (no CSS blur filters, which are costly while scrolling) */}
@@ -29,14 +31,14 @@ export function Hero() {
         <div className="flex flex-col gap-7 lg:col-span-7">
           <Reveal>
             <h1 className="text-[clamp(2.5rem,1.4rem+3.2vw,4rem)] font-extrabold leading-[1.05] tracking-[-0.035em] text-white">
-              Ghana’s No.1 <span className="block text-brand-300">
-                Healthcare Company<span className="text-signal">.</span>
+              {hero.title} <span className="block text-brand-300">
+                {hero.highlight.replace(/\.$/, '')}<span className="text-signal">.</span>
               </span>
             </h1>
           </Reveal>
 
           <Reveal delay={0.08}>
-            <p className="no-justify max-w-2xl text-xl leading-relaxed text-white/85">Total healthcare solutions for hospitals and laboratories across Ghana and West Africa. Saving lives since 2008.</p>
+            <p className="no-justify max-w-2xl text-xl leading-relaxed text-white/85">{hero.lead}</p>
           </Reveal>
 
           <Reveal delay={0.14} className="flex flex-wrap gap-3">

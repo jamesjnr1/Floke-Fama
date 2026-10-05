@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ProcurementFlow } from '@/components/quote/procurement-flow';
 import { Icon } from '@/components/ui/icon';
-import { contact } from '@/data/seed';
+import { getSite } from '@/lib/site';
 import { getCategories, getProducts } from '@/lib/data';
 
 /** Which department a machine usually serves, from its Shop category (the visitor can change it). */
@@ -21,6 +21,7 @@ export const metadata: Metadata = {
 };
 
 export default async function QuotePage({ searchParams }: { searchParams: Promise<{ intent?: string; product?: string; products?: string; need?: string; docs?: string }> }) {
+  const { contact } = await getSite();
   const [{ intent, product, products: listParam, need, docs }, products, categories] = await Promise.all([searchParams, getProducts(), getCategories()]);
   const options = products.map((p) => ({ slug: p.slug, label: `${p.brand === 'Flokefama Select' ? '' : `${p.brand} `}${p.name}`, group: categories.find((c) => c.slug === p.category)?.title ?? 'Other' }));
   // From the quote list: several products in one request

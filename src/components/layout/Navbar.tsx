@@ -6,7 +6,7 @@ import { AnimatePresence, motion, useMotionValueEvent, useScroll } from 'motion/
 import { useEffect, useState } from 'react';
 import { Logo } from '@/components/layout/logo';
 import { Icon } from '@/components/ui/icon';
-import { contact } from '@/data/seed';
+import { useSite } from '@/components/site-provider';
 import { logout } from '@/lib/auth/actions';
 import { roleHome } from '@/lib/auth/session';
 import { useSession } from '@/lib/auth/use-session';
@@ -44,6 +44,7 @@ const isActive = (pathname: string, item: NavItem) => (item.children ? item.chil
 
 /** Global Header: floating glass bar, 1280px max, 72px tall. */
 export function Navbar() {
+  const { contact } = useSite();
   const pathname = usePathname();
   const { scrollY } = useScroll();
   const [scrolled, setScrolled] = useState(false);

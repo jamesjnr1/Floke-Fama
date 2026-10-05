@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { PageHero } from '@/components/layout/page-hero';
+import { SitePageHero } from '@/components/layout/site-page-hero';
 import { Reveal } from '@/components/motion/reveal';
 import { Icon } from '@/components/ui/icon';
-import { purpose } from '@/data/seed';
+import { getSite } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: 'ESG: Environmental, Social & Governance',
@@ -12,54 +12,13 @@ export const metadata: Metadata = {
   alternates: { canonical: '/esg' },
 };
 
-const aim = purpose.find((p) => p.label === 'Aim')!;
 
-/** Every item below is drawn from Flokefama’s own published news, About page and awards. */
-const pillars = [
-  {
-    label: 'Social · Patient safety',
-    icon: 'fi-rr-shield-check',
-    title: 'Quality is tested, not assumed.',
-    body: 'Analysers, reagents and IVD kits directly inform clinical decisions. We verify quality before delivery, because every result protects a patient.',
-    image: '/images/news/quality-verification-the-cornerstone-of-healthcare-excellence-in-ghana-cover.webp',
-    alt: 'Flokefama specialists verifying analyser results with laboratory staff',
-  },
-  {
-    label: 'Social · Community',
-    icon: 'fi-rr-hand-holding-heart',
-    title: 'Supporting the ZoDF Ramadan programme.',
-    body: 'In March 2026 Flokefama supported the ZoDF Ramadan distribution programme, serving communities beyond the hospital walls.',
-    image: '/images/news/flokefama-supports-zodf-ramadan-distribution-programme-cover.webp',
-    alt: 'Flokefama presenting its donation to the Zongo Development Fund Ramadan programme',
-  },
-  {
-    label: 'Social · Education',
-    icon: 'fi-rr-graduation-cap',
-    title: 'Shaping Ghana’s next biomedical engineers.',
-    body: 'A partnership with the University of Ghana School of Engineering, alongside hands-on training and capacity building for clinical teams nationwide.',
-    image: '/images/news/quality-verification-the-cornerstone-of-healthcare-excellence-in-ghana-1.webp',
-    alt: 'A Flokefama training session for clinical and laboratory teams',
-  },
-  {
-    label: 'Governance',
-    icon: 'fi-rr-badge-check',
-    title: 'Honesty and integrity, on record.',
-    body: 'Honesty and integrity guide every dealing. Flokefama is ranked among Ghana’s top companies in the Ghana Club 100 (Ghana Investment Promotion Centre), and our vision includes listing on the Ghana Stock Exchange by 2030.',
-    image: '/images/awards/ghana-club-100-trophy.webp',
-    alt: 'Flokefama’s Ghana Club 100 trophy, 21st edition',
-  },
-] as const;
-
-export default function EsgPage() {
+export default async function EsgPage() {
+  const { purpose, esgPillars: pillars } = await getSite();
+  const aim = purpose.find((p) => p.label === 'Aim') ?? purpose[purpose.length - 1];
   return (
     <>
-      <PageHero
-        image="/images/headers/esg-ghana.webp"
-        position="50% 30%"
-        label="Environmental, Social & Governance (ESG)"
-        title={<>Healthcare that <span className="text-brand-600">gives back</span></>}
-        lead="How Flokefama creates value beyond supply: for patients, for communities and for Ghana’s economy."
-      />
+      <SitePageHero page="esg" />
 
       <section className="bg-paper py-14 md:py-32">
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">

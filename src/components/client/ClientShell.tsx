@@ -14,7 +14,7 @@ import { LogoMark, LogoWordmark } from '@/components/layout/logo';
 import { Notifications } from '@/components/service/Notifications';
 import { useAccessibility } from '@/components/layout/accessibility';
 import { Icon } from '@/components/ui/icon';
-import { contact } from '@/data/seed';
+import { useSite } from '@/components/site-provider';
 import { logout } from '@/lib/auth/actions';
 import { useOrders } from '@/lib/orders';
 import { CLIENT_FACILITY, isOpen, nextTicketId, useServiceStore, type Action, type Notification } from '@/lib/service/store';
@@ -34,6 +34,7 @@ const nav: { id: View; label: string; icon: string }[] = [
 
 /** Hospital dashboard (Flokefama Care): the facility's service desk, equipment, certificates and orders. */
 export function ClientShell({ user, products }: { user: { name: string; email: string; facility?: string }; products: CatalogueItem[] }) {
+  const { contact } = useSite();
   const facility = user.facility ?? CLIENT_FACILITY;
   const isDemo = facility === CLIENT_FACILITY;
   const orders = useOrders(user.email);

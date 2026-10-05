@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Icon, IconTile } from '@/components/ui/icon';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { contact } from '@/data/seed';
+import { useSite } from '@/components/site-provider';
 import { downloadCertificate } from '@/lib/service/certificate';
 import { assetStatus, dueLabel, fmtDate, fmtTime, isOpen, type Asset, type Ticket } from '@/lib/service/store';
 
@@ -87,6 +87,7 @@ function Sheet({ asset, tickets, onLogFault, onRecord, onOpenTicket }: {
   onRecord: (a: Asset) => void;
   onOpenTicket: (id: string) => void;
 }) {
+  const { contact } = useSite();
   const h = health[assetStatus(asset, tickets)];
   const history = tickets.filter((t) => t.assetId === asset.id).sort((a, b) => b.openedAt.localeCompare(a.openedAt));
   const manualRequest = `mailto:${contact.support}?subject=${encodeURIComponent(`Manual request: ${asset.brand} ${asset.name} (${asset.serial})`)}&body=${encodeURIComponent(`Please send the operator and service manuals for:\n\n${asset.brand} ${asset.name}\nSerial: ${asset.serial}\nFacility: ${asset.facility}, ${asset.location}\n`)}`;

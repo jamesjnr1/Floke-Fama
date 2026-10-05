@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { Icon } from '@/components/ui/icon';
-import { contact } from '@/data/seed';
+import { useSite } from '@/components/site-provider';
 import { composeLinks } from '@/lib/compose';
 import { contactSchema, topics, type ContactInput } from '@/lib/contact-schema';
 import { cn } from '@/lib/utils';
@@ -19,6 +19,7 @@ const field =
  * the same message, pre-filled, by email (to the inbox for the chosen topic) or WhatsApp.
  */
 export function ContactForm() {
+  const { contact } = useSite();
   const [errors, setErrors] = useState<Errors>({});
   const [pending, setPending] = useState(false);
   const [result, setResult] = useState<Result>(null);
@@ -95,9 +96,13 @@ function Field({ label, error, children }: { label: string; error?: string; chil
 }
 
 function Sent({ delivered, data, onReset }: NonNullable<Result> & { onReset: () => void }) {
+  const { contact } = useSite();
   const t = topics.find((x) => x.id === data.topic)!;
+  // The inbox for the chosen topic, from the contact details editable in Sanity
+  const inbox = t.id === 'sales' ? contact.sales : t.id === 'support' ? contact.support : contact.info;
   const send = composeLinks({
-    to: t.inbox,
+    whatsapp: contact.whatsapp,
+    to: inbox,
     subject: `${t.label}: ${data.name}`,
     body: [data.message, '', data.name, data.phone, data.email].filter(Boolean).join('\n'),
   });
@@ -114,7 +119,7 @@ function Sent({ delivered, data, onReset }: NonNullable<Result> & { onReset: () 
       ) : (
         <>
           <p className="mt-5 text-2xl font-bold tracking-[-0.02em] text-ink">One last step.</p>
-          <p className="mt-2 text-ink-3">Your message is ready. Send it by email to {t.inbox} or on WhatsApp. Everything is filled in.</p>
+          <p className="mt-2 text-ink-3">Your message is ready. Send it by email to {inbox} or on WhatsApp. Everything is filled in.</p>
           <div className="mt-5 flex flex-wrap gap-3">
             <a href={send.email} className="inline-flex h-12 items-center gap-2 rounded-xl bg-cta px-5 text-[1.125rem] font-medium text-white transition hover:bg-cta-700">
               <Icon name="fi-rr-envelope" /> Send by email

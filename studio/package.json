@@ -7,7 +7,8 @@
     "dev": "sanity dev",
     "build": "sanity build",
     "deploy": "sanity deploy",
-    "import-seed": "sanity exec ./import-seed.ts --with-user-token"
+    "import-seed": "sanity exec ./import-seed.ts --with-user-token",
+    "import-site": "sanity exec ./import-site.ts --with-user-token"
   },
   "dependencies": {
     "@sanity/vision": "^6",
