@@ -211,11 +211,14 @@ export function Navbar() {
                 onClick={() => setAccount((a) => !a)}
                 aria-expanded={account}
                 aria-haspopup="menu"
-                className="flex items-center gap-2.5 rounded-xl border border-white/15 py-2 pl-2 pr-3.5 text-white transition hover:border-white/30 hover:bg-white/[0.06]"
+                className="group flex items-center gap-3 rounded-lg py-1.5 pl-1.5 pr-2.5 text-left text-white transition hover:bg-white/[0.06]"
               >
-                <span className="grid size-8 place-items-center rounded-lg bg-brand-600 text-sm font-bold">{initials}</span>
-                <span className="max-w-[9rem] truncate text-[1rem] font-medium">{user.name.split(' ')[0]}</span>
-                <Icon name="fi-rr-angle-small-down" className={cn('transition-transform', account && 'rotate-180')} />
+                <span className="grid size-9 place-items-center rounded-md bg-[linear-gradient(140deg,#0b8a58,#075c3c)] text-[0.8125rem] font-semibold tracking-wide ring-1 ring-white/15">{initials}</span>
+                <span className="hidden leading-tight 2xl:block">
+                  <span className="block max-w-[10rem] truncate text-sm font-medium">{user.name}</span>
+                  <span className="block max-w-[10rem] truncate text-xs text-white/55">{user.facility ?? user.email}</span>
+                </span>
+                <Icon name="fi-rr-angle-small-down" className={cn('text-white/60 transition-transform group-hover:text-white', account && 'rotate-180')} />
               </button>
               <AnimatePresence>
                 {account && (
@@ -225,17 +228,34 @@ export function Navbar() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 6 }}
                     transition={{ duration: 0.18 }}
-                    className="absolute right-0 top-[calc(100%+10px)] w-64 overflow-hidden rounded-2xl border border-white/10 bg-midnight p-2 shadow-[0_30px_60px_-20px_rgb(0_0_0/0.6)]"
+                    className="absolute right-0 top-[calc(100%+12px)] w-72 overflow-hidden rounded-xl border border-white/10 bg-[#0f1d22] shadow-[0_30px_60px_-20px_rgb(0_0_0/0.65)]"
                   >
-                    <div className="px-3 py-2.5">
-                      {user.facility && <p className="text-sm font-semibold leading-snug text-brand-300">{user.facility}</p>}
-                      <p className="truncate font-semibold text-white">{user.name}</p>
-                      <p className="truncate text-sm text-white/65">{user.email}</p>
+                    <div className="flex items-center gap-3 border-b border-white/[0.08] p-4">
+                      <span className="grid size-10 shrink-0 place-items-center rounded-md bg-[linear-gradient(140deg,#0b8a58,#075c3c)] text-sm font-semibold text-white">{initials}</span>
+                      <span className="min-w-0">
+                        <span className="block truncate text-sm font-semibold text-white">{user.name}</span>
+                        <span className="block truncate text-xs text-white/55">{user.email}</span>
+                      </span>
                     </div>
-                    <Link role="menuitem" href={home} className="block rounded-xl px-3 py-2.5 text-[1rem] text-white/85 hover:bg-white/[0.06] hover:text-white">{homeLabel}</Link>
-                    <Link role="menuitem" href="/checkout" className="block rounded-xl px-3 py-2.5 text-[1rem] text-white/85 hover:bg-white/[0.06] hover:text-white">Cart &amp; checkout</Link>
-                    <form action={logout}>
-                      <button role="menuitem" type="submit" className="w-full rounded-xl px-3 py-2.5 text-left text-[1rem] text-white/85 hover:bg-white/[0.06] hover:text-white">Sign out</button>
+                    {user.facility && (
+                      <p className="border-b border-white/[0.08] px-4 py-3 text-xs text-white/55">
+                        Signed in for <span className="font-medium text-white/85">{user.facility}</span>
+                      </p>
+                    )}
+                    <div className="p-1.5">
+                      {[
+                        { href: home, label: homeLabel, icon: 'fi-rr-apps' },
+                        { href: '/checkout', label: 'Cart & checkout', icon: 'fi-rr-shopping-cart' },
+                      ].map((l) => (
+                        <Link key={l.href} role="menuitem" href={l.href} className="flex items-center gap-3 rounded-md px-3 py-2.5 text-sm text-white/80 transition hover:bg-white/[0.06] hover:text-white">
+                          <Icon name={l.icon} className="text-white/45" /> {l.label}
+                        </Link>
+                      ))}
+                    </div>
+                    <form action={logout} className="border-t border-white/[0.08] p-1.5">
+                      <button role="menuitem" type="submit" className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-left text-sm text-white/80 transition hover:bg-white/[0.06] hover:text-white">
+                        <Icon name="fi-rr-sign-out-alt" className="text-white/45" /> Sign out
+                      </button>
                     </form>
                   </motion.div>
                 )}

@@ -4,10 +4,10 @@ import * as Dialog from '@radix-ui/react-dialog';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { inputClass, statusStyle, urgency } from '@/components/client/ui';
+import { inputClass, statusStyle, urgency, tag } from '@/components/client/ui';
 import { Icon, IconTile } from '@/components/ui/icon';
 import { downloadCertificate } from '@/lib/service/certificate';
-import { addMonths, assetStatus, clientSteps, newAssetId, dueLabel, daysUntil, fmtDate, fmtTime, type Asset, type Priority, type Ticket } from '@/lib/service/store';
+import { addMonths, assetImage, assetStatus, clientSteps, newAssetId, dueLabel, daysUntil, fmtDate, fmtTime, type Asset, type Priority, type Ticket } from '@/lib/service/store';
 import { cn } from '@/lib/utils';
 
 function Shell({ open, onOpenChange, title, description, children, wide }: {
@@ -25,13 +25,13 @@ function Shell({ open, onOpenChange, title, description, children, wide }: {
         <Dialog.Content
           aria-describedby={undefined}
           className={cn(
-            'fixed left-1/2 top-1/2 z-[70] max-h-[calc(100svh-2rem)] w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-3xl bg-paper p-6 text-ink shadow-2xl outline-none md:p-8',
+            'fixed left-1/2 top-1/2 z-[70] max-h-[calc(100svh-2rem)] w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-xl bg-paper p-6 text-ink shadow-2xl outline-none md:p-8',
             wide ? 'max-w-3xl' : 'max-w-lg',
           )}
         >
           <Dialog.Title className="text-2xl font-semibold tracking-[-0.02em]">{title}</Dialog.Title>
           {description && <p className="mt-1 text-sm text-ink-3">{description}</p>}
-          <Dialog.Close className="absolute right-4 top-4 grid size-9 place-items-center rounded-full text-ink-3 hover:bg-mist hover:text-ink" aria-label="Close">
+          <Dialog.Close className="absolute right-4 top-4 grid size-9 place-items-center rounded-md text-ink-3 hover:bg-mist hover:text-ink" aria-label="Close">
             <Icon name="fi-rr-cross-small" />
           </Dialog.Close>
           <div className="mt-6">{children}</div>
@@ -109,7 +109,7 @@ export function RequestDialog({ open, onOpenChange, assets, defaultAssetId, onSu
                 type="button"
                 aria-pressed={priority === p}
                 onClick={() => setPriority(p)}
-                className={cn('rounded-2xl border p-3 text-left transition', priority === p ? 'border-brand-600 bg-brand-50 ring-2 ring-brand-600/20' : 'border-line hover:border-ink/25')}
+                className={cn('rounded-lg border p-3 text-left transition', priority === p ? 'border-brand-600 bg-brand-50 ring-2 ring-brand-600/20' : 'border-line hover:border-ink/25')}
               >
                 <span className="block text-sm font-semibold text-ink">{urgency[p].label}</span>
                 <span className="block text-xs text-ink-3">{urgency[p].hint}</span>
@@ -156,8 +156,8 @@ export function EquipmentSheet({ asset, tickets, onClose, onRequest, onOpenTicke
       {asset && (
         <div className="space-y-8">
           <div className="grid gap-4 sm:grid-cols-[180px_1fr]">
-            <div className="relative grid aspect-square place-items-center overflow-hidden rounded-2xl bg-[radial-gradient(90%_70%_at_50%_35%,#fff,#eef2ef)]">
-              {asset.image ? <Image src={asset.image} alt="" fill sizes="180px" className="object-contain p-5 mix-blend-multiply" /> : <IconTile name="fi-rr-microscope" size="lg" />}
+            <div className="relative grid aspect-square place-items-center overflow-hidden rounded-lg bg-[radial-gradient(90%_70%_at_50%_35%,#fff,#eef2ef)]">
+              {assetImage(asset) ? <Image src={assetImage(asset)!} alt="" fill sizes="180px" className="object-contain p-5 mix-blend-multiply" /> : <IconTile name="fi-rr-microscope" size="lg" />}
             </div>
             <dl className="grid grid-cols-2 gap-3 text-sm">
               {[
@@ -166,7 +166,7 @@ export function EquipmentSheet({ asset, tickets, onClose, onRequest, onOpenTicke
                 ['Warranty', `${warrantyActive ? 'Until' : 'Ended'} ${fmtDate(asset.warrantyUntil)}`],
                 ['Next calibration', `${fmtDate(asset.nextCalibration)} · ${dueLabel(asset.nextCalibration)}`],
               ].map(([k, v]) => (
-                <div key={k} className="rounded-2xl bg-canvas p-3.5">
+                <div key={k} className="rounded-lg bg-canvas p-3.5">
                   <dt className="text-xs text-ink-3">{k}</dt>
                   <dd className="mt-1 font-medium text-ink">{v}</dd>
                 </div>
@@ -192,7 +192,7 @@ export function EquipmentSheet({ asset, tickets, onClose, onRequest, onOpenTicke
 
           <section>
             <h3 className="text-[1.125rem] font-semibold">Service history</h3>
-            <ul className="mt-3 divide-y divide-line rounded-2xl border border-line">
+            <ul className="mt-3 divide-y divide-line rounded-lg border border-line">
               {history.map((t) => (
                 <li key={t.id}>
                   <button onClick={() => onOpenTicket(t.id)} className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-canvas">
@@ -201,7 +201,7 @@ export function EquipmentSheet({ asset, tickets, onClose, onRequest, onOpenTicke
                       <span className="block truncate text-sm font-medium">{t.title}</span>
                       <span className="block text-xs text-ink-3">{fmtTime(t.openedAt)}</span>
                     </span>
-                    <span className={cn('shrink-0 rounded-full px-2.5 py-0.5 text-xs', statusStyle[t.status])}>{clientSteps[t.status]}</span>
+                    <span className={cn(tag, statusStyle[t.status])}>{clientSteps[t.status]}</span>
                   </button>
                 </li>
               ))}
@@ -211,7 +211,7 @@ export function EquipmentSheet({ asset, tickets, onClose, onRequest, onOpenTicke
 
           <section>
             <h3 className="text-[1.125rem] font-semibold">Calibration certificates</h3>
-            <ul className="mt-3 divide-y divide-line rounded-2xl border border-line">
+            <ul className="mt-3 divide-y divide-line rounded-lg border border-line">
               {asset.certificates.map((c) => (
                 <li key={c.id} className="flex items-center gap-3 px-4 py-3">
                   <Icon name="fi-rr-badge-check" className="text-brand-600" />
