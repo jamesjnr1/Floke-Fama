@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import { MeshLines } from '@/components/layout/mesh-lines';
 import { Reveal } from '@/components/motion/reveal';
 
 /**
@@ -31,8 +30,8 @@ export function PageHero({
         {/* The photo fades into the dark field towards the text */}
         <div className="absolute inset-0 bg-[linear-gradient(90deg,#121e24_0%,#121e24_38%,rgb(18_30_36/0.82)_55%,rgb(14_44_48/0.45)_78%,rgb(11_59_64/0.25)_100%)] max-md:bg-[rgb(18_30_36/0.8)]" />
         <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-[#10191e]/80 to-transparent" />
-        {/* Faint green mesh on the left, fading out before the photo */}
-        <MeshLines className="absolute inset-y-0 left-0 h-full w-full opacity-[0.28] [mask-image:linear-gradient(90deg,#000_0%,#000_20%,transparent_50%)] md:w-[75%]" />
+        {/* One soft green glow on the left, breathing very slowly */}
+        <div className="header-glow absolute -left-48 top-1/2 size-[640px] -translate-y-1/2 rounded-full bg-[radial-gradient(closest-side,rgb(46_170_115/0.34),rgb(0_138_87/0.12)_55%,transparent)]" />
       </div>
       <div className="mx-auto max-w-[1280px] px-5 pb-12 pt-32 md:px-16 md:pb-20 md:pt-44">
         <div className="max-w-2xl lg:max-w-3xl">
