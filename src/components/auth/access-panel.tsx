@@ -3,7 +3,7 @@
 import { LayoutGroup, motion } from 'motion/react';
 import { useEffect, useState } from 'react';
 import { LoginForm } from '@/components/auth/login-form';
-import { RegisterForm } from '@/components/auth/register-form';
+import { SignupForm } from '@/components/auth/signup-form';
 import { contact } from '@/data/seed';
 import { cn } from '@/lib/utils';
 
@@ -47,7 +47,7 @@ export function AccessPanel({ next, demo, notice, engineer, initialMode }: {
                 className={cn('relative h-10 rounded-lg text-sm font-medium transition-colors', mode === m ? 'text-ink' : 'text-ink-3 hover:text-ink')}
               >
                 {mode === m && <motion.span layoutId="access-tab" className="absolute inset-0 rounded-lg bg-paper shadow-[0_1px_3px_rgb(11_21_16/0.12)]" transition={{ type: 'spring', bounce: 0.15, duration: 0.45 }} />}
-                <span className="relative">{m === 'signin' ? 'Sign in' : 'Register'}</span>
+                <span className="relative">{m === 'signin' ? 'Sign in' : 'Create account'}</span>
               </button>
             ))}
           </div>
@@ -62,17 +62,17 @@ export function AccessPanel({ next, demo, notice, engineer, initialMode }: {
           {engineer
             ? 'Sign in to the engineer service portal.'
             : mode === 'signin'
-              ? 'Sign in to your Flokefama client portal.'
-              : 'Register your facility for the Flokefama client portal.'}
+              ? 'Sign in to check out, request quotes and follow your orders.'
+              : 'Create your Flokefama account to check out and request quotes.'}
         </p>
 
-        {mode === 'signin' ? <LoginForm next={next} demo={demo} notice={notice} /> : <RegisterForm onSignIn={() => setMode('signin')} />}
+        {mode === 'signin' ? <LoginForm next={next} demo={demo} notice={notice} /> : <SignupForm next={next} />}
       </div>
 
       <p className="mt-8 text-center text-sm text-ink-3">
-        {engineer || mode === 'register' ? 'Need help?' : 'New to the portal?'}{' '}
+        {engineer || mode === 'register' ? 'Need help?' : 'New to Flokefama?'}{' '}
         {!engineer && mode === 'signin' ? (
-          <button type="button" onClick={() => setMode('register')} className="font-medium text-brand-700 underline-offset-4 hover:underline">Register your facility</button>
+          <button type="button" onClick={() => setMode('register')} className="font-medium text-brand-700 underline-offset-4 hover:underline">Create an account</button>
         ) : (
           <a href={`mailto:${contact.support}`} className="font-medium text-brand-700 underline-offset-4 hover:underline">Contact support</a>
         )}
