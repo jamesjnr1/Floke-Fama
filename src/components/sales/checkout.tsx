@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { AnimatePresence, motion } from 'motion/react';
 import { Check, CreditCard, Landmark, Lock, Minus, Plus, Smartphone, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { contact } from '@/data/seed';
+import { useSite } from '@/components/site-provider';
 import { track } from '@/lib/analytics';
 import { useSession } from '@/lib/auth/use-session';
 import { saveOrder } from '@/lib/orders';
@@ -31,6 +31,7 @@ const emptyDetails: Details = { name: '', organisation: '', phone: '', email: ''
 
 /** Checkout in four steps (cart, delivery, payment, confirmation) with the order summary alongside. */
 export function Checkout() {
+  const { contact } = useSite();
   const items = useQuoteList();
   const { user } = useSession();
   const [step, setStep] = useState(0);

@@ -5,6 +5,8 @@ export const structure: StructureResolver = (S) =>
   S.list()
     .title('Flokefama')
     .items([
+      S.listItem().title('Site content').id('siteContent').child(S.document().schemaType('siteContent').documentId('siteContent').title('Site content')),
+      S.divider(),
       S.listItem().title('Shop').child(
         S.list().title('Shop').items([
           S.documentTypeListItem('product').title('Products'),

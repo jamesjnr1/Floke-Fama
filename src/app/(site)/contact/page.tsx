@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import { ContactForm } from '@/components/contact/contact-form';
 import { VisitUs } from '@/components/contact/visit-us';
-import { PageHero } from '@/components/layout/page-hero';
+import { SitePageHero } from '@/components/layout/site-page-hero';
 import { Icon } from '@/components/ui/icon';
-import { contact } from '@/data/seed';
+import { getSite } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: 'Contact',
@@ -11,22 +11,20 @@ export const metadata: Metadata = {
   alternates: { canonical: '/contact' },
 };
 
-/** Every channel on the current Contact page. */
-const details = [
-  { icon: 'fi-rr-phone-call', label: 'Call Center', value: contact.phone, href: contact.phoneHref },
-  { icon: 'fi-brands-whatsapp', label: 'WhatsApp', value: contact.phone, href: contact.whatsapp, external: true },
-  { icon: 'fi-rr-shopping-cart', label: 'Sales & quotes', value: contact.sales, href: `mailto:${contact.sales}` },
-  { icon: 'fi-rr-settings', label: 'Service & support', value: contact.support, href: `mailto:${contact.support}` },
-  { icon: 'fi-rr-envelope', label: 'General enquiries', value: contact.info, href: `mailto:${contact.info}` },
-];
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const { contact } = await getSite();
+  /** Every channel on the current Contact page. */
+  const details = [
+    { icon: 'fi-rr-phone-call', label: 'Call Center', value: contact.phone, href: contact.phoneHref },
+    { icon: 'fi-brands-whatsapp', label: 'WhatsApp', value: contact.phone, href: contact.whatsapp, external: true },
+    { icon: 'fi-rr-shopping-cart', label: 'Sales & quotes', value: contact.sales, href: `mailto:${contact.sales}` },
+    { icon: 'fi-rr-settings', label: 'Service & support', value: contact.support, href: `mailto:${contact.support}` },
+    { icon: 'fi-rr-envelope', label: 'General enquiries', value: contact.info, href: `mailto:${contact.info}` },
+  ];
   return (
     <>
-      <PageHero
-        image="/images/headers/contact-support.webp"
-        position="50% 30%"
-        flip label="Contact" title={<>Get in touch <span className="text-brand-600">with us</span></>} lead="We’re here to provide total healthcare solutions. Reach out to us anytime." />
+      <SitePageHero page="contact" flip />
 
       <section className="bg-canvas py-12 md:py-28">
         <div className="mx-auto grid max-w-[1280px] gap-12 px-5 md:px-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">

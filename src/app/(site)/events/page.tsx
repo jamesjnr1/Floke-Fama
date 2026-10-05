@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { PageHero } from '@/components/layout/page-hero';
+import { SitePageHero } from '@/components/layout/site-page-hero';
 import { NewsGrid } from '@/components/media/news-grid';
 import { Reveal } from '@/components/motion/reveal';
 import { Icon } from '@/components/ui/icon';
@@ -41,13 +41,7 @@ export default async function EventsPage() {
 
   return (
     <>
-      <PageHero
-        image="/images/headers/events-ghana.webp"
-        position="50% 40%"
-        label="Events & activities"
-        title={<>Moments that <span className="text-brand-600">bring us together</span></>}
-        lead="Celebrations, community programmes and industry events from across the Flokefama family."
-      />
+      <SitePageHero page="events" />
 
       <section className="bg-paper py-14 md:py-20">
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">

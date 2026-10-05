@@ -10,7 +10,9 @@ export const sanity: SanityClient | null = projectId
       projectId,
       dataset,
       apiVersion: '2025-01-01',
-      useCdn: true,
+      // Not the CDN: it can answer a query with a copy up to a minute old, so a webhook refresh right after a
+      // publish would store stale content. The website caches every query itself (10 min, cleared by the webhook).
+      useCdn: false,
       token: process.env.SANITY_API_READ_TOKEN?.trim() || undefined,
       perspective: 'published',
     })

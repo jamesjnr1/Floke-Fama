@@ -1,44 +1,11 @@
 import Link from 'next/link';
 import { Icon } from '@/components/ui/icon';
-import { contact } from '@/data/seed';
+import { getSite } from '@/lib/site';
 
-/** Buying from Flokefama: the questions a hospital or lab asks before it requests a quote. Facts from the current site. */
-const faqs: { q: string; a: string; link?: { href: string; label: string } }[] = [
-  {
-    q: 'How do I get a price?',
-    a: 'Prices depend on the model, configuration, quantity and the service package you choose, so every order is quoted. Add products to your cart, or press “Order now” on any product. A specialist replies within one business day.',
-    link: { href: '/quote', label: 'Order now' },
-  },
-  {
-    q: 'Can I see the equipment working before I buy?',
-    a: 'Yes. Book a demonstration from any product page and our applications team will arrange it at your facility.',
-  },
-  {
-    q: 'Which brands do you supply?',
-    a: 'Flokefama is the official distributor of Mindray, Biozek Holland and MR Global, alongside other trusted manufacturers in the catalogue.',
-  },
-  {
-    q: 'Do you install the equipment and train our staff?',
-    a: 'Yes. We handle installation, calibration and training, then support you with maintenance, repairs and calibration for the life of the equipment.',
-    link: { href: '/services', label: 'Our services' },
-  },
-  {
-    q: 'How do we get service after installation?',
-    a: 'Through the Flokefama client portal: request a service visit, follow the engineer’s progress and download calibration certificates. You can also call or message us on WhatsApp.',
-    link: { href: '/login', label: 'Client portal' },
-  },
-  {
-    q: 'Can you supply something that isn’t in the catalogue?',
-    a: 'Often, yes. Our team sources beyond the catalogue: tell us what you need at checkout.',
-  },
-  {
-    q: 'Where can we find you?',
-    a: `Head office in Santa Maria, Accra, with branches at Korle-Bu, Okaishie, Kumasi, Aflao and Techiman. Call ${contact.phone} or email ${contact.sales}.`,
-    link: { href: '/contact', label: 'Contact and directions' },
-  },
-];
+/** Buying from Flokefama: the questions a hospital or lab asks before it buys. Editable in Sanity (Site content → Buying FAQ). */
 
-export function BuyingFaq() {
+export async function BuyingFaq() {
+  const { contact, faqs } = await getSite();
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',

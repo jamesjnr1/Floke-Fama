@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Icon } from '@/components/ui/icon';
-import { contact } from '@/data/seed';
+import { useSite } from '@/components/site-provider';
 import { track } from '@/lib/analytics';
 import { quoteList, useQuoteList } from '@/lib/quote-list';
 import { cn } from '@/lib/utils';
@@ -16,6 +16,7 @@ import { cn } from '@/lib/utils';
  * and a WhatsApp button that opens a chat with sales, mentioning the product being viewed.
  */
 export function SalesDock() {
+  const { contact } = useSite();
   const pathname = usePathname();
   const items = useQuoteList();
   const [open, setOpen] = useState(false);

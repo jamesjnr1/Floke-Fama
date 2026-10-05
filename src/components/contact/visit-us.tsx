@@ -2,10 +2,11 @@ import Image from 'next/image';
 import { Reveal } from '@/components/motion/reveal';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
-import { branches, contact, maps } from '@/data/seed';
+import { getSite } from '@/lib/site';
 
 /** Head office photo, live map and one-tap directions, plus the branch network. */
-export function VisitUs({ id = 'visit', photo = true }: { id?: string; photo?: boolean }) {
+export async function VisitUs({ id = 'visit', photo = true }: { id?: string; photo?: boolean }) {
+  const { branches, contact, maps } = await getSite();
   return (
     <section id={id} className="scroll-mt-28 bg-paper py-14 md:py-32">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">

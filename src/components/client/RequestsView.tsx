@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { useRef, useState } from 'react';
 import { Card, inputClass, statusBar, statusStyle, tag, urgency } from '@/components/client/ui';
 import { Icon } from '@/components/ui/icon';
-import { contact } from '@/data/seed';
+import { useSite } from '@/components/site-provider';
 import { clientSteps, fmtTime, isOpen, statusSteps, stepIndex, type Action, type Asset, type Ticket } from '@/lib/service/store';
 import { cn } from '@/lib/utils';
 
@@ -82,6 +82,7 @@ export function RequestsView({ assets, tickets, selectedId, onSelect, onRequest,
 }
 
 function Detail({ ticket: t, asset, dispatch }: { ticket: Ticket; asset?: Asset; dispatch: (a: Action) => void }) {
+  const { contact } = useSite();
   const idx = stepIndex(t.status);
   const [message, setMessage] = useState('');
   const [rating, setRating] = useState(0);

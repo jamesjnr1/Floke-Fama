@@ -1,6 +1,6 @@
 import { Reveal } from '@/components/motion/reveal';
 import { Icon } from '@/components/ui/icon';
-import { purpose } from '@/data/seed';
+import { getSite } from '@/lib/site';
 import { cn } from '@/lib/utils';
 
 /**
@@ -14,18 +14,20 @@ const tone = {
   Aim: { box: 'bg-sea', head: 'text-white', body: 'text-white/85', icon: 'text-brand-300' },
 } as const;
 
-export function PurposeBlocks({ className }: { className?: string }) {
+export async function PurposeBlocks({ className }: { className?: string }) {
+  const { purpose } = await getSite();
   return (
     <ul className={cn('grid gap-4 md:grid-cols-3 md:gap-5', className)}>
       {purpose.map((p, i) => {
+        const t = tone[p.label as keyof typeof tone] ?? tone.Mission;
         return (
           <li key={p.label}>
-            <Reveal delay={i * 0.08} className={cn('flex h-full flex-col items-center rounded-3xl px-7 py-10 text-center md:px-9 md:py-14', tone[p.label].box)}>
-              <Icon name={p.icon} className={cn('text-5xl', tone[p.label].icon)} />
-              <h3 className={cn('mt-6 text-[clamp(2rem,1.4rem+1.6vw,2.75rem)] font-semibold leading-[1.05] tracking-[-0.02em]', tone[p.label].head)}>
+            <Reveal delay={i * 0.08} className={cn('flex h-full flex-col items-center rounded-3xl px-7 py-10 text-center md:px-9 md:py-14', t.box)}>
+              <Icon name={p.icon} className={cn('text-5xl', t.icon)} />
+              <h3 className={cn('mt-6 text-[clamp(2rem,1.4rem+1.6vw,2.75rem)] font-semibold leading-[1.05] tracking-[-0.02em]', t.head)}>
                 Our {p.label}
               </h3>
-              <p className={cn('mt-5 max-w-sm text-[1.0625rem] leading-relaxed', tone[p.label].body)}>{p.text}</p>
+              <p className={cn('mt-5 max-w-sm text-[1.0625rem] leading-relaxed', t.body)}>{p.text}</p>
             </Reveal>
           </li>
         );

@@ -2,13 +2,14 @@
 
 import { useActionState, useRef, useState } from 'react';
 import { Icon } from '@/components/ui/icon';
-import { contact } from '@/data/seed';
+import { useSite } from '@/components/site-provider';
 import { login, type LoginState } from '@/lib/auth/actions';
 import { cn } from '@/lib/utils';
 
 type Demo = { role: 'client' | 'engineer'; label: string; email: string; password: string };
 
 export function LoginForm({ next, demo, notice }: { next?: string; demo: Demo[]; notice?: string }) {
+  const { contact } = useSite();
   const [state, action, pending] = useActionState<LoginState, FormData>(login, {});
   const [show, setShow] = useState(false);
   const form = useRef<HTMLFormElement>(null);
