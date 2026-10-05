@@ -12,15 +12,13 @@ import { Button } from '@/components/ui/button';
 export function Hero() {
   return (
     <section className="relative isolate overflow-hidden bg-[linear-gradient(135deg,#10191e_0%,#16232a_40%,#0b3b40_72%,#10191e_100%)] text-white">
-      <div aria-hidden className="absolute -right-32 top-1/4 -z-10 size-[600px] rounded-full bg-brand-500/15 blur-[120px]" />
-      <div aria-hidden className="absolute bottom-1/3 left-1/4 -z-10 size-[420px] rounded-full bg-[#0d9ba8]/10 blur-[100px]" />
-      <div aria-hidden className="absolute right-1/3 top-1/2 -z-10 size-[300px] rounded-full bg-signal/10 blur-[90px]" />
+      {/* Soft glows as gradients (no CSS blur filters, which are costly while scrolling) */}
+      <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(40%_50%_at_85%_40%,rgb(0_138_87/0.16),transparent_70%),radial-gradient(30%_40%_at_30%_70%,rgb(13_155_168/0.1),transparent_70%)]" />
 
       {/* ECG trace */}
       <svg aria-hidden className="absolute inset-x-0 top-[38%] -z-10 h-32 w-full opacity-[0.12]" viewBox="0 0 1400 100" preserveAspectRatio="none">
         <path
-          className="ecg-path"
-          d="M0,50 L200,50 L220,50 L230,20 L240,80 L250,50 L300,50 L310,50 L320,10 L330,90 L340,50 L600,50 L620,50 L630,30 L640,70 L650,50 L900,50 L920,50 L930,15 L940,85 L950,50 L1200,50 L1220,50 L1230,25 L1240,75 L1250,50 L1400,50"
+                    d="M0,50 L200,50 L220,50 L230,20 L240,80 L250,50 L300,50 L310,50 L320,10 L330,90 L340,50 L600,50 L620,50 L630,30 L640,70 L650,50 L900,50 L920,50 L930,15 L940,85 L950,50 L1200,50 L1220,50 L1230,25 L1240,75 L1250,50 L1400,50"
           stroke="#7fd1a5"
           strokeWidth="2"
           fill="none"
