@@ -10,6 +10,19 @@ import { cn } from '@/lib/utils';
 export function CertificatesView({ assets, onOpenAsset }: { assets: Asset[]; onOpenAsset: (id: string) => void }) {
   const rows = assets.flatMap((a) => a.certificates.map((c) => ({ a, c }))).sort((x, y) => y.c.date.localeCompare(x.c.date));
   return (
+    <div className="space-y-6">
+      <div className="grid gap-px overflow-hidden rounded-xl border border-line bg-line md:grid-cols-3">
+        {[
+          { t: 'Proof for inspections', b: 'Licensing inspectors and accreditation bodies (such as HeFRA, and ISO 15189 for laboratories) ask for proof that equipment is installed and calibrated. Download it here in seconds.' },
+          { t: 'Results you can trust', b: 'Each certificate records that the system was checked against reference standards and passed, or what was adjusted, by which engineer and when.' },
+          { t: 'Warranty and history', b: 'Installation, calibration and service certificates form the system’s record, useful for warranty claims, insurance and planning replacements.' },
+        ].map((x) => (
+          <div key={x.t} className="bg-paper p-5">
+            <p className="text-sm font-semibold text-ink">{x.t}</p>
+            <p className="no-justify mt-1.5 text-sm leading-relaxed text-ink-3">{x.b}</p>
+          </div>
+        ))}
+      </div>
     <Card className="overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full min-w-[640px] text-sm">
@@ -41,9 +54,15 @@ export function CertificatesView({ assets, onOpenAsset }: { assets: Asset[]; onO
                 </td>
               </tr>
             ))}
+            {rows.length === 0 && (
+              <tr>
+                <td colSpan={6} className="px-5 py-10 text-center text-sm text-ink-3">Certificates appear here after each installation, calibration or service visit.</td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
     </Card>
+    </div>
   );
 }
