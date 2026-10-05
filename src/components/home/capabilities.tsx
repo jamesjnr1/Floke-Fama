@@ -39,7 +39,7 @@ const pillars = [
     points: ['Installation & commissioning', 'Calibration', 'Repairs & spare parts'],
     href: '/services',
     image: '/images/pillars/biomedical-engineer.webp',
-    alt: 'An engineer testing a circuit board with a multimeter during a repair',
+    alt: 'A laboratory scientist in gloves working with laboratory equipment',
     product: false,
     accent: 'red',
   },
