@@ -1,12 +1,13 @@
 import { MapPin } from 'lucide-react';
 import { Reveal } from '@/components/motion/reveal';
-import { branches } from '@/data/seed';
+import { getSite } from '@/lib/site';
 import { cn } from '@/lib/utils';
 
 const pin = ['text-brand-600', 'text-[#087d88]', 'text-[#0068a8]', 'text-signal-700', 'text-[#a87a00]', 'text-brand-600'];
 
 /** About: the six Flokefama branches as a grid of boxes, each opening the location in Google Maps. */
-export function Branches() {
+export async function Branches() {
+  const { branches } = await getSite();
   return (
     <section id="branches" className="scroll-mt-28 border-t border-line bg-paper py-14 md:py-24">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">

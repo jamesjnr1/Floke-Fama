@@ -5,7 +5,9 @@ import { Toaster } from 'sonner';
 import { AccessibilityProvider } from '@/components/layout/accessibility';
 import { ServiceWorkerRegister } from '@/components/layout/sw-register';
 import { a11yBootScript } from '@/lib/a11y';
-import { contact } from '@/data/seed';
+import { SiteProvider } from '@/components/site-provider';
+import { getSite } from '@/lib/site';
+import type { Contact } from '@/lib/site-content';
 import { allowIndexing, siteUrl } from '@/lib/utils';
 import '@/styles/uicons/uicons.css';
 import './globals.css';
@@ -27,7 +29,7 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = { themeColor: '#16232a', width: 'device-width', initialScale: 1 };
 
-const organizationLd = {
+const organizationLd = (contact: Contact) => ({
   '@context': 'https://schema.org',
   '@type': 'MedicalBusiness',
   name: 'Flokefama Company Limited',
@@ -37,9 +39,10 @@ const organizationLd = {
   telephone: contact.phone,
   email: contact.info,
   address: { '@type': 'PostalAddress', addressLocality: 'Santa Maria, Accra', addressCountry: 'GH' },
-};
+});
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const site = await getSite();
   return (
     <html lang="en-GH" className={`${jakarta.variable} ${grotesk.variable}`} suppressHydrationWarning>
       <head>
@@ -50,7 +53,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-brand-600 focus:px-4 focus:py-2 focus:text-white">
           Skip to content
         </a>
-        <AccessibilityProvider>{children}</AccessibilityProvider>
+        <SiteProvider value={site}>
+          <AccessibilityProvider>{children}</AccessibilityProvider>
+        </SiteProvider>
         <Toaster
           position="top-right"
           toastOptions={{
@@ -64,7 +69,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ServiceWorkerRegister />
         {/* Vercel Web Analytics: only on Vercel, where its script is served */}
         {process.env.VERCEL && <Analytics />}
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationLd(site.contact)) }} />
       </body>
     </html>
   );

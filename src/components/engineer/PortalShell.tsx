@@ -15,7 +15,7 @@ import { TicketsView } from '@/components/engineer/TicketsView';
 import { LogoMark } from '@/components/layout/logo';
 import { useAccessibility } from '@/components/layout/accessibility';
 import { Icon } from '@/components/ui/icon';
-import { contact } from '@/data/seed';
+import { useSite } from '@/components/site-provider';
 import { logout } from '@/lib/auth/actions';
 import { daysUntil, isOpen, nextTicketId, useEngineerStore, type Action, type Asset, type Notification, type Ticket } from '@/lib/service/store';
 import { cn } from '@/lib/utils';
@@ -31,6 +31,7 @@ const nav: { id: View; label: string; icon: string }[] = [
 
 /** Biomedical Engineer Service Portal: sidebar rail + workspace, backed by the persisted portal store. */
 export function PortalShell({ user }: { user: { name: string; email: string } }) {
+  const { contact } = useSite();
   const me = user.name;
   const initials = me.split(/\s+/).map((w) => w[0]).slice(0, 2).join('').toUpperCase();
   const a11y = useAccessibility();

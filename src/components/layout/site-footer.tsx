@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { ArrowUpRight, Mail, MapPin, Phone } from 'lucide-react';
 import { Logo } from '@/components/layout/logo';
-import { contact, maps } from '@/data/seed';
+import { getSite } from '@/lib/site';
 
 /** Footer in the FLOKE_BOLT layout, with the original Flokefama logo and links to the real pages. */
 const columns = [
@@ -35,7 +35,8 @@ const columns = [
   },
 ];
 
-export function SiteFooter() {
+export async function SiteFooter() {
+  const { contact, maps } = await getSite();
   return (
     <footer className="relative overflow-hidden border-t border-white/10 bg-[#10191e] text-white/75">
       <div aria-hidden className="absolute inset-0 bg-[radial-gradient(30%_60%_at_100%_100%,rgb(13_155_168/0.1),transparent_70%)]" />

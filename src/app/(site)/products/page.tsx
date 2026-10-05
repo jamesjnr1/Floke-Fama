@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { BuyingFaq } from '@/components/products/buying-faq';
 import { Catalog } from '@/components/products/catalog';
 import { NewArrivals } from '@/components/products/new-arrivals';
-import { PageHero } from '@/components/layout/page-hero';
+import { SitePageHero } from '@/components/layout/site-page-hero';
 import { getCategories, getProducts } from '@/lib/data';
 
 export const metadata: Metadata = {
@@ -23,16 +23,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
 
   return (
     <div className="bg-canvas">
-      <PageHero
-        image="/images/headers/shop.webp"
-        position="50% 35%"
-        title={
-          <>
-            Clinical-grade equipment. <span>Instantly searchable.</span>
-          </>
-        }
-        lead={`${products.length} products for hospitals and laboratories, with installation, training and after-sales support on everything we supply.`}
-      />
+      <SitePageHero page="shop" vars={{ count: products.length }} />
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <NewArrivals products={products} categories={categories} />
         <div id="catalog" className="scroll-mt-24">
