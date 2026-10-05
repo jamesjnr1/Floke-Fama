@@ -125,6 +125,7 @@ export const clients = [
   { name: 'Korle Bu Teaching Hospital', logo: '/images/partners/korle-bu.webp', w: 800, h: 763 },
   { name: 'Komfo Anokye Teaching Hospital', logo: '/images/partners/kath.webp', w: 512, h: 512 },
   { name: 'University of Ghana Medical Centre', logo: '/images/partners/ugmc.webp', w: 800, h: 468 },
+  { name: 'Christian Health Association of Ghana', logo: '/images/partners/chag.webp', w: 650, h: 800 },
   { name: 'Euracare', logo: '/images/partners/euracare.webp', w: 218, h: 50 },
   { name: 'LEKMA Hospital', logo: '/images/partners/lekma.webp', w: 267, h: 335 },
 ];
