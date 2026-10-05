@@ -9,9 +9,9 @@
    Company red      #DC2430 · the logo-dot accents, Contact buttons, Vision block (white text on it)
    ========================================================================== */
 @theme {
-  /* Two typefaces: Plus Jakarta Sans for headings, body and navigation; JetBrains Mono for technical labels, specs and badges. */
-  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-jetbrains), ui-monospace, SFMono-Regular, Menlo, monospace;
+  /* One grotesk typeface (Space Grotesk) everywhere; `font-mono` labels use it too, so nothing switches to a code font. */
+  --font-sans: var(--font-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-grotesk), ui-sans-serif, system-ui, sans-serif;
 
   /* Text sizes one step up from Tailwind's defaults, so everything stays readable */
   --text-xs: 0.875rem;
@@ -243,7 +243,7 @@ html[data-font='readable'] .display { letter-spacing: 0; }
    (main carries lang="en" so browsers have a dictionary); very short words never stretch a line on their own.
    Short text inside cards and list items keeps natural spacing: a 2-3 line card justifies into wide gaps. */
 @media (min-width: 768px) {
-  main p.leading-relaxed:not(:is(li, article, dd, figcaption, button, a) p) {
+  main p.leading-relaxed:not(.no-justify):not(:is(li, article, dd, figcaption, button, a) p) {
     text-align: justify;
     text-justify: inter-word;
     hyphens: auto;
