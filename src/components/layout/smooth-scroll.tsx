@@ -6,9 +6,10 @@ import { useEffect, useRef } from 'react';
 import { prefersReducedMotion } from '@/lib/a11y';
 
 /**
- * Eased wheel scrolling for the public site (Lenis). It moves the real page scroll, so sticky elements,
- * anchors and the browser's own scrollbar keep working. Touch devices keep their native scrolling, and it
- * switches off when the visitor asks for less motion (here or in their OS settings).
+ * Eased mouse-wheel scrolling for the public site (Lenis). It moves the real page scroll, so sticky elements,
+ * anchors and the browser's own scrollbar keep working. Trackpads and touch screens keep their native
+ * scrolling (they already glide; easing them again feels like lag), and it switches off when the visitor
+ * asks for less motion (here or in their OS settings).
  */
 export function SmoothScroll() {
   const lenis = useRef<Lenis | null>(null);
@@ -18,7 +19,19 @@ export function SmoothScroll() {
     let raf = 0;
     const start = () => {
       if (lenis.current || prefersReducedMotion()) return;
-      lenis.current = new Lenis({ lerp: 0.12, wheelMultiplier: 1, anchors: true, allowNestedScroll: true });
+      lenis.current = new Lenis({
+        lerp: 0.18,
+        wheelMultiplier: 1,
+        anchors: true,
+        allowNestedScroll: true,
+        // Trackpads send small or fractional pixel deltas; a mouse wheel sends whole notches (about 100px).
+        // Returning false hands the event back to the browser's own scrolling.
+        virtualScroll: ({ event }) => {
+          if (!(event instanceof WheelEvent) || event.deltaMode !== 0) return true;
+          const d = Math.abs(event.deltaY);
+          return Number.isInteger(event.deltaY) && d >= 50;
+        },
+      });
       const loop = (t: number) => {
         lenis.current?.raf(t);
         raf = requestAnimationFrame(loop);
