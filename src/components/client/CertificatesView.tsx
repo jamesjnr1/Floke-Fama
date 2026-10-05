@@ -31,7 +31,7 @@ export function CertificatesView({ assets, onOpenAsset }: { assets: Asset[]; onO
                 </td>
                 <td className="px-5 py-3.5 text-ink-2">{fmtDate(c.date)}</td>
                 <td className="px-5 py-3.5">
-                  <span className={cn('rounded-full px-2.5 py-0.5 text-xs font-medium', c.result === 'Pass' ? 'bg-brand-50 text-brand-700' : 'bg-mist text-ink-2')}>{c.result}</span>
+                  <span className={cn('rounded-md px-2.5 py-0.5 text-xs font-medium', c.result === 'Pass' ? 'bg-brand-50 text-brand-700' : 'bg-mist text-ink-2')}>{c.result}</span>
                 </td>
                 <td className="px-5 py-3.5 text-ink-2">{c.engineer}</td>
                 <td className="px-5 py-3.5 text-right">

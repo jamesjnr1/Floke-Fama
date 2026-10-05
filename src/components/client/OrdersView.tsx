@@ -15,7 +15,7 @@ export function OrdersView({ orders }: { orders: SavedOrder[] }) {
   if (orders.length === 0)
     return (
       <Card className="grid place-items-center p-10 text-center">
-        <span className="grid size-14 place-items-center rounded-2xl bg-brand-50 text-2xl text-brand-700"><Icon name="fi-rr-box-open" /></span>
+        <span className="grid size-14 place-items-center rounded-lg bg-brand-50 text-2xl text-brand-700"><Icon name="fi-rr-box-open" /></span>
         <p className="mt-4 text-lg font-semibold text-ink">No orders yet</p>
         <p className="mt-1 max-w-sm text-sm text-ink-3">Equipment and consumables you check out on the Flokefama shop appear here, with their reference and delivery details.</p>
         <Link href="/products" className="mt-6 inline-flex h-11 items-center gap-2 rounded-xl bg-brand-600 px-5 text-sm font-semibold text-white hover:bg-brand-700">
@@ -35,7 +35,7 @@ export function OrdersView({ orders }: { orders: SavedOrder[] }) {
                 <p className="font-mono text-xs text-ink-3">{o.reference} · {fmtDate(o.placedAt)}</p>
                 <p className="mt-1 text-lg font-semibold text-ink">{units} {units === 1 ? 'item' : 'items'} · {methodLabel[o.method]}</p>
               </div>
-              <span className={cn('rounded-full px-2.5 py-1 text-xs font-medium', o.status === 'awaiting-payment' ? 'bg-signal/10 text-signal-700' : 'bg-brand-50 text-brand-700')}>
+              <span className={cn('rounded-md px-2.5 py-1 text-xs font-medium', o.status === 'awaiting-payment' ? 'bg-signal/10 text-signal-700' : 'bg-brand-50 text-brand-700')}>
                 {orderStatusLabel[o.status]}
               </span>
             </div>
