@@ -114,7 +114,7 @@ export function Catalog({ products, categories, initialCategory, initialQuery, i
       </div>
 
       {/* Toolbar: search, sort and view */}
-      <div className="sticky top-20 z-30 -mx-5 border-b border-line bg-mist/90 px-5 py-4 backdrop-blur-xl md:mx-0 md:border-x md:px-5">
+      <div className="sticky top-20 z-30 -mx-5 border-b border-line bg-mist px-5 py-4 md:mx-0 md:border-x md:px-5">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
           <label className="relative flex h-12 flex-1 items-center border border-line bg-paper pl-12 pr-4 transition focus-within:border-brand-500 focus-within:ring-4 focus-within:ring-brand-100">
             <Search className="absolute left-4 size-5 text-ink-3" aria-hidden />
@@ -221,19 +221,19 @@ function ProductCard({ product, category, code, list }: { product: Product; cate
     { label: 'Support', value: 'Installation & training' },
   ].filter((r) => r.value);
   const note = product.highlights[0];
-  // Hover, keyboard focus or "in your cart" colours the card: deep Mirage with soft-green accents
+  // Once in the cart the card is coloured: deep Mirage with soft-green accents
   return (
     <div
       data-on={inCart || undefined}
       className={cn(
         'group/card flex h-full flex-col p-5 transition-colors duration-500 sm:p-6',
-        'hover:bg-[#10191e] focus-within:bg-[#10191e] data-[on]:bg-[#10191e]',
+        'data-[on]:bg-[#10191e]',
         list && 'md:grid md:grid-cols-[240px_minmax(0,1fr)_minmax(0,0.8fr)] md:items-start md:gap-8',
       )}
     >
       <div className={cn(list && 'md:row-span-2')}>
         <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-ink-3 transition-colors group-hover/card:text-brand-300 group-focus-within/card:text-brand-300 group-data-[on]/card:text-brand-300">{code}</span>
+          <span className="text-sm font-medium text-ink-3 transition-colors group-data-[on]/card:text-brand-300">{code}</span>
           {inCart ? (
             <span className="flex items-center gap-1.5 border border-brand-300/40 bg-brand-300/10 px-2 py-1 text-xs font-semibold text-brand-300">
               <span className="size-1.5 bg-brand-300" aria-hidden />In your cart
@@ -251,28 +251,28 @@ function ProductCard({ product, category, code, list }: { product: Product; cate
         </Link>
       </div>
       <div className="mt-5 flex flex-col md:mt-0">
-        <p className="text-sm font-semibold text-brand-700 transition-colors group-hover/card:text-brand-300 group-focus-within/card:text-brand-300 group-data-[on]/card:text-brand-300">
+        <p className="text-sm font-semibold text-brand-700 transition-colors group-data-[on]/card:text-brand-300">
           {product.brand} · {category?.short}
         </p>
-        <h2 className="mt-1.5 text-xl font-bold leading-snug tracking-[-0.01em] text-ink transition-colors group-hover/card:text-white group-focus-within/card:text-white group-data-[on]/card:text-white">
+        <h2 className="mt-1.5 text-xl font-bold leading-snug tracking-[-0.01em] text-ink transition-colors group-data-[on]/card:text-white">
           <Link href={`/products/${product.slug}`} scroll={false} className="outline-none">{product.name}</Link>
         </h2>
-        {note && <p className="mt-2 line-clamp-2 text-base leading-relaxed text-ink-3 transition-colors group-hover/card:text-white/75 group-focus-within/card:text-white/75 group-data-[on]/card:text-white/75">{note}</p>}
+        {note && <p className="mt-2 line-clamp-2 text-base leading-relaxed text-ink-3 transition-colors group-data-[on]/card:text-white/75">{note}</p>}
       </div>
-      <dl className={cn('my-5 space-y-2.5 border-t border-line pt-4 text-[1.0625rem] transition-colors group-hover/card:border-white/10 group-focus-within/card:border-white/10 group-data-[on]/card:border-white/10', list && 'md:my-0 md:border-t-0 md:pt-0')}>
+      <dl className={cn('my-5 space-y-2.5 border-t border-line pt-4 text-[1.0625rem] transition-colors group-data-[on]/card:border-white/10', list && 'md:my-0 md:border-t-0 md:pt-0')}>
         {rows.map((r) => (
           <div key={r.label} className="flex items-baseline justify-between gap-4">
-            <dt className="text-ink-3 transition-colors group-hover/card:text-white/60 group-focus-within/card:text-white/60 group-data-[on]/card:text-white/60">{r.label}</dt>
-            <dd className="text-right font-semibold text-ink transition-colors group-hover/card:text-brand-300 group-focus-within/card:text-brand-300 group-data-[on]/card:text-brand-300">{r.value}</dd>
+            <dt className="text-ink-3 transition-colors group-data-[on]/card:text-white/60">{r.label}</dt>
+            <dd className="text-right font-semibold text-ink transition-colors group-data-[on]/card:text-brand-300">{r.value}</dd>
           </div>
         ))}
       </dl>
-      <div className={cn('mt-auto flex items-center justify-between gap-3 border-t border-line pt-4 transition-colors group-hover/card:border-white/10 group-focus-within/card:border-white/10 group-data-[on]/card:border-white/10', list && 'md:col-start-3 md:mt-4')}>
+      <div className={cn('mt-auto flex items-center justify-between gap-3 border-t border-line pt-4 transition-colors group-data-[on]/card:border-white/10', list && 'md:col-start-3 md:mt-4')}>
         <AddToQuote
           item={{ slug: product.slug, name: product.name, brand: product.brand, image: product.image }}
-          className="h-11 rounded-md text-base group-hover/card:text-brand-300 group-hover/card:ring-brand-300/50 group-focus-within/card:text-brand-300 group-focus-within/card:ring-brand-300/50 group-data-[on]/card:bg-transparent group-data-[on]/card:text-brand-300 group-data-[on]/card:ring-brand-300/50"
+          className="h-11 rounded-md text-base group-data-[on]/card:bg-transparent group-data-[on]/card:text-brand-300 group-data-[on]/card:ring-brand-300/50"
         />
-        <Link href={`/products/${product.slug}`} scroll={false} className="text-base font-semibold text-ink underline-offset-4 transition-colors hover:underline group-hover/card:text-brand-300 group-focus-within/card:text-brand-300 group-data-[on]/card:text-brand-300">
+        <Link href={`/products/${product.slug}`} scroll={false} className="text-base font-semibold text-ink underline-offset-4 transition-colors hover:underline group-data-[on]/card:text-brand-300">
           Details
         </Link>
       </div>
