@@ -115,7 +115,7 @@ export function Catalog({ products, categories, initialCategory, initialQuery, i
       </div>
 
       <motion.ul layout className="grid grid-cols-2 gap-3 pb-16 sm:gap-4 sm:pb-24 lg:grid-cols-3">
-        <AnimatePresence mode="popLayout">
+        <AnimatePresence mode="popLayout" initial={false}>
           {visible.map((p, i) => (
             <motion.li
               key={p.slug}

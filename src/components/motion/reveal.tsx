@@ -8,13 +8,13 @@ import { motion, type HTMLMotionProps } from 'motion/react';
  * remains. Always rendering the same element keeps server and client in step, so content can never
  * be left hidden at its starting opacity.
  */
-export function Reveal({ delay = 0, y = 24, ...props }: HTMLMotionProps<'div'> & { delay?: number; y?: number }) {
+export function Reveal({ delay = 0, y = 16, ...props }: HTMLMotionProps<'div'> & { delay?: number; y?: number }) {
   return (
     <motion.div
       initial={{ opacity: 0, y }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '0px 0px -10% 0px' }}
-      transition={{ duration: 0.9, delay, ease: [0.16, 1, 0.3, 1] }}
+      viewport={{ once: true, margin: '0px 0px -5% 0px' }}
+      transition={{ duration: 0.6, delay, ease: [0.16, 1, 0.3, 1] }}
       {...props}
     />
   );
