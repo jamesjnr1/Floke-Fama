@@ -272,7 +272,7 @@ export function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-           
+            data-lenis-prevent
             className="fixed inset-x-3 bottom-3 top-[92px] flex flex-col overflow-y-auto rounded-2xl border border-white/10 bg-midnight/95 p-5 backdrop-blur-xl xl:hidden"
           >
             <ul className="divide-y divide-white/10">

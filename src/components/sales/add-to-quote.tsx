@@ -27,7 +27,7 @@ export function AddToQuote({ item, compact, className }: { item: QuoteItem; comp
         title={added ? 'In your cart' : 'Add to cart'}
         className={cn(
           'grid size-9 place-items-center rounded-full shadow-[0_6px_16px_-8px_rgb(11_21_16/0.5)] ring-1 transition sm:size-10',
-          added ? 'bg-brand-600 text-white ring-brand-600' : 'bg-paper/95 text-ink ring-line backdrop-blur hover:bg-brand-600 hover:text-white hover:ring-brand-600',
+          added ? 'bg-brand-600 text-white ring-brand-600' : 'bg-paper text-ink ring-line hover:bg-brand-600 hover:text-white hover:ring-brand-600',
           className,
         )}
       >

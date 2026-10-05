@@ -83,7 +83,6 @@
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
-    scroll-behavior: smooth;
   }
   body {
     @apply bg-canvas text-[1.0625rem] text-ink-2 antialiased;
@@ -108,6 +107,20 @@
   }
 }
 
+/* Lenis smooth scrolling (its recommended base styles) */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis:not(.lenis-autoToggle).lenis-stopped {
+  overflow: clip;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
 
 @layer components {
   /* Section label: Geist Sans, 12px, medium, +15% tracking, uppercase, in medical blue (red is kept for alerts and the logo dot) */
