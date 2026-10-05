@@ -36,7 +36,7 @@ export function Hero() {
           </Reveal>
 
           <Reveal delay={0.08}>
-            <p className="max-w-2xl text-xl leading-relaxed text-white/85">Total healthcare solutions for hospitals and laboratories across Ghana and West Africa. Saving lives since 2008.</p>
+            <p className="no-justify max-w-2xl text-xl leading-relaxed text-white/85">Total healthcare solutions for hospitals and laboratories across Ghana and West Africa. Saving lives since 2008.</p>
           </Reveal>
 
           <Reveal delay={0.14} className="flex flex-wrap gap-3">
