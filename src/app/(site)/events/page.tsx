@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { PageHero } from '@/components/layout/page-hero';
 import { NewsGrid } from '@/components/media/news-grid';
 import { Reveal } from '@/components/motion/reveal';
+import { Icon } from '@/components/ui/icon';
 import { getEvents } from '@/lib/data';
 import { longDate } from '@/lib/events';
 import type { EventItem } from '@/lib/types';
@@ -48,10 +49,10 @@ export default async function EventsPage() {
         lead="Celebrations, community programmes and industry events from across the Flokefama family."
       />
 
-      <section className="bg-canvas py-14 md:py-24">
+      <section className="bg-paper py-14 md:py-20">
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
           <Reveal>
-            <h2 className="text-[clamp(1.5rem,1.2rem+1vw,2rem)] font-medium tracking-[-0.02em]">Upcoming events</h2>
+            <h2 className="text-2xl font-semibold tracking-[-0.01em] text-ink">Upcoming events</h2>
           </Reveal>
           {upcoming.length === 0 ? (
             <p className="mt-6 text-ink-3">There are no upcoming events right now. New dates are announced here and in the news below.</p>
@@ -62,7 +63,7 @@ export default async function EventsPage() {
           {past.length > 0 && (
             <>
               <Reveal>
-                <h2 className="mt-16 text-[clamp(1.5rem,1.2rem+1vw,2rem)] font-medium tracking-[-0.02em] md:mt-20">Past events</h2>
+                <h2 className="mt-16 text-2xl font-semibold tracking-[-0.01em] text-ink md:mt-20">Past events</h2>
               </Reveal>
               <EventGrid events={past} />
             </>
@@ -76,43 +77,37 @@ export default async function EventsPage() {
   );
 }
 
-/** The month broken by syllable and stacked beside the day, as on the reference ("Dec / em / ber"). */
-const monthParts = [['Jan', 'u', 'ary'], ['Feb', 'ru', 'ary'], ['March'], ['April'], ['May'], ['June'], ['July'], ['Au', 'gust'], ['Sep', 'tem', 'ber'], ['Oc', 'to', 'ber'], ['No', 'vem', 'ber'], ['De', 'cem', 'ber']];
-const stackMonth = (date: string) => monthParts[Number(date.slice(5, 7)) - 1];
+const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-/** Events as simple cards: title, the day in large figures, the event picture, then More info. */
+/** Events as a list: the date on the left, the picture, then title, place, time, a line about it and View event details. */
 function EventGrid({ events }: { events: EventItem[] }) {
   return (
-    <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      {events.map((e, i) => {
-        const day = String(Number(e.date.slice(8, 10)));
-        return (
-          <li key={e.id} id={e.id} className="scroll-mt-28">
-            <Reveal delay={i * 0.05} className="h-full">
-              <article className="flex h-full flex-col bg-paper">
-                <div className="flex flex-1 flex-col justify-between gap-6 p-5">
-                  <h3 className="text-base font-medium leading-snug text-ink">{e.title}</h3>
-                  <p className="flex items-center gap-2" aria-label={longDate(e.date)}>
-                    <span className="text-[3.5rem] font-normal leading-none tracking-[-0.04em] text-ink">{day}</span>
-                    <span className="text-sm font-medium leading-[1.05] text-ink-2" aria-hidden>
-                      {stackMonth(e.date).map((m) => <span key={m} className="block">{m}</span>)}
-                    </span>
-                  </p>
-                </div>
-                {e.image && (
-                  <div className="relative aspect-[4/3] overflow-hidden bg-midnight">
-                    <Image src={e.image} alt={e.alt ?? ''} fill sizes="(min-width: 1024px) 300px, (min-width: 640px) 50vw, 100vw" className="object-cover object-top" />
-                  </div>
-                )}
-                <Link href={`/events/${e.id}`} className="block bg-ink py-3 text-center text-sm font-medium text-white transition-colors hover:bg-brand-700">
-                  More info
-                </Link>
-              </article>
-            </Reveal>
-          </li>
-        );
-      })}
+    <ul className="mt-6 border-t border-line">
+      {events.map((e, i) => (
+        <li key={e.id} id={e.id} className="scroll-mt-28 border-b border-line">
+          <Reveal delay={i * 0.05} className="grid gap-6 py-10 md:grid-cols-[88px_minmax(0,1fr)_minmax(0,1fr)] md:gap-10">
+            <p className="flex items-baseline gap-3 md:block" aria-label={longDate(e.date)}>
+              <span className="text-lg font-semibold uppercase tracking-[0.12em] text-ink-2">{months[Number(e.date.slice(5, 7)) - 1]}</span>
+              <span aria-hidden className="my-2 hidden h-0.5 w-6 bg-line md:block" />
+              <span className="text-5xl font-bold leading-none tracking-[-0.03em] text-ink">{e.date.slice(8, 10)}</span>
+            </p>
+            {e.image && (
+              <Link href={`/events/${e.id}`} className="relative block aspect-[16/10] overflow-hidden bg-midnight">
+                <Image src={e.image} alt={e.alt ?? ''} fill sizes="(min-width: 768px) 40vw, 100vw" className="object-cover object-top transition-transform duration-700 hover:scale-[1.03]" />
+              </Link>
+            )}
+            <div className="flex flex-col">
+              <h3 className="text-2xl font-semibold leading-snug tracking-[-0.01em] text-ink">{e.title}</h3>
+              <p className="mt-3 font-medium text-ink-3">{e.venue}</p>
+              <p className="font-medium text-ink-3">{e.time}</p>
+              <p className="no-justify mt-4 line-clamp-3 leading-relaxed text-ink-2">{e.body}</p>
+              <Link href={`/events/${e.id}`} className="group mt-6 flex items-center gap-3 border-t border-line pt-5 font-semibold text-ink md:mt-auto">
+                View event details <Icon name="fi-rr-arrow-small-right" className="text-ink-3 transition-transform group-hover:translate-x-1 group-hover:text-brand-600" />
+              </Link>
+            </div>
+          </Reveal>
+        </li>
+      ))}
     </ul>
   );
 }
-

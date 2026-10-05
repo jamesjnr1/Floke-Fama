@@ -30,6 +30,8 @@ export function PageHero({
         {/* The photo fades into the dark field towards the text */}
         <div className="absolute inset-0 bg-[linear-gradient(90deg,#121e24_0%,#121e24_38%,rgb(18_30_36/0.82)_55%,rgb(14_44_48/0.45)_78%,rgb(11_59_64/0.25)_100%)] max-md:bg-[rgb(18_30_36/0.8)]" />
         <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-[#10191e]/80 to-transparent" />
+        {/* A faint grid of pixels on the plain side, fading out before the photo */}
+        <div className="absolute inset-y-0 left-0 w-full bg-[radial-gradient(rgb(127_209_165/0.22)_1px,transparent_1.4px)] bg-[length:18px_18px] [mask-image:linear-gradient(90deg,#000_0%,rgb(0_0_0/0.6)_30%,transparent_55%)] md:w-[70%]" />
       </div>
       <div className="mx-auto max-w-[1280px] px-5 pb-12 pt-32 md:px-16 md:pb-20 md:pt-44">
         <div className="max-w-2xl lg:max-w-3xl">
