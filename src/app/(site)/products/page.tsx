@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { BuyingFaq } from '@/components/products/buying-faq';
 import { Catalog } from '@/components/products/catalog';
 import { NewArrivals } from '@/components/products/new-arrivals';
+import { PageHero } from '@/components/layout/page-hero';
 import { getCategories, getProducts } from '@/lib/data';
 
 export const metadata: Metadata = {
@@ -21,16 +22,17 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
   const initialType = type && types.has(type) ? type : null;
 
   return (
-    <div className="bg-canvas pt-20">
-      <section className="relative overflow-hidden">
-        <div className="grid-fade-light absolute inset-0" />
-        <div className="relative mx-auto max-w-[1280px] px-5 pb-10 pt-16 md:px-10 md:pt-24">
-          <h1 className="display text-[clamp(2.25rem,0.6rem+4.6vw,4.75rem)]">
-            <span className="sm:whitespace-nowrap">Clinical-grade equipment.</span>{' '}
-            <span className="block text-brand-600 sm:whitespace-nowrap">Instantly searchable.</span>
-          </h1>
-        </div>
-      </section>
+    <div className="bg-canvas">
+      <PageHero
+        image="/images/headers/shop.webp"
+        position="50% 35%"
+        title={
+          <>
+            Clinical-grade equipment. <span>Instantly searchable.</span>
+          </>
+        }
+        lead={`${products.length} products for hospitals and laboratories, with installation, training and after-sales support on everything we supply.`}
+      />
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <NewArrivals products={products} categories={categories} />
         <div id="catalog" className="scroll-mt-24">
