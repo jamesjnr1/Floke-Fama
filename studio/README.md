@@ -36,7 +36,7 @@ It takes a few minutes because it uploads about 290 images. You can run it again
 ### 3. Open the Studio
 ```bash
 npm run dev                           # http://localhost:3333
-npm run deploy                        # optional: hosts it at https://flokefama.sanity.studio
+npm run deploy                        # updates https://flokefama.sanity.studio (live since 5 Oct 2026)
 ```
 Before deploying, add `https://flokefama.sanity.studio` (and `http://localhost:3333`) under **API → CORS origins**, with *Allow credentials* ticked.
 
