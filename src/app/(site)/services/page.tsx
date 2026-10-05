@@ -23,8 +23,8 @@ export default function ServicesPage() {
   return (
     <>
       <PageHero
-        image="/images/news/flokefama-celebrates-customer-service-week-cover.webp"
-        position="50% 35%"
+        image="/images/headers/services.webp"
+        position="50% 40%"
         label="Products & services"
         title={<>We go beyond just supplying <span className="text-brand-600">medical equipment</span></>}
         lead="End-to-end solutions, from procurement and installation to training and maintenance."

@@ -54,7 +54,7 @@ export default function EsgPage() {
   return (
     <>
       <PageHero
-        image="/images/news/flokefama-supports-zodf-ramadan-distribution-programme-cover.webp"
+        image="/images/headers/esg-ghana.webp"
         position="50% 30%"
         label="Environmental, Social & Governance (ESG)"
         title={<>Healthcare that <span className="text-brand-600">gives back</span></>}
