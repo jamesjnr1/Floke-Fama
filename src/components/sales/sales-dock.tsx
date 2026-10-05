@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
 import { Icon } from '@/components/ui/icon';
 import { contact } from '@/data/seed';
 import { track } from '@/lib/analytics';
-import { quoteHref, quoteList, useQuoteList } from '@/lib/quote-list';
+import { quoteList, useQuoteList } from '@/lib/quote-list';
 import { cn } from '@/lib/utils';
 
 /**
@@ -35,7 +35,7 @@ export function SalesDock() {
     return () => document.removeEventListener('click', onClick);
   }, []);
 
-  const onQuotePage = pathname.startsWith('/quote');
+  const onQuotePage = pathname.startsWith('/quote') || pathname.startsWith('/checkout');
   const onProduct = /^\/products\/[^/]+/.test(pathname);
 
   const whatsapp = () => {
@@ -83,7 +83,7 @@ export function SalesDock() {
             </ul>
             <div className="border-t border-line p-4">
               <Link
-                href={quoteHref(items)}
+                href="/checkout"
                 onClick={() => {
                   track('quote_list_request', { items: items.length });
                   setOpen(false);
@@ -92,7 +92,7 @@ export function SalesDock() {
               >
                 Check out {items.length === 1 ? '1 item' : `${items.length} items`}
               </Link>
-              <p className="mt-2 text-center text-xs text-ink-3">A sales engineer confirms price and delivery within one business day.</p>
+              <p className="mt-2 text-center text-xs text-ink-3">Pay securely by Mobile Money, card or bank transfer.</p>
             </div>
           </motion.div>
         )}

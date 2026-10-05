@@ -7,7 +7,7 @@ import { track } from '@/lib/analytics';
  * The visitor's quote list: several products gathered while browsing, sent as one quote request.
  * Kept in this browser only (localStorage), so it survives page changes and reloads.
  */
-export interface QuoteItem { slug: string; name: string; brand: string; image?: string }
+export interface QuoteItem { slug: string; name: string; brand: string; image?: string; /** Quantity at checkout (1 when absent). */ qty?: number }
 
 const KEY = 'ff-quote-list';
 const EVENT = 'ff-quote-list';
@@ -66,6 +66,7 @@ export const quoteList = {
     if (quoteList.has(item.slug)) quoteList.remove(item.slug);
     else quoteList.add(item);
   },
+  setQty: (slug: string, qty: number) => write(read().map((x) => (x.slug === slug ? { ...x, qty: Math.max(1, Math.min(99, Math.round(qty) || 1)) } : x))),
   clear: () => write([]),
 };
 
