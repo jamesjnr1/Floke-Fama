@@ -16,7 +16,9 @@ Where the Flokefama team edits the website without a developer: products and pho
 The project **project-red-field** already exists, with a `production` dataset, Viewer and Editor tokens for Vercel, and CORS origins for the Vercel previews. These steps connect it.
 
 ### 1. Find the project ID
-sanity.io/manage → **project-red-field** → the **Project ID** under the name (8 letters and numbers).
+sanity.io/manage → **project-red-field** → the **Project ID** under the name: `wq2wc7i8`.
+
+**Status (5 Oct 2026):** the content is already imported (92 products with photos, 5 categories, 2 events, 8 articles, 4 figures, 4 milestones). Step 2 is only needed to reload it.
 
 ### 2. Load the current content into Sanity
 On your computer, in the repository:

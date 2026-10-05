@@ -14,7 +14,8 @@ import { articles, type Run } from '../src/data/articles';
 import { categories, events, metrics, milestones, products } from '../src/data/seed';
 
 const client = getCliClient({ apiVersion: '2025-01-01' });
-const publicDir = join(__dirname, '..', 'public');
+// Run from the studio folder (npm run import-seed), so the website's public folder is one level up
+const publicDir = join(process.cwd(), '..', 'public');
 
 const cache = new Map<string, string>();
 /** Uploads a file from /public once and returns its asset ID (or undefined if it is missing). */
