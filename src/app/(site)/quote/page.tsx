@@ -43,9 +43,9 @@ export default async function QuotePage({ searchParams }: { searchParams: Promis
           <p className="mt-4 max-w-sm text-lg leading-relaxed text-ink-2">Send your order and a sales engineer will confirm price and delivery within one business day.</p>
           {focus && (
             <div className="mt-8 overflow-hidden rounded-4xl border border-line bg-paper" data-testid="quote-focus">
-              <div className="relative aspect-[16/10] bg-gradient-to-b from-paper to-canvas">
+              <div className="relative aspect-[16/10] bg-white">
                 {focus.image ? (
-                  <Image src={focus.image} alt="" fill sizes="(min-width: 1024px) 460px, 100vw" className="object-contain p-6 mix-blend-multiply" />
+                  <Image src={focus.image} alt="" fill sizes="(min-width: 1024px) 460px, 100vw" className="object-contain p-6" />
                 ) : (
                   <Icon name="fi-rr-box-open" className="absolute inset-0 m-auto size-fit text-5xl text-ink-3" />
                 )}
@@ -65,8 +65,8 @@ export default async function QuotePage({ searchParams }: { searchParams: Promis
             <ul className="mt-8 divide-y divide-line overflow-hidden rounded-4xl border border-line bg-paper" data-testid="quote-list-summary">
               {listed.map((p) => (
                 <li key={p.slug} className="flex items-center gap-4 p-4">
-                  <span className="relative size-14 shrink-0 overflow-hidden rounded-2xl bg-canvas">
-                    {p.image && <Image src={p.image} alt="" fill sizes="56px" className="object-contain p-1.5 mix-blend-multiply" />}
+                  <span className="relative size-14 shrink-0 overflow-hidden rounded-2xl border border-line bg-white">
+                    {p.image && <Image src={p.image} alt="" fill sizes="56px" className="object-contain p-1.5" />}
                   </span>
                   <span className="min-w-0">
                     <Link href={`/products/${p.slug}`} className="block truncate font-medium text-ink hover:text-brand-700">{p.name}</Link>

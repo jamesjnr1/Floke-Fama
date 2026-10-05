@@ -52,7 +52,7 @@ export function VisitUs({ id = 'visit', photo = true }: { id?: string; photo?: b
                   referrerPolicy="no-referrer-when-downgrade"
                   className="absolute inset-0 size-full border-0 [filter:grayscale(1)_contrast(1.05)_brightness(1.02)]"
                 />
-                <div aria-hidden className="pointer-events-none absolute inset-0 bg-brand-600/[0.06] mix-blend-multiply" />
+                <div aria-hidden className="pointer-events-none absolute inset-0 bg-brand-600/[0.06]" />
               </div>
               <div className="flex flex-col gap-5 border-t border-line bg-paper p-6 md:flex-row md:items-center md:justify-between md:p-7">
                 <div className="flex items-start gap-3">
