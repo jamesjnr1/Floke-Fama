@@ -7,6 +7,9 @@ import { useEffect, useState } from 'react';
 import { Logo } from '@/components/layout/logo';
 import { Icon } from '@/components/ui/icon';
 import { contact } from '@/data/seed';
+import { logout } from '@/lib/auth/actions';
+import { roleHome } from '@/lib/auth/session';
+import { useSession } from '@/lib/auth/use-session';
 import { cn } from '@/lib/utils';
 
 type NavItem = { href: string; label: string; children?: { href: string; label: string; hint: string }[] };
@@ -47,11 +50,27 @@ export function Navbar() {
   const [open, setOpen] = useState(false);
   const [hovered, setHovered] = useState<string | null>(null);
   const [menu, setMenu] = useState<string | null>(null);
+  const [account, setAccount] = useState(false);
+  const session = useSession();
+  const user = session.user;
+  const initials = user?.name.split(/\s+/).map((w) => w[0]).slice(0, 2).join('').toUpperCase();
+  const home = user ? roleHome[user.role] : '/login';
+  const homeLabel = user?.role === 'engineer' ? 'Engineer portal' : 'Hospital dashboard';
   useMotionValueEvent(scrollY, 'change', (y) => setScrolled(y > 24));
   useEffect(() => {
     setOpen(false);
     setMenu(null);
+    setAccount(false);
   }, [pathname]);
+  useEffect(() => {
+    if (!account) return;
+    const close = () => setAccount(false);
+    const t = setTimeout(() => document.addEventListener('click', close, { once: true }));
+    return () => {
+      clearTimeout(t);
+      document.removeEventListener('click', close);
+    };
+  }, [account]);
   useEffect(() => {
     if (!menu) return;
     const close = (e: KeyboardEvent) => e.key === 'Escape' && setMenu(null);
@@ -184,13 +203,52 @@ export function Navbar() {
           >
             <Icon name="fi-rr-shopping-cart" className="mr-2 text-base" /> Cart
           </Link>
-          {/* CTA Button: padding 12px 24px, brand green, radius 12px */}
-          <Link
-            href="/portal"
-            className="group hidden items-center gap-2 whitespace-nowrap rounded-xl bg-cta px-4 py-3 text-[1rem] font-semibold text-white 2xl:px-6 2xl:text-sm transition hover:bg-cta-700 sm:inline-flex"
-          >
-            <span className="hidden 2xl:inline">Client Portal Access</span><span className="2xl:hidden">Client Portal</span>
-          </Link>
+          {user ? (
+            /* Signed in: the account menu replaces the portal button */
+            <div className="relative hidden sm:block">
+              <button
+                type="button"
+                onClick={() => setAccount((a) => !a)}
+                aria-expanded={account}
+                aria-haspopup="menu"
+                className="flex items-center gap-2.5 rounded-xl border border-white/15 py-2 pl-2 pr-3.5 text-white transition hover:border-white/30 hover:bg-white/[0.06]"
+              >
+                <span className="grid size-8 place-items-center rounded-lg bg-brand-600 text-sm font-bold">{initials}</span>
+                <span className="max-w-[9rem] truncate text-[1rem] font-medium">{user.name.split(' ')[0]}</span>
+                <Icon name="fi-rr-angle-small-down" className={cn('transition-transform', account && 'rotate-180')} />
+              </button>
+              <AnimatePresence>
+                {account && (
+                  <motion.div
+                    role="menu"
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 6 }}
+                    transition={{ duration: 0.18 }}
+                    className="absolute right-0 top-[calc(100%+10px)] w-64 overflow-hidden rounded-2xl border border-white/10 bg-midnight p-2 shadow-[0_30px_60px_-20px_rgb(0_0_0/0.6)]"
+                  >
+                    <div className="px-3 py-2.5">
+                      {user.facility && <p className="text-sm font-semibold leading-snug text-brand-300">{user.facility}</p>}
+                      <p className="truncate font-semibold text-white">{user.name}</p>
+                      <p className="truncate text-sm text-white/65">{user.email}</p>
+                    </div>
+                    <Link role="menuitem" href={home} className="block rounded-xl px-3 py-2.5 text-[1rem] text-white/85 hover:bg-white/[0.06] hover:text-white">{homeLabel}</Link>
+                    <Link role="menuitem" href="/checkout" className="block rounded-xl px-3 py-2.5 text-[1rem] text-white/85 hover:bg-white/[0.06] hover:text-white">Cart &amp; checkout</Link>
+                    <form action={logout}>
+                      <button role="menuitem" type="submit" className="w-full rounded-xl px-3 py-2.5 text-left text-[1rem] text-white/85 hover:bg-white/[0.06] hover:text-white">Sign out</button>
+                    </form>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ) : (
+            <Link
+              href="/login"
+              className="group hidden items-center gap-2 whitespace-nowrap rounded-xl bg-cta px-4 py-3 text-[1rem] font-semibold text-white 2xl:px-6 2xl:text-sm transition hover:bg-cta-700 sm:inline-flex"
+            >
+              Sign in
+            </Link>
+          )}
           <button
             type="button"
             onClick={() => setOpen((o) => !o)}
@@ -218,7 +276,7 @@ export function Navbar() {
             className="fixed inset-x-3 bottom-3 top-[92px] flex flex-col overflow-y-auto rounded-2xl border border-white/10 bg-midnight/95 p-5 backdrop-blur-xl xl:hidden"
           >
             <ul className="divide-y divide-white/10">
-              {[...flat, { href: '/checkout', label: 'Cart' }, { href: '/portal', label: 'Client Portal Access' }].map((item, i) => (
+              {[...flat, { href: '/checkout', label: 'Cart' }, user ? { href: home, label: homeLabel } : { href: '/login', label: 'Sign in' }].map((item, i) => (
                 <motion.li key={item.href} initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.04 * i }}>
                   <Link
                     href={item.href}
@@ -230,6 +288,14 @@ export function Navbar() {
                 </motion.li>
               ))}
             </ul>
+            {user && (
+              <form action={logout} className="mt-4">
+                <button type="submit" className="flex w-full items-center justify-between rounded-xl border border-white/10 p-4 text-left text-white">
+                  <span><span className="block font-semibold">{user.name}</span><span className="text-sm text-white/65">Sign out</span></span>
+                  <Icon name="fi-rr-sign-out-alt" className="text-brand-300" />
+                </button>
+              </form>
+            )}
             <a href={contact.phoneHref} className="mt-auto flex items-center gap-3 rounded-xl border border-white/10 p-4 font-mono text-sm text-white">
               <Icon name="fi-rr-phone-call" className="text-brand-400" /> {contact.phone}
             </a>

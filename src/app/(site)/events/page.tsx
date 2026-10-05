@@ -4,8 +4,9 @@ import Link from 'next/link';
 import { PageHero } from '@/components/layout/page-hero';
 import { NewsGrid } from '@/components/media/news-grid';
 import { Reveal } from '@/components/motion/reveal';
+import { Icon } from '@/components/ui/icon';
 import { getEvents } from '@/lib/data';
-import { longDate } from '@/lib/events';
+import { dateParts, daysUntil, googleCalendarUrl, longDate } from '@/lib/events';
 import type { EventItem } from '@/lib/types';
 import { siteUrl } from '@/lib/utils';
 
@@ -51,20 +52,28 @@ export default async function EventsPage() {
       <section className="bg-canvas py-14 md:py-24">
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
           <Reveal>
-            <h2 className="text-[clamp(1.5rem,1.2rem+1vw,2rem)] font-medium tracking-[-0.02em]">Upcoming events</h2>
+            <h2 className="text-[clamp(1.75rem,1.3rem+1.4vw,2.5rem)] font-semibold tracking-[-0.02em] text-ink">Upcoming</h2>
           </Reveal>
           {upcoming.length === 0 ? (
-            <p className="mt-6 text-ink-3">There are no upcoming events right now. New dates are announced here and in the news below.</p>
+            <p className="mt-6 rounded-3xl border border-dashed border-line bg-paper p-8 text-ink-3">There are no upcoming events right now. New dates are announced here and in the news below.</p>
           ) : (
-            <EventGrid events={upcoming} />
+            <div className="mt-8 space-y-8">
+              {upcoming.map((e) => <FeaturedEvent key={e.id} e={e} today={today} />)}
+            </div>
           )}
 
           {past.length > 0 && (
             <>
               <Reveal>
-                <h2 className="mt-16 text-[clamp(1.5rem,1.2rem+1vw,2rem)] font-medium tracking-[-0.02em] md:mt-20">Past events</h2>
+                <h2 className="mt-20 text-[clamp(1.75rem,1.3rem+1.4vw,2.5rem)] font-semibold tracking-[-0.02em] text-ink md:mt-24">Past events</h2>
               </Reveal>
-              <EventGrid events={past} />
+              <ul className="mt-8 grid gap-6 md:grid-cols-2">
+                {past.map((e, i) => (
+                  <li key={e.id} id={e.id} className="scroll-mt-28">
+                    <Reveal delay={i * 0.05} className="h-full"><PastEvent e={e} /></Reveal>
+                  </li>
+                ))}
+              </ul>
             </>
           )}
         </div>
@@ -76,43 +85,100 @@ export default async function EventsPage() {
   );
 }
 
-/** The month broken by syllable and stacked beside the day, as on the reference ("Dec / em / ber"). */
-const monthParts = [['Jan', 'u', 'ary'], ['Feb', 'ru', 'ary'], ['March'], ['April'], ['May'], ['June'], ['July'], ['Au', 'gust'], ['Sep', 'tem', 'ber'], ['Oc', 'to', 'ber'], ['No', 'vem', 'ber'], ['De', 'cem', 'ber']];
-const stackMonth = (date: string) => monthParts[Number(date.slice(5, 7)) - 1];
+const shortDate = (date: string) => {
+  const { day, month, year } = dateParts(date);
+  return `${day} ${month} ${year}`;
+};
 
-/** Events as simple cards: title, the day in large figures, the event picture, then More info. */
-function EventGrid({ events }: { events: EventItem[] }) {
+/** The next event, given room: the full flyer beside everything a guest needs and the actions to come. */
+function FeaturedEvent({ e, today }: { e: EventItem; today: string }) {
+  const days = daysUntil(e.date, today);
+  const { day, month } = dateParts(e.date);
+  const directions = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e.venue)}`;
+  const details = [
+    { icon: 'fi-rr-calendar', label: 'Date', value: longDate(e.date) },
+    { icon: 'fi-rr-clock', label: 'Time', value: e.time },
+    { icon: 'fi-rr-marker', label: 'Venue', value: e.venue },
+    ...(e.guests ? [{ icon: 'fi-rr-user', label: 'Guests', value: e.guests }] : []),
+  ];
   return (
-    <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      {events.map((e, i) => {
-        const day = String(Number(e.date.slice(8, 10)));
-        return (
-          <li key={e.id} id={e.id} className="scroll-mt-28">
-            <Reveal delay={i * 0.05} className="h-full">
-              <article className="flex h-full flex-col bg-paper">
-                <div className="flex flex-1 flex-col justify-between gap-6 p-5">
-                  <h3 className="text-base font-medium leading-snug text-ink">{e.title}</h3>
-                  <p className="flex items-center gap-2" aria-label={longDate(e.date)}>
-                    <span className="text-[3.5rem] font-normal leading-none tracking-[-0.04em] text-ink">{day}</span>
-                    <span className="text-sm font-medium leading-[1.05] text-ink-2" aria-hidden>
-                      {stackMonth(e.date).map((m) => <span key={m} className="block">{m}</span>)}
-                    </span>
-                  </p>
+    <Reveal>
+      <article id={e.id} className="grid scroll-mt-28 overflow-hidden rounded-3xl border border-line bg-paper lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+        {e.image && (
+          <Link href={`/events/${e.id}`} className="relative flex items-center justify-center bg-midnight p-6 md:p-10" aria-label={`${e.title}: details`}>
+            <Image
+              src={e.image}
+              alt={e.alt ?? ''}
+              width={e.imageWidth ?? 1200}
+              height={e.imageHeight ?? 1200}
+              sizes="(min-width: 1024px) 460px, 100vw"
+              priority
+              className="mx-auto h-auto max-h-[560px] w-auto rounded-xl shadow-[0_30px_60px_-30px_rgb(0_0_0/0.8)]"
+            />
+          </Link>
+        )}
+        <div className="flex flex-col p-6 md:p-10 lg:p-12">
+          <div className="flex items-center gap-4">
+            <span className="grid w-[4.5rem] shrink-0 overflow-hidden rounded-2xl border border-line text-center" aria-hidden>
+              <span className="bg-signal py-1 text-xs font-semibold uppercase tracking-widest text-white">{month}</span>
+              <span className="py-1.5 text-3xl font-bold leading-none tracking-[-0.03em] text-ink">{day}</span>
+            </span>
+            <span className="rounded-full bg-brand-50 px-3 py-1.5 text-sm font-semibold text-brand-700">
+              {days === 0 ? 'Today' : days === 1 ? 'Tomorrow' : `In ${days} days`}
+            </span>
+          </div>
+          <h3 className="mt-6 text-[clamp(2rem,1.4rem+2vw,3rem)] font-bold leading-[1.05] tracking-[-0.03em] text-ink">{e.title}</h3>
+          {e.theme && <p className="mt-3 text-lg text-ink-2">Theme: <span className="font-medium text-ink">{e.theme}</span></p>}
+          <p className="no-justify mt-4 text-lg leading-relaxed text-ink-3">{e.body}</p>
+
+          <dl className="mt-8 grid gap-5 border-t border-line pt-8 sm:grid-cols-2">
+            {details.map((d) => (
+              <div key={d.label} className="flex gap-3">
+                <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-brand-50 text-brand-700"><Icon name={d.icon} /></span>
+                <div className="min-w-0">
+                  <dt className="text-sm text-ink-3">{d.label}</dt>
+                  <dd className="font-medium leading-snug text-ink">{d.value}</dd>
                 </div>
-                {e.image && (
-                  <div className="relative aspect-[4/3] overflow-hidden bg-midnight">
-                    <Image src={e.image} alt={e.alt ?? ''} fill sizes="(min-width: 1024px) 300px, (min-width: 640px) 50vw, 100vw" className="object-cover object-top" />
-                  </div>
-                )}
-                <Link href={`/events/${e.id}`} className="block bg-ink py-3 text-center text-sm font-medium text-white transition-colors hover:bg-brand-700">
-                  More info
-                </Link>
-              </article>
-            </Reveal>
-          </li>
-        );
-      })}
-    </ul>
+              </div>
+            ))}
+          </dl>
+
+          <div className="mt-auto flex flex-wrap gap-2 pt-10">
+            <Link href={`/events/${e.id}`} className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand-600 px-6 sm:w-auto font-semibold text-white transition hover:bg-brand-700">
+              Event details <Icon name="fi-rr-arrow-small-right" />
+            </Link>
+            <a href={googleCalendarUrl(e)} target="_blank" rel="noopener noreferrer" className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-xl border border-line px-5 sm:flex-none font-medium text-ink transition hover:border-ink/30">
+              <Icon name="fi-rr-calendar-plus" /> Add to calendar
+            </a>
+            <a href={directions} target="_blank" rel="noopener noreferrer" className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-xl border border-line px-5 sm:flex-none font-medium text-ink transition hover:border-ink/30">
+              <Icon name="fi-rr-marker" /> Directions
+            </a>
+          </div>
+        </div>
+      </article>
+    </Reveal>
   );
 }
 
+/** A past event: its flyer, date, title and a line about it; the whole card opens the event. */
+function PastEvent({ e }: { e: EventItem }) {
+  return (
+    <Link href={`/events/${e.id}`} className="group flex h-full flex-col overflow-hidden rounded-3xl border border-line bg-paper transition duration-500 ease-out-expo hover:-translate-y-1 hover:shadow-[0_30px_60px_-40px_rgb(11_21_16/0.5)]">
+      {e.image && (
+        <div className="relative aspect-[16/9] overflow-hidden bg-midnight">
+          <Image src={e.image} alt={e.alt ?? ''} fill sizes="(min-width: 768px) 600px, 100vw" className="object-cover transition-transform duration-700 ease-out-expo group-hover:scale-[1.03]" />
+        </div>
+      )}
+      <div className="flex flex-1 flex-col p-6 md:p-8">
+        <p className="flex items-center gap-2 text-sm font-medium text-ink-3">
+          <Icon name="fi-rr-calendar" className="text-brand-600" /> {shortDate(e.date)} · {e.time}
+        </p>
+        <h3 className="mt-3 text-2xl font-bold leading-snug tracking-[-0.02em] text-ink">{e.title}</h3>
+        <p className="no-justify mt-3 line-clamp-3 text-base leading-relaxed text-ink-3">{e.body}</p>
+        <span className="mt-auto inline-flex items-center gap-1.5 pt-6 font-semibold text-brand-700">
+          View event <Icon name="fi-rr-arrow-small-right" className="transition-transform group-hover:translate-x-1" />
+        </span>
+      </div>
+    </Link>
+  );
+}
