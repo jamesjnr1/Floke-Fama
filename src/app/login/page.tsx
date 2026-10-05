@@ -35,12 +35,12 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
 
         <div className="max-w-md">
           <h1 className="text-[clamp(26px,18px+1.6vw,40px)] font-semibold leading-[1.1] tracking-[-0.02em] text-white">
-            {toEngineer ? 'Every system, every visit, one workspace.' : 'Your Flokefama account.'}
+            {toEngineer ? 'Every system, every visit, one workspace.' : 'Your hospital, one dashboard.'}
           </h1>
           <p className="mt-3 hidden text-[1.125rem] leading-relaxed text-white/75 sm:block">
             {toEngineer
               ? 'The service portal for Flokefama field and workshop engineers.'
-              : 'Check out, request quotes and follow your orders. Hospitals on a service plan also reach their client portal here.'}
+              : 'Request service and follow the engineer, keep calibration certificates, order equipment and check out, all under your facility’s account.'}
           </p>
         </div>
       </section>
@@ -57,7 +57,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
           <AccessPanel
             next={safeNext(next) ?? undefined}
             demo={demoAccountsEnabled ? demoCredentials : []}
-            notice={signedout ? 'You’ve been signed out.' : next ? 'Please sign in or create an account to continue.' : undefined}
+            notice={signedout ? 'You’ve been signed out.' : next ? 'Please sign in with your hospital account to continue.' : undefined}
             engineer={Boolean(toEngineer)}
             initialMode={mode === 'register' ? 'register' : 'signin'}
           />

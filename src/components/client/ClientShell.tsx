@@ -2,11 +2,12 @@
 
 import Link from 'next/link';
 import { motion } from 'motion/react';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { CertificatesView } from '@/components/client/CertificatesView';
-import { EquipmentSheet, RequestDialog } from '@/components/client/dialogs';
+import { AddEquipmentDialog, EquipmentSheet, RequestDialog, type CatalogueItem } from '@/components/client/dialogs';
 import { EquipmentView } from '@/components/client/EquipmentView';
+import { OrdersView } from '@/components/client/OrdersView';
 import { Overview } from '@/components/client/Overview';
 import { RequestsView } from '@/components/client/RequestsView';
 import { LogoMark, LogoWordmark } from '@/components/layout/logo';
@@ -15,24 +16,34 @@ import { useAccessibility } from '@/components/layout/accessibility';
 import { Icon } from '@/components/ui/icon';
 import { contact } from '@/data/seed';
 import { logout } from '@/lib/auth/actions';
+import { useOrders } from '@/lib/orders';
 import { CLIENT_FACILITY, isOpen, nextTicketId, useServiceStore, type Action, type Notification } from '@/lib/service/store';
 import { cn } from '@/lib/utils';
 
-type View = 'overview' | 'requests' | 'equipment' | 'certificates';
+type View = 'overview' | 'requests' | 'equipment' | 'certificates' | 'orders';
 const nav: { id: View; label: string; icon: string }[] = [
   { id: 'overview', label: 'Overview', icon: 'fi-rr-apps' },
   { id: 'requests', label: 'Service requests', icon: 'fi-rr-clipboard-list' },
   { id: 'equipment', label: 'Equipment', icon: 'fi-rr-microscope' },
   { id: 'certificates', label: 'Certificates', icon: 'fi-rr-badge-check' },
+  { id: 'orders', label: 'Orders', icon: 'fi-rr-box-open' },
 ];
 
-/** Client portal (Flokefama Care): the facility's service dashboard, on the shared service desk. */
-export function ClientShell({ user }: { user: { name: string; email: string; facility?: string } }) {
+/** Hospital dashboard (Flokefama Care): the facility's service desk, equipment, certificates and orders. */
+export function ClientShell({ user, products }: { user: { name: string; email: string; facility?: string }; products: CatalogueItem[] }) {
   const facility = user.facility ?? CLIENT_FACILITY;
+  const isDemo = facility === CLIENT_FACILITY;
+  const orders = useOrders(user.email);
+  const [adding, setAdding] = useState(false);
   const actor = useMemo(() => ({ name: user.name, role: 'client' as const, facility }), [user.name, facility]);
   const a11y = useAccessibility();
   const { state, dispatch: rawDispatch, ready, reset } = useServiceStore(actor);
   const [view, setView] = useState<View>('overview');
+  // Deep links such as /portal?view=orders (from checkout)
+  useEffect(() => {
+    const v = new URLSearchParams(location.search).get('view');
+    if (v && nav.some((n) => n.id === v)) setView(v as View);
+  }, []);
   const [ticketId, setTicketId] = useState<string | null>(null);
   const [assetId, setAssetId] = useState<string | null>(null);
   const [requesting, setRequesting] = useState<{ open: boolean; assetId?: string }>({ open: false });
@@ -58,6 +69,12 @@ export function ClientShell({ user }: { user: { name: string; email: string; fac
   const openAsset = useCallback((id: string) => setAssetId(id), []);
   const onNotification = (n: Notification) => (n.ticketId ? openTicket(n.ticketId) : n.assetId ? openAsset(n.assetId) : undefined);
   const openCount = tickets.filter(isOpen).length;
+  const request = (assetId?: string) => {
+    if (assets.length === 0) {
+      toast('Add your equipment first', { description: 'Then choose it when you request service.' });
+      setAdding(true);
+    } else setRequesting({ open: true, assetId });
+  };
 
   return (
     <div className="flex min-h-svh bg-canvas text-ink">
@@ -69,7 +86,7 @@ export function ClientShell({ user }: { user: { name: string; email: string; fac
           <span className="ml-auto rounded-md bg-white/10 px-1.5 py-0.5 font-mono text-[0.875rem] uppercase tracking-widest text-white/75">Care</span>
         </Link>
         <div className="mt-8 rounded-2xl bg-white/[0.06] p-3">
-          <p className="truncate text-sm font-medium">{facility}</p>
+          <p className="text-sm font-medium leading-snug">{facility}</p>
           <p className="truncate text-xs text-white/75">{user.name}</p>
         </div>
         <nav aria-label="Client portal" className="mt-8">
@@ -84,17 +101,18 @@ export function ClientShell({ user }: { user: { name: string; email: string; fac
                   {view === n.id && <motion.span layoutId="client-rail" className="absolute inset-0 rounded-xl bg-brand-600" />}
                   <Icon name={n.icon} className="relative" />
                   <span className="relative flex-1 text-left">{n.label}</span>
+                  {n.id === 'orders' && orders.length > 0 && <span className="relative rounded-full bg-white/15 px-1.5 font-mono text-[0.875rem]">{orders.length}</span>}
                   {n.id === 'requests' && openCount > 0 && <span className="relative rounded-full bg-white/15 px-1.5 font-mono text-[0.875rem]">{openCount}</span>}
                 </button>
               </li>
             ))}
           </ul>
         </nav>
-        <button onClick={() => setRequesting({ open: true })} className="mt-6 flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-semibold text-brand-700 hover:bg-brand-50">
+        <button onClick={() => request()} className="mt-6 flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-semibold text-brand-700 hover:bg-brand-50">
           <Icon name="fi-rr-wrench-simple" /> Request service
         </button>
         <div className="mt-auto space-y-3 text-xs">
-          <div className="rounded-xl bg-white/[0.05] px-3 py-2 text-white/75">
+          {isDemo && <div className="rounded-xl bg-white/[0.05] px-3 py-2 text-white/75">
             Demo data. Requests you submit appear in the engineer portal.
             <button
               onClick={() => {
@@ -108,7 +126,7 @@ export function ClientShell({ user }: { user: { name: string; email: string; fac
             >
               Reset demo data
             </button>
-          </div>
+          </div>}
           <button onClick={a11y.open} className="flex items-center gap-2 text-xs text-white/75 hover:text-white"><Icon name="fi-rr-universal-access" className="text-brand-300" /> Accessibility</button>
           <a href={contact.phoneHref} className="flex items-center gap-2 text-white/75 hover:text-white"><Icon name="fi-rr-phone-call" className="text-brand-300" /> {contact.phone}</a>
           <Link href="/" className="flex items-center gap-2 text-white/75 hover:text-white"><Icon name="fi-rr-arrow-small-left" /> Back to flokefama site</Link>
@@ -126,7 +144,7 @@ export function ClientShell({ user }: { user: { name: string; email: string; fac
             <p className="truncate text-xs text-ink-3">{facility}</p>
             <h1 className="truncate text-lg font-semibold tracking-[-0.01em] text-ink">{nav.find((n) => n.id === view)?.label}</h1>
           </div>
-          <button onClick={() => setRequesting({ open: true })} className="hidden h-11 items-center gap-2 rounded-xl bg-brand-600 px-4 text-sm font-medium text-white hover:bg-brand-700 sm:inline-flex lg:hidden">
+          <button onClick={() => request()} className="hidden h-11 items-center gap-2 rounded-xl bg-brand-600 px-4 text-sm font-medium text-white hover:bg-brand-700 sm:inline-flex lg:hidden">
             <Icon name="fi-rr-wrench-simple" /> Request service
           </button>
           <Notifications tone="light" items={notifications} onRead={(id) => rawDispatch({ type: 'read', id })} onReadAll={() => rawDispatch({ type: 'readAll', audience: 'client' })} onOpen={onNotification} />
@@ -150,15 +168,16 @@ export function ClientShell({ user }: { user: { name: string; email: string; fac
             <div className="grid grid-cols-2 gap-3 xl:grid-cols-4" aria-busy="true">{[0, 1, 2, 3].map((i) => <div key={i} className="h-32 animate-pulse rounded-3xl bg-mist" />)}</div>
           ) : (
             <>
-              {view === 'overview' && <Overview name={user.name} assets={assets} tickets={tickets} onOpenTicket={openTicket} onOpenAsset={openAsset} onRequest={() => setRequesting({ open: true })} onGo={setView} />}
-              {view === 'requests' && <RequestsView assets={assets} tickets={tickets} selectedId={ticketId} onSelect={setTicketId} onRequest={() => setRequesting({ open: true })} dispatch={dispatch} />}
-              {view === 'equipment' && <EquipmentView assets={assets} tickets={tickets} onOpenAsset={openAsset} />}
+              {view === 'overview' && <Overview name={user.name} facility={facility} orders={orders.length} onAddEquipment={() => setAdding(true)} assets={assets} tickets={tickets} onOpenTicket={openTicket} onOpenAsset={openAsset} onRequest={() => request()} onGo={setView} />}
+              {view === 'requests' && <RequestsView assets={assets} tickets={tickets} selectedId={ticketId} onSelect={setTicketId} onRequest={() => request()} dispatch={dispatch} />}
+              {view === 'equipment' && <EquipmentView assets={assets} tickets={tickets} onOpenAsset={openAsset} onAdd={() => setAdding(true)} />}
               {view === 'certificates' && <CertificatesView assets={assets} onOpenAsset={openAsset} />}
+              {view === 'orders' && <OrdersView orders={orders} />}
             </>
           )}
         </div>
         {/* Mobile: floating request button */}
-        <button onClick={() => setRequesting({ open: true })} className="fixed bottom-4 right-4 z-30 inline-flex h-12 items-center gap-2 rounded-full bg-brand-600 px-5 text-sm font-semibold text-white shadow-[0_8px_20px_-8px_rgb(11_21_16/0.35)] sm:hidden">
+        <button onClick={() => request()} className="fixed bottom-4 right-4 z-30 inline-flex h-12 items-center gap-2 rounded-full bg-brand-600 px-5 text-sm font-semibold text-white shadow-[0_8px_20px_-8px_rgb(11_21_16/0.35)] sm:hidden">
           <Icon name="fi-rr-wrench-simple" /> Request service
         </button>
       </main>
@@ -172,6 +191,17 @@ export function ClientShell({ user }: { user: { name: string; email: string; fac
           setRequesting({ open: true, assetId: id });
         }}
         onOpenTicket={openTicket}
+      />
+      <AddEquipmentDialog
+        open={adding}
+        onOpenChange={setAdding}
+        products={products}
+        facility={facility}
+        onAdd={(asset) => {
+          rawDispatch({ type: 'addAsset', asset });
+          toast.success(`${asset.name} added`, { description: 'You can now request service for it.' });
+          setView('equipment');
+        }}
       />
       <RequestDialog
         open={requesting.open}

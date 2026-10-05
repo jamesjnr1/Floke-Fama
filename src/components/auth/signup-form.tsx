@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 const field =
   'h-12 w-full rounded-xl border border-line bg-paper px-4 text-[1.125rem] text-ink outline-none transition placeholder:text-ink-3/70 focus:border-brand-500 focus:ring-4 focus:ring-brand-100 aria-[invalid=true]:border-signal';
 
-/** Create an account: signs the visitor in straight away and takes them back to where they were (e.g. checkout). */
+/** Create a hospital account: signs the facility in straight away and opens its dashboard (or where they were going, e.g. checkout). */
 export function SignupForm({ next }: { next?: string }) {
   const [state, action, pending] = useActionState<SignupState, FormData>(register, {});
   const [show, setShow] = useState(false);
@@ -27,8 +27,8 @@ export function SignupForm({ next }: { next?: string }) {
     <form action={action} noValidate className="mt-8 space-y-4">
       {next && <input type="hidden" name="next" value={next} />}
       <input type="text" name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
-      {row('name', 'Full name', <input name="name" autoComplete="name" defaultValue={v.name} aria-invalid={!!e.name} className={field} />)}
-      {row('organisation', 'Hospital, lab, clinic or company', <input name="organisation" autoComplete="organization" defaultValue={v.organisation} aria-invalid={!!e.organisation} placeholder="e.g. Korle-Bu Teaching Hospital" className={field} />)}
+      {row('name', 'Your name (contact person)', <input name="name" autoComplete="name" defaultValue={v.name} aria-invalid={!!e.name} className={field} />)}
+      {row('organisation', 'Hospital or facility name', <input name="organisation" autoComplete="organization" defaultValue={v.organisation} aria-invalid={!!e.organisation} placeholder="e.g. Korle-Bu Teaching Hospital" className={field} />)}
       <div className="grid gap-4 sm:grid-cols-2">
         {row('phone', 'Phone', <input name="phone" type="tel" autoComplete="tel" defaultValue={v.phone} aria-invalid={!!e.phone} placeholder="+233" className={field} />)}
         {row('email', 'Email', <input name="email" type="email" autoComplete="email" defaultValue={v.email} aria-invalid={!!e.email} placeholder="you@hospital.org" className={field} />)}
@@ -45,9 +45,9 @@ export function SignupForm({ next }: { next?: string }) {
       )}
       {row('confirm', 'Confirm password', <input name="confirm" type={show ? 'text' : 'password'} autoComplete="new-password" aria-invalid={!!e.confirm} className={field} />)}
       <button type="submit" disabled={pending} className="!mt-6 flex h-12 w-full items-center justify-center rounded-xl bg-brand-600 text-[1.125rem] font-semibold text-white transition hover:bg-brand-700 disabled:opacity-60">
-        {pending ? 'Creating your account…' : 'Create account'}
+        {pending ? 'Creating your hospital account…' : 'Create hospital account'}
       </button>
-      <p className="text-center text-sm text-ink-3">Hospitals on a Flokefama service plan get their client portal account from our team.</p>
+      <p className="text-center text-sm text-ink-3">Hospitals, clinics and laboratories. Add your equipment once you’re in, and request service from your dashboard.</p>
     </form>
   );
 }

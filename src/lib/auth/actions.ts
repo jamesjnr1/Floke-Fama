@@ -26,7 +26,7 @@ const credentials = z.object({
 const signup = z
   .object({
     name: z.string().trim().min(2, 'Enter your full name').max(100),
-    organisation: z.string().trim().min(2, 'Enter your hospital, lab, clinic or company').max(120),
+    organisation: z.string().trim().min(2, 'Enter your hospital or facility name').max(120),
     phone: z.string().trim().regex(/^[+\d][\d\s()-]{6,}$/, 'Enter a valid phone number'),
     email: z.string().trim().toLowerCase().email('Enter a valid email address'),
     password: z.string().min(8, 'Use at least 8 characters').max(200),
@@ -50,7 +50,7 @@ export async function login(_prev: LoginState, form: FormData): Promise<LoginSta
   // One generic message: never reveal whether the email or the password was wrong.
   if (!demo && !saved) return { error: 'That email and password don’t match an account.', email: parsed.data.email };
 
-  const user = demo ?? { id: saved!.id, name: saved!.name, email: saved!.email, role: 'customer' as const, facility: saved!.organisation };
+  const user = demo ?? { id: saved!.id, name: saved!.name, email: saved!.email, role: 'client' as const, facility: saved!.organisation };
   await startSession({ sub: user.id, name: user.name, email: user.email, role: user.role, facility: user.facility, phone: saved?.phone }, parsed.data.next);
   return {};
 }
@@ -70,9 +70,9 @@ export async function register(_prev: SignupState, form: FormData): Promise<Sign
   if (taken) return { errors: { email: 'There is already an account with this email. Sign in instead.' }, values };
 
   const { salt, hash } = await hashPassword(d.password);
-  const id = `cus-${crypto.randomUUID().slice(0, 8)}`;
+  const id = `hos-${crypto.randomUUID().slice(0, 8)}`;
   await saveAccount({ id, name: d.name, email: d.email, organisation: d.organisation, phone: d.phone, salt, hash });
-  await startSession({ sub: id, name: d.name, email: d.email, role: 'customer', facility: d.organisation, phone: d.phone }, d.next);
+  await startSession({ sub: id, name: d.name, email: d.email, role: 'client', facility: d.organisation, phone: d.phone }, d.next);
   return {};
 }
 

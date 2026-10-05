@@ -55,7 +55,7 @@ export function Navbar() {
   const user = session.user;
   const initials = user?.name.split(/\s+/).map((w) => w[0]).slice(0, 2).join('').toUpperCase();
   const home = user ? roleHome[user.role] : '/login';
-  const homeLabel = user?.role === 'client' ? 'Client portal' : user?.role === 'engineer' ? 'Engineer portal' : 'My account';
+  const homeLabel = user?.role === 'engineer' ? 'Engineer portal' : 'Hospital dashboard';
   useMotionValueEvent(scrollY, 'change', (y) => setScrolled(y > 24));
   useEffect(() => {
     setOpen(false);
@@ -228,6 +228,7 @@ export function Navbar() {
                     className="absolute right-0 top-[calc(100%+10px)] w-64 overflow-hidden rounded-2xl border border-white/10 bg-midnight p-2 shadow-[0_30px_60px_-20px_rgb(0_0_0/0.6)]"
                   >
                     <div className="px-3 py-2.5">
+                      {user.facility && <p className="text-sm font-semibold leading-snug text-brand-300">{user.facility}</p>}
                       <p className="truncate font-semibold text-white">{user.name}</p>
                       <p className="truncate text-sm text-white/65">{user.email}</p>
                     </div>

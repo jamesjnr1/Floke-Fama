@@ -97,7 +97,7 @@ export const clientSteps: Record<TicketStatus, string> = {
 const DAY = 86_400_000;
 const iso = (d: Date) => d.toISOString();
 const addDays = (base: Date, days: number) => new Date(base.getTime() + days * DAY);
-const addMonths = (base: Date, months: number) => { const d = new Date(base); d.setMonth(d.getMonth() + months); return d; };
+export const addMonths = (base: Date, months: number) => { const d = new Date(base); d.setMonth(d.getMonth() + months); return d; };
 
 export const fmtDate = (s: string) => new Date(s).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
 export const fmtTime = (s: string) => {
@@ -239,6 +239,9 @@ export function createSeed(now = new Date()): ServiceState {
 }
 
 /** The id the next logged ticket will get. */
+/** A new id for equipment a facility registers itself. */
+export const newAssetId = () => uidAsset();
+
 export const nextTicketId = (s: ServiceState) => `TK-${Math.max(1000, ...s.tickets.map((t) => Number(t.id.split('-')[1]) || 0)) + 1}`;
 
 /* ---------- actions ---------- */
@@ -254,11 +257,13 @@ export type Action =
   | { type: 'request'; ticket: Pick<Ticket, 'assetId' | 'description' | 'priority' | 'contactPhone' | 'preferredVisit'> }
   | { type: 'rate'; id: string; rating: number; feedback?: string }
   | { type: 'calibrate'; assetId: string; result: Certificate['result']; notes?: string }
+  | { type: 'addAsset'; asset: Asset }
   | { type: 'read'; id: string }
   | { type: 'readAll'; audience: Audience };
 
 let counter = 0;
 const uid = (p: string) => `${p}-${Date.now().toString(36).slice(-4).toUpperCase()}${(counter++).toString(36).toUpperCase()}`;
+function uidAsset() { return uid('AS'); }
 
 export function reducer(actor: Actor) {
   const me = actor.name;
@@ -328,6 +333,9 @@ export function reducer(actor: Actor) {
         const asset = state.assets.find((a) => a.id === action.assetId);
         return notify({ ...state, assets }, `New calibration certificate for ${asset?.name}.`, { assetId: action.assetId });
       }
+      case 'addAsset':
+        return notify({ ...state, assets: [...state.assets, action.asset] },
+          `${action.asset.facility} registered ${action.asset.name} (${action.asset.location}).`, { assetId: action.asset.id });
       case 'read':
         return { ...state, notifications: state.notifications.map((n) => (n.id === action.id ? { ...n, read: true } : n)) };
       case 'readAll':
