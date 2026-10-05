@@ -1,128 +1,127 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { HeartPulse, Microscope, PackageCheck, Wrench } from 'lucide-react';
+import { ArrowRight, Check } from 'lucide-react';
 import { Reveal } from '@/components/motion/reveal';
 import { cn } from '@/lib/utils';
 
-/** Each pillar has its own accent, so the icons are never one flat colour. */
+/** Each pillar has its own accent (number, ticks and link), so the four read as a set but stay distinct. */
 const accents = {
-  green: { box: 'border-brand-300/40 text-brand-300 group-hover:bg-brand-300 group-hover:border-brand-300', tag: 'text-brand-300 border-brand-300/40', dot: 'bg-brand-300' },
-  teal: { box: 'border-[#54cdd6]/40 text-[#54cdd6] group-hover:bg-[#54cdd6] group-hover:border-[#54cdd6]', tag: 'text-[#8fdde3] border-[#54cdd6]/40', dot: 'bg-[#54cdd6]' },
-  red: { box: 'border-[#ff6b6b]/45 text-[#ff8a8a] group-hover:bg-signal group-hover:border-signal group-hover:!text-white', tag: 'text-[#ff9a9a] border-[#ff6b6b]/45', dot: 'bg-[#ff6b6b]' },
-  amber: { box: 'border-[#f5b82e]/45 text-[#f5b82e] group-hover:bg-[#f5b82e] group-hover:border-[#f5b82e]', tag: 'text-[#f5c95a] border-[#f5b82e]/45', dot: 'bg-[#f5b82e]' },
+  green: { num: 'bg-brand-600', tick: 'text-brand-600', link: 'text-brand-700', bar: 'bg-brand-600' },
+  teal: { num: 'bg-[#087d88]', tick: 'text-[#087d88]', link: 'text-[#087d88]', bar: 'bg-[#087d88]' },
+  red: { num: 'bg-signal', tick: 'text-signal-700', link: 'text-signal-700', bar: 'bg-signal' },
+  amber: { num: 'bg-[#a87a00]', tick: 'text-[#a87a00]', link: 'text-[#8a6400]', bar: 'bg-[#e8ab00]' },
 } as const;
 
 const pillars = [
   {
-    icon: Microscope,
     title: 'In-Vitro Diagnostics',
-    tag: 'IVD',
-    body: 'Biochemistry and haematology analysers with matched reagents and controls that keep laboratories running without interruption. Official distributor of Mindray and Biozek Holland.',
-    specs: ['Biochemistry analysers', 'Haematology analysers', 'Point-of-care testing', 'Microbiology equipment'],
+    body: 'Analysers with matched reagents and controls, from the official distributor of Mindray and Biozek Holland.',
+    points: ['Biochemistry & haematology analysers', 'Point-of-care testing', 'Microbiology equipment'],
     href: '/products?category=in-vitro-diagnostics',
+    cta: 'View diagnostics',
+    image: '/images/products/auto-heamatology-analyzer-bc5150.webp',
+    alt: 'Mindray BC-5150 haematology analyser',
+    product: true,
     accent: 'green',
-    image: '/images/solution-ivd.webp',
-    span: 'lg:col-span-2 lg:row-span-2',
   },
   {
-    icon: HeartPulse,
     title: 'Patient Monitoring & Critical Care',
-    tag: 'Life support',
     body: 'Monitors, defibrillators, CTG and respiratory support for wards and theatres.',
-    specs: ['Patient monitors', 'Defibrillators', 'ECG machines', 'CPAP & oxygen therapy'],
+    points: ['Patient monitors', 'Defibrillators & ECG', 'CPAP & oxygen therapy'],
     href: '/products?category=critical-care',
+    cta: 'View critical care',
+    image: '/images/products/patient-monitor-comen.webp',
+    alt: 'Comen patient monitor',
+    product: true,
     accent: 'teal',
-    photo: '/images/products/patient-monitor-comen.webp',
-    span: 'lg:col-span-2',
   },
   {
-    icon: Wrench,
     title: 'Biomedical Engineering',
-    tag: 'Service',
-    body: 'Installation, calibration and maintenance by our engineers.',
-    specs: ['Installation & commissioning', 'Calibration', 'Repairs & spare parts'],
+    body: 'Our engineers install, calibrate and maintain every system we supply.',
+    points: ['Installation & commissioning', 'Calibration', 'Repairs & spare parts'],
     href: '/services',
+    cta: 'View services',
+    image: '/images/news/flokefama-celebrates-customer-service-week-cover.webp',
+    alt: 'A Flokefama engineer at work on a laboratory analyser',
+    product: false,
     accent: 'red',
-    span: '',
   },
   {
-    icon: PackageCheck,
     title: 'Reagents & Consumables',
-    tag: 'Supply',
-    body: 'A continuous, reliable supply of reagents, cuvettes and disposables.',
-    specs: ['Chemistry reagents', 'Medical disposables', '6 branches nationwide'],
+    body: 'A continuous, reliable supply of reagents, cuvettes, lamps and disposables.',
+    points: ['Chemistry reagents', 'Spare lamps & cuvettes', 'Six branches nationwide'],
     href: '/products?category=consumables',
+    cta: 'View consumables',
+    image: '/images/products/ba-88a-bulb.webp',
+    alt: 'Replacement lamp for the Mindray BA-88A analyser',
+    product: true,
     accent: 'amber',
-    span: '',
   },
 ] as const;
 
-/** Home: "Core Capabilities", the four pillars as a bento of gridline cells on the deep brand field. */
+/**
+ * Home: "Four pillars of medical infrastructure". Four equal cards on the deep navy band: a photo, the pillar's
+ * number, what it covers in one line, three points and a link into the catalogue or services.
+ */
 export function Capabilities() {
   return (
-    <section aria-labelledby="capabilities-title" className="relative isolate overflow-hidden bg-[#10191e] py-16 md:py-28">
-      <div aria-hidden className="gridlines-dark absolute inset-0 -z-10" />
-      <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(35%_45%_at_0%_55%,rgb(0_138_87/0.14),transparent_70%),radial-gradient(30%_40%_at_100%_100%,rgb(13_155_168/0.1),transparent_70%)]" />
-
+    <section aria-labelledby="capabilities-title" className="relative isolate overflow-hidden bg-[linear-gradient(160deg,#10191e_0%,#16232a_55%,#0b3b40_100%)] py-16 md:py-24">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
-        <Reveal className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
-          <div>
-            <h2 id="capabilities-title" className="display text-[clamp(2rem,1.3rem+2.6vw,3.5rem)] text-white">
-              Four pillars of <br className="hidden sm:block" />
-              <span className="text-brand-300">medical infrastructure.</span>
-            </h2>
-          </div>
-          <p className="max-w-md leading-relaxed text-white/75">
-            From diagnostics to delivery: an integrated service model, so every piece of equipment performs reliably. Official distributor of Mindray, Biozek Holland and MR Global.
+        <Reveal className="flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
+          <h2 id="capabilities-title" className="display text-[clamp(2rem,1.3rem+2.6vw,3.5rem)] text-white">
+            Four pillars of <br className="hidden sm:block" />
+            <span className="text-brand-300">medical infrastructure.</span>
+          </h2>
+          <p className="max-w-md text-lg leading-relaxed text-white/80">
+            From diagnostics to delivery: one partner for the equipment, the engineers and the supplies that keep it running.
           </p>
         </Reveal>
 
-        <div className="mt-12 grid gap-px border border-white/10 bg-white/10 lg:grid-cols-4">
+        <ol className="swipe-row mt-10 gap-4 md:mt-14 md:grid-cols-2 lg:grid-cols-4 lg:gap-5">
           {pillars.map((p, i) => {
             const a = accents[p.accent];
-            const Ico = p.icon;
             return (
-              <Reveal key={p.title} delay={i * 0.05} className={cn('h-full', p.span)}>
-                <Link
-                  href={p.href}
-                  className="group relative flex h-full min-h-[300px] flex-col justify-between gap-8 overflow-hidden bg-[#121d23] p-6 transition-colors duration-500 hover:bg-[#16262d] lg:p-8"
-                >
-                  {'image' in p && (
-                    <div aria-hidden className="absolute inset-0 opacity-90 transition-opacity duration-700 group-hover:opacity-100">
-                      <Image src={p.image} alt="" fill sizes="(min-width: 1024px) 640px, 100vw" className="object-cover object-[80%_20%]" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#121d23] via-[#121d23]/70 to-transparent" />
-                    </div>
-                  )}
-                  <div className="relative flex items-start justify-between gap-4">
-                    <span className={cn('grid size-12 place-items-center border transition-colors duration-300 group-hover:text-[#10191e]', a.box)}>
-                      <Ico className="size-6" strokeWidth={1.6} aria-hidden />
-                    </span>
-                    {'photo' in p ? (
-                      <span className="relative hidden size-24 overflow-hidden rounded-md bg-sand sm:block">
-                        <Image src={p.photo} alt="" fill sizes="96px" className="object-contain p-2 mix-blend-multiply" />
+              <li key={p.title}>
+                <Reveal delay={i * 0.06} className="h-full">
+                  <Link
+                    href={p.href}
+                    className="group flex h-full flex-col overflow-hidden rounded-3xl bg-paper shadow-[0_30px_60px_-40px_rgb(0_0_0/0.7)] transition duration-500 ease-out-expo hover:-translate-y-1.5"
+                  >
+                    <div className={cn('relative aspect-[4/3] overflow-hidden', p.product ? 'bg-[radial-gradient(90%_75%_at_50%_45%,#fff_0%,#eef3f4_70%,#e4eef0_100%)]' : 'bg-midnight')}>
+                      <Image
+                        src={p.image}
+                        alt={p.alt}
+                        fill
+                        sizes="(min-width: 1024px) 300px, (min-width: 768px) 50vw, 84vw"
+                        className={cn('transition-transform duration-700 ease-out-expo group-hover:scale-105', p.product ? 'object-contain p-8 mix-blend-multiply' : 'object-cover')}
+                      />
+                      <span className={cn('absolute left-4 top-4 grid size-11 place-items-center rounded-xl text-base font-bold text-white', a.num)}>
+                        {String(i + 1).padStart(2, '0')}
                       </span>
-                    ) : (
-                      <span className={cn('border-l pl-2 font-mono text-[0.875rem] uppercase tracking-wider', a.tag)}>{p.tag}</span>
-                    )}
-                  </div>
-                  <div className="relative flex flex-col gap-4">
-                    <h3 className="text-xl font-bold leading-tight tracking-[-0.02em] text-white lg:text-2xl">{p.title}</h3>
-                    <p className="leading-relaxed text-white/75">{p.body}</p>
-                    <ul className="flex flex-col gap-2 border-t border-white/10 pt-4">
-                      {p.specs.map((s) => (
-                        <li key={s} className="flex items-center gap-2.5 font-mono text-[0.9375rem] text-white/70 transition-colors group-hover:text-white">
-                          <span className={cn('size-1.5 shrink-0', a.dot)} aria-hidden />
-                          {s}
-                        </li>
-                      ))}
-                    </ul>
-                    <span className="text-sm font-semibold text-brand-300 underline-offset-4 group-hover:underline">Learn more</span>
-                  </div>
-                </Link>
-              </Reveal>
+                    </div>
+                    <span aria-hidden className={cn('h-1 w-full', a.bar)} />
+                    <div className="flex flex-1 flex-col p-6">
+                      <h3 className="text-xl font-bold leading-snug tracking-[-0.02em] text-ink">{p.title}</h3>
+                      <p className="mt-2 text-base leading-relaxed text-ink-3">{p.body}</p>
+                      <ul className="mt-5 space-y-2.5 border-t border-line pt-5">
+                        {p.points.map((pt) => (
+                          <li key={pt} className="flex items-start gap-2.5 text-[0.9375rem] leading-snug text-ink-2">
+                            <Check className={cn('mt-0.5 size-4 shrink-0', a.tick)} strokeWidth={2.5} aria-hidden />
+                            {pt}
+                          </li>
+                        ))}
+                      </ul>
+                      <span className={cn('mt-auto inline-flex items-center gap-2 pt-6 text-base font-semibold', a.link)}>
+                        {p.cta}
+                        <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" aria-hidden />
+                      </span>
+                    </div>
+                  </Link>
+                </Reveal>
+              </li>
             );
           })}
-        </div>
+        </ol>
       </div>
     </section>
   );
