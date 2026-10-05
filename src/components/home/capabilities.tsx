@@ -38,7 +38,7 @@ const pillars = [
     body: 'Our engineers install, calibrate and maintain every system we supply.',
     points: ['Installation & commissioning', 'Calibration', 'Repairs & spare parts'],
     href: '/services',
-    image: '/images/pillars/biomedical-engineer.webp',
+    image: '/images/pillars/biomedical-lab.webp',
     alt: 'A laboratory scientist in gloves working with laboratory equipment',
     product: false,
     accent: 'red',
