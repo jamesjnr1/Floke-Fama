@@ -166,14 +166,10 @@
       linear-gradient(90deg, rgb(22 35 42 / 0.045) 1px, transparent 1px);
     background-size: 64px 64px;
   }
-  /* The hero's ECG trace draws itself, then repeats */
-  .ecg-path {
-    stroke-dasharray: 1000;
-    stroke-dashoffset: 1000;
-    animation: ecg 5s linear infinite;
-  }
-  @keyframes ecg {
-    to { stroke-dashoffset: -1000; }
+  /* Moving logo rows run on the compositor */
+  .animate-marquee {
+    will-change: transform;
+    backface-visibility: hidden;
   }
   .grid-fade-light {
     background-image:

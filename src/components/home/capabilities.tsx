@@ -62,8 +62,7 @@ export function Capabilities() {
   return (
     <section aria-labelledby="capabilities-title" className="relative isolate overflow-hidden bg-[#10191e] py-16 md:py-28">
       <div aria-hidden className="gridlines-dark absolute inset-0 -z-10" />
-      <div aria-hidden className="absolute -left-40 top-1/2 -z-10 size-[520px] rounded-full bg-brand-500/12 blur-[120px]" />
-      <div aria-hidden className="absolute bottom-0 right-0 -z-10 size-[420px] rounded-full bg-[#0d9ba8]/10 blur-[100px]" />
+      <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(35%_45%_at_0%_55%,rgb(0_138_87/0.14),transparent_70%),radial-gradient(30%_40%_at_100%_100%,rgb(13_155_168/0.1),transparent_70%)]" />
 
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
