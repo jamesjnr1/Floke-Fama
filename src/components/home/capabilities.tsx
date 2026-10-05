@@ -1,15 +1,15 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, Check } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { Reveal } from '@/components/motion/reveal';
 import { cn } from '@/lib/utils';
 
 /** Each pillar has its own accent (number, ticks and link), so the four read as a set but stay distinct. */
 const accents = {
-  green: { num: 'bg-brand-600', tick: 'text-brand-600', link: 'text-brand-700', bar: 'bg-brand-600' },
-  teal: { num: 'bg-[#087d88]', tick: 'text-[#087d88]', link: 'text-[#087d88]', bar: 'bg-[#087d88]' },
-  red: { num: 'bg-signal', tick: 'text-signal-700', link: 'text-signal-700', bar: 'bg-signal' },
-  amber: { num: 'bg-[#a87a00]', tick: 'text-[#a87a00]', link: 'text-[#8a6400]', bar: 'bg-[#e8ab00]' },
+  green: { num: 'bg-brand-600', tick: 'text-brand-600', bar: 'bg-brand-600' },
+  teal: { num: 'bg-[#087d88]', tick: 'text-[#087d88]', bar: 'bg-[#087d88]' },
+  red: { num: 'bg-signal', tick: 'text-signal-700', bar: 'bg-signal' },
+  amber: { num: 'bg-[#a87a00]', tick: 'text-[#a87a00]', bar: 'bg-[#e8ab00]' },
 } as const;
 
 const pillars = [
@@ -18,7 +18,6 @@ const pillars = [
     body: 'Analysers with matched reagents and controls, from the official distributor of Mindray and Biozek Holland.',
     points: ['Biochemistry & haematology analysers', 'Point-of-care testing', 'Microbiology equipment'],
     href: '/products?category=in-vitro-diagnostics',
-    cta: 'View diagnostics',
     image: '/images/products/auto-heamatology-analyzer-bc5150.webp',
     alt: 'Mindray BC-5150 haematology analyser',
     product: true,
@@ -29,7 +28,6 @@ const pillars = [
     body: 'Monitors, defibrillators, CTG and respiratory support for wards and theatres.',
     points: ['Patient monitors', 'Defibrillators & ECG', 'CPAP & oxygen therapy'],
     href: '/products?category=critical-care',
-    cta: 'View critical care',
     image: '/images/products/patient-monitor-comen.webp',
     alt: 'Comen patient monitor',
     product: true,
@@ -40,7 +38,6 @@ const pillars = [
     body: 'Our engineers install, calibrate and maintain every system we supply.',
     points: ['Installation & commissioning', 'Calibration', 'Repairs & spare parts'],
     href: '/services',
-    cta: 'View services',
     image: '/images/news/flokefama-celebrates-customer-service-week-cover.webp',
     alt: 'A Flokefama engineer at work on a laboratory analyser',
     product: false,
@@ -51,7 +48,6 @@ const pillars = [
     body: 'A continuous, reliable supply of reagents, cuvettes, lamps and disposables.',
     points: ['Chemistry reagents', 'Spare lamps & cuvettes', 'Six branches nationwide'],
     href: '/products?category=consumables',
-    cta: 'View consumables',
     image: '/images/products/ba-88a-bulb.webp',
     alt: 'Replacement lamp for the Mindray BA-88A analyser',
     product: true,
@@ -61,7 +57,7 @@ const pillars = [
 
 /**
  * Home: "Four pillars of medical infrastructure". Four equal cards on the deep navy band: a photo, the pillar's
- * number, what it covers in one line, three points and a link into the catalogue or services.
+ * number, what it covers in one line and three points; the whole card opens that part of the site.
  */
 export function Capabilities() {
   return (
@@ -87,13 +83,13 @@ export function Capabilities() {
                     href={p.href}
                     className="group flex h-full flex-col overflow-hidden rounded-3xl bg-paper shadow-[0_30px_60px_-40px_rgb(0_0_0/0.7)] transition duration-500 ease-out-expo hover:-translate-y-1.5"
                   >
-                    <div className={cn('relative aspect-[4/3] overflow-hidden', p.product ? 'bg-[radial-gradient(90%_75%_at_50%_45%,#fff_0%,#eef3f4_70%,#e4eef0_100%)]' : 'bg-midnight')}>
+                    <div className={cn('relative aspect-[4/3.6] overflow-hidden', p.product ? 'bg-[radial-gradient(90%_75%_at_50%_45%,#fff_0%,#eef3f4_70%,#e4eef0_100%)]' : 'bg-midnight')}>
                       <Image
                         src={p.image}
                         alt={p.alt}
                         fill
-                        sizes="(min-width: 1024px) 300px, (min-width: 768px) 50vw, 84vw"
-                        className={cn('transition-transform duration-700 ease-out-expo group-hover:scale-105', p.product ? 'object-contain p-8 mix-blend-multiply' : 'object-cover')}
+                        sizes="(min-width: 1024px) 320px, (min-width: 768px) 50vw, 84vw"
+                        className={cn('transition-transform duration-700 ease-out-expo group-hover:scale-105', p.product ? 'object-contain p-3 mix-blend-multiply' : 'object-cover')}
                       />
                       <span className={cn('absolute left-4 top-4 grid size-11 place-items-center rounded-xl text-base font-bold text-white', a.num)}>
                         {String(i + 1).padStart(2, '0')}
@@ -102,8 +98,8 @@ export function Capabilities() {
                     <span aria-hidden className={cn('h-1 w-full', a.bar)} />
                     <div className="flex flex-1 flex-col p-6">
                       <h3 className="text-xl font-bold leading-snug tracking-[-0.02em] text-ink">{p.title}</h3>
-                      <p className="mt-2 text-base leading-relaxed text-ink-3">{p.body}</p>
-                      <ul className="mt-5 space-y-2.5 border-t border-line pt-5">
+                      <p className="mb-5 mt-2 text-base leading-relaxed text-ink-3">{p.body}</p>
+                      <ul className="mt-auto space-y-2.5 border-t border-line pt-5">
                         {p.points.map((pt) => (
                           <li key={pt} className="flex items-start gap-2.5 text-[0.9375rem] leading-snug text-ink-2">
                             <Check className={cn('mt-0.5 size-4 shrink-0', a.tick)} strokeWidth={2.5} aria-hidden />
@@ -111,10 +107,6 @@ export function Capabilities() {
                           </li>
                         ))}
                       </ul>
-                      <span className={cn('mt-auto inline-flex items-center gap-2 pt-6 text-base font-semibold', a.link)}>
-                        {p.cta}
-                        <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" aria-hidden />
-                      </span>
                     </div>
                   </Link>
                 </Reveal>
