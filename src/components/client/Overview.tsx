@@ -8,14 +8,17 @@ import { assetStatus, clientSteps, daysUntil, dueLabel, fmtTime, isOpen, statusS
 import { cn } from '@/lib/utils';
 
 /** Overview: the facility at a glance. Every figure is derived from live service-desk data. */
-export function Overview({ name, assets, tickets, onOpenTicket, onOpenAsset, onRequest, onGo }: {
+export function Overview({ name, facility, assets, tickets, orders, onOpenTicket, onOpenAsset, onRequest, onAddEquipment, onGo }: {
   name: string;
+  facility: string;
+  orders: number;
+  onAddEquipment: () => void;
   assets: Asset[];
   tickets: Ticket[];
   onOpenTicket: (id: string) => void;
   onOpenAsset: (id: string) => void;
   onRequest: () => void;
-  onGo: (v: 'requests' | 'equipment' | 'certificates') => void;
+  onGo: (v: 'requests' | 'equipment' | 'certificates' | 'orders') => void;
 }) {
   const open = tickets.filter(isOpen).sort((a, b) => stepIndex(b.status) - stepIndex(a.status));
   const enRoute = open.filter((t) => t.status === 'travelling' || t.status === 'onsite');
@@ -26,6 +29,41 @@ export function Overview({ name, assets, tickets, onOpenTicket, onOpenAsset, onR
     .sort((a, b) => b.at.localeCompare(a.at))
     .slice(0, 5);
   const hour = new Date().getHours();
+  const greeting = `${hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'}, ${name.split(' ')[0]}`;
+
+  // A newly registered facility: nothing to show yet, so show how to get started.
+  if (assets.length === 0)
+    return (
+      <div className="space-y-6">
+        <div className="rounded-3xl bg-[linear-gradient(135deg,#0a6a70,#075056)] p-6 text-white md:p-8">
+          <p className="text-sm text-white/80">{greeting}</p>
+          <p className="mt-1 text-2xl font-semibold tracking-[-0.02em] md:text-3xl">Welcome to the {facility} dashboard.</p>
+          <p className="mt-2 max-w-2xl text-white/80">Add the systems at your facility to request service, follow the engineer and keep every calibration certificate in one place.</p>
+        </div>
+        <ol className="grid gap-4 md:grid-cols-3">
+          {[
+            { n: 1, icon: 'fi-rr-microscope', title: 'Add your equipment', body: 'Analysers, monitors, autoclaves: anything at your facility, with its serial number and location.', action: <button onClick={onAddEquipment} className="inline-flex h-11 items-center gap-2 rounded-xl bg-brand-600 px-4 text-sm font-semibold text-white hover:bg-brand-700"><Icon name="fi-rr-plus" /> Add equipment</button> },
+            { n: 2, icon: 'fi-rr-wrench-simple', title: 'Request service', body: 'Tell us what’s wrong. The nearest engineer is assigned and you follow every step here.', action: <a href={contact.phoneHref} className="inline-flex h-11 items-center gap-2 rounded-xl border border-line px-4 text-sm font-medium text-ink hover:border-ink/30"><Icon name="fi-rr-phone-call" /> Urgent? Call {contact.phone}</a> },
+            { n: 3, icon: 'fi-rr-shopping-cart', title: 'Order and check out', body: 'Buy equipment and consumables for your facility. Your orders appear under Orders.', action: <Link href="/products" className="inline-flex h-11 items-center gap-2 rounded-xl border border-line px-4 text-sm font-medium text-ink hover:border-ink/30"><Icon name="fi-rr-search" /> Shop equipment</Link> },
+          ].map((s) => (
+            <li key={s.n} className="flex flex-col rounded-3xl border border-line bg-paper p-6">
+              <span className="flex items-center gap-3">
+                <span className="grid size-10 place-items-center rounded-xl bg-brand-50 text-lg text-brand-700"><Icon name={s.icon} /></span>
+                <span className="font-mono text-sm text-ink-3">Step {s.n}</span>
+              </span>
+              <p className="mt-4 text-lg font-semibold text-ink">{s.title}</p>
+              <p className="mb-5 mt-1 text-sm leading-relaxed text-ink-3">{s.body}</p>
+              <div className="mt-auto">{s.action}</div>
+            </li>
+          ))}
+        </ol>
+        {orders > 0 && (
+          <button onClick={() => onGo('orders')} className="flex w-full items-center gap-3 rounded-2xl border border-line bg-paper p-4 text-left text-sm font-medium text-ink hover:border-ink/20">
+            <Icon name="fi-rr-box-open" className="text-brand-600" /> <span className="flex-1">You have {orders} order{orders === 1 ? '' : 's'}</span> <Icon name="fi-rr-arrow-small-right" className="text-ink-3" />
+          </button>
+        )}
+      </div>
+    );
 
   const kpis = [
     { label: 'Open requests', value: open.length, icon: 'fi-rr-clipboard-list', go: 'requests' as const },
@@ -39,7 +77,7 @@ export function Overview({ name, assets, tickets, onOpenTicket, onOpenAsset, onR
       {/* Greeting + primary action */}
       <div className="flex flex-col justify-between gap-4 rounded-3xl bg-[linear-gradient(135deg,#0a6a70,#075056)] p-6 text-white md:flex-row md:items-center md:p-8">
         <div>
-          <p className="text-sm text-white/80">{hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'}, {name}</p>
+          <p className="text-sm text-white/80">{greeting}</p>
           <p className="mt-1 text-2xl font-semibold tracking-[-0.02em] md:text-3xl">
             {open.length === 0 ? 'All systems are running. No open requests.' : `${open.length} service request${open.length === 1 ? '' : 's'} in progress.`}
           </p>
@@ -143,7 +181,7 @@ export function Overview({ name, assets, tickets, onOpenTicket, onOpenAsset, onR
 
       <div className="grid gap-3 sm:grid-cols-3">
         {[
-          { icon: 'fi-rr-shopping-cart', title: 'Order consumables or new equipment', href: '/quote' },
+          { icon: 'fi-rr-shopping-cart', title: 'Order consumables or new equipment', href: '/products' },
           { icon: 'fi-rr-graduation-cap', title: 'Book staff training', href: '/quote?intent=demo' },
           { icon: 'fi-rr-envelope', title: `Email support · ${contact.support}`, href: `mailto:${contact.support}` },
         ].map((q) => (

@@ -2,8 +2,8 @@
  * Signed session tokens (HMAC-SHA-256 via Web Crypto), usable in middleware (edge) and on the server.
  * Token = base64url(JSON payload) + "." + base64url(signature).
  */
-/** customer: anyone who signs up on the site (shop, checkout, quotes). client: a hospital on the service portal. */
-export type Role = 'customer' | 'client' | 'engineer';
+/** client: a hospital or facility account (everyone who signs up on the site). engineer: Flokefama's service engineers. */
+export type Role = 'client' | 'engineer';
 
 export interface SessionUser {
   sub: string;
@@ -22,16 +22,16 @@ export const SESSION_COOKIE = 'ff_session';
 export const SESSION_TTL_SECONDS = 60 * 60; // 1 hour
 
 /** Where each role lands after signing in. */
-export const roleHome: Record<Role, string> = { customer: '/account', client: '/portal', engineer: '/engineer' };
+export const roleHome: Record<Role, string> = { client: '/portal', engineer: '/engineer' };
 
-/** Areas only one role may open. Everything else (shop, checkout, account) is open to any signed-in user. */
+/** Areas only one role may open. Everything else (shop, checkout, quotes) is open to any signed-in user. */
 export const roleAreas: { prefix: string; role: Role }[] = [
   { prefix: '/portal', role: 'client' },
   { prefix: '/engineer', role: 'engineer' },
 ];
 
 /** Pages that need a signed-in user of any role. */
-export const signedInAreas = ['/checkout', '/quote', '/account'];
+export const signedInAreas = ['/checkout', '/quote'];
 
 /** Where a role may be sent after signing in: anywhere on the site except another role's area. */
 export function nextFor(role: Role, next: string | null) {
