@@ -13,7 +13,7 @@ export async function POST(req: Request) {
   if (!secret) return Response.json({ error: 'Webhook not configured' }, { status: 501 });
 
   const body = await req.text();
-  // Header format: t=<timestamp>,v1=<base64url HMAC-SHA256 of "<timestamp>.<body>">
+  // Header format: t=<timestamp in ms>,v1=<base64url HMAC-SHA256 of "<timestamp>.<body>">
   const header = req.headers.get('sanity-webhook-signature') ?? '';
   const t = /t=(\d+)/.exec(header)?.[1];
   const v1 = /v1=([\w-]+)/.exec(header)?.[1];
@@ -22,7 +22,9 @@ export async function POST(req: Request) {
   const a = Buffer.from(v1);
   const b = Buffer.from(expected);
   if (a.length !== b.length || !timingSafeEqual(a, b)) return Response.json({ error: 'Invalid signature' }, { status: 401 });
-  if (Math.abs(Date.now() / 1000 - Number(t)) > 300) return Response.json({ error: 'Stale request' }, { status: 401 });
+  // Sanity sends the timestamp in milliseconds; accept seconds too. Reject anything older than 5 minutes.
+  const sentMs = Number(t) > 1e12 ? Number(t) : Number(t) * 1000;
+  if (Math.abs(Date.now() - sentMs) > 5 * 60 * 1000) return Response.json({ error: 'Stale request' }, { status: 401 });
 
   revalidateTag('cms');
   revalidatePath('/', 'layout');
