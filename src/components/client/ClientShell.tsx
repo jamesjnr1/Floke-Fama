@@ -77,95 +77,115 @@ export function ClientShell({ user, products }: { user: { name: string; email: s
   };
 
   return (
-    <div className="flex min-h-svh bg-canvas text-ink">
+    <div className="flex min-h-svh bg-[#f5f6f4] text-ink">
       {/* Sidebar */}
-      <aside className="sticky top-0 hidden h-svh w-[248px] shrink-0 flex-col bg-midnight p-5 text-white lg:flex">
-        <Link href="/" aria-label="Flokefama home" className="flex items-center gap-1.5">
+      <aside className="sticky top-0 hidden h-svh w-[264px] shrink-0 flex-col bg-[linear-gradient(180deg,#00804f_0%,#006b42_55%,#005a38_100%)] text-white lg:flex">
+        <Link href="/" aria-label="Flokefama home" className="flex h-[76px] items-center gap-1.5 border-b border-white/15 px-6">
           <LogoMark />
           <LogoWordmark className="h-[17px] text-white" />
-          <span className="ml-auto rounded-md bg-white/10 px-1.5 py-0.5 font-mono text-[0.875rem] uppercase tracking-widest text-white/75">Care</span>
+          <span className="ml-auto text-[0.6875rem] font-semibold uppercase tracking-[0.18em] text-white/80">Care</span>
         </Link>
-        <div className="mt-8 rounded-2xl bg-white/[0.06] p-3">
-          <p className="text-sm font-medium leading-snug">{facility}</p>
-          <p className="truncate text-xs text-white/75">{user.name}</p>
+        <div className="flex items-center gap-3 px-6 py-6">
+          <span className="grid size-10 shrink-0 place-items-center rounded-md bg-white text-sm font-semibold text-[#006b42]">{facility.split(' ').filter((w) => /^[A-Z]/.test(w)).map((w) => w[0]).slice(0, 2).join('')}</span>
+          <div className="min-w-0">
+            <p className="text-sm font-semibold leading-snug">{facility}</p>
+            <p className="truncate text-xs text-white/75">{user.name}</p>
+          </div>
         </div>
-        <nav aria-label="Client portal" className="mt-8">
-          <ul className="space-y-1">
-            {nav.map((n) => (
-              <li key={n.id}>
-                <button
-                  onClick={() => setView(n.id)}
-                  aria-current={view === n.id ? 'page' : undefined}
-                  className={cn('relative flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition', view === n.id ? 'text-white' : 'text-white/75 hover:bg-white/[0.05] hover:text-white')}
-                >
-                  {view === n.id && <motion.span layoutId="client-rail" className="absolute inset-0 rounded-xl bg-brand-600" />}
-                  <Icon name={n.icon} className="relative" />
-                  <span className="relative flex-1 text-left">{n.label}</span>
-                  {n.id === 'orders' && orders.length > 0 && <span className="relative rounded-full bg-white/15 px-1.5 font-mono text-[0.875rem]">{orders.length}</span>}
-                  {n.id === 'requests' && openCount > 0 && <span className="relative rounded-full bg-white/15 px-1.5 font-mono text-[0.875rem]">{openCount}</span>}
-                </button>
-              </li>
-            ))}
+        <nav aria-label="Client portal" className="px-3">
+          <p className="px-3 pb-2 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-white/60">Menu</p>
+          <ul className="space-y-0.5">
+            {nav.map((n) => {
+              const on = view === n.id;
+              const count = n.id === 'orders' ? orders.length : n.id === 'requests' ? openCount : 0;
+              return (
+                <li key={n.id}>
+                  <button
+                    onClick={() => setView(n.id)}
+                    aria-current={on ? 'page' : undefined}
+                    className={cn('relative flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm transition', on ? 'bg-white/[0.16] font-semibold text-white' : 'text-white/80 hover:bg-white/[0.08] hover:text-white')}
+                  >
+                    {on && <motion.span layoutId="client-rail" className="absolute inset-y-2 left-0 w-[3px] rounded-r-[2px] bg-white" />}
+                    <Icon name={n.icon} className={on ? 'text-white' : 'text-white/70'} />
+                    <span className="flex-1 text-left">{n.label}</span>
+                    {count > 0 && <span className="font-mono text-xs tabular-nums text-white/75">{count}</span>}
+                  </button>
+                </li>
+              );
+            })}
           </ul>
         </nav>
-        <button onClick={() => request()} className="mt-6 flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-semibold text-brand-700 hover:bg-brand-50">
-          <Icon name="fi-rr-wrench-simple" /> Request service
-        </button>
-        <div className="mt-auto space-y-3 text-xs">
-          {isDemo && <div className="rounded-xl bg-white/[0.05] px-3 py-2 text-white/75">
-            Demo data. Requests you submit appear in the engineer portal.
-            <button
-              onClick={() => {
-                if (confirm('Reset the demo data? Changes in this browser will be cleared.')) {
-                  reset();
-                  setTicketId(null);
-                  toast('Demo data reset');
-                }
-              }}
-              className="mt-1 block text-brand-300 hover:text-white"
-            >
-              Reset demo data
-            </button>
-          </div>}
-          <button onClick={a11y.open} className="flex items-center gap-2 text-xs text-white/75 hover:text-white"><Icon name="fi-rr-universal-access" className="text-brand-300" /> Accessibility</button>
-          <a href={contact.phoneHref} className="flex items-center gap-2 text-white/75 hover:text-white"><Icon name="fi-rr-phone-call" className="text-brand-300" /> {contact.phone}</a>
-          <Link href="/" className="flex items-center gap-2 text-white/75 hover:text-white"><Icon name="fi-rr-arrow-small-left" /> Back to flokefama site</Link>
-          <form action={logout}>
-            <button type="submit" className="flex items-center gap-2 text-white/75 hover:text-white"><Icon name="fi-rr-sign-out-alt" /> Sign out</button>
-          </form>
+        <div className="px-6 pt-6">
+          <button onClick={() => request()} className="flex h-11 w-full items-center justify-center gap-2 rounded-md bg-white text-sm font-semibold text-[#006b42] shadow-[0_10px_24px_-14px_rgb(0_0_0/0.5)] transition hover:bg-[#eefaf3]">
+            <Icon name="fi-rr-wrench-simple" /> Request service
+          </button>
+        </div>
+        <div className="mt-auto border-t border-white/15 px-6 py-5 text-[0.8125rem]">
+          {isDemo && (
+            <p className="mb-4 text-xs leading-relaxed text-white/70">
+              Demo data. Requests you submit appear in the engineer portal.{' '}
+              <button
+                onClick={() => {
+                  if (confirm('Reset the demo data? Changes in this browser will be cleared.')) {
+                    reset();
+                    setTicketId(null);
+                    toast('Demo data reset');
+                  }
+                }}
+                className="font-semibold text-white underline underline-offset-2"
+              >
+                Reset
+              </button>
+            </p>
+          )}
+          <div className="space-y-2.5">
+            <a href={contact.phoneHref} className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-phone-call" /> {contact.phone}</a>
+            <button onClick={a11y.open} className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-universal-access" /> Accessibility</button>
+            <Link href="/" className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-arrow-small-left" /> Flokefama website</Link>
+            <form action={logout}>
+              <button type="submit" className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-sign-out-alt" /> Sign out</button>
+            </form>
+          </div>
         </div>
       </aside>
 
       <main id="main" className="min-w-0 flex-1">
         {/* Header */}
-        <header className="sticky top-0 z-30 flex items-center gap-3 border-b border-line bg-canvas/90 px-4 py-3 backdrop-blur md:px-8">
+        <header className="sticky top-0 z-30 flex h-[76px] items-center gap-3 border-b border-line bg-paper px-4 md:px-10">
           <Link href="/" className="flex items-center gap-2 lg:hidden" aria-label="Flokefama home"><LogoMark /></Link>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-xs text-ink-3">{facility}</p>
+            <p className="hidden truncate text-xs text-ink-3 sm:block">{facility} <span className="text-ink-3/50">/</span> Dashboard</p>
             <h1 className="truncate text-lg font-semibold tracking-[-0.01em] text-ink">{nav.find((n) => n.id === view)?.label}</h1>
           </div>
-          <button onClick={() => request()} className="hidden h-11 items-center gap-2 rounded-xl bg-brand-600 px-4 text-sm font-medium text-white hover:bg-brand-700 sm:inline-flex lg:hidden">
+          <button onClick={() => request()} className="hidden h-10 items-center gap-2 rounded-md bg-brand-600 px-4 text-sm font-medium text-white hover:bg-[#006b42] sm:inline-flex lg:hidden">
             <Icon name="fi-rr-wrench-simple" /> Request service
           </button>
           <Notifications tone="light" items={notifications} onRead={(id) => rawDispatch({ type: 'read', id })} onReadAll={() => rawDispatch({ type: 'readAll', audience: 'client' })} onOpen={onNotification} />
-          <button onClick={a11y.open} aria-label="Accessibility options" className="grid size-11 place-items-center rounded-xl border border-line bg-paper text-ink lg:hidden"><Icon name="fi-rr-universal-access" /></button>
+          <span className="hidden items-center gap-3 border-l border-line pl-4 md:flex">
+            <span className="grid size-9 place-items-center rounded-md bg-brand-600 text-xs font-semibold text-white">{user.name.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase()}</span>
+            <span className="leading-tight">
+              <span className="block text-sm font-medium text-ink">{user.name}</span>
+              <span className="block text-xs text-ink-3">{user.email}</span>
+            </span>
+          </span>
+          <button onClick={a11y.open} aria-label="Accessibility options" className="grid size-10 place-items-center rounded-md border border-line bg-paper text-ink lg:hidden"><Icon name="fi-rr-universal-access" /></button>
           <form action={logout} className="lg:hidden">
-            <button type="submit" aria-label="Sign out" className="grid size-11 place-items-center rounded-xl border border-line bg-paper text-ink"><Icon name="fi-rr-sign-out-alt" /></button>
+            <button type="submit" aria-label="Sign out" className="grid size-10 place-items-center rounded-md border border-line bg-paper text-ink"><Icon name="fi-rr-sign-out-alt" /></button>
           </form>
         </header>
 
         {/* Mobile nav */}
-        <nav aria-label="Client portal sections" className="flex gap-1 overflow-x-auto border-b border-line bg-paper px-3 py-2 lg:hidden">
+        <nav aria-label="Client portal sections" className="flex gap-5 overflow-x-auto border-b border-line bg-paper px-4 lg:hidden">
           {nav.map((n) => (
-            <button key={n.id} onClick={() => setView(n.id)} aria-current={view === n.id ? 'page' : undefined} className={cn('shrink-0 rounded-lg px-3 py-2 text-sm', view === n.id ? 'bg-brand-600 text-white' : 'text-ink-3')}>
+            <button key={n.id} onClick={() => setView(n.id)} aria-current={view === n.id ? 'page' : undefined} className={cn('-mb-px shrink-0 border-b-2 py-3 text-sm', view === n.id ? 'border-ink font-semibold text-ink' : 'border-transparent text-ink-3')}>
               {n.label}
             </button>
           ))}
         </nav>
 
-        <div className="p-4 md:p-8">
+        <div className="mx-auto max-w-[1360px] p-4 md:p-10">
           {!ready ? (
-            <div className="grid grid-cols-2 gap-3 xl:grid-cols-4" aria-busy="true">{[0, 1, 2, 3].map((i) => <div key={i} className="h-32 animate-pulse rounded-3xl bg-mist" />)}</div>
+            <div className="grid grid-cols-2 gap-3 xl:grid-cols-4" aria-busy="true">{[0, 1, 2, 3].map((i) => <div key={i} className="h-32 animate-pulse rounded-xl bg-mist" />)}</div>
           ) : (
             <>
               {view === 'overview' && <Overview name={user.name} facility={facility} orders={orders.length} onAddEquipment={() => setAdding(true)} assets={assets} tickets={tickets} onOpenTicket={openTicket} onOpenAsset={openAsset} onRequest={() => request()} onGo={setView} />}
@@ -177,7 +197,7 @@ export function ClientShell({ user, products }: { user: { name: string; email: s
           )}
         </div>
         {/* Mobile: floating request button */}
-        <button onClick={() => request()} className="fixed bottom-4 right-4 z-30 inline-flex h-12 items-center gap-2 rounded-full bg-brand-600 px-5 text-sm font-semibold text-white shadow-[0_8px_20px_-8px_rgb(11_21_16/0.35)] sm:hidden">
+        <button onClick={() => request()} className="fixed bottom-4 right-4 z-30 inline-flex h-12 items-center gap-2 rounded-md bg-brand-600 px-5 text-sm font-semibold text-white shadow-[0_8px_20px_-8px_rgb(11_21_16/0.35)] sm:hidden">
           <Icon name="fi-rr-wrench-simple" /> Request service
         </button>
       </main>

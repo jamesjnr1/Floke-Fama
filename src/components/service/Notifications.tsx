@@ -41,7 +41,7 @@ export function Notifications({ items, onRead, onReadAll, onOpen, tone = 'dark' 
         className={cn('relative grid size-11 place-items-center rounded-xl border', tone === 'dark' ? 'border-white/10 bg-white/[0.04] text-white hover:bg-white/10' : 'border-line bg-paper text-ink hover:border-ink/25')}
       >
         <Icon name="fi-rr-bell" />
-        {unread > 0 && <span className="absolute -right-1 -top-1 grid min-w-5 place-items-center rounded-full bg-signal px-1 text-[0.875rem] font-semibold text-white">{unread}</span>}
+        {unread > 0 && <span className="absolute -right-1 -top-1 grid min-w-5 place-items-center rounded-md bg-signal px-1 text-[0.875rem] font-semibold text-white">{unread}</span>}
       </button>
       <AnimatePresence>
         {open && (
@@ -51,7 +51,7 @@ export function Notifications({ items, onRead, onReadAll, onOpen, tone = 'dark' 
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 4 }}
             transition={{ duration: 0.18 }}
-            className="absolute right-0 top-full z-50 mt-2 w-[min(380px,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-white/10 bg-[#111d17] shadow-2xl"
+            className="absolute right-0 top-full z-50 mt-2 w-[min(380px,calc(100vw-2rem))] overflow-hidden rounded-lg border border-white/10 bg-[#111d17] shadow-2xl"
           >
             <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
               <p className="text-sm font-semibold text-white">Notifications</p>
@@ -68,7 +68,7 @@ export function Notifications({ items, onRead, onReadAll, onOpen, tone = 'dark' 
                     }}
                     className={cn('flex w-full gap-3 border-b border-white/[0.05] px-4 py-3 text-left transition hover:bg-white/[0.04]', !n.read && 'bg-brand-500/[0.06]')}
                   >
-                    <span className={cn('mt-1.5 inline-block size-2 shrink-0 rounded-full', n.read ? 'bg-white/15' : 'bg-brand-400')} aria-hidden />
+                    <span className={cn('mt-1.5 inline-block size-2 shrink-0 rounded-md', n.read ? 'bg-white/15' : 'bg-brand-400')} aria-hidden />
                     <span>
                       <span className={cn('block text-sm', n.read ? 'text-white/75' : 'text-white')}>{n.text}</span>
                       <span className="text-xs text-white/60">{fmtTime(n.at)}</span>

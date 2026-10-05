@@ -124,6 +124,9 @@ export const dueLabel = (s: string) => {
 };
 
 /* ---------- derived ---------- */
+/** The asset's photo: its own, else the catalogue photo of the product it is. */
+export const assetImage = (a: Asset) => a.image ?? (a.productSlug ? `/images/products/${a.productSlug}.webp` : undefined);
+
 export const isOpen = (t: Ticket) => t.status !== 'resolved';
 export function assetStatus(asset: Asset, tickets: Ticket[]): AssetStatus {
   const open = tickets.filter((t) => t.assetId === asset.id && isOpen(t));

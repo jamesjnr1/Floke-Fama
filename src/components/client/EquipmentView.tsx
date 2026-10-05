@@ -3,13 +3,13 @@
 import Image from 'next/image';
 import { useState } from 'react';
 import { Icon, IconTile } from '@/components/ui/icon';
-import { assetStatus, daysUntil, dueLabel, isOpen, type Asset, type AssetStatus, type Ticket } from '@/lib/service/store';
+import { assetImage, assetStatus, daysUntil, dueLabel, isOpen, type Asset, type AssetStatus, type Ticket } from '@/lib/service/store';
 import { cn } from '@/lib/utils';
 
 const label: Record<AssetStatus, { text: string; dot: string }> = {
-  online: { text: 'Operational', dot: 'bg-brand-500' },
-  attention: { text: 'Service requested', dot: 'bg-signal' },
-  maintenance: { text: 'Engineer on site', dot: 'bg-ink-3' },
+  online: { text: 'Operational', dot: 'bg-[#0b8a58]' },
+  attention: { text: 'Service requested', dot: 'bg-[#d39a1c]' },
+  maintenance: { text: 'Engineer on site', dot: 'bg-[#2f6fa8]' },
 };
 
 /** Installed equipment: health, warranty and calibration for every system at the facility. */
@@ -36,11 +36,11 @@ export function EquipmentView({ assets, tickets, onOpenAsset, onAdd }: { assets:
           const warranty = daysUntil(a.warrantyUntil) >= 0;
           return (
             <li key={a.id} className="min-w-0">
-              <button onClick={() => onOpenAsset(a.id)} className="flex h-full w-full flex-col rounded-3xl border border-line bg-paper p-2 text-left transition hover:border-ink/20 hover:shadow-[0_24px_48px_-32px_rgb(11_21_16/0.45)]">
-                <div className="relative grid aspect-[16/9] place-items-center overflow-hidden rounded-2xl bg-[radial-gradient(90%_70%_at_50%_35%,#fff,#eef2ef)]">
-                  {a.image ? <Image src={a.image} alt="" fill sizes="(min-width: 1280px) 30vw, 50vw" className="object-contain p-6 mix-blend-multiply" /> : <IconTile name="fi-rr-microscope" />}
-                  <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-paper/90 px-2.5 py-1 text-xs font-medium text-ink backdrop-blur">
-                    <span className={cn('size-1.5 rounded-full', st.dot)} aria-hidden /> {st.text}
+              <button onClick={() => onOpenAsset(a.id)} className="flex h-full w-full flex-col rounded-xl border border-line bg-paper p-2 text-left transition hover:border-ink/20 hover:shadow-[0_24px_48px_-32px_rgb(11_21_16/0.45)]">
+                <div className="relative grid aspect-[16/9] place-items-center overflow-hidden rounded-lg bg-[radial-gradient(90%_70%_at_50%_35%,#fff,#eef2ef)]">
+                  {assetImage(a) ? <Image src={assetImage(a)!} alt="" fill sizes="(min-width: 1280px) 30vw, 50vw" className="object-contain p-6 mix-blend-multiply" /> : <IconTile name="fi-rr-microscope" />}
+                  <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-md bg-paper/90 px-2.5 py-1 text-xs font-medium text-ink backdrop-blur">
+                    <span className={cn('size-1.5 rounded-md', st.dot)} aria-hidden /> {st.text}
                   </span>
                 </div>
                 <div className="flex flex-1 flex-col p-3">
@@ -57,7 +57,7 @@ export function EquipmentView({ assets, tickets, onOpenAsset, onAdd }: { assets:
           );
         })}
         {list.length === 0 && (
-          <li className="rounded-3xl border border-dashed border-line p-8 text-center text-sm text-ink-3 sm:col-span-2 xl:col-span-3">
+          <li className="rounded-xl border border-dashed border-line p-8 text-center text-sm text-ink-3 sm:col-span-2 xl:col-span-3">
             {assets.length === 0 ? <>No equipment yet. <button onClick={onAdd} className="font-medium text-brand-700 hover:underline">Add your first system</button></> : <>No equipment matches “{q}”.</>}
           </li>
         )}
