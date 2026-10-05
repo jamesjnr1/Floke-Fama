@@ -67,7 +67,7 @@ export function Catalog({ products, categories, initialCategory, initialQuery, i
 
   return (
     <LayoutGroup>
-      <div className="sticky top-20 z-30 -mx-5 border-b border-line bg-canvas/85 px-5 py-4 backdrop-blur-xl md:-mx-10 md:px-10">
+      <div className="sticky top-20 z-30 -mx-5 border-b border-line bg-canvas px-5 py-4 md:-mx-10 md:px-10">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div role="tablist" aria-label="Categories" className="-mx-1 flex gap-1 overflow-x-auto px-1 pb-1 [scrollbar-width:none]">
             {tabs.map((t) => {
