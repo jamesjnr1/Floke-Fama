@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { JetBrains_Mono, Plus_Jakarta_Sans } from 'next/font/google';
+import { Space_Grotesk } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
 import { Toaster } from 'sonner';
 import { AccessibilityProvider } from '@/components/layout/accessibility';
@@ -10,9 +10,8 @@ import { allowIndexing, siteUrl } from '@/lib/utils';
 import '@/styles/uicons/uicons.css';
 import './globals.css';
 
-/** Plus Jakarta Sans: headings, body and navigation. JetBrains Mono: technical labels, specs, badges and numbers. */
-const jakarta = Plus_Jakarta_Sans({ subsets: ['latin'], weight: ['400', '500', '600', '700', '800'], variable: '--font-jakarta', display: 'swap' });
-const jetbrains = JetBrains_Mono({ subsets: ['latin'], weight: ['400', '500', '600'], variable: '--font-jetbrains', display: 'swap' });
+/** Space Grotesk: one grotesk typeface for the whole site, from headings and body to labels and figures. */
+const grotesk = Space_Grotesk({ subsets: ['latin'], weight: ['300', '400', '500', '600', '700'], variable: '--font-grotesk', display: 'swap' });
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -41,7 +40,7 @@ const organizationLd = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en-GH" className={`${jakarta.variable} ${jetbrains.variable}`} suppressHydrationWarning>
+    <html lang="en-GH" className={grotesk.variable} suppressHydrationWarning>
       <head>
         {/* Apply saved accessibility preferences before first paint */}
         <script dangerouslySetInnerHTML={{ __html: a11yBootScript }} />
