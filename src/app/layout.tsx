@@ -67,8 +67,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           }}
         />
         <ServiceWorkerRegister />
-        {/* Vercel Web Analytics: only on Vercel, where its script is served */}
-        {process.env.VERCEL && <Analytics />}
+        <Analytics />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationLd(site.contact)) }} />
       </body>
     </html>
