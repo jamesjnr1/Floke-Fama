@@ -72,8 +72,8 @@ export function Navbar() {
         className={cn(
           'mx-auto flex h-[72px] max-w-[1280px] items-center 2xl:max-w-[1400px] justify-between gap-6 rounded-2xl border px-4 transition-[background-color,border-color,box-shadow] duration-500 md:px-6',
           dark
-            ? cn('border-white/10 backdrop-blur-xl', solid ? 'bg-midnight/90 shadow-[0_20px_50px_-20px_rgb(0_0_0/0.6)]' : 'bg-white/[0.04]')
-            : cn('border-line backdrop-blur-xl', scrolled ? 'bg-paper/90 shadow-[0_20px_50px_-30px_rgb(11_21_16/0.35)]' : 'bg-paper/70'),
+            ? cn('border-white/10', solid ? 'bg-midnight/[0.97] shadow-[0_20px_50px_-20px_rgb(0_0_0/0.6)]' : 'bg-midnight/40')
+            : cn('border-line', scrolled ? 'bg-paper/[0.97] shadow-[0_20px_50px_-30px_rgb(11_21_16/0.35)]' : 'bg-paper/90'),
         )}
       >
         <Logo tone={dark ? 'dark' : 'light'} />
@@ -214,6 +214,7 @@ export function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            data-lenis-prevent
             className="fixed inset-x-3 bottom-3 top-[92px] flex flex-col overflow-y-auto rounded-2xl border border-white/10 bg-midnight/95 p-5 backdrop-blur-xl xl:hidden"
           >
             <ul className="divide-y divide-white/10">
