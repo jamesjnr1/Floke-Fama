@@ -179,7 +179,7 @@ export function Navbar() {
 
         <div className="flex items-center gap-3">
           <Link
-            href="/quote"
+            href="/checkout"
             className="hidden items-center whitespace-nowrap rounded-xl border border-white/15 px-3.5 py-3 text-[1rem] font-medium text-white 2xl:px-4 2xl:text-sm transition hover:border-white/30 hover:bg-white/[0.06] xl:inline-flex"
           >
             <Icon name="fi-rr-shopping-cart" className="mr-2 text-base" /> Cart
@@ -218,7 +218,7 @@ export function Navbar() {
             className="fixed inset-x-3 bottom-3 top-[92px] flex flex-col overflow-y-auto rounded-2xl border border-white/10 bg-midnight/95 p-5 backdrop-blur-xl xl:hidden"
           >
             <ul className="divide-y divide-white/10">
-              {[...flat, { href: '/quote', label: 'Cart' }, { href: '/portal', label: 'Client Portal Access' }].map((item, i) => (
+              {[...flat, { href: '/checkout', label: 'Cart' }, { href: '/portal', label: 'Client Portal Access' }].map((item, i) => (
                 <motion.li key={item.href} initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.04 * i }}>
                   <Link
                     href={item.href}
