@@ -68,8 +68,8 @@ export function SalesDock() {
             <ul data-lenis-prevent className="max-h-72 divide-y divide-line overflow-y-auto">
               {items.map((x) => (
                 <li key={x.slug} className="flex items-center gap-3 px-5 py-3">
-                  <span className="relative size-11 shrink-0 overflow-hidden rounded-xl border border-line bg-canvas">
-                    {x.image && <Image src={x.image} alt="" fill sizes="44px" className="object-contain p-1 mix-blend-multiply" />}
+                  <span className="relative size-11 shrink-0 overflow-hidden rounded-xl border border-line bg-white">
+                    {x.image && <Image src={x.image} alt="" fill sizes="44px" className="object-contain p-1" />}
                   </span>
                   <Link href={`/products/${x.slug}`} className="min-w-0 flex-1">
                     <span className="block truncate text-sm font-medium text-ink">{x.name}</span>

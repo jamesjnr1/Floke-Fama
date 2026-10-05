@@ -83,13 +83,13 @@ export function Capabilities() {
                     href={p.href}
                     className="group flex h-full flex-col overflow-hidden rounded-3xl bg-paper shadow-[0_30px_60px_-40px_rgb(0_0_0/0.7)] transition duration-500 ease-out-expo hover:-translate-y-1.5"
                   >
-                    <div className={cn('relative aspect-[4/3.6] overflow-hidden', p.product ? 'bg-[radial-gradient(90%_75%_at_50%_45%,#fff_0%,#eef3f4_70%,#e4eef0_100%)]' : 'bg-midnight')}>
+                    <div className={cn('relative aspect-[4/3.6] overflow-hidden', p.product ? 'bg-white' : 'bg-midnight')}>
                       <Image
                         src={p.image}
                         alt={p.alt}
                         fill
                         sizes="(min-width: 1024px) 320px, (min-width: 768px) 50vw, 84vw"
-                        className={cn('transition-transform duration-700 ease-out-expo group-hover:scale-105', p.product ? 'object-contain p-3 mix-blend-multiply' : 'object-cover')}
+                        className={cn('transition-transform duration-700 ease-out-expo group-hover:scale-105', p.product ? 'object-contain p-3' : 'object-cover')}
                       />
                       <span className={cn('absolute left-4 top-4 grid size-11 place-items-center rounded-xl text-base font-bold text-white', a.num)}>
                         {String(i + 1).padStart(2, '0')}

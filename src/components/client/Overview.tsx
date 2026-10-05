@@ -227,8 +227,8 @@ export function Overview({ name, facility, assets, tickets, orders, onOpenTicket
                 return (
                   <li key={a.id}>
                     <button onClick={() => onOpenAsset(a.id)} className="flex w-full items-center gap-3 py-3 text-left">
-                      <span className="relative size-11 shrink-0 overflow-hidden rounded-md border border-line bg-[#f5f6f4]">
-                        {assetImage(a) && <Image src={assetImage(a)!} alt="" fill sizes="44px" className="object-contain p-1 mix-blend-multiply" />}
+                      <span className="relative size-11 shrink-0 overflow-hidden rounded-md border border-line bg-white">
+                        {assetImage(a) && <Image src={assetImage(a)!} alt="" fill sizes="44px" className="object-contain p-1" />}
                         <span className={cn('absolute bottom-0.5 right-0.5 size-2 rounded-[2px] ring-2 ring-paper', h.dot)} aria-hidden />
                       </span>
                       <span className="min-w-0 flex-1">
