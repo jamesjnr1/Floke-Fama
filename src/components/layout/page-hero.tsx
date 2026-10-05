@@ -11,6 +11,7 @@ export function PageHero({
   lead,
   image = '/images/news/the-forgotten-stage-of-quality-cover.webp',
   position = '60% 35%',
+  flip = false,
 }: {
   /** Kept for the callers; the small label above the title is no longer shown. */
   label?: string;
@@ -20,12 +21,14 @@ export function PageHero({
   image?: string;
   /** CSS object-position for the photo. */
   position?: string;
+  /** Mirror the photo, to move its subject away from the title (only for photos without text). */
+  flip?: boolean;
 }) {
   return (
     <section className="relative isolate overflow-hidden bg-[linear-gradient(135deg,#10191e_0%,#16232a_45%,#0b3b40_100%)] text-white">
       <div aria-hidden className="absolute inset-0 -z-10">
         <div className="absolute inset-y-0 right-0 w-full md:w-[60%]">
-          <Image src={image} alt="" fill priority sizes="60vw" className="object-cover" style={{ objectPosition: position }} />
+          <Image src={image} alt="" fill priority sizes="60vw" className={flip ? '-scale-x-100 object-cover' : 'object-cover'} style={{ objectPosition: position }} />
         </div>
         {/* The photo fades into the dark field towards the text */}
         <div className="absolute inset-0 bg-[linear-gradient(90deg,#121e24_0%,#121e24_38%,rgb(18_30_36/0.82)_55%,rgb(14_44_48/0.45)_78%,rgb(11_59_64/0.25)_100%)] max-md:bg-[rgb(18_30_36/0.8)]" />
