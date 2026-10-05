@@ -1,7 +1,6 @@
 import Image from 'next/image';
-import { CountUp } from '@/components/motion/count-up';
 import { Reveal } from '@/components/motion/reveal';
-import { awards, companyFigures } from '@/data/seed';
+import { awards } from '@/data/seed';
 import { cn } from '@/lib/utils';
 
 /** Bento spans for five awards on a 6-column grid: feature + two stacked, then a 2 + 4 row. */
@@ -52,17 +51,6 @@ export function AwardsGallery() {
             These accolades serve as a testament to the <span className="font-medium text-ink">hard work of our team</span>, the{' '}
             <span className="font-medium text-ink">quality of our solutions</span>, and the <span className="font-medium text-brand-700">positive impact we’ve made in transforming healthcare delivery across Ghana and the West African region</span>.
           </p>
-          {/* Figures from the current Awards page, as proof for the sentence above */}
-          <dl className="mx-auto mt-8 flex w-fit divide-x divide-line rounded-full border border-line bg-paper py-2.5">
-            {companyFigures.map((f) => (
-              <div key={f.label} className="flex items-baseline gap-1 whitespace-nowrap px-3 md:gap-2 md:px-7">
-                <dt className="text-sm text-ink-3 md:text-[1.125rem]">{f.label}</dt>
-                <dd className="order-first text-xl font-bold tracking-[-0.03em] text-brand-600 md:text-3xl">
-                  <CountUp value={f.value} suffix={f.suffix} />
-                </dd>
-              </div>
-            ))}
-          </dl>
         </Reveal>
       </div>
     </section>

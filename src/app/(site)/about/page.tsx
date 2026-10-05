@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { PurposeBlocks } from '@/components/about/purpose-blocks';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Branches } from '@/components/about/branches';
 import { CoreValues } from '@/components/about/core-values';
 import { Impact } from '@/components/about/impact';
 import { PageHero } from '@/components/layout/page-hero';
@@ -82,11 +83,9 @@ export default async function AboutPage() {
           <Reveal className="lg:col-span-5">
             <div className="lg:sticky lg:top-28">
               <figure className="relative mx-auto aspect-[4/5] max-w-md overflow-hidden bg-[#e9e6e3] lg:max-w-none">
-                <Image src="/images/ceo-emmanuel-kenney.webp" alt="Mr. Emmanuel Kenney, Founder and Chief Executive Officer of Flokefama" fill sizes="(min-width: 1024px) 40vw, 100vw" className="object-cover object-top" />
-                <span aria-hidden className="absolute left-0 top-0 size-8 border-l-2 border-t-2 border-brand-600" />
-                <span aria-hidden className="absolute bottom-0 right-0 size-8 border-b-2 border-r-2 border-signal" />
+                <Image src="/images/ceo-emmanuel-kenney.jpg" alt="Mr. Emmanuel Kenney, Founder and Chief Executive Officer of Flokefama" fill sizes="(min-width: 1024px) 40vw, 100vw" className="object-cover object-top" />
               </figure>
-              <blockquote className="mx-auto mt-6 max-w-md border-l-2 border-signal pl-5 text-lg font-semibold leading-snug text-ink lg:max-w-none">
+              <blockquote className="mx-auto mt-6 max-w-md text-lg font-semibold leading-snug text-ink lg:max-w-none">
                 “Better healthcare should not be a privilege; it should be accessible, efficient and delivered with dignity and excellence.”
               </blockquote>
             </div>
@@ -162,15 +161,15 @@ export default async function AboutPage() {
               </p>
             </Reveal>
           </div>
-          <ul className="swipe-row mt-10 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <ul className="mt-10 grid gap-px border border-line bg-line md:grid-cols-2 lg:grid-cols-3">
             {servicesInBrief.map((x, i) => (
-              <li key={x.title}>
-                <Reveal delay={Math.min(i, 5) * 0.05} className="group flex h-full flex-col rounded-4xl border border-line bg-paper p-7 transition duration-500 ease-out-expo hover:-translate-y-1 hover:border-brand-300 hover:shadow-[0_30px_60px_-34px_rgb(11_21_16/0.35)]">
+              <li key={x.title} className="bg-paper">
+                <Reveal delay={(i % 3) * 0.05} className="flex h-full flex-col p-7 lg:p-9">
                   <div className="flex items-start justify-between">
                     <ToneIcon icon={briefIcons[i].icon} tone={briefIcons[i].tone} />
-                    <span className="font-mono text-xs text-ink-3">{String(i + 1).padStart(2, '0')}</span>
+                    <span className="font-mono text-sm text-ink-3">{String(i + 1).padStart(2, '0')}</span>
                   </div>
-                  <h4 className="mt-8 text-lg font-semibold tracking-[-0.01em] text-ink">{x.title}</h4>
+                  <h4 className="mt-6 text-xl font-bold tracking-[-0.01em] text-ink">{x.title}</h4>
                   <p className="mt-2 text-[1.125rem] leading-relaxed text-ink-3">{x.text}</p>
                 </Reveal>
               </li>
@@ -185,6 +184,8 @@ export default async function AboutPage() {
       </section>
 
       <Impact metrics={metrics} />
+
+      <Branches />
 
       {/* Core values */}
       <section id="values" className="scroll-mt-28 relative isolate overflow-hidden bg-canvas py-24 md:py-32">

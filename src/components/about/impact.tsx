@@ -50,8 +50,7 @@ export function Impact({ metrics }: { metrics: Metric[] }) {
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
           <div>
-            <p className="label !text-brand-300">Our impact</p>
-            <h2 className="display mt-3 max-w-3xl text-[clamp(1.9rem,1.2rem+2.4vw,3.25rem)] text-white">Equipping the labs and wards <span className="text-accent">that care for Ghana.</span></h2>
+            <h2 className="display max-w-3xl text-[clamp(1.9rem,1.2rem+2.4vw,3.25rem)] text-white">Equipping the labs and wards <span className="text-accent">that care for Ghana.</span></h2>
           </div>
         </Reveal>
 
