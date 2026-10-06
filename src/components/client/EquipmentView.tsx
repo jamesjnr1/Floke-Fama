@@ -41,7 +41,7 @@ export function EquipmentView({ assets, tickets, onOpenAsset }: { assets: Asset[
               <button onClick={() => onOpenAsset(a.id)} className="flex h-full w-full flex-col rounded-xl border border-line bg-paper p-2 text-left transition hover:border-ink/20 hover:shadow-[0_24px_48px_-32px_rgb(11_21_16/0.45)]">
                 <div className="relative grid aspect-[16/9] place-items-center overflow-hidden rounded-lg bg-white">
                   {assetImage(a) ? <Image src={assetImage(a)!} alt="" fill sizes="(min-width: 1280px) 30vw, 50vw" className="object-contain p-6" /> : <IconTile name="fi-rr-microscope" />}
-                  <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-md border border-line bg-paper px-2.5 py-1 text-xs font-medium text-ink">
+                  <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-md bg-paper/90 px-2.5 py-1 text-xs font-medium text-ink">
                     <span className={cn('size-1.5 rounded-md', st.dot)} aria-hidden /> {st.text}
                   </span>
                 </div>
