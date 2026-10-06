@@ -12,6 +12,6 @@ export const metadata: Metadata = {
 export default async function ClientPortalPage() {
   const session = await requireSession('client', '/portal');
   // Only what the dashboard needs to turn purchases into equipment
-  const products = catalogue.map(({ slug, name, brand, image, category }) => ({ slug, name, brand, image, category }));
+  const products = catalogue.map(({ slug, name, brand, image, category, types }) => ({ slug, name, brand, image, category, types }));
   return <ClientShell user={{ name: session.name, email: session.email, facility: session.facility }} products={products} />;
 }

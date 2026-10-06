@@ -242,4 +242,4 @@ export function EquipmentSheet({ asset, tickets, onClose, onRequest, onOpenTicke
   );
 }
 
-export interface CatalogueItem { slug: string; name: string; brand: string; image?: string; category?: string }
+export interface CatalogueItem { slug: string; name: string; brand: string; image?: string; category: string; types?: string[] }

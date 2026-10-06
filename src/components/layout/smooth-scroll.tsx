@@ -28,6 +28,17 @@ export function SmoothScroll() {
         stopInertiaOnNavigate: true,
         autoRaf: true,
       });
+      // Lenis marks <html> with "lenis-scrolling" / "lenis-smooth" at the start and end of every scroll. A class
+      // change on <html> makes the browser restyle the whole page, a visible hitch on long pages, so keep only
+      // the classes our CSS uses ("lenis", and "lenis-stopped" while a menu or dialog is open).
+      const l = lenis.current;
+      const quiet = l as unknown as { updateClassName: () => void };
+      quiet.updateClassName = () => {
+        const root = document.documentElement;
+        root.classList.add('lenis');
+        root.classList.toggle('lenis-stopped', l.isStopped);
+      };
+      quiet.updateClassName();
     };
     const stop = () => {
       lenis.current?.destroy();

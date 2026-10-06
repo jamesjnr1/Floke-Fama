@@ -16,6 +16,7 @@ import { useAccessibility } from '@/components/layout/accessibility';
 import { Icon } from '@/components/ui/icon';
 import { useSite } from '@/components/site-provider';
 import { logout } from '@/lib/auth/actions';
+import { needsInstallation } from '@/lib/installation';
 import { useOrders } from '@/lib/orders';
 import { CLIENT_FACILITY, isOpen, nextTicketId, useServiceStore, type Action, type Notification } from '@/lib/service/store';
 import { cn } from '@/lib/utils';
@@ -83,15 +84,16 @@ export function ClientShell({ user, products }: { user: { name: string; email: s
     else setRequesting({ open: true, assetId });
   };
 
-  // Behind the scenes: every order placed at checkout becomes this facility's equipment (awaiting installation),
-  // with an installation job for the engineers. Consumables are skipped. Each order is registered once.
+  // Behind the scenes: every order placed at checkout becomes this facility's equipment. Systems that need an
+  // engineer (analysers, ultrasound, monitors…) await installation; the rest is ready to use on delivery.
+  // Consumables are skipped. Each order is registered once.
   useEffect(() => {
     if (!ready) return;
     for (const o of orders) {
       if (state.purchases?.includes(o.reference)) continue;
       const items = o.items.flatMap((x) => {
         const p = products.find((c) => c.slug === x.slug);
-        return p && p.category !== 'consumables' ? [{ slug: p.slug, name: tidyName(p.name), brand: p.brand, image: p.image, qty: x.qty }] : [];
+        return p && p.category !== 'consumables' ? [{ slug: p.slug, name: tidyName(p.name), brand: p.brand, image: p.image, qty: x.qty, install: needsInstallation(p) }] : [];
       });
       rawDispatch({ type: 'purchase', order: o.reference, facility, items });
     }
