@@ -115,10 +115,10 @@ html.lenis body {
 .lenis:not(.lenis-autoToggle).lenis-stopped {
   overflow: clip;
 }
-.lenis.lenis-smooth {
+.lenis {
   scroll-behavior: auto !important;
 }
-.lenis.lenis-smooth [data-lenis-prevent] {
+.lenis [data-lenis-prevent] {
   overscroll-behavior: contain;
 }
 

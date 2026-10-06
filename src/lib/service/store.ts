@@ -273,7 +273,7 @@ export type Action =
   | { type: 'rate'; id: string; rating: number; feedback?: string }
   | { type: 'calibrate'; assetId: string; result: Certificate['result']; notes?: string }
   | { type: 'addAsset'; asset: Asset }
-  | { type: 'purchase'; order: string; facility: string; items: { slug: string; name: string; brand: string; image?: string; qty: number }[] }
+  | { type: 'purchase'; order: string; facility: string; items: { slug: string; name: string; brand: string; image?: string; qty: number; install: boolean }[] }
   | { type: 'read'; id: string }
   | { type: 'readAll'; audience: Audience };
 
@@ -371,12 +371,16 @@ export function reducer(actor: Actor) {
         for (const item of action.items)
           for (let k = 0; k < item.qty; k++) {
             const id = uid('AS');
+            // Ready-to-use equipment (BP monitors, diagnostic sets, beds…) goes straight into service on delivery;
+            // the rest waits for an engineer to install and commission it.
             assets.push({
-              id, name: item.name, brand: item.brand, productSlug: item.slug, image: item.image, serial: 'Recorded at installation',
-              facility: action.facility, location: 'Set at installation', readings: [50, 52, 51, 53, 52, 54, 53, 55, 54, 56],
-              installed: now, warrantyUntil: iso(addMonths(new Date(), 12)), lastCalibration: now, nextCalibration: iso(addMonths(new Date(), 6)),
-              intervalMonths: 6, certificates: [], installation: { order: action.order },
+              id, name: item.name, brand: item.brand, productSlug: item.slug, image: item.image,
+              serial: item.install ? 'Recorded at installation' : 'On the delivery note',
+              facility: action.facility, location: item.install ? 'Set at installation' : 'Location not set', readings: [50, 52, 51, 53, 52, 54, 53, 55, 54, 56],
+              installed: now, warrantyUntil: iso(addMonths(new Date(), 12)), lastCalibration: now, nextCalibration: iso(addMonths(new Date(), item.install ? 6 : 12)),
+              intervalMonths: item.install ? 6 : 12, certificates: [], ...(item.install ? { installation: { order: action.order } } : {}),
             });
+            if (!item.install) continue;
             n += 1;
             tickets.push({
               id: `TK-${n}`, assetId: id, kind: 'installation', title: `${item.name}: delivery, installation and commissioning`,
@@ -385,11 +389,20 @@ export function reducer(actor: Actor) {
               log: [{ at: now, by: 'System', text: `Installation booked from order ${action.order}`, kind: 'system' }],
             });
           }
-        if (!assets.length) return { ...state, purchases: [...(state.purchases ?? []), action.order] };
-        let next: ServiceState = { ...state, assets: [...state.assets, ...assets], tickets: [...tickets, ...state.tickets], purchases: [...(state.purchases ?? []), action.order] };
-        next = notify(next, `${assets.length} new system${assets.length === 1 ? '' : 's'} to install at ${action.facility} (order ${action.order}).`, { ticketId: tickets[0].id });
+        const purchases = [...(state.purchases ?? []), action.order];
+        if (!assets.length) return { ...state, purchases };
+        let next: ServiceState = { ...state, assets: [...state.assets, ...assets], tickets: [...tickets, ...state.tickets], purchases };
+        if (tickets.length)
+          next = notify(next, `${tickets.length} new system${tickets.length === 1 ? '' : 's'} to install at ${action.facility} (order ${action.order}).`, { ticketId: tickets[0].id });
         // Tell the hospital too
-        return { ...next, notifications: [{ id: uid('N'), at: now, text: `Order ${action.order}: ${assets.length === 1 ? assets[0].name : `${assets.length} systems`} added to your equipment. Our engineers will deliver, install and commission ${assets.length === 1 ? 'it' : 'them'}.`, audience: 'client', read: false, ticketId: tickets[0].id }, ...next.notifications] };
+        const ready = assets.length - tickets.length;
+        const what = assets.length === 1 ? assets[0].name : `${assets.length} items`;
+        const text = !tickets.length
+          ? `Order ${action.order}: ${what} added to your equipment, ready to use on delivery.`
+          : !ready
+            ? `Order ${action.order}: ${what} added to your equipment. Our engineers will deliver, install and commission ${assets.length === 1 ? 'it' : 'them'}.`
+            : `Order ${action.order}: ${what} added to your equipment. ${ready} ${ready === 1 ? 'is' : 'are'} ready to use on delivery; our engineers will install and commission ${tickets.length === 1 ? `the ${assets.find((a) => a.installation)?.name}` : `the other ${tickets.length}`}.`;
+        return { ...next, notifications: [{ id: uid('N'), at: now, text, audience: 'client', read: false, ...(tickets[0] ? { ticketId: tickets[0].id } : { assetId: assets[0].id }) }, ...next.notifications] };
       }
       case 'addAsset':
         return notify({ ...state, assets: [...state.assets, action.asset] },
