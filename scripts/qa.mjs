@@ -38,7 +38,10 @@ for (const path of [...pages, ...Object.keys(protectedPages)]) {
     const errors = [];
     page.on('pageerror', (e) => errors.push(e.message));
     page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
-    await page.goto(base + path, { waitUntil: 'networkidle' });
+    await page.goto(base + path, { waitUntil: 'load' });
+    // Chrome reports below-the-fold lazy images as started but holds them until they near the viewport, so a page
+    // can stay "busy" forever; wait for the network to settle, but not longer than a few seconds.
+    await page.waitForLoadState('networkidle', { timeout: 5000 }).catch(() => {});
     // Scroll through so lazy images and in-view animations settle
     await page.evaluate(async () => {
       for (let y = 0; y < document.body.scrollHeight; y += innerHeight / 2) { scrollTo(0, y); await new Promise((r) => setTimeout(r, 60)); }
