@@ -77,11 +77,11 @@ export function Overview({ name, facility, assets, tickets, orders, onOpenTicket
   if (assets.length === 0)
     return (
       <div className="space-y-8">
-        {header(`Welcome to the ${facility} dashboard. Equipment you buy from Flokefama appears here by itself: we install it, look after it and keep every certificate in one place.`)}
+        {header(`Welcome to the ${facility} dashboard. Equipment you buy from Flokefama appears here by itself: we deliver it, install what needs an engineer, look after it and keep every certificate in one place.`)}
         <ol className="grid divide-y divide-line overflow-hidden rounded-xl border border-line bg-paper md:grid-cols-3 md:divide-x md:divide-y-0">
           {[
             { n: '01', title: 'Buy equipment', body: 'Order from the Flokefama shop and check out. Each machine is added to your equipment automatically.', action: <Link href="/products" className="text-sm font-semibold text-brand-700 hover:underline">Shop equipment →</Link> },
-            { n: '02', title: 'We install it', body: 'Our engineers deliver, install, commission and train your staff. You follow the job here and get the installation certificate.', action: <button onClick={() => onGo('orders')} className="text-sm font-semibold text-brand-700 hover:underline">Your orders →</button> },
+            { n: '02', title: 'We deliver and install it', body: 'Ready-to-use items, like BP monitors and diagnostic sets, go straight into service. Systems such as analysers and ultrasound are installed, commissioned and handed over with training by our engineers.', action: <button onClick={() => onGo('orders')} className="text-sm font-semibold text-brand-700 hover:underline">Your orders →</button> },
             { n: '03', title: 'We look after it', body: 'Request service in a few clicks, follow the engineer, and keep warranty, calibration dates and certificates in one place.', action: <a href={contact.phoneHref} className="text-sm font-semibold text-brand-700 hover:underline">Already own Flokefama equipment? Call {contact.phone}</a> },
           ].map((s) => (
             <li key={s.n} className="flex flex-col p-7">
