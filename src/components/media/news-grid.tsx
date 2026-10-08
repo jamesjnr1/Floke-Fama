@@ -15,10 +15,7 @@ export async function NewsGrid() {
   return (
     <section id="news" className="scroll-mt-28 bg-paper section-y">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
-        <p className="eyebrow">Latest news</p>
-        <h2 className="mt-4 text-[clamp(2rem,1.2rem+2.8vw,3.5rem)] font-medium leading-[1.05] tracking-[-0.03em] text-ink">
-          News, Blog <em className="font-serif font-normal">&amp; Press</em>
-        </h2>
+        <h2 className="display text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">News, Blog &amp; Press</h2>
         <NewsMore initial={6}>
           {articles.map((a) => (
             <li key={a.slug}>
