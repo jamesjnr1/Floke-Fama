@@ -28,7 +28,7 @@ export function BeyondSupply() {
           </Button>
         </Reveal>
 
-        <Reveal delay={0.1} className="relative aspect-[4/3] overflow-hidden lg:aspect-square">
+        <Reveal delay={0.1} className="relative aspect-[4/3] overflow-hidden rounded-lg lg:aspect-square">
           <Image
             src="/images/home-equipment.webp"
             alt="Hospital equipment: an oxygen concentrator, a hospital bed, a patient monitor and a wheelchair"

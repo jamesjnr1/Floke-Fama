@@ -27,7 +27,7 @@ export async function AwardsGallery() {
             return (
             <li key={a.id} className={l.span}>
               <Reveal delay={Math.min(i, 4) * 0.05} className="h-full">
-                <article className={cn('group relative isolate flex h-full overflow-hidden bg-midnight text-white', l.height)}>
+                <article className={cn('group relative isolate flex h-full overflow-hidden rounded-lg bg-midnight text-white', l.height)}>
                   <Image
                     src={a.image}
                     alt={a.alt}
