@@ -121,13 +121,6 @@
   .section-y {
     @apply py-16 md:py-32;
   }
-  /* Section eyebrow, as on youversion.com: a short italic serif line with a dash ("Latest news —") */
-  .eyebrow {
-    @apply font-serif text-[1.375rem] leading-none text-ink-3 md:text-2xl;
-  }
-  .eyebrow::after {
-    content: ' —';
-  }
   /* Phones: a stack of cards becomes one horizontal swipe row (saves scrolling). md+: the element's own grid. */
   .swipe-row {
     @apply -mx-5 flex snap-x snap-mandatory scroll-px-5 gap-3 overflow-x-auto px-5 pb-2 md:mx-0 md:grid md:scroll-px-0 md:overflow-visible md:px-0 md:pb-0;
