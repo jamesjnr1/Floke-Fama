@@ -20,12 +20,12 @@ export default async function EsgPage() {
     <>
       <SitePageHero page="esg" />
 
-      <section className="bg-paper py-14 md:py-32">
+      <section className="bg-paper section-y">
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
           <ul className="swipe-row gap-4 md:grid-cols-2">
             {pillars.map((p, i) => (
               <li key={p.title}>
-                <Reveal delay={i * 0.06} className="flex h-full flex-col overflow-hidden rounded-4xl border border-line bg-canvas">
+                <Reveal delay={i * 0.06} className="flex h-full flex-col overflow-hidden border border-line bg-canvas">
                   <div className="relative aspect-[16/10] bg-mist">
                     <Image src={p.image} alt={p.alt} fill sizes="(min-width: 768px) 600px, 84vw" className="object-cover" />
                   </div>

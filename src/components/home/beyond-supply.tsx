@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
  */
 export function BeyondSupply() {
   return (
-    <section aria-labelledby="beyond-supply-title" className="border-y border-line bg-paper py-16 md:py-28">
+    <section aria-labelledby="beyond-supply-title" className="bg-paper section-y">
       <div className="mx-auto grid max-w-[1280px] items-center gap-10 px-5 md:px-16 lg:grid-cols-[1.15fr_1fr] lg:gap-16">
         <Reveal>
           <h2 id="beyond-supply-title" className="display text-[clamp(2rem,1.3rem+2vw,2.875rem)] leading-[1.1] text-ink">
@@ -28,7 +28,7 @@ export function BeyondSupply() {
           </Button>
         </Reveal>
 
-        <Reveal delay={0.1} className="relative aspect-[4/3] overflow-hidden rounded-3xl lg:aspect-square">
+        <Reveal delay={0.1} className="relative aspect-[4/3] overflow-hidden lg:aspect-square">
           <Image
             src="/images/home-equipment.webp"
             alt="Hospital equipment: an oxygen concentrator, a hospital bed, a patient monitor and a wheelchair"

@@ -68,7 +68,7 @@ export function ArticleBody({ blocks }: { blocks: Block[] }) {
             );
           case 'img':
             return (
-              <figure key={i} className="!my-10 overflow-hidden last:!mb-0 rounded-3xl border border-line bg-paper">
+              <figure key={i} className="!my-10 overflow-hidden last:!mb-0 border border-line bg-paper">
                 <Image src={b.src} alt={b.alt} width={b.width} height={b.height} sizes="(min-width: 1024px) 800px, 100vw" className="h-auto w-full" />
                 {b.alt && <figcaption className="border-t border-line px-5 py-3 text-sm text-ink-3">{b.alt}</figcaption>}
               </figure>

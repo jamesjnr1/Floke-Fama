@@ -154,9 +154,9 @@ function ProductCard({ product, category, wide }: { product: Product; category?:
     <Link
       href={`/products/${product.slug}`}
       scroll={false}
-      className="group flex h-full flex-col rounded-3xl border border-line bg-paper p-1.5 transition-all sm:rounded-4xl sm:p-2 duration-700 ease-out-expo hover:-translate-y-1 hover:border-transparent hover:shadow-[0_30px_60px_-30px_rgb(11_21_16/0.35)]"
+      className="group flex h-full flex-col border border-line bg-paper p-1.5 transition-all sm:p-2 duration-700 ease-out-expo hover:-translate-y-1 hover:border-transparent hover:shadow-[0_30px_60px_-30px_rgb(11_21_16/0.35)]"
     >
-      <ProductVisual product={product} category={category} sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" className={cn('rounded-[1.1rem] sm:rounded-[1.6rem]', wide ? 'aspect-square sm:aspect-auto sm:h-96' : 'aspect-square')} />
+      <ProductVisual product={product} category={category} sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" className={wide ? 'aspect-square sm:aspect-auto sm:h-96' : 'aspect-square'} />
       {/* Picture first: the image takes most of the card, the text stays to two short lines */}
       <div className="px-2.5 pb-3 pt-3 sm:px-3.5 sm:pb-4">
         <p className="flex items-center gap-2 text-xs font-medium text-ink-3">
