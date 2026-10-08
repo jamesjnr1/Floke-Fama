@@ -124,7 +124,9 @@ export function Catalog({ products, categories, initialCategory, initialQuery, i
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.96 }}
               transition={{ duration: 0.5, delay: Math.min(i, 8) * 0.03, ease: [0.16, 1, 0.3, 1] }}
-              className={cn(p.featured && !category && !query && i === 0 && 'col-span-2')}
+              // Off-screen cards skip rendering until they near the viewport (smoother scrolling through ~90 products);
+              // the clip margin leaves room for the hover lift and shadow.
+              className={cn('[content-visibility:auto] [contain-intrinsic-size:auto_380px] [overflow-clip-margin:48px]', p.featured && !category && !query && i === 0 && 'col-span-2')}
             >
               <ProductCard product={p} category={catBySlug.get(p.category)} wide={Boolean(p.featured && !category && !query && i === 0)} />
             </motion.li>
