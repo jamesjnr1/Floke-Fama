@@ -86,7 +86,7 @@ function EventGrid({ events }: { events: EventItem[] }) {
               <span className="text-5xl font-bold leading-none tracking-[-0.03em] text-ink">{e.date.slice(8, 10)}</span>
             </p>
             {e.image && (
-              <Link href={`/events/${e.id}`} className="relative block aspect-[16/10] overflow-hidden bg-midnight">
+              <Link href={`/events/${e.id}`} className="relative block aspect-[16/10] overflow-hidden rounded-lg bg-midnight">
                 <Image src={e.image} alt={e.alt ?? ''} fill sizes="(min-width: 768px) 40vw, 100vw" className="object-cover object-top transition-transform duration-700 hover:scale-[1.03]" />
               </Link>
             )}
