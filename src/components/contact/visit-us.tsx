@@ -8,7 +8,7 @@ import { getSite } from '@/lib/site';
 export async function VisitUs({ id = 'visit', photo = true }: { id?: string; photo?: boolean }) {
   const { branches, contact, maps } = await getSite();
   return (
-    <section id={id} className="scroll-mt-28 bg-paper py-14 md:py-32">
+    <section id={id} className="scroll-mt-28 bg-paper section-y">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal className="flex flex-wrap items-end justify-between gap-6">
           <div>
@@ -21,7 +21,7 @@ export async function VisitUs({ id = 'visit', photo = true }: { id?: string; pho
           {/* The building */}
           {photo && (
           <Reveal className="lg:col-span-5">
-            <figure className="group relative isolate h-full min-h-[280px] overflow-hidden rounded-5xl md:min-h-[440px] bg-midnight">
+            <figure className="group relative isolate h-full min-h-[280px] overflow-hidden md:min-h-[440px] bg-midnight">
               <Image
                 src="/images/head-office.webp"
                 alt="The Floke Company head office building in Santa Maria, Accra"

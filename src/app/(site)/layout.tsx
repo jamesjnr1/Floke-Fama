@@ -1,3 +1,4 @@
+import { HeaderPreload } from '@/components/layout/header-preload';
 import { Navbar } from '@/components/layout/Navbar';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { SalesDock } from '@/components/sales/sales-dock';
@@ -10,6 +11,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
       <main id="main" lang="en">{children}</main>
       <SiteFooter />
       <SalesDock />
+      <HeaderPreload />
     </>
   );
 }

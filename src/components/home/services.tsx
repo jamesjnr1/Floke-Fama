@@ -25,7 +25,7 @@ const solid: Record<Tone, string> = {
 /** Our services: a 3 × 2 grid of cells divided by thin gridlines. A cell turns dark on hover. */
 export function Services() {
   return (
-    <section id="services" className="relative scroll-mt-20 bg-canvas py-14 md:py-28">
+    <section id="services" className="relative scroll-mt-20 bg-canvas section-y">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
           <div>

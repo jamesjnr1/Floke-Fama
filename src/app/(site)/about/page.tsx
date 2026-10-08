@@ -48,7 +48,7 @@ export default async function AboutPage() {
       </section>
 
       {/* Who we are */}
-      <section id="who-we-are" className="scroll-mt-28 bg-paper py-14 md:py-32">
+      <section id="who-we-are" className="scroll-mt-28 bg-paper section-y">
         <div className="mx-auto grid max-w-[1280px] items-center gap-12 px-5 md:px-10 lg:grid-cols-2 lg:gap-16">
           <Reveal>
             <h2 className="display text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">Redefining healthcare delivery in Ghana and across Africa.</h2>
@@ -67,7 +67,7 @@ export default async function AboutPage() {
             </div>
           </Reveal>
           <Reveal delay={0.1}>
-            <figure className="relative aspect-[4/3.6] overflow-hidden rounded-5xl bg-midnight">
+            <figure className="relative aspect-[4/3.6] overflow-hidden bg-midnight">
               <Image src="/images/office-team.webp" alt="Inside the Flokefama head office: the ‘Together we do great things’ wall" fill sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />
               <figcaption className="absolute bottom-4 left-4 rounded-full bg-paper/90 px-3.5 py-2 text-xs font-medium text-ink backdrop-blur">Head office · Santa Maria, Accra</figcaption>
             </figure>
@@ -76,7 +76,7 @@ export default async function AboutPage() {
       </section>
 
       {/* Leadership. Portrait from the current site's media library; text from the CEO profile supplied by Flokefama. */}
-      <section id="ceo" className="scroll-mt-28 border-t border-line bg-paper py-14 md:py-24">
+      <section id="ceo" className="scroll-mt-28 bg-paper section-y">
         <div className="mx-auto grid max-w-[1280px] gap-10 px-5 md:px-10 lg:grid-cols-12 lg:gap-16">
           <Reveal className="lg:col-span-5">
             <div className="lg:sticky lg:top-28">
@@ -114,7 +114,7 @@ export default async function AboutPage() {
       </section>
 
       {/* Industry experience and services (content from the current About page) */}
-      <section id="experience" className="scroll-mt-28 border-t border-line bg-canvas py-14 md:py-32">
+      <section id="experience" className="scroll-mt-28 bg-canvas section-y">
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
           <div className="grid gap-10 lg:grid-cols-12 lg:items-center lg:gap-16">
             <Reveal className="lg:col-span-7">
@@ -174,7 +174,7 @@ export default async function AboutPage() {
       <Branches />
 
       {/* Core values */}
-      <section id="values" className="scroll-mt-28 bg-canvas py-20 md:py-28">
+      <section id="values" className="scroll-mt-28 bg-canvas section-y">
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
           <Reveal>
             <h2 className="display max-w-3xl text-[clamp(2rem,1.2rem+2.8vw,3.5rem)] text-ink">The principles that define who we are.</h2>
