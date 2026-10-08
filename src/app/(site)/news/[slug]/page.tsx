@@ -89,7 +89,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
       {a.image && (
         <div className="bg-canvas">
           <div className="mx-auto max-w-[1200px] px-5">
-            <figure className="relative isolate overflow-hidden border border-line bg-midnight shadow-[0_40px_80px_-50px_rgb(11_21_16/0.6)]">
+            <figure className="relative isolate overflow-hidden rounded-lg border border-line bg-midnight shadow-[0_40px_80px_-50px_rgb(11_21_16/0.6)]">
               <Image src={a.image.src} alt="" fill aria-hidden sizes="100vw" className="-z-10 scale-110 object-cover opacity-50 blur-2xl" />
               <div className="relative mx-auto aspect-[16/9] max-h-[640px] w-full">
                 <Image src={a.image.src} alt={a.image.alt} fill priority sizes="(min-width: 1180px) 1140px, 100vw" className="object-contain" />

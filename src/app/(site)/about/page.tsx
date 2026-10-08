@@ -67,7 +67,7 @@ export default async function AboutPage() {
             </div>
           </Reveal>
           <Reveal delay={0.1}>
-            <figure className="relative aspect-[4/3.6] overflow-hidden bg-midnight">
+            <figure className="relative aspect-[4/3.6] overflow-hidden rounded-lg bg-midnight">
               <Image src="/images/office-team.webp" alt="Inside the Flokefama head office: the ‘Together we do great things’ wall" fill sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />
               <figcaption className="absolute bottom-4 left-4 rounded-full bg-paper/90 px-3.5 py-2 text-xs font-medium text-ink backdrop-blur">Head office · Santa Maria, Accra</figcaption>
             </figure>
@@ -80,7 +80,7 @@ export default async function AboutPage() {
         <div className="mx-auto grid max-w-[1280px] gap-10 px-5 md:px-10 lg:grid-cols-12 lg:gap-16">
           <Reveal className="lg:col-span-5">
             <div className="lg:sticky lg:top-28">
-              <figure className="relative mx-auto aspect-[4/5] max-w-md overflow-hidden bg-[#e9e6e3] lg:max-w-none">
+              <figure className="relative mx-auto aspect-[4/5] max-w-md overflow-hidden rounded-lg bg-[#e9e6e3] lg:max-w-none">
                 <Image src="/images/ceo-emmanuel-kenney.jpg" alt="Mr. Emmanuel Kenney, Founder and Chief Executive Officer of Flokefama" fill sizes="(min-width: 1024px) 40vw, 100vw" className="object-cover object-top" />
               </figure>
               <blockquote className="mx-auto mt-6 max-w-md text-lg font-semibold leading-snug text-ink lg:max-w-none">

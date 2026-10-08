@@ -33,7 +33,7 @@ export function MachineSlideshow() {
 
   return (
     <div className="relative" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocus={() => setPaused(true)} onBlur={() => setPaused(false)}>
-      <Link href={`/products/${m.slug}`} className="group block overflow-hidden bg-white" aria-label={`${m.brand} ${m.name}: view product`}>
+      <Link href={`/products/${m.slug}`} className="group block overflow-hidden rounded-lg bg-white" aria-label={`${m.brand} ${m.name}: view product`}>
         <div className="relative h-[clamp(220px,calc(100svh-540px),420px)] bg-white">
           <AnimatePresence mode="popLayout" initial={false}>
             <motion.div

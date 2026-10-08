@@ -34,7 +34,7 @@ export function ProductGallery({ product, category, sizes, priority, shared, cla
                 aria-label={`Photo ${i + 1} of ${photos.length}`}
                 aria-current={i === active}
                 className={cn(
-                  'relative block size-16 overflow-hidden border bg-white transition md:size-[72px]',
+                  'relative block size-16 overflow-hidden rounded-md border bg-white transition md:size-[72px]',
                   i === active ? 'border-brand-600 ring-2 ring-brand-100' : 'border-line hover:border-ink/30',
                 )}
               >
