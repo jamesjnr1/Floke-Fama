@@ -51,7 +51,7 @@ export function RelatedProducts({ products, category }: { products: Product[]; c
             <li key={p.slug} className="relative">
               <AddToQuote item={{ slug: p.slug, name: p.name, brand: p.brand, image: p.image }} compact className="absolute right-3 top-3 z-10" />
               <Link href={`/products/${p.slug}`} className="group flex h-full flex-col rounded-3xl border border-line bg-canvas p-2 transition hover:border-transparent hover:shadow-[0_24px_50px_-28px_rgb(11_21_16/0.35)]">
-                <span className="relative block aspect-square overflow-hidden bg-white">
+                <span className="relative block aspect-square overflow-hidden rounded-md bg-white">
                   {p.image && <Image src={p.image} alt="" fill sizes="(min-width: 1024px) 25vw, 50vw" className="object-contain p-[14%] transition-transform duration-700 group-hover:scale-105" />}
                 </span>
                 <span className="px-2 pb-2 pt-3">

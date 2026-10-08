@@ -24,7 +24,7 @@ export function NewArrivals({ products, categories }: { products: Product[]; cat
               <Link
                 href={`/products/${p.slug}`}
                 scroll={false}
-                className="group flex h-full flex-col overflow-hidden border border-line bg-paper transition duration-500 ease-out-expo hover:-translate-y-1 hover:shadow-[0_30px_60px_-30px_rgb(11_21_16/0.35)]"
+                className="group flex h-full flex-col overflow-hidden rounded-lg border border-line bg-paper transition duration-500 ease-out-expo hover:-translate-y-1 hover:shadow-[0_30px_60px_-30px_rgb(11_21_16/0.35)]"
               >
                 <div className="relative">
                   <ProductVisual product={p} category={category} shared={false} sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 84vw" className="aspect-[4/3.2]" />

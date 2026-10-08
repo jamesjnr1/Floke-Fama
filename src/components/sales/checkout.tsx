@@ -137,7 +137,7 @@ export function Checkout() {
                     const qty = x.qty ?? 1;
                     return (
                       <li key={x.slug} className="flex flex-wrap items-center gap-x-4 gap-y-3 p-4">
-                        <span className="relative size-14 shrink-0 overflow-hidden border border-line bg-white">
+                        <span className="relative size-14 shrink-0 overflow-hidden rounded-md border border-line bg-white">
                           {x.image && <Image src={x.image} alt="" fill sizes="56px" className="object-contain p-1" />}
                         </span>
                         <span className="min-w-0 flex-1 basis-40">

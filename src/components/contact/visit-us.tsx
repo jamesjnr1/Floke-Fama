@@ -21,7 +21,7 @@ export async function VisitUs({ id = 'visit', photo = true }: { id?: string; pho
           {/* The building */}
           {photo && (
           <Reveal className="lg:col-span-5">
-            <figure className="group relative isolate h-full min-h-[280px] overflow-hidden md:min-h-[440px] bg-midnight">
+            <figure className="group relative isolate h-full min-h-[280px] overflow-hidden rounded-lg md:min-h-[440px] bg-midnight">
               <Image
                 src="/images/head-office.webp"
                 alt="The Floke Company head office building in Santa Maria, Accra"
