@@ -61,7 +61,7 @@ const pillars = [
  */
 export function Capabilities() {
   return (
-    <section aria-labelledby="capabilities-title" className="relative isolate overflow-hidden bg-[linear-gradient(160deg,#10191e_0%,#16232a_55%,#0b3b40_100%)] py-16 md:py-24">
+    <section aria-labelledby="capabilities-title" className="relative isolate overflow-hidden bg-[linear-gradient(160deg,#10191e_0%,#16232a_55%,#0b3b40_100%)] section-y">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal className="flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
           <h2 id="capabilities-title" className="display text-[clamp(2rem,1.3rem+2.6vw,3.5rem)] text-white">
@@ -81,7 +81,7 @@ export function Capabilities() {
                 <Reveal delay={i * 0.06} className="h-full">
                   <Link
                     href={p.href}
-                    className="group flex h-full flex-col overflow-hidden rounded-3xl bg-paper shadow-[0_30px_60px_-40px_rgb(0_0_0/0.7)] transition duration-500 ease-out-expo hover:-translate-y-1.5"
+                    className="group flex h-full flex-col overflow-hidden bg-paper shadow-[0_30px_60px_-40px_rgb(0_0_0/0.7)] transition duration-500 ease-out-expo hover:-translate-y-1.5"
                   >
                     <div className={cn('relative aspect-[4/3.6] overflow-hidden', p.product ? 'bg-white' : 'bg-midnight')}>
                       <Image

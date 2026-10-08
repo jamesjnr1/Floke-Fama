@@ -126,7 +126,7 @@ export const defaultEsgPillars: EsgPillar[] = [
 ];
 
 export const defaultPageHeaders: Record<PageKey, PageHeader> = {
-  about: { title: 'Purveyor of excellence', highlight: 'in healthcare', lead: 'FLOKEFAMA is a multiple award-winning company and one of the most trusted medical equipment suppliers in Ghana.' },
+  about: { title: 'Purveyor of excellence', highlight: 'in healthcare', lead: 'FLOKEFAMA is a multiple award-winning company and one of the most trusted medical equipment suppliers in Ghana.', image: '/images/news/the-forgotten-stage-of-quality-cover.webp' },
   services: { title: 'We go beyond just supplying', highlight: 'medical equipment', lead: 'End-to-end solutions, from procurement and installation to training and maintenance.', image: '/images/headers/services.webp', position: '50% 40%' },
   shop: { title: 'Clinical-grade equipment.', highlight: 'Instantly searchable.', lead: '{count} products for hospitals and laboratories, with installation, training and after-sales support on everything we supply.', image: '/images/headers/shop.webp', position: '50% 35%' },
   events: { title: 'Moments that', highlight: 'bring us together', lead: 'Celebrations, community programmes and industry events from across the Flokefama family.', image: '/images/headers/events-ghana.webp', position: '50% 40%' },
