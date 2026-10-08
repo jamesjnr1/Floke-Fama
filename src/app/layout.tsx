@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Plus_Jakarta_Sans, Space_Grotesk } from 'next/font/google';
+import { Instrument_Serif, Plus_Jakarta_Sans, Space_Grotesk } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
 import { Toaster } from 'sonner';
 import { AccessibilityProvider } from '@/components/layout/accessibility';
@@ -15,6 +15,8 @@ import './globals.css';
 /** Plus Jakarta Sans: the main typeface (headings, body, navigation, the hero). Space Grotesk: small labels and figures. */
 const jakarta = Plus_Jakarta_Sans({ subsets: ['latin'], weight: ['400', '500', '600', '700', '800'], variable: '--font-jakarta', display: 'swap' });
 const grotesk = Space_Grotesk({ subsets: ['latin'], weight: ['400', '500', '600', '700'], variable: '--font-grotesk', display: 'swap' });
+// Italic serif for the accent words in page headers
+const serif = Instrument_Serif({ subsets: ['latin'], weight: '400', style: 'italic', variable: '--font-instrument', display: 'swap' });
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -44,7 +46,7 @@ const organizationLd = (contact: Contact) => ({
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const site = await getSite();
   return (
-    <html lang="en-GH" className={`${jakarta.variable} ${grotesk.variable}`} suppressHydrationWarning>
+    <html lang="en-GH" className={`${jakarta.variable} ${grotesk.variable} ${serif.variable}`} suppressHydrationWarning>
       <head>
         {/* Apply saved accessibility preferences before first paint */}
         <script dangerouslySetInnerHTML={{ __html: a11yBootScript }} />

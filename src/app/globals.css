@@ -12,6 +12,7 @@
   /* Plus Jakarta Sans is the main typeface; Space Grotesk (the `font-mono` utility) sets small labels and figures. */
   --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-instrument), ui-serif, Georgia, serif;
 
   /* Text sizes one step up from Tailwind's defaults, so everything stays readable */
   --text-xs: 0.875rem;
@@ -105,21 +106,6 @@
       transition-duration: 0.01ms !important;
     }
   }
-}
-
-/* Lenis smooth scrolling (its recommended base styles) */
-html.lenis,
-html.lenis body {
-  height: auto;
-}
-.lenis:not(.lenis-autoToggle).lenis-stopped {
-  overflow: clip;
-}
-.lenis {
-  scroll-behavior: auto !important;
-}
-.lenis [data-lenis-prevent] {
-  overscroll-behavior: contain;
 }
 
 @layer components {
@@ -227,6 +213,7 @@ html[data-links='underline'] a { text-decoration: underline !important; text-und
 html[data-font='readable'] {
   --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
   --font-mono: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+  --font-serif: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
 }
 html[data-font='readable'] body { letter-spacing: 0.012em; word-spacing: 0.08em; }
 html[data-font='readable'] .display { letter-spacing: 0; }
