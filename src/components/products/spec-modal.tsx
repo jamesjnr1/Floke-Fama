@@ -22,7 +22,7 @@ export function SpecModal({ product, category }: { product: Product; category?: 
           className="fixed inset-x-3 bottom-3 top-16 z-[70] mx-auto max-w-6xl overflow-hidden rounded-5xl bg-canvas shadow-2xl outline-none md:inset-x-6 md:bottom-6 md:top-24"
         >
           <Dialog.Title className="sr-only">{product.name}</Dialog.Title>
-          <div data-lenis-prevent className="grid h-full overflow-y-auto lg:grid-cols-[1fr_1.1fr] lg:overflow-hidden">
+          <div className="grid h-full overflow-y-auto lg:grid-cols-[1fr_1.1fr] lg:overflow-hidden">
             <div className="relative lg:h-full">
               <ProductGallery product={product} category={category} sizes="(min-width: 1024px) 50vw, 100vw" priority className="lg:h-full lg:pb-4" visualClassName="min-h-[300px] flex-1 rounded-none" thumbsClassName="px-4" />
             </div>

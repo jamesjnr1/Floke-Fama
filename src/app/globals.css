@@ -107,21 +107,6 @@
   }
 }
 
-/* Lenis smooth scrolling (its recommended base styles) */
-html.lenis,
-html.lenis body {
-  height: auto;
-}
-.lenis:not(.lenis-autoToggle).lenis-stopped {
-  overflow: clip;
-}
-.lenis {
-  scroll-behavior: auto !important;
-}
-.lenis [data-lenis-prevent] {
-  overscroll-behavior: contain;
-}
-
 @layer components {
   /* Section label: Geist Sans, 12px, medium, +15% tracking, uppercase, in medical blue (red is kept for alerts and the logo dot) */
   .label {
