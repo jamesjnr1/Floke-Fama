@@ -1,48 +1,41 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { Reveal } from '@/components/motion/reveal';
+import { Icon } from '@/components/ui/icon';
+import { NewsMore } from '@/components/media/news-more';
 import { getArticles } from '@/lib/data';
-import { cn } from '@/lib/utils';
 
 export const formatDate = (iso: string) => new Date(`${iso}T12:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 
-/** Media Centre: every news, blog and press post from flokefama.com, each opening its full article. */
+/**
+ * Media Centre, laid out like youversion.com/newsroom: a plain grid of large photos with the headline and
+ * "Read more" beneath, nothing else. Every news, blog and press post from flokefama.com opens its full article.
+ */
 export async function NewsGrid() {
   const articles = await getArticles();
   return (
-    <section id="news" className="scroll-mt-28 border-t border-line bg-canvas py-12 md:py-28">
+    <section id="news" className="scroll-mt-28 bg-paper section-y">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
-        <Reveal>
-          <h2 className="display text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">News, Blog &amp; Press</h2>
-        </Reveal>
-        <ul className="swipe-row mt-10 gap-4 md:mt-12 md:grid-cols-2 lg:grid-cols-3">
-          {articles.map((a, i) => (
-            <li key={a.slug} className={cn(i === 0 && 'lg:col-span-2')}>
-              <Reveal delay={Math.min(i, 5) * 0.05} className="h-full">
-                <Link
-                  href={`/news/${a.slug}`}
-                  className="group flex h-full flex-col overflow-hidden rounded-3xl border border-line bg-paper transition duration-500 hover:-translate-y-1 hover:shadow-[0_30px_60px_-30px_rgb(11_21_16/0.35)]"
-                >
+        <p className="eyebrow">Latest news</p>
+        <h2 className="mt-4 text-[clamp(2rem,1.2rem+2.8vw,3.5rem)] font-medium leading-[1.05] tracking-[-0.03em] text-ink">
+          News, Blog <em className="font-serif font-normal">&amp; Press</em>
+        </h2>
+        <NewsMore initial={6}>
+          {articles.map((a) => (
+            <li key={a.slug}>
+              <Link href={`/news/${a.slug}`} className="group block">
+                <div className="relative aspect-[25/24] overflow-hidden bg-mist">
                   {a.image && (
-                    <div className="relative aspect-[16/9] overflow-hidden bg-mist">
-                      <Image src={a.image.src} alt="" fill sizes="(min-width: 1024px) 33vw, 100vw" className="object-cover object-top transition-transform duration-1000 ease-out-expo group-hover:scale-105" />
-                    </div>
+                    <Image src={a.image.src} alt="" fill sizes="(min-width: 1024px) 400px, (min-width: 768px) 50vw, 84vw" className="object-cover transition-transform duration-700 ease-out-expo group-hover:scale-[1.03]" />
                   )}
-                  <div className="flex flex-1 flex-col p-6">
-                    <p className="label flex items-center gap-2">
-                      <span className="size-1.5 rounded-full bg-brand-500" aria-hidden /> {a.categories.join(', ')} · {formatDate(a.date)}
-                    </p>
-                    <h3 className="mt-3 text-xl font-bold leading-snug tracking-[-0.02em]">{a.title}</h3>
-                    <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-ink-3">{a.excerpt}</p>
-                    <span className="mt-auto inline-flex items-center gap-1 pt-4 text-sm font-medium text-brand-700">
-                      Read more
-                    </span>
-                  </div>
-                </Link>
-              </Reveal>
+                </div>
+                <h3 className="mt-5 text-xl font-medium leading-snug tracking-[-0.015em] text-ink md:text-2xl">{a.title}</h3>
+                <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-ink">
+                  Read more <Icon name="fi-rr-arrow-small-right" className="text-signal transition-transform group-hover:translate-x-0.5" />
+                </span>
+              </Link>
             </li>
           ))}
-        </ul>
+        </NewsMore>
       </div>
     </section>
   );

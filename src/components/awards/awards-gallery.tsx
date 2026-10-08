@@ -16,7 +16,7 @@ const layout = [
 export async function AwardsGallery() {
   const { awards } = await getSite();
   return (
-    <section className="bg-canvas pb-24 pt-24 md:pb-32 md:pt-32">
+    <section className="bg-canvas section-y">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal>
           <h2 className="display max-w-3xl text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">We are proud to share some of the awards that celebrate our passion and progress.</h2>
@@ -27,7 +27,7 @@ export async function AwardsGallery() {
             return (
             <li key={a.id} className={l.span}>
               <Reveal delay={Math.min(i, 4) * 0.05} className="h-full">
-                <article className={cn('group relative isolate flex h-full overflow-hidden rounded-4xl bg-midnight text-white', l.height)}>
+                <article className={cn('group relative isolate flex h-full overflow-hidden bg-midnight text-white', l.height)}>
                   <Image
                     src={a.image}
                     alt={a.alt}

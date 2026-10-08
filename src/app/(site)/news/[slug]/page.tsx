@@ -89,7 +89,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
       {a.image && (
         <div className="bg-canvas">
           <div className="mx-auto max-w-[1200px] px-5">
-            <figure className="relative isolate overflow-hidden rounded-5xl border border-line bg-midnight shadow-[0_40px_80px_-50px_rgb(11_21_16/0.6)]">
+            <figure className="relative isolate overflow-hidden border border-line bg-midnight shadow-[0_40px_80px_-50px_rgb(11_21_16/0.6)]">
               <Image src={a.image.src} alt="" fill aria-hidden sizes="100vw" className="-z-10 scale-110 object-cover opacity-50 blur-2xl" />
               <div className="relative mx-auto aspect-[16/9] max-h-[640px] w-full">
                 <Image src={a.image.src} alt={a.image.alt} fill priority sizes="(min-width: 1180px) 1140px, 100vw" className="object-contain" />
@@ -151,7 +151,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
       </section>
 
       {/* More from the Media Centre */}
-      <section className="border-t border-line bg-paper py-16 md:py-24">
+      <section className="bg-paper section-y">
         <div className="mx-auto max-w-[1200px] px-5">
           <div className="flex items-end justify-between gap-4">
             <h2 className="text-2xl font-bold tracking-[-0.02em] text-ink md:text-3xl">More from the Media Centre</h2>
@@ -160,7 +160,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
           <ul className="swipe-row mt-8 gap-4 md:grid-cols-3">
             {related.map((r) => (
               <li key={r.slug}>
-                <Link href={`/news/${r.slug}`} className="group flex h-full flex-col overflow-hidden rounded-3xl border border-line bg-paper transition duration-500 hover:-translate-y-1 hover:shadow-[0_30px_60px_-30px_rgb(11_21_16/0.35)]">
+                <Link href={`/news/${r.slug}`} className="group flex h-full flex-col overflow-hidden border border-line bg-paper transition duration-500 hover:-translate-y-1 hover:shadow-[0_30px_60px_-30px_rgb(11_21_16/0.35)]">
                   {r.image && (
                     <div className="relative aspect-[16/10] overflow-hidden bg-mist">
                       <Image src={r.image.src} alt="" fill sizes="(min-width: 768px) 33vw, 100vw" className="object-cover object-top transition-transform duration-1000 ease-out-expo group-hover:scale-105" />

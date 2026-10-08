@@ -9,7 +9,7 @@ const pin = ['text-brand-600', 'text-[#087d88]', 'text-[#0068a8]', 'text-signal-
 export async function Branches() {
   const { branches } = await getSite();
   return (
-    <section id="branches" className="scroll-mt-28 border-t border-line bg-paper py-14 md:py-24">
+    <section id="branches" className="scroll-mt-28 bg-paper section-y">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
           <h2 className="display text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">Our branches</h2>

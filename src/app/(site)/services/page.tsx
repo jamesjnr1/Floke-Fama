@@ -26,7 +26,7 @@ export default async function ServicesPage() {
       <SitePageHero page="services" />
       <Services />
 
-      <section id="why-choose-us" className="scroll-mt-28 border-t border-line bg-paper py-14 md:py-28">
+      <section id="why-choose-us" className="scroll-mt-28 bg-paper section-y">
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
           <Reveal>
             <h2 className="display max-w-3xl text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">

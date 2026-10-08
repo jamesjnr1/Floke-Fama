@@ -23,7 +23,7 @@ export function Testimonials() {
   }, [active, paused, reduce, testimonials.length]);
 
   return (
-    <section id="testimonials" className="scroll-mt-28 border-y border-line bg-paper py-14 md:py-32">
+    <section id="testimonials" className="scroll-mt-28 bg-paper section-y">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal className="flex flex-col items-center text-center">
           <h2 className="display max-w-3xl text-[clamp(1.9rem,1.2rem+2.4vw,3.25rem)]">Hear what our customers say.</h2>

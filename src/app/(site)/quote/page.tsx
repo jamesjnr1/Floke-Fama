@@ -66,7 +66,7 @@ export default async function QuotePage({ searchParams }: { searchParams: Promis
             <ul className="mt-8 divide-y divide-line overflow-hidden rounded-4xl border border-line bg-paper" data-testid="quote-list-summary">
               {listed.map((p) => (
                 <li key={p.slug} className="flex items-center gap-4 p-4">
-                  <span className="relative size-14 shrink-0 overflow-hidden rounded-2xl border border-line bg-white">
+                  <span className="relative size-14 shrink-0 overflow-hidden border border-line bg-white">
                     {p.image && <Image src={p.image} alt="" fill sizes="56px" className="object-contain p-1.5" />}
                   </span>
                   <span className="min-w-0">
