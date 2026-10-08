@@ -2,51 +2,46 @@ import Image from 'next/image';
 import { Reveal } from '@/components/motion/reveal';
 
 /**
- * Page header shared by the inner pages, in the site colours: the hero's deep Mirage → Deep Sea field, with a
- * photo (different per page) dissolving into it from the right. White title, accent words in soft green.
- * Information only: actions live in the page content.
+ * Page header shared by the inner pages: the page's photo fills the whole header under a dark veil, with a large
+ * centred title. The accent words (`<em>` in the title) are set in an italic serif. Information only: actions live
+ * in the page content.
  */
 export function PageHero({
   title,
   lead,
   image = '/images/news/the-forgotten-stage-of-quality-cover.webp',
-  position = '60% 35%',
+  position = '50% 40%',
   flip = false,
 }: {
   /** Kept for the callers; the small label above the title is no longer shown. */
   label?: string;
   title: React.ReactNode;
   lead?: string;
-  /** The photo for this page's header, faded in on the right. */
+  /** The photo for this page's header. */
   image?: string;
   /** CSS object-position for the photo. */
   position?: string;
-  /** Mirror the photo, to move its subject away from the title (only for photos without text). */
+  /** Mirror the photo (only for photos without text). */
   flip?: boolean;
 }) {
   return (
-    <section className="relative isolate overflow-hidden bg-[linear-gradient(135deg,#10191e_0%,#16232a_45%,#0b3b40_100%)] text-white">
+    <section className="relative isolate grid min-h-[34rem] place-items-center overflow-hidden bg-[#10191e] text-center text-white md:min-h-[min(47.5rem,92svh)]">
       <div aria-hidden className="absolute inset-0 -z-10">
-        <div className="absolute inset-y-0 right-0 w-full md:w-[60%]">
-          <Image src={image} alt="" fill priority sizes="60vw" className={flip ? '-scale-x-100 object-cover' : 'object-cover'} style={{ objectPosition: position }} />
-        </div>
-        {/* The photo fades into the dark field towards the text */}
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,#121e24_0%,#121e24_38%,rgb(18_30_36/0.82)_55%,rgb(14_44_48/0.45)_78%,rgb(11_59_64/0.25)_100%)] max-md:bg-[rgb(18_30_36/0.8)]" />
-        <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-[#10191e]/80 to-transparent" />
-        {/* A faint grid of pixels on the plain side, fading out before the photo */}
-        <div className="absolute inset-y-0 left-0 w-full bg-[radial-gradient(rgb(127_209_165/0.22)_1px,transparent_1.4px)] bg-[length:18px_18px] [mask-image:linear-gradient(90deg,#000_0%,rgb(0_0_0/0.6)_30%,transparent_55%)] md:w-[70%]" />
+        <Image src={image} alt="" fill priority sizes="100vw" className={flip ? '-scale-x-100 object-cover' : 'object-cover'} style={{ objectPosition: position }} />
+        {/* Dark veil: keeps the white title readable on any photo, deepest at the bottom */}
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(10_16_20/0.6)_0%,rgb(10_16_20/0.48)_40%,rgb(10_16_20/0.86)_100%)]" />
       </div>
-      <div className="mx-auto max-w-[1280px] px-5 pb-12 pt-32 md:px-16 md:pb-20 md:pt-44">
-        <div className="max-w-2xl lg:max-w-3xl">
-          <Reveal delay={0.06}>
-            <h1 className="display text-[clamp(2.25rem,1.2rem+3.4vw,4rem)] uppercase leading-[0.98] text-white [&_span]:!text-brand-300">{title}</h1>
+      <div className="mx-auto w-full max-w-[1280px] px-5 pb-16 pt-36 md:px-16 md:pb-24 md:pt-40">
+        <Reveal delay={0.06}>
+          <h1 className="mx-auto max-w-5xl text-balance text-[clamp(2.5rem,1.1rem+4.6vw,5.25rem)] font-medium leading-[1.02] tracking-[-0.03em] text-white [&_em]:font-serif [&_em]:font-normal [&_em]:tracking-[-0.01em]">
+            {title}
+          </h1>
+        </Reveal>
+        {lead && (
+          <Reveal delay={0.12}>
+            <p className="no-justify mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-white/85 md:text-xl">{lead}</p>
           </Reveal>
-          {lead && (
-            <Reveal delay={0.12}>
-              <p className="no-justify mt-5 max-w-xl text-lg leading-relaxed text-white/85">{lead}</p>
-            </Reveal>
-          )}
-        </div>
+        )}
       </div>
     </section>
   );

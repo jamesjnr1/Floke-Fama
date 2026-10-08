@@ -4,7 +4,7 @@ import type { PageKey } from '@/lib/site-content';
 
 /**
  * A page header from the editable site content (Sanity → Site content → Page headers): heading, the words shown
- * in green, the intro line and the photo. `vars` fills placeholders such as {count} in the intro line.
+ * in italic, the intro line and the photo. `vars` fills placeholders such as {count} in the intro line.
  */
 export async function SitePageHero({ page, flip, vars = {} }: { page: PageKey; flip?: boolean; vars?: Record<string, string | number> }) {
   const h = (await getSite()).pageHeaders[page];
@@ -16,7 +16,7 @@ export async function SitePageHero({ page, flip, vars = {} }: { page: PageKey; f
       flip={flip}
       title={
         <>
-          {h.title} {h.highlight && <span className="text-brand-600">{h.highlight}</span>}
+          {h.title} {h.highlight && <em>{h.highlight}</em>}
         </>
       }
       lead={lead}
