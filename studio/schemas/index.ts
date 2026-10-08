@@ -231,7 +231,7 @@ const header = (name: string, title: string) =>
     options: { collapsible: true, collapsed: true },
     fields: [
       defineField({ name: 'title', type: 'string', description: 'First part of the heading' }),
-      defineField({ name: 'highlight', type: 'string', description: 'Words shown in green after the heading' }),
+      defineField({ name: 'highlight', type: 'string', description: 'Words shown in italic after the heading' }),
       defineField({ name: 'lead', title: 'Intro line', type: 'text', rows: 2 }),
       defineField({ name: 'image', title: 'Header photo', type: 'image', options: { hotspot: true }, description: 'Wide photo; shown on the right, fading into the dark background' }),
     ],
