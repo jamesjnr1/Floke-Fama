@@ -3,6 +3,7 @@ import { HeroLogos } from '@/components/home/hero-logos';
 import { MachineSlideshow } from '@/components/home/machine-slideshow';
 import { Reveal } from '@/components/motion/reveal';
 import { Button } from '@/components/ui/button';
+import { navStyle } from '@/lib/nav-style';
 import { getSite } from '@/lib/site';
 
 /**
@@ -16,6 +17,9 @@ export async function Hero() {
     <section className="relative isolate flex min-h-[100svh] flex-col overflow-hidden bg-[linear-gradient(135deg,#10191e_0%,#16232a_40%,#0b3b40_72%,#10191e_100%)] text-white">
       {/* Soft glows as gradients (no CSS blur filters, which are costly while scrolling) */}
       <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(40%_50%_at_85%_40%,rgb(0_138_87/0.16),transparent_70%),radial-gradient(30%_40%_at_30%_70%,rgb(13_155_168/0.1),transparent_70%)]" />
+
+      {/* Under the full-width menu bar: start in the bar's own colour, so there is no dark edge where they meet */}
+      {navStyle === 'bar' && <div aria-hidden className="absolute inset-x-0 top-0 -z-10 h-56 bg-[linear-gradient(180deg,#16232a_0,#16232a_72px,rgb(22_35_42/0)_100%)]" />}
 
       {/* ECG trace */}
       <svg aria-hidden className="absolute inset-x-0 top-[38%] -z-10 h-32 w-full opacity-[0.12]" viewBox="0 0 1400 100" preserveAspectRatio="none">
