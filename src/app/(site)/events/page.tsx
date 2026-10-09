@@ -8,7 +8,7 @@ import { Icon } from '@/components/ui/icon';
 import { getEvents } from '@/lib/data';
 import { longDate } from '@/lib/events';
 import type { EventItem } from '@/lib/types';
-import { siteUrl } from '@/lib/utils';
+import { cn, siteUrl } from '@/lib/utils';
 
 // Re-render daily so events move from Upcoming to Past, and the countdown stays right.
 export const revalidate = 86400;
@@ -59,7 +59,7 @@ export default async function EventsPage() {
               <Reveal>
                 <h2 className="mt-16 text-2xl font-semibold tracking-[-0.01em] text-ink md:mt-20">Past events</h2>
               </Reveal>
-              <EventGrid events={past} />
+              <EventGrid events={past} past />
             </>
           )}
         </div>
@@ -71,37 +71,64 @@ export default async function EventsPage() {
   );
 }
 
-const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const dateParts = (iso: string) => {
+  const d = new Date(`${iso}T12:00:00Z`);
+  return { weekday: weekdays[d.getUTCDay()], day: d.getUTCDate(), month: `${months[d.getUTCMonth()]} ${d.getUTCFullYear()}` };
+};
 
-/** Events as a list: the date on the left, the picture, then title, place, time, a line about it and View event details. */
-function EventGrid({ events }: { events: EventItem[] }) {
+/**
+ * Events as a clean list of rows: the day on the left, then the time and place, then the event with its
+ * picture. The next upcoming event's date is picked out in red; past events sit on a faint striped
+ * background. A month label starts each new month.
+ */
+function EventGrid({ events, past = false }: { events: EventItem[]; past?: boolean }) {
   return (
-    <ul className="mt-6 border-t border-line">
-      {events.map((e, i) => (
-        <li key={e.id} id={e.id} className="scroll-mt-28 border-b border-line">
-          <Reveal delay={i * 0.05} className="grid gap-6 py-10 md:grid-cols-[88px_minmax(0,1fr)_minmax(0,1fr)] md:gap-10">
-            <p className="flex items-baseline gap-3 md:block" aria-label={longDate(e.date)}>
-              <span className="text-lg font-semibold uppercase tracking-[0.12em] text-ink-2">{months[Number(e.date.slice(5, 7)) - 1]}</span>
-              <span aria-hidden className="my-2 hidden h-0.5 w-6 bg-line md:block" />
-              <span className="text-5xl font-bold leading-none tracking-[-0.03em] text-ink">{e.date.slice(8, 10)}</span>
-            </p>
-            {e.image && (
-              <Link href={`/events/${e.id}`} className="relative block aspect-[16/10] overflow-hidden rounded-lg bg-midnight">
-                <Image src={e.image} alt={e.alt ?? ''} fill sizes="(min-width: 768px) 40vw, 100vw" className="object-cover object-top transition-transform duration-700 hover:scale-[1.03]" />
+    <ul className="mt-6 space-y-3">
+      {events.map((e, i) => {
+        const d = dateParts(e.date);
+        const newMonth = i === 0 || dateParts(events[i - 1].date).month !== d.month;
+        return (
+          <li key={e.id} id={e.id} className="scroll-mt-28">
+            {newMonth && <p className={cn('pb-3 text-base font-semibold text-ink-2', i > 0 && 'pt-6')}>{d.month}</p>}
+            <Reveal delay={Math.min(i, 5) * 0.04}>
+              <Link
+                href={`/events/${e.id}`}
+                className={cn(
+                  'group grid grid-cols-[72px_minmax(0,1fr)] items-center gap-x-5 gap-y-4 rounded-lg border p-5 transition md:grid-cols-[96px_minmax(0,19rem)_minmax(0,1fr)_auto] md:gap-x-8 md:px-8',
+                  past
+                    ? 'border-transparent bg-[repeating-linear-gradient(135deg,rgb(11_21_16/0.035)_0_14px,transparent_14px_28px)] bg-canvas hover:border-line'
+                    : 'border-line bg-paper hover:border-ink/25 hover:shadow-[0_20px_40px_-32px_rgb(11_21_16/0.4)]',
+                )}
+                aria-label={`${e.title}, ${longDate(e.date)}`}
+              >
+                <span className="row-span-2 border-r border-line pr-5 text-center md:row-span-1 md:pr-8">
+                  <span className={cn('block text-lg', !past && i === 0 ? 'text-signal' : 'text-ink-2')}>{d.weekday}</span>
+                  <span className={cn('block text-[2.75rem] font-medium leading-none tracking-[-0.02em]', !past && i === 0 ? 'text-signal' : 'text-ink')}>{d.day}</span>
+                </span>
+                <span className="min-w-0 space-y-2 text-[0.9375rem] text-ink-2">
+                  <span className="flex items-center gap-2.5">
+                    <Icon name="fi-rr-clock" className="shrink-0 text-ink-3" /> <span className="truncate">{e.time}</span>
+                  </span>
+                  <span className="flex items-center gap-2.5" title={e.venue}>
+                    <Icon name="fi-rr-marker" className="shrink-0 text-ink-3" /> <span className="truncate">{e.venue}</span>
+                  </span>
+                </span>
+                <span className="col-start-2 flex min-w-0 items-center gap-4 md:col-start-auto">
+                  {e.image && (
+                    <span className="relative size-12 shrink-0 overflow-hidden rounded-md bg-midnight">
+                      <Image src={e.image} alt="" fill sizes="48px" className="object-cover object-top" />
+                    </span>
+                  )}
+                  <span className="min-w-0 font-medium leading-snug text-ink">{e.title}</span>
+                </span>
+                <Icon name="fi-rr-arrow-small-right" className="hidden text-xl text-ink-3 transition-transform group-hover:translate-x-1 group-hover:text-ink md:block" />
               </Link>
-            )}
-            <div className="flex flex-col">
-              <h3 className="text-2xl font-semibold leading-snug tracking-[-0.01em] text-ink">{e.title}</h3>
-              <p className="mt-3 font-medium text-ink-3">{e.venue}</p>
-              <p className="font-medium text-ink-3">{e.time}</p>
-              <p className="no-justify mt-4 line-clamp-3 leading-relaxed text-ink-2">{e.body}</p>
-              <Link href={`/events/${e.id}`} className="group mt-6 flex items-center gap-3 border-t border-line pt-5 font-semibold text-ink md:mt-auto">
-                View event details <Icon name="fi-rr-arrow-small-right" className="text-ink-3 transition-transform group-hover:translate-x-1 group-hover:text-brand-600" />
-              </Link>
-            </div>
-          </Reveal>
-        </li>
-      ))}
+            </Reveal>
+          </li>
+        );
+      })}
     </ul>
   );
 }
