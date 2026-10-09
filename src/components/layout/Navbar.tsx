@@ -43,7 +43,14 @@ const darkTop = ['/portal'];
 const matches = (pathname: string, href: string) => (href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(`${href}/`));
 const isActive = (pathname: string, item: NavItem) => (item.children ? item.children.some((c) => matches(pathname, c.href)) : matches(pathname, item.href));
 
-/** Global Header: floating glass bar, 1280px max, 72px tall. */
+/**
+ * Menu bar style. 'bar' (default): a dark bar across the full width, fixed at the top. 'floating': the earlier
+ * rounded glass bar that floats over the page. Switch with NEXT_PUBLIC_NAV_STYLE in Vercel (then redeploy).
+ */
+const navStyle: 'bar' | 'floating' = process.env.NEXT_PUBLIC_NAV_STYLE === 'floating' ? 'floating' : 'bar';
+const bar = navStyle === 'bar';
+
+/** Global Header, 72px tall: a full-width dark bar, or the floating glass bar (see navStyle). */
 export function Navbar() {
   const { contact } = useSite();
   const pathname = usePathname();
@@ -87,13 +94,14 @@ export function Navbar() {
   const solid = open || scrolled || !darkTop.includes(pathname);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 px-3 pt-3 md:px-6 md:pt-4">
+    <header className={cn('fixed inset-x-0 top-0 z-50', !bar && 'px-3 pt-3 md:px-6 md:pt-4')}>
       <div
         className={cn(
-          'mx-auto flex h-[72px] max-w-[1280px] items-center 2xl:max-w-[1400px] justify-between gap-6 rounded-2xl border px-4 transition-[background-color,border-color,box-shadow] duration-500 md:px-6',
-          dark
+          bar && 'flex h-[72px] w-full items-center justify-between gap-6 border-b border-white/[0.06] bg-midnight px-4 shadow-[0_14px_30px_-18px_rgb(0_0_0/0.55)] md:px-8 xl:px-10',
+          !bar && 'mx-auto flex h-[72px] max-w-[1280px] items-center 2xl:max-w-[1400px] justify-between gap-6 rounded-2xl border px-4 transition-[background-color,border-color,box-shadow] duration-500 md:px-6',
+          !bar && (dark
             ? cn('border-white/10', solid ? 'bg-midnight/[0.97] shadow-[0_20px_50px_-20px_rgb(0_0_0/0.6)]' : 'bg-midnight/40')
-            : cn('border-line', scrolled ? 'bg-paper/[0.97] shadow-[0_20px_50px_-30px_rgb(11_21_16/0.35)]' : 'bg-paper/90'),
+            : cn('border-line', scrolled ? 'bg-paper/[0.97] shadow-[0_20px_50px_-30px_rgb(11_21_16/0.35)]' : 'bg-paper/90')),
         )}
       >
         <Logo tone={dark ? 'dark' : 'light'} />
@@ -293,7 +301,10 @@ export function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed inset-x-3 bottom-3 top-[92px] flex flex-col overflow-y-auto rounded-2xl border border-white/10 bg-midnight/95 p-5 backdrop-blur-xl xl:hidden"
+            className={cn(
+              'fixed flex flex-col overflow-y-auto bg-midnight/95 p-5 backdrop-blur-xl xl:hidden',
+              bar ? 'inset-x-0 bottom-0 top-[72px] border-t border-white/10' : 'inset-x-3 bottom-3 top-[92px] rounded-2xl border border-white/10',
+            )}
           >
             <ul className="divide-y divide-white/10">
               {[...flat, { href: '/checkout', label: 'Cart' }, user ? { href: home, label: homeLabel } : { href: '/login', label: 'Sign in' }].map((item, i) => (
