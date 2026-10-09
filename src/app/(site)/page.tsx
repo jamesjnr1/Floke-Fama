@@ -5,6 +5,7 @@ import { Capabilities } from '@/components/home/capabilities';
 import { PurposeBlocks } from '@/components/about/purpose-blocks';
 import { BeyondSupply } from '@/components/home/beyond-supply';
 import { Testimonials } from '@/components/home/testimonials';
+import { SolutionsInAction } from '@/components/home/solutions-in-action';
 
 export const revalidate = 600;
 
@@ -15,6 +16,7 @@ export default function HomePage() {
   return (
     <>
       <Hero />
+      <SolutionsInAction />
       <Partners heading={false} logos={false} />
       <BeyondSupply />
       <section aria-label="Our mission, vision and aim" className="bg-canvas section-y">
