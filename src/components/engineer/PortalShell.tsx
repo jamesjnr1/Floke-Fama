@@ -12,7 +12,7 @@ import { Notifications } from '@/components/service/Notifications';
 import { Overview } from '@/components/engineer/Overview';
 import { SystemsView } from '@/components/engineer/SystemsView';
 import { TicketsView } from '@/components/engineer/TicketsView';
-import { LogoMark } from '@/components/layout/logo';
+import { LogoMark, LogoWordmark } from '@/components/layout/logo';
 import { useAccessibility } from '@/components/layout/accessibility';
 import { Icon } from '@/components/ui/icon';
 import { useSite } from '@/components/site-provider';
@@ -23,18 +23,57 @@ import { cn } from '@/lib/utils';
 type View = 'overview' | 'tickets' | 'systems' | 'calibration' | 'docs';
 const nav: { id: View; label: string; icon: string }[] = [
   { id: 'overview', label: 'Overview', icon: 'fi-rr-apps' },
-  { id: 'tickets', label: 'Service Tickets', icon: 'fi-rr-headset' },
-  { id: 'systems', label: 'System Pulse', icon: 'fi-rr-heart-rate' },
-  { id: 'calibration', label: 'Calibration', icon: 'fi-rr-chart-line-up' },
-  { id: 'docs', label: 'Documentation', icon: 'fi-rr-book-alt' },
+  { id: 'tickets', label: 'Service requests', icon: 'fi-rr-clipboard-list' },
+  { id: 'systems', label: 'Equipment', icon: 'fi-rr-microscope' },
+  { id: 'calibration', label: 'Calibration', icon: 'fi-rr-badge-check' },
+  { id: 'docs', label: 'Documents', icon: 'fi-rr-book-alt' },
 ];
 
-/** Biomedical Engineer Service Portal: sidebar rail + workspace, backed by the persisted portal store. */
+type Theme = 'light' | 'dark';
+const THEME_KEY = 'ff-eng-theme';
+
+/**
+ * Light (default) or dark mode for the engineer portal, remembered in this browser. The choice is set on
+ * <html> (data-eng-theme), so dialogs, which render outside the portal, follow it too. The engineer layout
+ * applies a saved dark choice before the page paints.
+ */
+function useTheme() {
+  const [theme, setTheme] = useState<Theme>('light');
+  useEffect(() => {
+    try {
+      if (localStorage.getItem(THEME_KEY) === 'dark') setTheme('dark');
+    } catch {
+      /* storage blocked: stay light */
+    }
+  }, []);
+  useEffect(() => {
+    const root = document.documentElement;
+    if (theme === 'dark') root.dataset.engTheme = 'dark';
+    else delete root.dataset.engTheme;
+    return () => {
+      delete root.dataset.engTheme;
+    };
+  }, [theme]);
+  const toggle = () =>
+    setTheme((t) => {
+      const next = t === 'dark' ? 'light' : 'dark';
+      try {
+        localStorage.setItem(THEME_KEY, next);
+      } catch {
+        /* not remembered */
+      }
+      return next;
+    });
+  return { theme, toggle };
+}
+
+/** Biomedical Engineer Service Portal: the same layout as the hospital dashboard, backed by the shared service desk. */
 export function PortalShell({ user }: { user: { name: string; email: string } }) {
   const { contact } = useSite();
   const me = user.name;
   const initials = me.split(/\s+/).map((w) => w[0]).slice(0, 2).join('').toUpperCase();
   const a11y = useAccessibility();
+  const { theme, toggle } = useTheme();
   const { state, dispatch: rawDispatch, ready } = useEngineerStore(me);
   const [view, setView] = useState<View>('overview');
   const [ticketId, setTicketId] = useState<string | null>(null);
@@ -67,8 +106,12 @@ export function PortalShell({ user }: { user: { name: string; email: string } })
   }, []);
   const openAsset = useCallback((id: string) => setSheetId(id), []);
   const sheet = state.assets.find((a) => a.id === sheetId) ?? null;
+  const logFault = useCallback(() => {
+    if (state.assets.length === 0) toast('No equipment yet', { description: 'Faults are logged against installed equipment. Systems appear here once hospitals buy them.' });
+    else setFault({ open: true });
+  }, [state.assets.length]);
 
-  // ⌘K / Ctrl+K, or "/" when not typing, opens search
+  // Ctrl+K / ⌘K, or "/" when not typing, opens search
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const typing = /input|textarea|select/i.test((e.target as HTMLElement)?.tagName ?? '');
@@ -81,17 +124,17 @@ export function PortalShell({ user }: { user: { name: string; email: string } })
     return () => window.removeEventListener('keydown', onKey);
   }, []);
 
-  const counts = {
+  const counts: Partial<Record<View, number>> = {
     tickets: state.tickets.filter((t) => isOpen(t) && (t.status === 'new' || t.engineer === me)).length,
-    calibration: state.assets.filter((a) => daysUntil(a.nextCalibration) < 0).length,
+    calibration: state.assets.filter((a) => !a.installation && daysUntil(a.nextCalibration) < 0).length,
   };
 
   const actions: Command[] = useMemo(
     () => [
-      { id: 'a-fault', label: 'Log new equipment fault', icon: 'fi-rr-plus', group: 'Actions', run: () => setFault({ open: true }) },
+      { id: 'a-fault', label: 'Log equipment fault', icon: 'fi-rr-plus', group: 'Actions', run: logFault },
       ...nav.map((n) => ({ id: `a-${n.id}`, label: `Go to ${n.label}`, icon: n.icon, group: 'Actions' as const, run: () => setView(n.id) })),
     ],
-    [],
+    [logFault],
   );
 
   const onNotification = (n: Notification) => {
@@ -99,132 +142,129 @@ export function PortalShell({ user }: { user: { name: string; email: string } })
     else if (n.assetId) openAsset(n.assetId);
   };
 
-  return (
-    <div className="flex min-h-svh bg-midnight text-white">
-      {/* Sidebar Rail */}
-      <aside className="sticky top-0 hidden h-svh w-[260px] shrink-0 flex-col border-r border-white/10 p-5 lg:flex">
-        <Link href="/" className="flex items-center gap-2">
-          <LogoMark />
-          <span className="text-lg font-semibold tracking-[-0.02em]">Flokefama</span>
-          <span className="ml-auto rounded-md bg-white/5 px-1.5 py-0.5 font-mono text-[0.875rem] uppercase tracking-widest text-white/60">Service</span>
-        </Link>
+  const themeButton = (
+    <button
+      onClick={toggle}
+      aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+      title={theme === 'dark' ? 'Light mode' : 'Dark mode'}
+      className="grid size-10 shrink-0 place-items-center rounded-md border border-line bg-paper text-ink transition hover:border-ink/30"
+    >
+      <Icon name={theme === 'dark' ? 'fi-rr-sun' : 'fi-rr-moon'} />
+    </button>
+  );
 
-        <div className="mt-8 flex items-center gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.03] p-3">
-          <span className="grid size-10 place-items-center rounded-xl bg-brand-600 font-semibold">{initials}</span>
+  return (
+    <div className="eng-page flex min-h-svh text-ink">
+      {/* Sidebar */}
+      <aside className="eng-rail sticky top-0 hidden h-svh w-[264px] shrink-0 flex-col text-white lg:flex">
+        <Link href="/" aria-label="Flokefama home" className="flex h-[76px] items-center gap-1.5 border-b border-white/15 px-6">
+          <LogoMark />
+          <LogoWordmark className="h-[17px] text-white" />
+          <span className="ml-auto text-[0.6875rem] font-semibold uppercase tracking-[0.18em] text-white/80">Service</span>
+        </Link>
+        <div className="flex items-center gap-3 px-6 py-6">
+          <span className="grid size-10 shrink-0 place-items-center rounded-md bg-white text-sm font-semibold text-[#006b42]">{initials}</span>
           <span className="min-w-0">
-            <span className="block truncate text-sm font-medium">{me}</span>
-            <span className="block truncate text-xs text-white/65">Biomedical engineer</span>
+            <span className="block truncate text-sm font-semibold">{me}</span>
+            <span className="block truncate text-xs text-white/75">Biomedical engineer</span>
           </span>
         </div>
-
-        <nav aria-label="Portal" className="mt-8">
-          <p className="font-mono text-[0.9375rem] uppercase tracking-widest text-white/60">Workspace</p>
-          <ul className="mt-3 space-y-1">
+        <nav aria-label="Engineer portal" className="px-3">
+          <p className="px-3 pb-2 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-white/60">Menu</p>
+          <ul className="space-y-0.5">
             {nav.map((n) => {
-              const badge = n.id === 'tickets' ? counts.tickets : n.id === 'calibration' ? counts.calibration : 0;
+              const on = view === n.id;
+              const count = counts[n.id] ?? 0;
               return (
                 <li key={n.id}>
                   <button
                     onClick={() => setView(n.id)}
-                    aria-current={view === n.id ? 'page' : undefined}
-                    className={cn('relative flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition', view === n.id ? 'text-white' : 'text-white/75 hover:bg-white/[0.04] hover:text-white')}
+                    aria-current={on ? 'page' : undefined}
+                    className={cn('relative flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm transition', on ? 'bg-white/[0.16] font-semibold text-white' : 'text-white/80 hover:bg-white/[0.08] hover:text-white')}
                   >
-                    {view === n.id && <motion.span layoutId="rail-active" className="absolute inset-0 rounded-xl bg-white/[0.07] ring-1 ring-white/10" />}
-                    {view === n.id && <motion.span layoutId="rail-bar" className="absolute -left-5 top-2 h-6 w-[3px] rounded-r bg-brand-500" />}
-                    <Icon name={n.icon} className={cn('relative', view === n.id && 'text-brand-400')} />
-                    <span className="relative flex-1 text-left">{n.label}</span>
-                    {badge > 0 && <span className={cn('relative rounded-full px-1.5 font-mono text-[0.875rem]', n.id === 'calibration' ? 'bg-signal/20 text-white' : 'bg-white/10 text-white/80')}>{badge}</span>}
+                    {on && <motion.span layoutId="eng-rail" className="absolute inset-y-2 left-0 w-[3px] rounded-r-[2px] bg-white" />}
+                    <Icon name={n.icon} className={on ? 'text-white' : 'text-white/70'} />
+                    <span className="flex-1 text-left">{n.label}</span>
+                    {count > 0 && <span className="font-mono text-xs tabular-nums text-white/75">{count}</span>}
                   </button>
                 </li>
               );
             })}
           </ul>
         </nav>
-
-        <button onClick={() => setFault({ open: true })} className="mt-6 rounded-2xl border border-dashed border-brand-400/50 px-4 py-4 font-mono text-xs text-brand-300 transition hover:border-brand-400 hover:bg-brand-700/10">
-          [ <span className="text-white">+ Log equipment fault</span> ]
-        </button>
-
-        <div className="mt-auto space-y-3">
-          <button onClick={a11y.open} className="flex items-center gap-2 text-xs text-white/75 hover:text-white"><Icon name="fi-rr-universal-access" className="text-brand-300" /> Accessibility</button>
-          <a href={contact.phoneHref} className="flex items-center gap-2 font-mono text-xs text-white/75 hover:text-white">
-            <Icon name="fi-rr-phone-call" className="text-brand-400" /> {contact.phone}
-          </a>
-          <Link href="/" className="flex items-center gap-2 text-xs text-white/75 hover:text-white">
-            <Icon name="fi-rr-arrow-small-left" /> Back to flokefama site
-          </Link>
-          <form action={logout}>
-            <button type="submit" className="flex items-center gap-2 text-xs text-white/75 hover:text-white">
-              <Icon name="fi-rr-sign-out-alt" /> Sign out
-            </button>
-          </form>
+        <div className="px-6 pt-6">
+          <button onClick={logFault} className="flex h-11 w-full items-center justify-center gap-2 rounded-md bg-white text-sm font-semibold text-[#006b42] shadow-[0_10px_24px_-14px_rgb(0_0_0/0.5)] transition hover:bg-[#eefaf3]">
+            <Icon name="fi-rr-plus" /> Log equipment fault
+          </button>
         </div>
-      </aside>
-
-      {/* Workspace */}
-      <main id="main" className="min-w-0 flex-1 p-4 md:p-8 xl:p-10">
-        {/* Mobile top bar + nav */}
-        <div className="mb-5 flex items-center justify-between lg:hidden">
-          <Link href="/" className="flex items-center gap-2"><LogoMark /><span className="font-semibold">Service Portal</span></Link>
-          <div className="flex items-center gap-2">
-            <button onClick={() => setFault({ open: true })} className="grid size-10 place-items-center rounded-xl bg-brand-600" aria-label="Log equipment fault"><Icon name="fi-rr-plus" /></button>
-            <button onClick={a11y.open} className="grid size-10 place-items-center rounded-xl border border-white/10" aria-label="Accessibility options"><Icon name="fi-rr-universal-access" /></button>
+        <div className="mt-auto border-t border-white/15 px-6 py-5 text-[0.8125rem]">
+          <div className="space-y-2.5">
+            <a href={contact.phoneHref} className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-phone-call" /> {contact.phone}</a>
+            <button onClick={a11y.open} className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-universal-access" /> Accessibility</button>
+            <Link href="/" className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-arrow-small-left" /> Flokefama website</Link>
             <form action={logout}>
-              <button type="submit" className="grid size-10 place-items-center rounded-xl border border-white/10" aria-label="Sign out"><Icon name="fi-rr-sign-out-alt" /></button>
+              <button type="submit" className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-sign-out-alt" /> Sign out</button>
             </form>
           </div>
         </div>
-        <div className="-mx-1 mb-6 flex gap-1 overflow-x-auto px-1 lg:hidden">
+      </aside>
+
+      <main id="main" className="min-w-0 flex-1">
+        {/* Header */}
+        <header className="sticky top-0 z-30 flex h-[76px] items-center gap-3 border-b border-line bg-paper px-4 md:px-10">
+          <Link href="/" className="flex items-center gap-2 lg:hidden" aria-label="Flokefama home"><LogoMark /></Link>
+          <div className="min-w-0 flex-1">
+            <p className="hidden truncate text-xs text-ink-3 sm:block">Flokefama Service <span className="text-ink-3/50">/</span> Engineer portal</p>
+            <h1 className="truncate text-lg font-semibold tracking-[-0.01em] text-ink">{nav.find((n) => n.id === view)?.label}</h1>
+          </div>
+          <button onClick={() => setPalette(true)} className="hidden h-10 w-56 items-center gap-2 rounded-md border border-line bg-paper px-3 text-left text-sm text-ink-3 transition hover:border-ink/30 xl:flex">
+            <Icon name="fi-rr-search" />
+            <span className="flex-1 truncate whitespace-nowrap">Search…</span>
+            <kbd className="rounded-[4px] border border-line px-1.5 font-mono text-xs">Ctrl K</kbd>
+          </button>
+          <button onClick={() => setPalette(true)} aria-label="Search" className="grid size-10 shrink-0 place-items-center rounded-md border border-line bg-paper text-ink xl:hidden"><Icon name="fi-rr-search" /></button>
+          {themeButton}
+          <Notifications tone="light" items={state.notifications.filter((n) => n.audience === 'engineer')} onRead={(id) => rawDispatch({ type: 'read', id })} onReadAll={() => rawDispatch({ type: 'readAll', audience: 'engineer' })} onOpen={onNotification} />
+          <span className="hidden items-center gap-3 border-l border-line pl-4 md:flex">
+            <span className="grid size-9 place-items-center rounded-md bg-brand-600 text-xs font-semibold text-white">{initials}</span>
+            <span className="leading-tight">
+              <span className="block text-sm font-medium text-ink">{me}</span>
+              <span className="block text-xs text-ink-3">{user.email}</span>
+            </span>
+          </span>
+          <form action={logout} className="lg:hidden">
+            <button type="submit" aria-label="Sign out" className="grid size-10 place-items-center rounded-md border border-line bg-paper text-ink"><Icon name="fi-rr-sign-out-alt" /></button>
+          </form>
+        </header>
+
+        {/* Mobile nav */}
+        <nav aria-label="Engineer portal sections" className="flex gap-5 overflow-x-auto border-b border-line bg-paper px-4 lg:hidden">
           {nav.map((n) => (
-            <button key={n.id} onClick={() => setView(n.id)} aria-current={view === n.id ? 'page' : undefined} className={cn('shrink-0 rounded-xl px-3 py-2 text-sm', view === n.id ? 'bg-white/10 text-white' : 'text-white/75')}>
+            <button key={n.id} onClick={() => setView(n.id)} aria-current={view === n.id ? 'page' : undefined} className={cn('-mb-px shrink-0 border-b-2 py-3 text-sm', view === n.id ? 'border-ink font-semibold text-ink' : 'border-transparent text-ink-3')}>
               {n.label}
             </button>
           ))}
+        </nav>
+
+        <div className="mx-auto max-w-[1360px] p-4 md:p-10">
+          {!ready ? (
+            <div className="grid grid-cols-2 gap-3 xl:grid-cols-4" aria-busy="true">{[0, 1, 2, 3].map((i) => <div key={i} className="h-32 animate-pulse rounded-xl bg-mist" />)}</div>
+          ) : (
+            <>
+              {view === 'overview' && <Overview state={state} me={me} onOpenTicket={openTicket} onOpenAsset={openAsset} onGo={setView} onLogFault={logFault} />}
+              {view === 'tickets' && (
+                <TicketsView state={state} me={me} selectedId={ticketId} onSelect={setTicketId} dispatch={dispatch} onResolve={setResolving} onOpenAsset={openAsset} onLogFault={logFault} />
+              )}
+              {view === 'systems' && <SystemsView state={state} onOpenAsset={openAsset} />}
+              {view === 'calibration' && <CalibrationView state={state} onRecord={setCalibrating} onOpenAsset={openAsset} />}
+              {view === 'docs' && <Inventory assets={state.assets} tickets={state.tickets} onSelect={(a) => openAsset(a.id)} />}
+            </>
+          )}
         </div>
-
-        <header className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-          <div>
-            <p className="font-mono text-[0.9375rem] uppercase tracking-widest text-white/60">{nav.find((n) => n.id === view)?.label}</p>
-            <h1 className="mt-1 text-3xl font-bold tracking-[-0.03em] text-white md:text-4xl">Biomedical Engineer Service Portal</h1>
-          </div>
-          <div className="flex items-center gap-3">
-            <button onClick={() => setPalette(true)} className="flex h-11 flex-1 items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 text-left text-sm text-white/60 transition hover:border-white/20 xl:w-72 xl:flex-none">
-              <Icon name="fi-rr-search" />
-              <span className="flex-1">Search systems, tickets…</span>
-              <kbd className="hidden rounded-md border border-white/10 px-1.5 py-0.5 font-mono text-[0.875rem] sm:inline">⌘K</kbd>
-            </button>
-            <Notifications items={state.notifications.filter((n) => n.audience === 'engineer')} onRead={(id) => rawDispatch({ type: 'read', id })} onReadAll={() => rawDispatch({ type: 'readAll', audience: 'engineer' })} onOpen={onNotification} />
-          </div>
-        </header>
-
-        {!ready ? (
-          <div className="mt-8 grid gap-3 sm:grid-cols-2 xl:grid-cols-4" aria-busy="true">
-            {[0, 1, 2, 3].map((i) => <div key={i} className="h-36 animate-pulse rounded-[20px] bg-white/[0.04]" />)}
-          </div>
-        ) : (
-          <>
-            {view === 'overview' && <Overview state={state} me={me} onOpenTicket={openTicket} onOpenAsset={openAsset} onGo={setView} />}
-            {view === 'tickets' && (
-              <TicketsView
-                state={state}
-                me={me}
-                selectedId={ticketId}
-                onSelect={setTicketId}
-                dispatch={dispatch}
-                onResolve={setResolving}
-                onOpenAsset={openAsset}
-                onLogFault={() => setFault({ open: true })}
-              />
-            )}
-            {view === 'systems' && <SystemsView state={state} onOpenAsset={openAsset} />}
-            {view === 'calibration' && <CalibrationView state={state} onRecord={setCalibrating} onOpenAsset={openAsset} />}
-            {view === 'docs' && (
-              <div className="mt-8">
-                <Inventory assets={state.assets} tickets={state.tickets} onSelect={(a) => openAsset(a.id)} />
-              </div>
-            )}
-          </>
-        )}
+        {/* Mobile: floating log-fault button */}
+        <button onClick={logFault} className="fixed bottom-4 right-4 z-30 inline-flex h-12 items-center gap-2 rounded-md bg-brand-600 px-5 text-sm font-semibold text-white shadow-[0_8px_20px_-8px_rgb(11_21_16/0.35)] sm:hidden">
+          <Icon name="fi-rr-plus" /> Log fault
+        </button>
       </main>
 
       <AssetSheet
