@@ -59,11 +59,25 @@ const tables = [
   },
 ];
 
-await step(`database "${databaseId}"`, () => db.create({ databaseId, name: 'Flokefama website' }));
+try {
+  // Use the database if it is already there (creating it again would hit the plan's database limit)
+  const found = await db.get({ databaseId }).catch((e) => (e?.code === 404 ? null : Promise.reject(e)));
+  if (found) console.log(`· database "${databaseId}" (${found.name}, already there)`);
+  else await step(`database "${databaseId}"`, () => db.create({ databaseId, name: 'Flokefama website' }));
+} catch (e) {
+  // The free plan allows one database: point APPWRITE_DATABASE_ID at the one the project already has
+  if (e?.type !== 'additional_resource_not_allowed') throw e;
+  const { databases } = await db.list();
+  console.error(`\nThis Appwrite plan allows no more databases. Existing: ${databases.map((d) => `${d.$id} (${d.name})`).join(', ') || 'none'}.`);
+  console.error('Set APPWRITE_DATABASE_ID to the one to use (in .env.local and in Vercel) and run the setup again.');
+  process.exit(1);
+}
 
 for (const t of tables) {
   // No table permissions: only the website's server (with its API key) can read or write these rows.
-  await step(`table "${t.id}"`, () => db.createTable({ databaseId, tableId: t.id, name: t.name, permissions: [], rowSecurity: false }));
+  const table = await db.getTable({ databaseId, tableId: t.id }).catch((e) => (e?.code === 404 ? null : Promise.reject(e)));
+  if (table) console.log(`· table "${t.id}" (already there)`);
+  else await step(`table "${t.id}"`, () => db.createTable({ databaseId, tableId: t.id, name: t.name, permissions: [], rowSecurity: false }));
   for (const c of t.columns) {
     const base = { databaseId, tableId: t.id, key: c.key, required: c.required };
     await step(`  column ${t.id}.${c.key}`, () => (c.kind === 'email' ? db.createEmailColumn(base) : db.createVarcharColumn({ ...base, size: c.size })));
@@ -73,7 +87,10 @@ for (const t of tables) {
 }
 
 // Logos are public pictures: anyone may view them, only the server may add or remove them.
-await step('bucket "hospital-logos"', () =>
+// (Checked first: creating it again would hit the plan's bucket limit before reporting it exists.)
+const bucket = await storage.getBucket({ bucketId: 'hospital-logos' }).catch((e) => (e?.code === 404 ? null : Promise.reject(e)));
+if (bucket) console.log('· bucket "hospital-logos" (already there)');
+else await step('bucket "hospital-logos"', () =>
   storage.createBucket({
     bucketId: 'hospital-logos',
     name: 'Hospital logos',
