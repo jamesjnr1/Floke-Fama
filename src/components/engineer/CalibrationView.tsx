@@ -59,6 +59,11 @@ export function CalibrationView({ state, onRecord, onOpenAsset }: { state: Engin
                   </tr>
                 );
               })}
+              {rows.length === 0 && (
+                <tr>
+                  <td colSpan={6} className="px-5 py-8 text-center text-white/65">No equipment registered yet. Calibration dates appear here once systems are installed.</td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

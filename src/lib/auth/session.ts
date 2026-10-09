@@ -42,7 +42,7 @@ export function nextFor(role: Role, next: string | null) {
 
 /**
  * IMPORTANT: set SESSION_SECRET (32+ random characters) in Vercel before real accounts or data
- * are connected. The fallback exists only so preview deployments with demo data work out of the box.
+ * are connected. The fallback exists only so local development works without it.
  */
 const secret = process.env.SESSION_SECRET?.trim() || 'flokefama-preview-only-secret--set-SESSION_SECRET';
 

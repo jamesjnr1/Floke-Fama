@@ -19,7 +19,7 @@ import { useSite } from '@/components/site-provider';
 import { logout } from '@/lib/auth/actions';
 import { needsInstallation } from '@/lib/installation';
 import { useOrders } from '@/lib/orders';
-import { CLIENT_FACILITY, isOpen, nextTicketId, useServiceStore, type Action, type Notification } from '@/lib/service/store';
+import { isOpen, nextTicketId, useServiceStore, type Action, type Notification } from '@/lib/service/store';
 import { cn } from '@/lib/utils';
 
 /** "AUTO HEAMATOLOGY ANALYZER BC5150" → "Auto Heamatology Analyzer BC5150" (model codes stay upper case). */
@@ -37,12 +37,11 @@ const nav: { id: View; label: string; icon: string }[] = [
 /** Hospital dashboard (Flokefama Care): the facility's service desk, equipment, certificates and orders. */
 export function ClientShell({ user, products }: { user: { name: string; email: string; facility?: string }; products: CatalogueItem[] }) {
   const { contact } = useSite();
-  const facility = user.facility ?? CLIENT_FACILITY;
-  const isDemo = facility === CLIENT_FACILITY;
+  const facility = user.facility ?? user.name;
   const orders = useOrders(user.email);
   const actor = useMemo(() => ({ name: user.name, role: 'client' as const, facility }), [user.name, facility]);
   const a11y = useAccessibility();
-  const { state, dispatch: rawDispatch, ready, reset } = useServiceStore(actor);
+  const { state, dispatch: rawDispatch, ready } = useServiceStore(actor);
   const [view, setView] = useState<View>('overview');
   // Deep links such as /portal?view=orders (from checkout)
   useEffect(() => {
@@ -144,23 +143,6 @@ export function ClientShell({ user, products }: { user: { name: string; email: s
           </button>
         </div>
         <div className="mt-auto border-t border-white/15 px-6 py-5 text-[0.8125rem]">
-          {isDemo && (
-            <p className="mb-4 text-xs leading-relaxed text-white/70">
-              Demo data. Requests you submit appear in the engineer portal.{' '}
-              <button
-                onClick={() => {
-                  if (confirm('Reset the demo data? Changes in this browser will be cleared.')) {
-                    reset();
-                    setTicketId(null);
-                    toast('Demo data reset');
-                  }
-                }}
-                className="font-semibold text-white underline underline-offset-2"
-              >
-                Reset
-              </button>
-            </p>
-          )}
           <div className="space-y-2.5">
             <a href={contact.phoneHref} className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-phone-call" /> {contact.phone}</a>
             <button onClick={a11y.open} className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-universal-access" /> Accessibility</button>

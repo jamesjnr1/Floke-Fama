@@ -35,7 +35,7 @@ export function PortalShell({ user }: { user: { name: string; email: string } })
   const me = user.name;
   const initials = me.split(/\s+/).map((w) => w[0]).slice(0, 2).join('').toUpperCase();
   const a11y = useAccessibility();
-  const { state, dispatch: rawDispatch, ready, reset } = useEngineerStore(me);
+  const { state, dispatch: rawDispatch, ready } = useEngineerStore(me);
   const [view, setView] = useState<View>('overview');
   const [ticketId, setTicketId] = useState<string | null>(null);
   const [sheetId, setSheetId] = useState<string | null>(null);
@@ -146,21 +146,6 @@ export function PortalShell({ user }: { user: { name: string; email: string } })
         </button>
 
         <div className="mt-auto space-y-3">
-          <div className="rounded-xl bg-white/[0.04] px-3 py-2 text-xs text-white/75 ring-1 ring-white/10">
-            Demo data: fictional facilities. Requests from the client portal appear here; changes are saved in this browser.
-            <button
-              onClick={() => {
-                if (confirm('Reset the demo data? Your changes in this browser will be cleared.')) {
-                  reset();
-                  setTicketId(null);
-                  toast('Demo data reset');
-                }
-              }}
-              className="mt-1 block text-brand-300 hover:text-white"
-            >
-              Reset demo data
-            </button>
-          </div>
           <button onClick={a11y.open} className="flex items-center gap-2 text-xs text-white/75 hover:text-white"><Icon name="fi-rr-universal-access" className="text-brand-300" /> Accessibility</button>
           <a href={contact.phoneHref} className="flex items-center gap-2 font-mono text-xs text-white/75 hover:text-white">
             <Icon name="fi-rr-phone-call" className="text-brand-400" /> {contact.phone}
