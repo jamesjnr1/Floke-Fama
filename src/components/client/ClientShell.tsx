@@ -41,7 +41,7 @@ export function ClientShell({ user, products }: { user: { name: string; email: s
   const orders = useOrders(user.email);
   const actor = useMemo(() => ({ name: user.name, role: 'client' as const, facility }), [user.name, facility]);
   const a11y = useAccessibility();
-  const { state, dispatch: rawDispatch, ready } = useServiceStore(actor);
+  const { state, dispatch: rawDispatch, ready, remote } = useServiceStore(actor);
   const [view, setView] = useState<View>('overview');
   // Deep links such as /portal?view=orders (from checkout)
   useEffect(() => {
@@ -84,11 +84,12 @@ export function ClientShell({ user, products }: { user: { name: string; email: s
     else setRequesting({ open: true, assetId });
   };
 
-  // Behind the scenes: every order placed at checkout becomes this facility's equipment. Systems that need an
+  // Behind the scenes: every order placed at checkout becomes this facility's equipment (done by the server when
+  // it keeps the service desk; here only when the desk lives in this browser). Systems that need an
   // engineer (analysers, ultrasound, monitors…) await installation; the rest is ready to use on delivery.
   // Consumables are skipped. Each order is registered once.
   useEffect(() => {
-    if (!ready) return;
+    if (!ready || remote) return;
     for (const o of orders) {
       if (state.purchases?.includes(o.reference)) continue;
       const items = o.items.flatMap((x) => {
@@ -97,7 +98,7 @@ export function ClientShell({ user, products }: { user: { name: string; email: s
       });
       rawDispatch({ type: 'purchase', order: o.reference, facility, items });
     }
-  }, [ready, orders, state.purchases, products, facility, rawDispatch]);
+  }, [ready, remote, orders, state.purchases, products, facility, rawDispatch]);
 
   return (
     <div className="flex min-h-svh bg-[#f5f6f4] text-ink">
