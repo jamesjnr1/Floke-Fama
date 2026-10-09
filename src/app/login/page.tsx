@@ -5,7 +5,6 @@ import { AccessPanel } from '@/components/auth/access-panel';
 import { Logo } from '@/components/layout/logo';
 import { Icon } from '@/components/ui/icon';
 import { safeNext } from '@/lib/auth/session';
-import { demoAccountsEnabled, demoCredentials } from '@/lib/auth/users';
 
 export const metadata: Metadata = { title: 'Portal access', robots: { index: false } };
 
@@ -56,7 +55,6 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
           <Logo tone="light" className="hidden lg:flex" />
           <AccessPanel
             next={safeNext(next) ?? undefined}
-            demo={demoAccountsEnabled ? demoCredentials : []}
             notice={signedout ? 'You’ve been signed out.' : next ? 'Please sign in with your hospital account to continue.' : undefined}
             engineer={Boolean(toEngineer)}
             initialMode={mode === 'register' ? 'register' : 'signin'}
