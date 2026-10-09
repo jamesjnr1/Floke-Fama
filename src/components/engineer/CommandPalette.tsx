@@ -32,7 +32,7 @@ export function CommandPalette({ open, onOpenChange, state, actions, onOpenTicke
     const match = (s: string) => !term || s.toLowerCase().includes(term);
     const tickets: Command[] = state.tickets.map((t) => {
       const a = state.assets.find((x) => x.id === t.assetId);
-      return { id: t.id, label: `${t.id} · ${t.title}`, hint: a?.facility, icon: 'fi-rr-headset', group: 'Tickets', priority: t.priority, run: () => onOpenTicket(t.id) };
+      return { id: t.id, label: `${t.id} · ${t.title}`, hint: a?.facility, icon: 'fi-rr-clipboard-list', group: 'Tickets', priority: t.priority, run: () => onOpenTicket(t.id) };
     });
     const systems: Command[] = state.assets.map((a) => ({ id: a.id, label: a.name, hint: `${a.facility} · ${a.serial}`, icon: 'fi-rr-microscope', group: 'Systems', run: () => onOpenAsset(a.id) }));
     return [...actions, ...tickets, ...systems].filter((c) => match(`${c.label} ${c.hint ?? ''}`)).slice(0, 12);
@@ -47,11 +47,11 @@ export function CommandPalette({ open, onOpenChange, state, actions, onOpenTicke
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm" />
-        <Dialog.Content aria-describedby={undefined} className="fixed left-1/2 top-[12vh] z-[70] w-[calc(100%-2rem)] max-w-xl -translate-x-1/2 overflow-hidden rounded-3xl border border-white/10 bg-[#111d17] text-white shadow-2xl outline-none">
+        <Dialog.Overlay className="fixed inset-0 z-[60] bg-black/45 backdrop-blur-[2px]" />
+        <Dialog.Content aria-describedby={undefined} className="fixed left-1/2 top-[12vh] z-[70] w-[calc(100%-2rem)] max-w-xl -translate-x-1/2 overflow-hidden rounded-xl border border-line bg-paper text-ink shadow-2xl outline-none">
           <Dialog.Title className="sr-only">Search the portal</Dialog.Title>
-          <div className="flex items-center gap-3 border-b border-white/10 px-5">
-            <Icon name="fi-rr-search" className="text-white/60" />
+          <div className="flex items-center gap-3 border-b border-line px-5">
+            <Icon name="fi-rr-search" className="text-ink-3" />
             <input
               autoFocus
               value={q}
@@ -64,35 +64,35 @@ export function CommandPalette({ open, onOpenChange, state, actions, onOpenTicke
                 if (e.key === 'ArrowUp') { e.preventDefault(); setIndex((i) => Math.max(i - 1, 0)); }
                 if (e.key === 'Enter') { e.preventDefault(); run(results[index]); }
               }}
-              placeholder="Search tickets, systems, actions…"
-              aria-label="Search tickets, systems and actions"
+              placeholder="Search requests, equipment, actions…"
+              aria-label="Search requests, equipment and actions"
               role="combobox"
               aria-expanded
               aria-controls="palette-results"
               aria-activedescendant={results[index] ? `cmd-${results[index].id}` : undefined}
-              className="h-14 w-full bg-transparent text-[1.125rem] outline-none placeholder:text-white/60"
+              className="h-14 w-full bg-transparent text-[1.0625rem] outline-none placeholder:text-ink-3/70"
             />
-            <kbd className="rounded-md border border-white/10 px-1.5 py-0.5 font-mono text-[0.875rem] text-white/60">Esc</kbd>
+            <kbd className="rounded-[4px] border border-line px-1.5 py-0.5 font-mono text-xs text-ink-3">Esc</kbd>
           </div>
           <ul id="palette-results" role="listbox" className="max-h-[50vh] overflow-y-auto p-2">
             {results.map((c, i) => (
               <li key={`${c.group}-${c.id}`} id={`cmd-${c.id}`} role="option" aria-selected={i === index}>
-                {(i === 0 || results[i - 1].group !== c.group) && <p className="px-3 pb-1 pt-3 font-mono text-[0.875rem] uppercase tracking-widest text-white/60">{c.group}</p>}
+                {(i === 0 || results[i - 1].group !== c.group) && <p className="px-3 pb-1 pt-3 text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-ink-3">{c.group === 'Tickets' ? 'Requests' : c.group === 'Systems' ? 'Equipment' : c.group}</p>}
                 <button
                   onMouseEnter={() => setIndex(i)}
                   onClick={() => run(c)}
-                  className={cn('flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm transition', i === index ? 'bg-white/[0.08] text-white' : 'text-white/75')}
+                  className={cn('flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-left text-sm transition', i === index ? 'bg-canvas text-ink' : 'text-ink-2')}
                 >
-                  <Icon name={c.icon} className="text-brand-300" />
+                  <Icon name={c.icon} className="text-brand-700" />
                   <span className="min-w-0 flex-1">
                     <span className="block truncate">{c.label}</span>
-                    {c.hint && <span className="block truncate text-xs text-white/60">{c.hint}</span>}
+                    {c.hint && <span className="block truncate text-xs text-ink-3">{c.hint}</span>}
                   </span>
                   {c.priority && <PriorityBadge priority={c.priority} />}
                 </button>
               </li>
             ))}
-            {results.length === 0 && <li className="px-3 py-8 text-center text-sm text-white/65">No results for “{q}”.</li>}
+            {results.length === 0 && <li className="px-3 py-8 text-center text-sm text-ink-3">No results for “{q}”.</li>}
           </ul>
         </Dialog.Content>
       </Dialog.Portal>

@@ -44,6 +44,7 @@
 .fi-rr-link-alt::before{content:"\f8b5"}
 .fi-rr-marker::before{content:"\f8fd"}
 .fi-rr-microscope::before{content:"\f945"}
+.fi-rr-moon::before{content:"\f972"}
 .fi-rr-navigation::before{content:"\f99d"}
 .fi-rr-paper-plane::before{content:"\f9f7"}
 .fi-rr-pause::before{content:"\fa0c"}
@@ -56,6 +57,7 @@
 .fi-rr-sign-out-alt::before{content:"\fc0c"}
 .fi-rr-star::before{content:"\fce9"}
 .fi-rr-stethoscope::before{content:"\fcf4"}
+.fi-rr-sun::before{content:"\fd17"}
 .fi-rr-syringe::before{content:"\fd36"}
 .fi-rr-text::before{content:"\fd85"}
 .fi-rr-time-fast::before{content:"\fda4"}
