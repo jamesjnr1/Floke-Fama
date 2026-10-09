@@ -10,6 +10,7 @@ import { Icon } from '@/components/ui/icon';
 import { useSite } from '@/components/site-provider';
 import { logout } from '@/lib/auth/actions';
 import { roleHome } from '@/lib/auth/session';
+import { navStyle } from '@/lib/nav-style';
 import { useSession } from '@/lib/auth/use-session';
 import { cn } from '@/lib/utils';
 
@@ -43,11 +44,6 @@ const darkTop = ['/portal'];
 const matches = (pathname: string, href: string) => (href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(`${href}/`));
 const isActive = (pathname: string, item: NavItem) => (item.children ? item.children.some((c) => matches(pathname, c.href)) : matches(pathname, item.href));
 
-/**
- * Menu bar style. 'bar' (default): a dark bar across the full width, fixed at the top. 'floating': the earlier
- * rounded glass bar that floats over the page. Switch with NEXT_PUBLIC_NAV_STYLE in Vercel (then redeploy).
- */
-const navStyle: 'bar' | 'floating' = process.env.NEXT_PUBLIC_NAV_STYLE === 'floating' ? 'floating' : 'bar';
 const bar = navStyle === 'bar';
 
 /** Global Header, 72px tall: a full-width dark bar, or the floating glass bar (see navStyle). */
@@ -97,7 +93,8 @@ export function Navbar() {
     <header className={cn('fixed inset-x-0 top-0 z-50', !bar && 'px-3 pt-3 md:px-6 md:pt-4')}>
       <div
         className={cn(
-          bar && 'flex h-[72px] w-full items-center justify-between gap-6 border-b border-white/[0.06] bg-midnight px-4 shadow-[0_14px_30px_-18px_rgb(0_0_0/0.55)] md:px-8 xl:px-10',
+          // No shadow at the top, where the bar sits on the dark hero; a light one once the page scrolls under it
+          bar && cn('flex h-[72px] w-full items-center justify-between gap-6 bg-midnight px-4 transition-shadow duration-300 md:px-8 xl:px-10', scrolled && 'shadow-[0_8px_24px_-16px_rgb(11_21_16/0.45)]'),
           !bar && 'mx-auto flex h-[72px] max-w-[1280px] items-center 2xl:max-w-[1400px] justify-between gap-6 rounded-2xl border px-4 transition-[background-color,border-color,box-shadow] duration-500 md:px-6',
           !bar && (dark
             ? cn('border-white/10', solid ? 'bg-midnight/[0.97] shadow-[0_20px_50px_-20px_rgb(0_0_0/0.6)]' : 'bg-midnight/40')
