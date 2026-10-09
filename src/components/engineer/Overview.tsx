@@ -22,7 +22,7 @@ export function Overview({ state, me, onOpenTicket, onOpenAsset, onGo }: {
   const attention = state.assets.filter((a) => assetStatus(a, state.tickets) !== 'online');
   const due = [...state.assets].sort((a, b) => a.nextCalibration.localeCompare(b.nextCalibration)).filter((a) => daysUntil(a.nextCalibration) <= 30);
   const healthy = state.assets.length - attention.length;
-  const fleet = Math.round((healthy / state.assets.length) * 1000) / 10;
+  const fleet = state.assets.length ? Math.round((healthy / state.assets.length) * 1000) / 10 : null;
 
   const kpis = [
     { label: 'Open tickets', value: open.length, hint: `${unassigned.length} unassigned`, icon: 'fi-rr-headset', go: 'tickets' as const, alert: unassigned.length > 0 },
@@ -78,8 +78,14 @@ export function Overview({ state, me, onOpenTicket, onOpenAsset, onGo }: {
 
         <Panel className="flex flex-col items-center justify-center p-6">
           <SectionLabel className="self-start">Fleet health</SectionLabel>
-          <Radial value={fleet} />
-          <p className="text-center text-xs text-white/60">{healthy} of {state.assets.length} systems online with no open faults</p>
+          {fleet === null ? (
+            <p className="my-auto py-10 text-center text-sm text-white/65">No equipment registered yet. Systems appear here once hospitals buy or add them.</p>
+          ) : (
+            <>
+              <Radial value={fleet} />
+              <p className="text-center text-xs text-white/60">{healthy} of {state.assets.length} systems online with no open faults</p>
+            </>
+          )}
         </Panel>
       </div>
 
@@ -127,6 +133,7 @@ export function Overview({ state, me, onOpenTicket, onOpenAsset, onGo }: {
                   </button>
                 </li>
               ))}
+            {state.tickets.length === 0 && <li className="py-2 text-sm text-white/65">No activity yet. Requests from hospitals appear here.</li>}
           </ul>
         </Panel>
       </div>
@@ -149,6 +156,7 @@ export function Overview({ state, me, onOpenTicket, onOpenAsset, onGo }: {
               </li>
             );
           })}
+          {state.assets.length === 0 && <li className="text-sm text-white/65">No systems yet.</li>}
         </ul>
       </Panel>
     </div>
