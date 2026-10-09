@@ -14,6 +14,7 @@ import { LogoMark, LogoWordmark } from '@/components/layout/logo';
 import { Notifications } from '@/components/service/Notifications';
 import { useAccessibility } from '@/components/layout/accessibility';
 import { Icon } from '@/components/ui/icon';
+import { LogoChanger } from '@/components/client/logo-changer';
 import { useSite } from '@/components/site-provider';
 import { logout } from '@/lib/auth/actions';
 import { needsInstallation } from '@/lib/installation';
@@ -109,11 +110,10 @@ export function ClientShell({ user, products }: { user: { name: string; email: s
           <span className="ml-auto text-[0.6875rem] font-semibold uppercase tracking-[0.18em] text-white/80">Care</span>
         </Link>
         <div className="flex items-center gap-3 px-6 py-6">
-          <span className="grid size-10 shrink-0 place-items-center rounded-md bg-white text-sm font-semibold text-[#006b42]">{facility.split(' ').filter((w) => /^[A-Z]/.test(w)).map((w) => w[0]).slice(0, 2).join('')}</span>
-          <div className="min-w-0">
+          <LogoChanger facility={facility} className="size-10 rounded-md" fallbackClassName="bg-white text-sm text-[#006b42]">
             <p className="text-sm font-semibold leading-snug">{facility}</p>
             <p className="truncate text-xs text-white/75">{user.name}</p>
-          </div>
+          </LogoChanger>
         </div>
         <nav aria-label="Client portal" className="px-3">
           <p className="px-3 pb-2 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-white/60">Menu</p>
@@ -185,7 +185,7 @@ export function ClientShell({ user, products }: { user: { name: string; email: s
           </button>
           <Notifications tone="light" items={notifications} onRead={(id) => rawDispatch({ type: 'read', id })} onReadAll={() => rawDispatch({ type: 'readAll', audience: 'client' })} onOpen={onNotification} />
           <span className="hidden items-center gap-3 border-l border-line pl-4 md:flex">
-            <span className="grid size-9 place-items-center rounded-md bg-brand-600 text-xs font-semibold text-white">{user.name.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase()}</span>
+            <LogoChanger facility={facility} className="size-9 rounded-md" fallbackClassName="bg-white text-xs text-[#006b42] ring-1 ring-inset ring-line" />
             <span className="leading-tight">
               <span className="block text-sm font-medium text-ink">{user.name}</span>
               <span className="block text-xs text-ink-3">{user.email}</span>
