@@ -43,6 +43,7 @@ async function waitForColumns(tableId) {
 }
 
 const text = (key, size, required = true) => ({ kind: 'varchar', key, size, required });
+const json = (key) => ({ kind: 'longtext', key, required: true });
 
 const tables = [
   {
@@ -55,6 +56,31 @@ const tables = [
     id: 'hospital_logos',
     name: 'Hospital logos',
     columns: [text('fileId', 36), text('facility', 160, false)],
+    indexes: [],
+  },
+  // Orders and the service desk: each row holds the item as JSON in `data`, plus the columns used to find it.
+  {
+    id: 'orders',
+    name: 'Orders',
+    columns: [text('account', 254), json('data')],
+    indexes: [{ key: 'account', type: 'key', columns: ['account'] }],
+  },
+  {
+    id: 'service_assets',
+    name: 'Service desk: equipment',
+    columns: [text('facility', 160, false), json('data')],
+    indexes: [],
+  },
+  {
+    id: 'service_tickets',
+    name: 'Service desk: requests',
+    columns: [text('facility', 160, false), json('data')],
+    indexes: [],
+  },
+  {
+    id: 'service_notifications',
+    name: 'Service desk: notifications',
+    columns: [text('audience', 16), json('data')],
     indexes: [],
   },
 ];
@@ -80,7 +106,7 @@ for (const t of tables) {
   else await step(`table "${t.id}"`, () => db.createTable({ databaseId, tableId: t.id, name: t.name, permissions: [], rowSecurity: false }));
   for (const c of t.columns) {
     const base = { databaseId, tableId: t.id, key: c.key, required: c.required };
-    await step(`  column ${t.id}.${c.key}`, () => (c.kind === 'email' ? db.createEmailColumn(base) : db.createVarcharColumn({ ...base, size: c.size })));
+    await step(`  column ${t.id}.${c.key}`, () => (c.kind === 'email' ? db.createEmailColumn(base) : c.kind === 'longtext' ? db.createLongtextColumn(base) : db.createVarcharColumn({ ...base, size: c.size })));
   }
   await waitForColumns(t.id);
   for (const ix of t.indexes) await step(`  index ${t.id}.${ix.key}`, () => db.createIndex({ databaseId, tableId: t.id, key: ix.key, type: ix.type, columns: ix.columns }));

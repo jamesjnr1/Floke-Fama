@@ -1,11 +1,12 @@
 'use client';
 
-import { useSyncExternalStore } from 'react';
+import { useEffect, useState, useSyncExternalStore } from 'react';
 import type { CheckoutOrder, PaymentMethod } from '@/lib/payments';
 
 /**
- * Orders placed at checkout, shown on the hospital dashboard. Kept in this browser (like the cart) until
- * orders are stored by the payment platform or a database; each order belongs to the account's email.
+ * Orders placed at checkout, shown on the hospital dashboard; each belongs to the account's email.
+ * With Appwrite set up they are saved on the server (/api/orders), which also turns them into the hospital's
+ * equipment, so they show on every device. Without it they are kept in this browser, like the cart.
  */
 export type OrderStatus = 'awaiting-payment' | 'paid' | 'processing' | 'delivered';
 
@@ -52,8 +53,28 @@ function subscribe(fn: () => void) {
   };
 }
 
+/** Orders from the server, for every hook on the page; `null` until asked, `false` when the server doesn't keep them. */
+let remote: Promise<SavedOrder[] | false> | null = null;
+const askServer = (fresh = false) =>
+  (remote = !fresh && remote ? remote : fetch('/api/orders', { cache: 'no-store' })
+    .then(async (r) => {
+      const out = (await r.json()) as { enabled: boolean; orders?: SavedOrder[] };
+      return out.enabled && r.ok ? (out.orders ?? []) : false;
+    })
+    .catch(() => false as const));
+
 /** Record an order from checkout (replaces one with the same reference). */
 export function saveOrder(order: CheckoutOrder, account: string) {
+  // On the server too (where it also becomes the hospital's equipment); harmless when the server doesn't keep orders
+  fetch('/api/orders', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ reference: order.reference, items: order.items, method: order.method, region: order.customer.region, address: order.customer.address }),
+    keepalive: true,
+  })
+    .then(() => askServer(true))
+    .then(() => listeners.forEach((l) => l()))
+    .catch(() => {});
   const saved: SavedOrder = {
     reference: order.reference,
     placedAt: new Date().toISOString(),
@@ -72,8 +93,21 @@ export function saveOrder(order: CheckoutOrder, account: string) {
   listeners.forEach((l) => l());
 }
 
-/** This account's orders, newest first. */
+/** This account's orders, newest first: from the server when it keeps them, else from this browser. */
 export function useOrders(account: string | undefined) {
   const all = useSyncExternalStore(subscribe, read, () => EMPTY);
+  const [server, setServer] = useState<SavedOrder[] | false | null>(null);
+  useEffect(() => {
+    let live = true;
+    const load = (fresh: boolean) => askServer(fresh).then((r) => live && setServer(r));
+    load(false);
+    const onChange = () => load(false);
+    listeners.add(onChange);
+    return () => {
+      live = false;
+      listeners.delete(onChange);
+    };
+  }, []);
+  if (server) return server;
   return account ? all.filter((o) => o.account === account.toLowerCase()) : EMPTY;
 }
