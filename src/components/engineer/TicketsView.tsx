@@ -3,7 +3,7 @@
 import { AnimatePresence, motion } from 'motion/react';
 import { useMemo, useRef, useState } from 'react';
 import { ticketStatusMeta } from '@/components/service/status';
-import { fieldClass, GhostButton, Panel, PrimaryButton, PriorityBadge, SectionLabel } from '@/components/service/ui';
+import { fieldClass, GhostButton, Panel, PrimaryButton, PriorityBadge, SectionLabel, tag } from '@/components/service/ui';
 import { Icon } from '@/components/ui/icon';
 import { fmtTime, isOpen, statusSteps, stepIndex, type Action, type EngineerState, type Ticket } from '@/lib/service/store';
 import { cn } from '@/lib/utils';
@@ -58,24 +58,24 @@ export function TicketsView({ state, me, selectedId, onSelect, dispatch, onResol
   const selected = state.tickets.find((t) => t.id === selectedId) ?? list[0] ?? null;
 
   return (
-    <div className="mt-8 grid gap-6 xl:grid-cols-[380px_minmax(0,1fr)]">
+    <div className="grid gap-6 xl:grid-cols-[380px_minmax(0,1fr)]">
       <section aria-label="Ticket list" className="min-w-0">
         <div className="flex items-center gap-2">
-          <label className="flex h-10 flex-1 items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 focus-within:border-brand-400">
-            <Icon name="fi-rr-search" className="text-white/60" />
-            <span className="sr-only">Filter tickets</span>
-            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Filter tickets…" className="w-full bg-transparent text-sm text-white outline-none placeholder:text-white/60" />
+          <label className="flex h-11 flex-1 items-center gap-2 rounded-lg border border-line bg-paper px-3 focus-within:border-brand-500">
+            <Icon name="fi-rr-search" className="text-ink-3" />
+            <span className="sr-only">Search requests</span>
+            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search requests…" className="w-full bg-transparent text-sm text-ink outline-none placeholder:text-ink-3/70" />
           </label>
-          <button onClick={onLogFault} className="grid size-10 shrink-0 place-items-center rounded-xl bg-brand-600 text-white hover:bg-brand-700" aria-label="Log new fault">
+          <button onClick={onLogFault} className="grid size-11 shrink-0 place-items-center rounded-lg bg-brand-600 text-white hover:bg-[#006b42]" aria-label="Log equipment fault">
             <Icon name="fi-rr-plus" />
           </button>
         </div>
-        <div className="-mx-1 mt-3 flex gap-1 overflow-x-auto px-1 pb-1" role="tablist" aria-label="Ticket filter">
+        <div className="mt-3 flex gap-4 overflow-x-auto border-b border-line" role="tablist" aria-label="Request filter">
           {filters.map((f) => {
             const count = f.id === 'all' ? state.tickets.length : state.tickets.filter((t) => (f.id === 'open' ? isOpen(t) : f.id === 'mine' ? isOpen(t) && t.engineer === me : f.id === 'new' ? t.status === 'new' : t.status === 'resolved')).length;
             return (
-              <button key={f.id} role="tab" aria-selected={filter === f.id} onClick={() => setFilter(f.id)} className={cn('shrink-0 rounded-lg px-3 py-1.5 text-xs transition', filter === f.id ? 'bg-white/10 text-white' : 'text-white/75 hover:text-white')}>
-                {f.label} <span className="ml-1 font-mono text-white/60">{count}</span>
+              <button key={f.id} role="tab" aria-selected={filter === f.id} onClick={() => setFilter(f.id)} className={cn('-mb-px shrink-0 border-b-2 py-2.5 text-sm', filter === f.id ? 'border-ink font-semibold text-ink' : 'border-transparent text-ink-3 hover:text-ink')}>
+                {f.label} <span className="ml-0.5 tabular-nums text-ink-3">{count}</span>
               </button>
             );
           })}
@@ -89,22 +89,22 @@ export function TicketsView({ state, me, selectedId, onSelect, dispatch, onResol
                 <button
                   onClick={() => select(t.id)}
                   aria-current={on ? 'true' : undefined}
-                  className={cn('w-full rounded-2xl border p-4 text-left transition', on ? 'border-brand-400/40 bg-brand-700/20' : 'border-white/[0.06] bg-white/[0.03] hover:border-white/15')}
+                  className={cn('w-full rounded-xl border p-4 text-left transition', on ? 'border-brand-500 bg-brand-50' : 'border-line bg-paper hover:border-ink/20')}
                 >
                   <span className="flex items-center justify-between gap-2">
-                    <span className="font-mono text-xs text-white/65">{t.id} · {fmtTime(t.openedAt)}</span>
+                    <span className="font-mono text-xs text-ink-3">{t.id} · {fmtTime(t.openedAt)}</span>
                     <PriorityBadge priority={t.priority} />
                   </span>
-                  <span className="mt-2 block text-sm font-medium text-white">{t.title}</span>
+                  <span className="mt-2 block text-sm font-semibold text-ink">{t.title}</span>
                   <span className="mt-1 flex items-center justify-between gap-2 text-xs">
-                    <span className="truncate text-white/60">{a?.facility}</span>
-                    <span className={cn('shrink-0', ticketStatusMeta[t.status].className)}>{ticketStatusMeta[t.status].label}{t.engineer && t.status !== 'new' ? ` · ${t.engineer === me ? 'you' : t.engineer.split(' ')[0]}` : ''}</span>
+                    <span className="truncate text-ink-3">{a?.facility}</span>
+                    <span className={cn('shrink-0 font-medium', ticketStatusMeta[t.status].text)}>{ticketStatusMeta[t.status].label}{t.engineer && t.status !== 'new' ? ` · ${t.engineer === me ? 'you' : t.engineer.split(' ')[0]}` : ''}</span>
                   </span>
                 </button>
               </li>
             );
           })}
-          {list.length === 0 && <li className="rounded-2xl border border-dashed border-white/10 p-6 text-center text-sm text-white/60">No tickets here.</li>}
+          {list.length === 0 && <li className="rounded-xl border border-dashed border-line p-6 text-center text-sm text-ink-3">{state.tickets.length ? 'No requests here.' : 'No service requests yet. Requests from hospitals appear here.'}</li>}
         </ul>
       </section>
 
@@ -115,7 +115,7 @@ export function TicketsView({ state, me, selectedId, onSelect, dispatch, onResol
               <TicketDetail ticket={selected} state={state} me={me} dispatch={dispatch} onResolve={onResolve} onOpenAsset={onOpenAsset} />
             </motion.div>
           ) : (
-            <Panel className="p-10 text-center text-white/75">Select a ticket.</Panel>
+            <Panel className="p-10 text-center text-sm text-ink-3">Select a request.</Panel>
           )}
         </AnimatePresence>
       </section>
@@ -123,6 +123,7 @@ export function TicketsView({ state, me, selectedId, onSelect, dispatch, onResol
   );
 }
 
+const stepLabel: Record<string, string> = { new: 'Logged', assigned: 'Assigned', travelling: 'En route', onsite: 'On site', resolved: 'Resolved' };
 const etas = ['15 mins', '30 mins', '45 mins', '1 hour', '2 hours'];
 
 function TicketDetail({ ticket: t, state, me, dispatch, onResolve, onOpenAsset }: {
@@ -142,26 +143,26 @@ function TicketDetail({ ticket: t, state, me, dispatch, onResolve, onOpenAsset }
   const [qty, setQty] = useState(1);
 
   return (
-    <div className="relative overflow-hidden rounded-[20px] border border-white/[0.06] bg-[#17261e] p-6 md:p-8">
-      <div aria-hidden className="absolute -right-20 -top-20 size-64 rounded-full bg-[radial-gradient(circle,rgb(46_154_91/0.18),transparent_65%)]" />
-      <div className="relative">
+    <Panel className="p-6 md:p-8">
+      <div>
         <div className="flex flex-wrap items-center gap-2">
-          <span className="font-mono text-xs tracking-wider text-white/60">{t.id} · Opened {fmtTime(t.openedAt)}</span>
+          <span className="mr-1 font-mono text-xs text-ink-3">{t.id} · Opened {fmtTime(t.openedAt)}</span>
           <PriorityBadge priority={t.priority} />
+          <span className={cn(tag, ticketStatusMeta[t.status].tag)}>{ticketStatusMeta[t.status].label}</span>
         </div>
-        <h2 className="mt-3 text-2xl font-bold tracking-[-0.02em] text-white md:text-3xl">{t.title}</h2>
-        <p className="mt-2 text-sm text-white/75">{t.description}</p>
+        <h2 className="mt-3 text-2xl font-semibold tracking-[-0.02em] text-ink">{t.title}</h2>
+        <p className="mt-2 text-sm text-ink-2">{t.description}</p>
         {(t.requestedBy || t.contactPhone || t.preferredVisit) && (
-          <p className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-white/65">
-            {t.requestedBy && <span>Raised by <span className="text-white/75">{t.requestedBy}</span></span>}
-            {t.contactPhone && <a href={`tel:${t.contactPhone.replace(/\s/g, '')}`} className="text-brand-300 hover:text-white">{t.contactPhone}</a>}
-            {t.preferredVisit && <span>Preferred visit: <span className="text-white/75">{t.preferredVisit}</span></span>}
-            {t.rating && <span>Client rating: <span className="text-white/75">{t.rating}/5</span></span>}
+          <p className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-ink-3">
+            {t.requestedBy && <span>Raised by <span className="text-ink-2">{t.requestedBy}</span></span>}
+            {t.contactPhone && <a href={`tel:${t.contactPhone.replace(/\s/g, '')}`} className="font-medium text-brand-700 hover:underline">{t.contactPhone}</a>}
+            {t.preferredVisit && <span>Preferred visit: <span className="text-ink-2">{t.preferredVisit}</span></span>}
+            {t.rating && <span>Client rating: <span className="text-ink-2">{t.rating}/5</span></span>}
           </p>
         )}
         {asset && (
-          <button onClick={() => onOpenAsset(asset.id)} className="mt-4 inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-white/80 transition hover:bg-white/10 hover:text-white">
-            <Icon name="fi-rr-hospital" className="text-brand-300" /> {asset.name} · {asset.facility}, {asset.location} · {asset.serial}
+          <button onClick={() => onOpenAsset(asset.id)} className="mt-4 inline-flex items-center gap-2 rounded-lg border border-line bg-canvas px-3 py-2 text-left text-xs text-ink-2 transition hover:border-ink/25 hover:text-ink">
+            <Icon name="fi-rr-hospital" className="text-brand-700" /> {asset.name} · {asset.facility}, {asset.location} · {asset.serial}
           </button>
         )}
 
@@ -171,22 +172,22 @@ function TicketDetail({ ticket: t, state, me, dispatch, onResolve, onOpenAsset }
             const st = i < idx || t.status === 'resolved' ? 'done' : i === idx ? 'active' : 'pending';
             return (
               <li key={s.status} className="min-w-0">
-                <span className={cn('block h-1.5 rounded-full', st === 'done' ? 'bg-surgical' : st === 'active' ? 'bg-brand-400 shadow-[0_0_12px_rgb(82_181_124/0.7)]' : 'bg-white/10')} />
-                <span className={cn('mt-2 block truncate text-[0.9375rem]', st === 'pending' ? 'text-white/60' : 'text-white/80')}>{s.label}</span>
+                <span className={cn('block h-1 rounded-[1px]', st === 'pending' ? 'bg-line' : 'bg-brand-600')} />
+                <span className={cn('mt-2 block truncate text-xs', st === 'pending' ? 'text-ink-3' : st === 'active' ? 'font-semibold text-ink' : 'text-ink-2')}>{stepLabel[s.status]}</span>
               </li>
             );
           })}
         </ol>
-        <p className="mt-3 text-sm text-white/75">
+        <p className="mt-3 text-sm text-ink-3">
           {t.status === 'new' && 'Waiting for an engineer.'}
-          {t.status !== 'new' && t.engineer && <>Engineer: <span className="text-white">{mine ? `${t.engineer} (you)` : t.engineer}</span></>}
+          {t.status !== 'new' && t.engineer && <>Engineer: <span className="font-medium text-ink">{mine ? `${t.engineer} (you)` : t.engineer}</span></>}
           {t.status === 'travelling' && t.eta && <> · ETA {t.eta}</>}
         </p>
 
         {/* Next action */}
         {t.status !== 'resolved' && (
-          <div className="mt-6 flex flex-wrap items-center gap-2 rounded-2xl border border-white/[0.06] bg-black/20 p-3">
-            <span className="mr-auto pl-1 font-mono text-[0.9375rem] uppercase tracking-widest text-white/60">Next step</span>
+          <div className="mt-6 flex flex-wrap items-center gap-2 rounded-lg border border-line bg-canvas p-3">
+            <span className="mr-auto pl-1 text-[0.75rem] font-semibold uppercase tracking-[0.08em] text-ink-3">Next step</span>
             {(t.status === 'new' || (!mine && t.status !== 'onsite')) && (
               <PrimaryButton onClick={() => dispatch({ type: 'assign', id: t.id, engineer: me })}>
                 <Icon name="fi-rr-user-add" /> {t.status === 'new' ? 'Assign to me' : 'Take over'}
@@ -196,7 +197,7 @@ function TicketDetail({ ticket: t, state, me, dispatch, onResolve, onOpenAsset }
               <>
                 <label className="sr-only" htmlFor={`eta-${t.id}`}>Estimated arrival</label>
                 <select id={`eta-${t.id}`} value={eta} onChange={(e) => setEta(e.target.value)} className={cn(fieldClass, 'h-10 w-32')}>
-                  {etas.map((x) => <option key={x} className="bg-midnight">{x}</option>)}
+                  {etas.map((x) => <option key={x}>{x}</option>)}
                 </select>
                 <PrimaryButton onClick={() => dispatch({ type: 'travel', id: t.id, eta })}><Icon name="fi-rr-truck-side" /> Start travel</PrimaryButton>
               </>
@@ -207,14 +208,14 @@ function TicketDetail({ ticket: t, state, me, dispatch, onResolve, onOpenAsset }
             {mine && t.status === 'onsite' && (
               <PrimaryButton onClick={() => onResolve(t)}><Icon name="fi-rr-check" /> Resolve…</PrimaryButton>
             )}
-            {!mine && t.status === 'onsite' && <span className="text-sm text-white/75">{t.engineer} is on site.</span>}
+            {!mine && t.status === 'onsite' && <span className="text-sm text-ink-3">{t.engineer} is on site.</span>}
           </div>
         )}
 
         {t.status === 'resolved' && (
-          <div className="mt-6 rounded-2xl border border-brand-400/30 bg-brand-500/10 p-4">
-            <p className="flex items-center gap-2 text-sm font-medium text-white"><Icon name="fi-rr-badge-check" className="text-brand-300" /> Resolved {t.resolvedAt && fmtTime(t.resolvedAt)}</p>
-            <p className="mt-2 text-sm text-white/80">{t.resolution}</p>
+          <div className="mt-6 rounded-lg border border-ok/30 bg-ok/[0.06] p-4">
+            <p className="flex items-center gap-2 text-sm font-semibold text-ink"><Icon name="fi-rr-badge-check" className="text-ok" /> Resolved {t.resolvedAt && fmtTime(t.resolvedAt)}</p>
+            <p className="mt-2 text-sm text-ink-2">{t.resolution}</p>
           </div>
         )}
 
@@ -225,12 +226,12 @@ function TicketDetail({ ticket: t, state, me, dispatch, onResolve, onOpenAsset }
             <ol className="mt-3 space-y-3">
               {[...t.log].reverse().map((l, i) => (
                 <li key={`${l.at}-${i}`} className="flex gap-3">
-                  <span className={cn('mt-1 grid size-6 shrink-0 place-items-center rounded-full text-[0.9375rem]', l.kind === 'note' ? 'bg-white/10 text-white' : l.kind === 'part' ? 'bg-brand-500/20 text-brand-300' : 'bg-brand-600 text-white')}>
+                  <span className={cn('mt-0.5 grid size-6 shrink-0 place-items-center rounded-md text-xs', l.kind === 'note' ? 'bg-mist text-ink-2' : l.kind === 'part' ? 'bg-brand-50 text-brand-700' : 'bg-brand-600 text-white')}>
                     <Icon name={l.kind === 'note' ? 'fi-rr-comment' : l.kind === 'part' ? 'fi-rr-box-open' : 'fi-rr-check'} />
                   </span>
                   <span className="min-w-0">
-                    <span className="block text-sm text-white/85">{l.text}</span>
-                    <span className="text-xs text-white/60">{l.by} · {fmtTime(l.at)}</span>
+                    <span className="block text-sm text-ink">{l.text}</span>
+                    <span className="text-xs text-ink-3">{l.by} · {fmtTime(l.at)}</span>
                   </span>
                 </li>
               ))}
@@ -257,12 +258,12 @@ function TicketDetail({ ticket: t, state, me, dispatch, onResolve, onOpenAsset }
             <SectionLabel>Parts used</SectionLabel>
             <ul className="mt-3 space-y-2">
               {t.parts.map((p, i) => (
-                <li key={`${p.name}-${i}`} className="flex items-center justify-between rounded-xl bg-white/[0.04] px-3 py-2 text-sm">
-                  <span className="text-white/85">{p.name}</span>
-                  <span className="font-mono text-xs text-white/75">× {p.qty}</span>
+                <li key={`${p.name}-${i}`} className="flex items-center justify-between rounded-lg bg-canvas px-3 py-2 text-sm">
+                  <span className="text-ink">{p.name}</span>
+                  <span className="font-mono text-xs text-ink-3">× {p.qty}</span>
                 </li>
               ))}
-              {t.parts.length === 0 && <li className="text-sm text-white/60">None recorded.</li>}
+              {t.parts.length === 0 && <li className="text-sm text-ink-3">None recorded.</li>}
             </ul>
             {t.status !== 'resolved' && (
               <form
@@ -285,6 +286,6 @@ function TicketDetail({ ticket: t, state, me, dispatch, onResolve, onOpenAsset }
           </div>
         </div>
       </div>
-    </div>
+    </Panel>
   );
 }
