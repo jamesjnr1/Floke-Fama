@@ -8,15 +8,14 @@ import { useSite } from '@/components/site-provider';
 import { cn } from '@/lib/utils';
 
 type Mode = 'signin' | 'register';
-type Demo = { role: 'client' | 'engineer'; label: string; email: string; password: string };
 
 /**
  * Portal access: Sign in and Register tabs, as on the original site's account page.
- * Engineers' accounts are issued internally, so their sign-in has no Register tab.
+ * Engineers register through Register hospital with an email listed in ENGINEER_EMAILS, so their sign-in has
+ * no Register tab.
  */
-export function AccessPanel({ next, demo, notice, engineer, initialMode }: {
+export function AccessPanel({ next, notice, engineer, initialMode }: {
   next?: string;
-  demo: Demo[];
   notice?: string;
   engineer: boolean;
   initialMode: Mode;
@@ -67,7 +66,7 @@ export function AccessPanel({ next, demo, notice, engineer, initialMode }: {
               : 'One account for your facility: request service, track engineers, order equipment and check out.'}
         </p>
 
-        {mode === 'signin' ? <LoginForm next={next} demo={demo} notice={notice} /> : <SignupForm next={next} />}
+        {mode === 'signin' ? <LoginForm next={next} notice={notice} /> : <SignupForm next={next} />}
       </div>
 
       <p className="mt-8 text-center text-sm text-ink-3">

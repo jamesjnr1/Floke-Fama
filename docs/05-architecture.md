@@ -80,18 +80,12 @@ Two separate areas, two roles: **client** (hospital staff) → `/portal`, **engi
 | `src/middleware.ts` (edge) | Runs on `/login`, `/portal/*` and `/engineer/*`. No valid session → redirect to `/login?next=…`; wrong role → own portal; signed in on `/login` → own portal. Sets `Cache-Control: private, no-store` |
 | `src/lib/auth/server.ts` | `requireSession(role)` is checked again inside each page, so a page is never rendered without a session even if the middleware is bypassed |
 | `src/lib/auth/session.ts` | Session = signed cookie `ff_session` (HMAC-SHA-256 with `SESSION_SECRET`, 8-hour expiry). `httpOnly`, `SameSite=Lax`, `Secure` in production. Tampered or expired cookies are rejected and cleared |
-| `src/lib/auth/actions.ts` | Server actions `login` / `logout`. One generic error message (never says which of email or password was wrong); `?next=` is honoured only inside the account's own area, so it can't be used as an open redirect |
-| `src/lib/auth/users.ts` | Server-only account lookup. Passwords are stored as hashes and compared in constant time |
+| `src/lib/auth/actions.ts` | Server actions `login` / `register` / `logout`. One generic error message (never says which of email or password was wrong); `?next=` is honoured only inside the account's own area, so it can't be used as an open redirect |
+| `src/lib/auth/users.ts` | Server-only: which emails are engineers (`ENGINEER_EMAILS`) |
+| `src/lib/auth/accounts.ts` | Registered accounts (Appwrite, or a signed cookie without it). Passwords are stored as salted hashes and compared in constant time |
 | `public/sw.js` | Never caches `/portal`, `/engineer` or `/login` |
 
-**Preview demo accounts** (fictional data; the login page shows one-click buttons for them):
-
-| Portal | Email | Password |
-|---|---|---|
-| Client | `client@demo.flokefama.com` | `FlokeCare-2026` |
-| Engineer | `engineer@demo.flokefama.com` | `FlokeEng-2026` |
-
-Set `ENABLE_DEMO_ACCOUNTS=false` to switch them off. **Before real hospitals get access:** set a long random `SESSION_SECRET` in Vercel, and replace `users.ts` with a real identity provider (e.g. Auth.js or Clerk with per-facility accounts, password reset and MFA for engineers), connected to the service backend.
+**Accounts.** There are no demo accounts. Hospitals register at `/login?mode=register`; accounts are stored in Appwrite (`accounts` table, passwords as salted PBKDF2 hashes), or in a signed browser cookie when Appwrite isn't configured. Engineers register the same way; an email listed in `ENGINEER_EMAILS` (comma-separated, in Vercel) signs in to `/engineer` instead of `/portal`. Set a long random `SESSION_SECRET` in Vercel.
 
 ## Deploying to Vercel (preview only, the live site is untouched)
 1. Import the GitHub repo at vercel.com → New Project (framework auto-detected).

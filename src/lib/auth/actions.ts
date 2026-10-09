@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { accountExists, findSavedAccount, hashPassword, saveAccount } from '@/lib/auth/accounts';
 import { nextFor, safeNext, SESSION_COOKIE, sessionCookie, signSession, type SessionUser } from '@/lib/auth/session';
-import { demoCredentials, findAccount } from '@/lib/auth/users';
+import { roleFor } from '@/lib/auth/users';
 
 export interface LoginState {
   error?: string;
@@ -45,13 +45,11 @@ export async function login(_prev: LoginState, form: FormData): Promise<LoginSta
   const parsed = credentials.safeParse({ email: form.get('email'), password: form.get('password'), next: form.get('next') ?? undefined });
   if (!parsed.success) return { error: parsed.error.issues[0]?.message, email: String(form.get('email') ?? '') };
 
-  const demo = await findAccount(parsed.data.email, parsed.data.password);
-  const saved = demo ? null : await findSavedAccount(parsed.data.email, parsed.data.password);
+  const saved = await findSavedAccount(parsed.data.email, parsed.data.password);
   // One generic message: never reveal whether the email or the password was wrong.
-  if (!demo && !saved) return { error: 'That email and password don’t match an account.', email: parsed.data.email };
+  if (!saved) return { error: 'That email and password don’t match an account.', email: parsed.data.email };
 
-  const user = demo ?? { id: saved!.id, name: saved!.name, email: saved!.email, role: 'client' as const, facility: saved!.organisation };
-  await startSession({ sub: user.id, name: user.name, email: user.email, role: user.role, facility: user.facility, phone: saved?.phone }, parsed.data.next);
+  await startSession({ sub: saved.id, name: saved.name, email: saved.email, role: roleFor(saved.email), facility: saved.organisation, phone: saved.phone }, parsed.data.next);
   return {};
 }
 
@@ -66,13 +64,13 @@ export async function register(_prev: SignupState, form: FormData): Promise<Sign
   }
   const d = parsed.data;
   if (d.website) return {};
-  const taken = demoCredentials.some((c) => c.email === d.email) || (await accountExists(d.email));
+  const taken = await accountExists(d.email);
   if (taken) return { errors: { email: 'There is already an account with this email. Sign in instead.' }, values };
 
   const { salt, hash } = await hashPassword(d.password);
   const id = `hos-${crypto.randomUUID().slice(0, 8)}`;
   await saveAccount({ id, name: d.name, email: d.email, organisation: d.organisation, phone: d.phone, salt, hash });
-  await startSession({ sub: id, name: d.name, email: d.email, role: 'client', facility: d.organisation, phone: d.phone }, d.next);
+  await startSession({ sub: id, name: d.name, email: d.email, role: roleFor(d.email), facility: d.organisation, phone: d.phone }, d.next);
   return {};
 }
 
