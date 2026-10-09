@@ -80,8 +80,7 @@ const dateParts = (iso: string) => {
 
 /**
  * Events as a clean list of rows: the day on the left, then the time and place, then the event with its
- * picture. The next upcoming event's date is picked out in red; past events sit on a faint striped
- * background. A month label starts each new month.
+ * picture. The next upcoming event's date is picked out in red. A month label starts each new month.
  */
 function EventGrid({ events, past = false }: { events: EventItem[]; past?: boolean }) {
   return (
@@ -97,9 +96,7 @@ function EventGrid({ events, past = false }: { events: EventItem[]; past?: boole
                 href={`/events/${e.id}`}
                 className={cn(
                   'group grid grid-cols-[72px_minmax(0,1fr)] items-center gap-x-5 gap-y-4 rounded-lg border p-5 transition md:grid-cols-[96px_minmax(0,19rem)_minmax(0,1fr)_auto] md:gap-x-8 md:px-8',
-                  past
-                    ? 'border-transparent bg-[repeating-linear-gradient(135deg,rgb(11_21_16/0.035)_0_14px,transparent_14px_28px)] bg-canvas hover:border-line'
-                    : 'border-line bg-paper hover:border-ink/25 hover:shadow-[0_20px_40px_-32px_rgb(11_21_16/0.4)]',
+                  'border-line bg-paper hover:border-ink/25 hover:shadow-[0_20px_40px_-32px_rgb(11_21_16/0.4)]',
                 )}
                 aria-label={`${e.title}, ${longDate(e.date)}`}
               >
@@ -115,10 +112,10 @@ function EventGrid({ events, past = false }: { events: EventItem[]; past?: boole
                     <Icon name="fi-rr-marker" className="shrink-0 text-ink-3" /> <span className="truncate">{e.venue}</span>
                   </span>
                 </span>
-                <span className="col-start-2 flex min-w-0 items-center gap-4 md:col-start-auto">
+                <span className="col-start-2 flex min-w-0 flex-col items-start gap-3 md:col-start-auto md:flex-row md:items-center md:gap-4">
                   {e.image && (
-                    <span className="relative size-12 shrink-0 overflow-hidden rounded-md bg-midnight">
-                      <Image src={e.image} alt="" fill sizes="48px" className="object-cover object-top" />
+                    <span className="relative aspect-[16/10] w-full shrink-0 overflow-hidden rounded-md bg-midnight md:aspect-auto md:h-[88px] md:w-36">
+                      <Image src={e.image} alt="" fill sizes="(min-width: 768px) 144px, 60vw" className="object-cover object-top" />
                     </span>
                   )}
                   <span className="min-w-0 font-medium leading-snug text-ink">{e.title}</span>
