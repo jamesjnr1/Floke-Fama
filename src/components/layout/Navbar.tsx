@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from 'motion/react';
 import { useEffect, useState } from 'react';
 import { Logo } from '@/components/layout/logo';
+import { HospitalMark } from '@/components/ui/hospital-mark';
 import { Icon } from '@/components/ui/icon';
 import { useSite } from '@/components/site-provider';
 import { logout } from '@/lib/auth/actions';
@@ -54,7 +55,6 @@ export function Navbar() {
   const [account, setAccount] = useState(false);
   const session = useSession();
   const user = session.user;
-  const initials = user?.name.split(/\s+/).map((w) => w[0]).slice(0, 2).join('').toUpperCase();
   const home = user ? roleHome[user.role] : '/login';
   const homeLabel = user?.role === 'engineer' ? 'Engineer portal' : 'Hospital dashboard';
   useMotionValueEvent(scrollY, 'change', (y) => setScrolled(y > 24));
@@ -214,7 +214,7 @@ export function Navbar() {
                 aria-haspopup="menu"
                 className="group flex items-center gap-3 rounded-lg py-1.5 pl-1.5 pr-2.5 text-left text-white transition hover:bg-white/[0.06]"
               >
-                <span className="grid size-9 place-items-center rounded-md bg-[linear-gradient(140deg,#0b8a58,#075c3c)] text-[0.8125rem] font-semibold tracking-wide ring-1 ring-white/15">{initials}</span>
+                <HospitalMark facility={user.role === 'client' ? user.facility : undefined} name={user.name} className="size-9 rounded-md" fallbackClassName="bg-white text-[0.8125rem] tracking-wide text-[#006b42]" />
                 <span className="hidden leading-tight 2xl:block">
                   <span className="block max-w-[10rem] truncate text-sm font-medium">{user.name}</span>
                   <span className="block max-w-[10rem] truncate text-xs text-white/55">{user.facility ?? user.email}</span>
@@ -232,7 +232,7 @@ export function Navbar() {
                     className="absolute right-0 top-[calc(100%+12px)] w-72 overflow-hidden rounded-xl border border-white/10 bg-[#0f1d22] shadow-[0_30px_60px_-20px_rgb(0_0_0/0.65)]"
                   >
                     <div className="flex items-center gap-3 border-b border-white/[0.08] p-4">
-                      <span className="grid size-10 shrink-0 place-items-center rounded-md bg-[linear-gradient(140deg,#0b8a58,#075c3c)] text-sm font-semibold text-white">{initials}</span>
+                      <HospitalMark facility={user.role === 'client' ? user.facility : undefined} name={user.name} className="size-10 rounded-md" fallbackClassName="bg-white text-sm text-[#006b42]" />
                       <span className="min-w-0">
                         <span className="block truncate text-sm font-semibold text-white">{user.name}</span>
                         <span className="block truncate text-xs text-white/55">{user.email}</span>
