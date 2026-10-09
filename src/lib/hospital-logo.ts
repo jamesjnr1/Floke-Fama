@@ -4,9 +4,10 @@ import { useCallback, useEffect, useState } from 'react';
 
 /**
  * Logos hospitals upload for their account, shown in the menu bar and on the hospital dashboard.
- * DEMO STORAGE: there is no database yet, so each logo is kept in this browser (localStorage), keyed by the
- * hospital's name, the same way the service desk keeps its data. In production, upload it to file storage
- * (Sanity assets, Supabase Storage…) and save the URL on the hospital's account; `useHospitalLogo` stays.
+ * - With Appwrite configured: saved with the account through /api/hospital-logo (Appwrite Storage), so the
+ *   logo shows on every device the hospital signs in from.
+ * - Without it: kept in this browser (localStorage), keyed by the hospital's name.
+ * Either way the image is prepared in the browser first: shrunk to 256 px and its white background cleared.
  */
 const KEY = 'ff-hospital-logos';
 const EVENT = 'ff-hospital-logo';
@@ -85,32 +86,56 @@ export function transparentLogo(src: string): Promise<string> {
   return cleared.get(src)!;
 }
 
+/** What the server said about logo storage: Appwrite on (with this hospital's logo, if any) or off. */
+type Remote = { enabled: false } | { enabled: true; url: string | null };
+let remote: Promise<Remote> | null = null;
+const askServer = () =>
+  (remote ??= fetch('/api/hospital-logo', { cache: 'no-store' })
+    .then(async (r) => (r.ok || r.status === 401 ? ((await r.json()) as Remote) : { enabled: false as const }))
+    .catch(() => ({ enabled: false as const })));
+
 /** The logo this hospital uploaded (or null), with a setter; every mark on the page updates together. */
 export function useHospitalLogo(facility: string | undefined) {
   const [logo, setLogoState] = useState<string | null>(null);
 
   useEffect(() => {
     if (!facility) return;
-    const sync = () => setLogoState(read()[keyFor(facility)] ?? null);
+    let live = true;
+    const sync = () =>
+      askServer().then((r) => {
+        if (live) setLogoState(r.enabled ? r.url : (read()[keyFor(facility)] ?? null));
+      });
     sync();
     window.addEventListener(EVENT, sync);
     window.addEventListener('storage', sync);
     return () => {
+      live = false;
       window.removeEventListener(EVENT, sync);
       window.removeEventListener('storage', sync);
     };
   }, [facility]);
 
+  /** Saves (a prepared data URL) or removes the logo. Throws with a readable message if saving fails. */
   const setLogo = useCallback(
-    (dataUrl: string | null) => {
+    async (dataUrl: string | null) => {
       if (!facility) return;
-      const all = read();
-      if (dataUrl) all[keyFor(facility)] = dataUrl;
-      else delete all[keyFor(facility)];
-      try {
-        localStorage.setItem(KEY, JSON.stringify(all));
-      } catch {
-        /* storage full or blocked: the logo just isn't kept */
+      const r = await askServer();
+      if (r.enabled) {
+        const res = dataUrl
+          ? await fetch('/api/hospital-logo', { method: 'PUT', headers: { 'Content-Type': 'image/webp' }, body: await (await fetch(dataUrl)).blob() })
+          : await fetch('/api/hospital-logo', { method: 'DELETE' });
+        const out = (await res.json().catch(() => ({}))) as { url?: string | null; error?: string };
+        if (!res.ok) throw new Error(out.error ?? 'The logo could not be saved. Please try again.');
+        remote = Promise.resolve({ enabled: true, url: out.url ?? null });
+      } else {
+        const all = read();
+        if (dataUrl) all[keyFor(facility)] = dataUrl;
+        else delete all[keyFor(facility)];
+        try {
+          localStorage.setItem(KEY, JSON.stringify(all));
+        } catch {
+          /* storage full or blocked: the logo just isn't kept */
+        }
       }
       window.dispatchEvent(new Event(EVENT));
     },

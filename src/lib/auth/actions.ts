@@ -3,7 +3,7 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
-import { findSavedAccount, hashPassword, readAccounts, saveAccount } from '@/lib/auth/accounts';
+import { accountExists, findSavedAccount, hashPassword, saveAccount } from '@/lib/auth/accounts';
 import { nextFor, safeNext, SESSION_COOKIE, sessionCookie, signSession, type SessionUser } from '@/lib/auth/session';
 import { demoCredentials, findAccount } from '@/lib/auth/users';
 
@@ -66,7 +66,7 @@ export async function register(_prev: SignupState, form: FormData): Promise<Sign
   }
   const d = parsed.data;
   if (d.website) return {};
-  const taken = demoCredentials.some((c) => c.email === d.email) || (await readAccounts()).some((a) => a.email === d.email);
+  const taken = demoCredentials.some((c) => c.email === d.email) || (await accountExists(d.email));
   if (taken) return { errors: { email: 'There is already an account with this email. Sign in instead.' }, values };
 
   const { salt, hash } = await hashPassword(d.password);

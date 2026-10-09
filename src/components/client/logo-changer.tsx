@@ -20,16 +20,20 @@ export function LogoChanger({ facility, className, fallbackClassName, children }
     e.target.value = '';
     if (!file) return;
     try {
-      setLogo(await prepareLogo(file));
+      await setLogo(await prepareLogo(file));
       toast.success('Logo updated', { description: `${facility}’s logo now shows across your dashboard.` });
     } catch (err) {
       toast.error('Couldn’t use that image', { description: err instanceof Error ? err.message : 'Please try another file.' });
     }
   };
 
-  const remove = () => {
-    setLogo(null);
-    toast('Logo removed');
+  const remove = async () => {
+    try {
+      await setLogo(null);
+      toast('Logo removed');
+    } catch (err) {
+      toast.error('Couldn’t remove the logo', { description: err instanceof Error ? err.message : 'Please try again.' });
+    }
   };
 
   return (
