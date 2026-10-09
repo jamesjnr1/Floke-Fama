@@ -63,6 +63,13 @@
   --color-sand: #e4eef0; /* Wild Sand */
   --color-sea: #075056; /* Deep Sea Green */
 
+  /* Status colours in the service portals: text colour, and the same at ~12% as the tag background */
+  --color-ok: #0b6b45;
+  --color-warn: #7a5200;
+  --color-info: #1f5585;
+  --color-bad: #a3172a;
+  --color-violet: #4f3f9a;
+
   --radius-4xl: 2rem;
   --radius-5xl: 2.5rem;
 
@@ -248,3 +255,28 @@ html[data-reveal-ready] [data-reveal]:not([data-shown]) {
   html[data-reveal-ready] [data-reveal]:not([data-shown]) { opacity: 1; transform: none; }
 }
 html[data-motion='reduce'] [data-reveal]:not([data-shown]) { opacity: 1 !important; transform: none !important; }
+
+/* ---------- Engineer portal: light (default) and dark mode, switched in the portal's header ---------- */
+.eng-page { background: #f5f6f4; }
+.eng-rail { background: linear-gradient(180deg, #00804f 0%, #006b42 55%, #005a38 100%); }
+html[data-eng-theme='dark'] {
+  color-scheme: dark;
+  --color-paper: #17242a;
+  --color-canvas: #1e2d34;
+  --color-mist: #22343c;
+  --color-line: #2b3e46;
+  --color-ink: #e8eff0;
+  --color-ink-2: #c2ced1;
+  --color-ink-3: #93a5aa;
+  --color-brand-50: #133528;
+  --color-brand-100: #184433;
+  --color-brand-700: #7fd1a5;
+  --color-blue-700: #8cc9cd;
+  --color-ok: #6fd3a0;
+  --color-warn: #e8b94f;
+  --color-info: #8fbde9;
+  --color-bad: #ff8d97;
+  --color-violet: #bbaef3;
+}
+html[data-eng-theme='dark'] .eng-page { background: #111b20; }
+html[data-eng-theme='dark'] .eng-rail { background: linear-gradient(180deg, #0f3a2a 0%, #0c3022 55%, #0a281d 100%); }
