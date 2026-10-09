@@ -13,7 +13,14 @@ const apiKey = process.env.APPWRITE_API_KEY;
 
 /** Names of the database, tables and bucket (also used by scripts/appwrite-setup.mjs). */
 export const DATABASE_ID = process.env.APPWRITE_DATABASE_ID || 'flokefama';
-export const TABLES = { accounts: 'accounts', hospitalLogos: 'hospital_logos' } as const;
+export const TABLES = {
+  accounts: 'accounts',
+  hospitalLogos: 'hospital_logos',
+  orders: 'orders',
+  serviceAssets: 'service_assets',
+  serviceTickets: 'service_tickets',
+  serviceNotifications: 'service_notifications',
+} as const;
 export const BUCKETS = { hospitalLogos: 'hospital-logos' } as const;
 
 export const appwrite =
