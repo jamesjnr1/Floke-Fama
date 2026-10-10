@@ -422,8 +422,8 @@ export const articles: Article[] = [
       {
         "type": "img",
         "src": "/images/news/flokefama-featured-in-forbes-africa-driving-healthcare-excellence-across-ghana-1.webp",
-        "alt": "",
-        "width": 811,
+        "alt": "Forbes Africa June/July 2026, Ghana edition: the cover and the Flokefama article, “Ghanaian medical engineering powered by partnerships”",
+        "width": 1280,
         "height": 1024
       }
     ],
