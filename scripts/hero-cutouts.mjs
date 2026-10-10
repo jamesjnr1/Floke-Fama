@@ -11,6 +11,6 @@ for (const slug of process.argv.slice(2)) {
     for (let c = 0; c < 3; c++) out[q + c] = a ? Math.round(255 - (255 - data[p + c]) / a) : 0;
     out[q + 3] = Math.round(a * 255);
   }
-  await sharp(out, { raw: { width: info.width, height: info.height, channels: 4 } }).webp({ quality: 90, alphaQuality: 100 }).toFile(`public/images/hero/${slug}.webp`);
+  await sharp(out, { raw: { width: info.width, height: info.height, channels: 4 } }).resize({ width: 720, height: 720, fit: 'inside', withoutEnlargement: true }).webp({ quality: 78, alphaQuality: 70, effort: 6, smartSubsample: true }).toFile(`public/images/hero/${slug}.webp`);
   console.log('hero cutout:', slug);
 }
