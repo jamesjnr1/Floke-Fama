@@ -151,3 +151,105 @@ export function CalibrationDialog({ asset, onOpenChange, onSubmit }: {
     </PortalDialog>
   );
 }
+
+export type CatalogueOption = { slug: string; name: string; brand: string; image?: string };
+const today = () => new Date().toISOString().slice(0, 10);
+/** "AUTO HEAMATOLOGY ANALYZER BC5150" → "Auto Heamatology Analyzer BC5150" (model codes stay upper case). */
+const tidy = (n: string) => n.split(/(\s+|[()])/).map((w) => (/\d/.test(w) ? w.toUpperCase() : w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())).join('');
+
+/**
+ * Register equipment a hospital already owns (bought before the website, or elsewhere), so it gets a calibration
+ * schedule, service requests and certificates like everything bought through the shop.
+ */
+export function AddEquipmentDialog({ open, onOpenChange, facilities, products, onSubmit }: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  facilities: string[];
+  products: CatalogueOption[];
+  onSubmit: (asset: Asset) => void;
+}) {
+  const blank = { facility: '', name: '', brand: '', serial: '', location: '', installed: '', lastCalibration: '', interval: '12', warranty: '' };
+  const [v, setV] = useState(blank);
+  useEffect(() => {
+    if (open) setV(blank);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- reset each time it opens
+  }, [open]);
+  const set = (k: keyof typeof blank) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => setV((x) => ({ ...x, [k]: e.target.value }));
+  const match = products.find((p) => tidy(p.name).toLowerCase() === v.name.trim().toLowerCase());
+  const ready = v.facility.trim().length > 1 && v.name.trim().length > 1;
+
+  return (
+    <PortalDialog open={open} onOpenChange={onOpenChange} title="Add existing equipment" description="Equipment a hospital already owns. It appears on that hospital’s dashboard with its calibration schedule.">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (!ready) return;
+          const installed = v.installed ? new Date(v.installed).toISOString() : new Date().toISOString();
+          const last = v.lastCalibration ? new Date(v.lastCalibration).toISOString() : installed;
+          const interval = Number(v.interval) || 12;
+          const next = new Date(last);
+          next.setMonth(next.getMonth() + interval);
+          onSubmit({
+            id: `AS-${Date.now().toString(36).toUpperCase()}${Math.random().toString(36).slice(2, 5).toUpperCase()}`,
+            name: match ? tidy(match.name) : v.name.trim(),
+            brand: v.brand.trim() || match?.brand || '',
+            productSlug: match?.slug,
+            image: match?.image,
+            serial: v.serial.trim() || 'Not recorded',
+            facility: v.facility.trim(),
+            location: v.location.trim() || 'Location not set',
+            readings: [],
+            installed,
+            warrantyUntil: v.warranty ? new Date(v.warranty).toISOString() : installed,
+            lastCalibration: last,
+            nextCalibration: next.toISOString(),
+            intervalMonths: interval,
+            certificates: [],
+          });
+          onOpenChange(false);
+        }}
+        className="space-y-4"
+      >
+        <Field label="Hospital">
+          <input required list="ff-facilities" value={v.facility} onChange={set('facility')} placeholder="Choose or type the hospital’s name" className={cn(fieldClass, 'h-11')} />
+          <datalist id="ff-facilities">{facilities.map((f) => <option key={f} value={f} />)}</datalist>
+        </Field>
+        <Field label="Equipment">
+          <input
+            required
+            list="ff-products"
+            value={v.name}
+            onChange={(e) => {
+              const name = e.target.value;
+              const p = products.find((x) => tidy(x.name).toLowerCase() === name.trim().toLowerCase());
+              setV((x) => ({ ...x, name, brand: p ? p.brand : x.brand }));
+            }}
+            placeholder="Search the catalogue, or type a name"
+            className={cn(fieldClass, 'h-11')}
+          />
+          <datalist id="ff-products">{products.map((p) => <option key={p.slug} value={tidy(p.name)}>{p.brand}</option>)}</datalist>
+          {match && <span className="text-xs text-ok">From the catalogue: photo and documents are added.</span>}
+        </Field>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label="Brand"><input value={v.brand} onChange={set('brand')} placeholder="e.g. Mindray" className={cn(fieldClass, 'h-11')} /></Field>
+          <Field label="Serial number"><input value={v.serial} onChange={set('serial')} placeholder="On the rating plate" className={cn(fieldClass, 'h-11')} /></Field>
+        </div>
+        <Field label="Department / location"><input value={v.location} onChange={set('location')} placeholder="e.g. Main laboratory" className={cn(fieldClass, 'h-11')} /></Field>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label="Installed on"><input type="date" max={today()} value={v.installed} onChange={set('installed')} className={cn(fieldClass, 'h-11')} /></Field>
+          <Field label="Last calibration"><input type="date" max={today()} value={v.lastCalibration} onChange={set('lastCalibration')} className={cn(fieldClass, 'h-11')} /></Field>
+          <Field label="Calibrate every">
+            <select value={v.interval} onChange={set('interval')} className={cn(fieldClass, 'h-11')}>
+              {[3, 6, 12, 24].map((m) => <option key={m} value={m}>{m} months</option>)}
+            </select>
+          </Field>
+          <Field label="Warranty until (optional)"><input type="date" value={v.warranty} onChange={set('warranty')} className={cn(fieldClass, 'h-11')} /></Field>
+        </div>
+        <div className="flex justify-end gap-2 pt-2">
+          <GhostButton type="button" onClick={() => onOpenChange(false)}>Cancel</GhostButton>
+          <PrimaryButton type="submit" disabled={!ready}><Icon name="fi-rr-plus" /> Add equipment</PrimaryButton>
+        </div>
+      </form>
+    </PortalDialog>
+  );
+}
