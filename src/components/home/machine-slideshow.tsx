@@ -103,6 +103,10 @@ function MachineCarousel() {
           })}
         </AnimatePresence>
       </div>
+      {/* Loads every photo up front (same sizes, so the tiles reuse them), so none appears late */}
+      <div aria-hidden className="pointer-events-none invisible absolute size-px overflow-hidden">
+        {machines.map((x) => <div key={x.slug} className="relative size-px"><Image src={`/images/hero/${x.slug}.webp`} alt="" fill loading="eager" sizes="(min-width: 1024px) 380px, 75vw" /></div>)}
+      </div>
 
       <div className="mt-4 flex justify-center gap-2" role="tablist" aria-label="Choose a machine">
         {machines.map((x, k) => (
@@ -144,18 +148,19 @@ function MachineCard() {
       >
         {/* Image area: one fixed height for every machine, soft off-white, room around the product */}
         <div className="relative h-[clamp(220px,calc(100svh-560px),400px)] bg-[#F5F7F6]">
-          <AnimatePresence mode="popLayout" initial={false}>
+          {/* Every photo is in place (and loading) from the start; only the current one is visible, so none appears late */}
+          {machines.map((x, k) => (
             <motion.div
-              key={m.slug}
+              key={x.slug}
               className="absolute inset-0"
-              initial={{ opacity: 0, scale: 0.97 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+              initial={false}
+              animate={{ opacity: k === i ? 1 : 0, scale: k === i ? 1 : 0.97 }}
+              transition={{ duration: reduce ? 0 : 0.7, ease: [0.16, 1, 0.3, 1] }}
+              aria-hidden={k !== i}
             >
-              <Image src={`/images/hero/${m.slug}.webp`} alt={`${m.brand} ${m.name}`} fill priority={i === 0} sizes="(min-width: 1024px) 480px, 90vw" className="object-contain p-10 md:p-12" />
+              <Image src={`/images/hero/${x.slug}.webp`} alt={k === i ? `${x.brand} ${x.name}` : ''} fill priority={k === 0} loading={k === 0 ? undefined : 'eager'} sizes="(min-width: 1024px) 480px, 90vw" className="object-contain p-10 md:p-12" />
             </motion.div>
-          </AnimatePresence>
+          ))}
         </div>
         <div className="px-6 py-5">
           <p className="text-[0.8125rem] font-medium uppercase tracking-[0.08em] text-brand-300">{m.brand}</p>
