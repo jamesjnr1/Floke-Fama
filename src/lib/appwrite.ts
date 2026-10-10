@@ -20,6 +20,7 @@ export const TABLES = {
   serviceAssets: 'service_assets',
   serviceTickets: 'service_tickets',
   serviceNotifications: 'service_notifications',
+  pushSubscriptions: 'push_subscriptions',
 } as const;
 export const BUCKETS = { hospitalLogos: 'hospital-logos' } as const;
 

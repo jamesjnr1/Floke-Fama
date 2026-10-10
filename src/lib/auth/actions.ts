@@ -21,6 +21,7 @@ const credentials = z.object({
   email: z.string().trim().email('Enter a valid email address'),
   password: z.string().min(1, 'Enter your password').max(200),
   next: z.string().optional(),
+  keep: z.literal('on').optional(),
 });
 
 const signup = z
@@ -32,24 +33,25 @@ const signup = z
     password: z.string().min(8, 'Use at least 8 characters').max(200),
     confirm: z.string(),
     next: z.string().optional(),
+    keep: z.literal('on').optional(),
     website: z.string().max(0).optional().or(z.literal('')), // honeypot
   })
   .refine((v) => v.password === v.confirm, { path: ['confirm'], message: 'The passwords don’t match' });
 
 async function startSession(user: Omit<SessionUser, 'exp'>, next: string | undefined) {
-  (await cookies()).set(SESSION_COOKIE, await signSession(user), sessionCookie);
+  (await cookies()).set(SESSION_COOKIE, await signSession(user), sessionCookie(user));
   redirect(nextFor(user.role, safeNext(next)));
 }
 
 export async function login(_prev: LoginState, form: FormData): Promise<LoginState> {
-  const parsed = credentials.safeParse({ email: form.get('email'), password: form.get('password'), next: form.get('next') ?? undefined });
+  const parsed = credentials.safeParse({ email: form.get('email'), password: form.get('password'), next: form.get('next') ?? undefined, keep: form.get('keep') ?? undefined });
   if (!parsed.success) return { error: parsed.error.issues[0]?.message, email: String(form.get('email') ?? '') };
 
   const saved = await findSavedAccount(parsed.data.email, parsed.data.password);
   // One generic message: never reveal whether the email or the password was wrong.
   if (!saved) return { error: 'That email and password don’t match an account.', email: parsed.data.email };
 
-  await startSession({ sub: saved.id, name: saved.name, email: saved.email, role: roleFor(saved.email), facility: saved.organisation, phone: saved.phone }, parsed.data.next);
+  await startSession({ sub: saved.id, name: saved.name, email: saved.email, role: roleFor(saved.email), facility: saved.organisation, phone: saved.phone, keep: parsed.data.keep === 'on' }, parsed.data.next);
   return {};
 }
 
@@ -70,7 +72,7 @@ export async function register(_prev: SignupState, form: FormData): Promise<Sign
   const { salt, hash } = await hashPassword(d.password);
   const id = `hos-${crypto.randomUUID().slice(0, 8)}`;
   await saveAccount({ id, name: d.name, email: d.email, organisation: d.organisation, phone: d.phone, salt, hash });
-  await startSession({ sub: id, name: d.name, email: d.email, role: roleFor(d.email), facility: d.organisation, phone: d.phone }, d.next);
+  await startSession({ sub: id, name: d.name, email: d.email, role: roleFor(d.email), facility: d.organisation, phone: d.phone, keep: d.keep === 'on' }, d.next);
   return {};
 }
 
