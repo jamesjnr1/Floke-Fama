@@ -13,7 +13,6 @@
 .fi-rr-bell::before{content:"\f239"}
 .fi-rr-book-alt::before{content:"\f274"}
 .fi-rr-box-open::before{content:"\f2b3"}
-.fi-rr-building::before{content:"\f303"}
 .fi-rr-bullseye-arrow::before{content:"\f307"}
 .fi-rr-calendar::before{content:"\f339"}
 .fi-rr-calendar-plus::before{content:"\f332"}
@@ -46,6 +45,7 @@
 .fi-rr-microscope::before{content:"\f945"}
 .fi-rr-moon::before{content:"\f972"}
 .fi-rr-navigation::before{content:"\f99d"}
+.fi-rr-newspaper::before{content:"\f9a5"}
 .fi-rr-paper-plane::before{content:"\f9f7"}
 .fi-rr-pause::before{content:"\fa0c"}
 .fi-rr-phone-call::before{content:"\fa61"}

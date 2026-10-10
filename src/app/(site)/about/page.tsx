@@ -69,7 +69,7 @@ export default async function AboutPage() {
           <Reveal delay={0.1}>
             <figure className="relative aspect-[4/3.6] overflow-hidden rounded-lg bg-midnight">
               <Image src="/images/office-team.webp" alt="Inside the Flokefama head office: the ‘Together we do great things’ wall" fill sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />
-              <figcaption className="absolute bottom-4 left-4 rounded-full bg-paper/90 px-3.5 py-2 text-xs font-medium text-ink backdrop-blur">Head office · Santa Maria, Accra</figcaption>
+              <figcaption className="absolute bottom-4 left-4 rounded-[4px] bg-paper/90 px-3 py-1.5 text-xs font-medium text-ink backdrop-blur">Head office · Santa Maria, Accra</figcaption>
             </figure>
           </Reveal>
         </div>

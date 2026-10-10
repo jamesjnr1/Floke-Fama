@@ -157,7 +157,7 @@ export function ProcurementFlow({ options, initial }: { options: Option[]; initi
 
             {step === 0 && (
               <div className="space-y-8">
-                <div className="inline-flex rounded-full bg-mist p-1" role="radiogroup" aria-label="Request type">
+                <div className="inline-flex rounded-lg bg-mist p-1" role="radiogroup" aria-label="Request type">
                   {(['quote', 'demo'] as const).map((intent) => (
                     <button
                       key={intent}
@@ -165,9 +165,9 @@ export function ProcurementFlow({ options, initial }: { options: Option[]; initi
                       role="radio"
                       aria-checked={values.intent === intent}
                       onClick={() => setValue('intent', intent)}
-                      className={cn('relative rounded-full px-5 py-2.5 text-sm font-medium', values.intent === intent ? 'text-white' : 'text-ink-3')}
+                      className={cn('relative rounded-md px-5 py-2.5 text-sm font-medium', values.intent === intent ? 'text-white' : 'text-ink-3')}
                     >
-                      {values.intent === intent && <motion.span layoutId="intent-pill" className="absolute inset-0 rounded-full bg-midnight" />}
+                      {values.intent === intent && <motion.span layoutId="intent-pill" className="absolute inset-0 rounded-md bg-midnight" />}
                       <span className="relative">{intent === 'quote' ? 'Order equipment' : 'Schedule a demonstration'}</span>
                     </button>
                   ))}
@@ -205,7 +205,7 @@ export function ProcurementFlow({ options, initial }: { options: Option[]; initi
                     <ul className="flex flex-wrap gap-2">
                       {values.equipment.map((e) => (
                         <li key={e}>
-                          <button type="button" onClick={() => toggle(e)} aria-label={`Remove ${e}`} className="inline-flex items-center gap-1.5 rounded-full bg-midnight px-3.5 py-1.5 text-sm text-white">
+                          <button type="button" onClick={() => toggle(e)} aria-label={`Remove ${e}`} className="inline-flex items-center gap-1.5 rounded-[4px] bg-midnight px-3 py-1.5 text-sm text-white">
                             {e} <Icon name="fi-rr-cross-small" className="text-white/75" />
                           </button>
                         </li>
