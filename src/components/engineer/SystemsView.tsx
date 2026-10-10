@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 const filters: (AssetStatus | 'all')[] = ['all', 'attention', 'maintenance', 'installing', 'online'];
 
 /** Equipment: every system at every facility, filterable by status and facility. */
-export function SystemsView({ state, onOpenAsset }: { state: EngineerState; onOpenAsset: (id: string) => void }) {
+export function SystemsView({ state, onOpenAsset, onAdd }: { state: EngineerState; onOpenAsset: (id: string) => void; onAdd: () => void }) {
   const [status, setStatus] = useState<AssetStatus | 'all'>('all');
   const [facility, setFacility] = useState('all');
   const [q, setQ] = useState('');
@@ -38,6 +38,9 @@ export function SystemsView({ state, onOpenAsset }: { state: EngineerState; onOp
             {facilities.map((f) => <option key={f}>{f}</option>)}
           </select>
         </label>
+        <button onClick={onAdd} className="inline-flex h-11 items-center gap-2 rounded-lg bg-brand-600 px-4 text-sm font-semibold text-white transition hover:bg-[#006b42] sm:ml-auto">
+          <Icon name="fi-rr-plus" /> Add existing equipment
+        </button>
       </div>
       <div className="mt-4 flex gap-5 overflow-x-auto border-b border-line" role="tablist" aria-label="Equipment status">
         {filters.map((s) => {
@@ -79,7 +82,7 @@ export function SystemsView({ state, onOpenAsset }: { state: EngineerState; onOp
         })}
         {list.length === 0 && (
           <li className="rounded-xl border border-dashed border-line p-8 text-center text-sm text-ink-3 sm:col-span-2 xl:col-span-3">
-            {state.assets.length === 0 ? 'No equipment yet. Systems appear here once hospitals buy them.' : 'No equipment matches.'}
+            {state.assets.length === 0 ? <>No equipment yet. Systems appear here once hospitals buy them, or <button onClick={onAdd} className="font-medium text-brand-700 hover:underline">add a hospital’s existing equipment</button>.</> : 'No equipment matches.'}
           </li>
         )}
       </ul>

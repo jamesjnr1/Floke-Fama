@@ -298,8 +298,12 @@ export function reducer(actor: Actor) {
         return { ...next, notifications: [{ id: uid('N'), at: now, text, audience: 'client', read: false, ...(tickets[0] ? { ticketId: tickets[0].id } : { assetId: assets[0].id }) }, ...next.notifications] };
       }
       case 'addAsset':
+        // An engineer registering equipment a hospital already owns tells that hospital; a hospital adding its own tells the engineers
         return notify({ ...state, assets: [...state.assets, action.asset] },
-          `${action.asset.facility} registered ${action.asset.name} (${action.asset.location}).`, { assetId: action.asset.id });
+          actor.role === 'engineer'
+            ? `${action.asset.name} (${action.asset.location}) was added to your equipment by ${me}. Its calibration schedule and service history now show here.`
+            : `${action.asset.facility} registered ${action.asset.name} (${action.asset.location}).`,
+          { assetId: action.asset.id });
       case 'read':
         return { ...state, notifications: state.notifications.map((n) => (n.id === action.id ? { ...n, read: true } : n)) };
       case 'readAll':
