@@ -13,7 +13,7 @@ export const dynamic = 'force-dynamic';
 
 const noStore = { 'Cache-Control': 'private, no-store' };
 const MAX_BODY = 16 * 1024;
-const TYPES = new Set<Action['type']>(['assign', 'travel', 'arrive', 'note', 'part', 'resolve', 'create', 'request', 'rate', 'calibrate', 'read', 'readAll']);
+const TYPES = new Set<Action['type']>(['assign', 'travel', 'arrive', 'note', 'part', 'resolve', 'create', 'request', 'rate', 'calibrate', 'addAsset', 'read', 'readAll']);
 
 /** Changes must come from this site (the session cookie is SameSite=Lax; this closes the rest). */
 const sameOrigin = (req: NextRequest) => {

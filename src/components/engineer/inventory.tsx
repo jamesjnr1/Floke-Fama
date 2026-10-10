@@ -13,9 +13,9 @@ import { assetImage, assetStatus, dueLabel, fmtDate, fmtTime, isOpen, type Asset
 import { cn } from '@/lib/utils';
 
 /** Documents: every system; opening one shows its records, certificates and manuals. */
-export function Inventory({ assets, tickets, onSelect }: { assets: Asset[]; tickets: Ticket[]; onSelect: (a: Asset) => void }) {
+export function Inventory({ assets, tickets, onSelect, onAdd }: { assets: Asset[]; tickets: Ticket[]; onSelect: (a: Asset) => void; onAdd: () => void }) {
   if (assets.length === 0)
-    return <p className="rounded-xl border border-dashed border-line p-8 text-center text-sm text-ink-3">No equipment yet. Service records, certificates and manuals for each system appear here.</p>;
+    return <p className="rounded-xl border border-dashed border-line p-8 text-center text-sm text-ink-3">No equipment yet. Service records, certificates and manuals for each system appear here. <button onClick={onAdd} className="font-medium text-brand-700 hover:underline">Add existing equipment</button></p>;
   return (
     <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
       {assets.map((a) => {

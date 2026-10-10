@@ -6,7 +6,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { CalibrationView } from '@/components/engineer/CalibrationView';
 import { CommandPalette, type Command } from '@/components/engineer/CommandPalette';
-import { CalibrationDialog, LogFaultDialog, ResolveDialog } from '@/components/engineer/dialogs';
+import { AddEquipmentDialog, CalibrationDialog, LogFaultDialog, ResolveDialog, type CatalogueOption } from '@/components/engineer/dialogs';
 import { AssetSheet, Inventory } from '@/components/engineer/inventory';
 import { AlertsBanner, AlertsSwitch, useNotificationPopups } from '@/components/service/alerts';
 import { Notifications } from '@/components/service/Notifications';
@@ -69,7 +69,7 @@ function useTheme() {
 }
 
 /** Biomedical Engineer Service Portal: the same layout as the hospital dashboard, backed by the shared service desk. */
-export function PortalShell({ user }: { user: { name: string; email: string } }) {
+export function PortalShell({ user, products }: { user: { name: string; email: string }; products: CatalogueOption[] }) {
   const { contact } = useSite();
   const me = user.name;
   const initials = me.split(/\s+/).map((w) => w[0]).slice(0, 2).join('').toUpperCase();
@@ -83,6 +83,12 @@ export function PortalShell({ user }: { user: { name: string; email: string } })
   const [resolving, setResolving] = useState<Ticket | null>(null);
   const [calibrating, setCalibrating] = useState<Asset | null>(null);
   const [palette, setPalette] = useState(false);
+  const [adding, setAdding] = useState(false);
+  const [facilities, setFacilities] = useState<string[]>([]);
+  const addEquipment = useCallback(() => {
+    setAdding(true);
+    fetch('/api/facilities').then((r) => (r.ok ? r.json() : { facilities: [] })).then((j: { facilities?: string[] }) => setFacilities(j.facilities ?? [])).catch(() => {});
+  }, []);
 
   /** Every action confirms itself with a toast. */
   const dispatch = useCallback(
@@ -108,9 +114,9 @@ export function PortalShell({ user }: { user: { name: string; email: string } })
   const openAsset = useCallback((id: string) => setSheetId(id), []);
   const sheet = state.assets.find((a) => a.id === sheetId) ?? null;
   const logFault = useCallback(() => {
-    if (state.assets.length === 0) toast('No equipment yet', { description: 'Faults are logged against installed equipment. Systems appear here once hospitals buy them.' });
+    if (state.assets.length === 0) toast('No equipment yet', { description: 'Faults are logged against registered equipment. Add a hospital’s existing equipment first.', action: { label: 'Add equipment', onClick: addEquipment } });
     else setFault({ open: true });
-  }, [state.assets.length]);
+  }, [state.assets.length, addEquipment]);
 
   // Ctrl+K / ⌘K, or "/" when not typing, opens search
   useEffect(() => {
@@ -133,9 +139,10 @@ export function PortalShell({ user }: { user: { name: string; email: string } })
   const actions: Command[] = useMemo(
     () => [
       { id: 'a-fault', label: 'Log equipment fault', icon: 'fi-rr-plus', group: 'Actions', run: logFault },
+      { id: 'a-add', label: 'Add existing equipment', icon: 'fi-rr-microscope', group: 'Actions', run: addEquipment },
       ...nav.map((n) => ({ id: `a-${n.id}`, label: `Go to ${n.label}`, icon: n.icon, group: 'Actions' as const, run: () => setView(n.id) })),
     ],
-    [logFault],
+    [logFault, addEquipment],
   );
 
   const onNotification = useCallback((n: Notification) => {
@@ -271,9 +278,9 @@ export function PortalShell({ user }: { user: { name: string; email: string } })
               {view === 'tickets' && (
                 <TicketsView state={state} me={me} selectedId={ticketId} onSelect={setTicketId} dispatch={dispatch} onResolve={setResolving} onOpenAsset={openAsset} onLogFault={logFault} />
               )}
-              {view === 'systems' && <SystemsView state={state} onOpenAsset={openAsset} />}
+              {view === 'systems' && <SystemsView state={state} onOpenAsset={openAsset} onAdd={addEquipment} />}
               {view === 'calibration' && <CalibrationView state={state} onRecord={setCalibrating} onOpenAsset={openAsset} />}
-              {view === 'docs' && <Inventory assets={state.assets} tickets={state.tickets} onSelect={(a) => openAsset(a.id)} />}
+              {view === 'docs' && <Inventory assets={state.assets} tickets={state.tickets} onSelect={(a) => openAsset(a.id)} onAdd={addEquipment} />}
             </>
           )}
         </div>
@@ -328,6 +335,17 @@ export function PortalShell({ user }: { user: { name: string; email: string } })
           rawDispatch({ type: 'calibrate', assetId: calibrating.id, result, notes });
           toast.success('Certificate issued', { description: `${calibrating.name} · next due in ${calibrating.intervalMonths} months` });
           setCalibrating(null);
+        }}
+      />
+      <AddEquipmentDialog
+        open={adding}
+        onOpenChange={setAdding}
+        facilities={[...new Set([...facilities, ...state.assets.map((a) => a.facility)])].sort((a, b) => a.localeCompare(b))}
+        products={products}
+        onSubmit={(asset) => {
+          rawDispatch({ type: 'addAsset', asset });
+          toast.success('Equipment added', { description: `${asset.name} at ${asset.facility}. The hospital can see it now.` });
+          setView('systems');
         }}
       />
       <CommandPalette open={palette} onOpenChange={setPalette} state={state} actions={actions} onOpenTicket={openTicket} onOpenAsset={openAsset} />

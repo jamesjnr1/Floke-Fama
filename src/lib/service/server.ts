@@ -2,6 +2,7 @@ import 'server-only';
 import { Query, type Models } from 'node-appwrite';
 import { appwrite, DATABASE_ID, TABLES } from '@/lib/appwrite';
 import type { SessionUser } from '@/lib/auth/session';
+import { catalogue } from '@/data/catalogue';
 import { pushNew } from '@/lib/push';
 import { createSeed, reducer, type Action, type Actor, type Asset, type Notification, type ServiceState, type Ticket } from '@/lib/service/desk';
 
@@ -105,10 +106,61 @@ function allowed(s: SessionUser, a: Action, state: ServiceState): string | null 
     case 'travel': case 'arrive': case 'note': case 'part': case 'resolve': return ownTicket(a.id) ? null : 'Unknown request.';
     case 'create': return ownAsset(a.ticket.assetId) ? null : 'Unknown equipment.';
     case 'calibrate': return ownAsset(a.assetId) ? null : 'Unknown equipment.';
+    case 'addAsset': return state.assets.some((x) => x.id === a.asset.id) ? 'That equipment is already registered.' : null;
     case 'read': return ownNote(a.id) ? null : 'Unknown notification.';
     case 'readAll': return a.audience === 'engineer' ? null : 'Not allowed.';
     default: return 'Not allowed.';
   }
+}
+
+const text = (v: unknown, max: number) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
+const date = (v: unknown, fallback: string) => {
+  const d = typeof v === 'string' ? new Date(v) : null;
+  return d && !Number.isNaN(d.getTime()) ? d.toISOString() : fallback;
+};
+
+/**
+ * Equipment a hospital already owns, registered by an engineer: rebuilt here from the fields that matter, so the
+ * browser can't set anything else. Catalogue items take their name, brand and photo from the catalogue.
+ */
+function cleanAsset(raw: Asset): Asset {
+  const p = raw.productSlug ? catalogue.find((c) => c.slug === raw.productSlug) : undefined;
+  const name = text(raw.name, 120) || p?.name || '';
+  const facility = text(raw.facility, 160);
+  if (name.length < 2) throw new DeskError('Enter the equipment name.');
+  if (facility.length < 2) throw new DeskError('Choose the hospital.');
+  if (!/^AS-[A-Z0-9]{2,20}$/.test(raw.id ?? '')) throw new DeskError('Invalid equipment.');
+  const now = new Date().toISOString();
+  const interval = Math.min(36, Math.max(1, Math.round(Number(raw.intervalMonths) || 12)));
+  const last = date(raw.lastCalibration, date(raw.installed, now));
+  const next = new Date(last);
+  next.setMonth(next.getMonth() + interval);
+  return {
+    id: raw.id,
+    name,
+    brand: text(raw.brand, 60) || p?.brand || '',
+    productSlug: p?.slug,
+    image: p?.image,
+    serial: text(raw.serial, 60) || 'Not recorded',
+    facility,
+    location: text(raw.location, 80) || 'Location not set',
+    readings: [],
+    installed: date(raw.installed, now),
+    warrantyUntil: date(raw.warrantyUntil, date(raw.installed, now)),
+    lastCalibration: last,
+    nextCalibration: next.toISOString(),
+    intervalMonths: interval,
+    certificates: [],
+  };
+}
+
+/** Hospitals an engineer can register equipment for: registered hospital accounts and facilities already on the desk. */
+export async function knownFacilities(): Promise<string[]> {
+  const desk = await loadDesk();
+  const names = new Set(desk.assets.map((a) => a.facility));
+  const { rows } = await appwrite!.tables.listRows<Models.Row & { organisation: string }>({ databaseId: DATABASE_ID, tableId: TABLES.accounts, queries: [Query.select(['organisation']), Query.limit(1000)] });
+  for (const r of rows) if (r.organisation && !r.organisation.toLowerCase().startsWith('flokefama')) names.add(r.organisation);
+  return [...names].sort((a, b) => a.localeCompare(b));
 }
 
 export class DeskError extends Error {
@@ -126,6 +178,7 @@ export async function applyAction(s: SessionUser, action: Action): Promise<Servi
     const before = await loadDesk();
     const why = allowed(s, action, before);
     if (why) throw new DeskError(why, 403);
+    if (action.type === 'addAsset') action = { ...action, asset: cleanAsset(action.asset) };
     const after = reducer(actorFor(s))(before, action);
     try {
       await saveChanges(before, after);
