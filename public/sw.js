@@ -3,9 +3,10 @@
  * - Pages: network-first, falling back to the cached copy, then /offline.
  * - Hashed build files (/_next/static): cache-first, they never go stale.
  * - Images: served from the cache for speed, refreshed in the background, so a replaced photo shows on the next visit.
+ * - Alerts (Web Push): shows new service requests and updates even when the site is closed; tapping one opens it.
  * Bump VERSION to invalidate old caches on deploy.
  */
-const VERSION = 'v3';
+const VERSION = 'v4';
 // Signed-in areas are never cached: private data must not survive sign-out on shared hospital machines.
 const PRIVATE = ['/portal', '/engineer', '/login'];
 const PAGE_CACHE = `pages-${VERSION}`;
@@ -61,4 +62,37 @@ self.addEventListener('fetch', (event) => {
     event.waitUntil(fresh.catch(() => {}));
     event.respondWith(caches.match(request).then((hit) => hit || fresh));
   }
+});
+
+// Alerts: a new request for engineers, or an update for a hospital (sent by lib/push.ts)
+self.addEventListener('push', (event) => {
+  let data = {};
+  try {
+    data = event.data ? event.data.json() : {};
+  } catch {
+    data = { body: event.data ? event.data.text() : '' };
+  }
+  event.waitUntil(
+    self.registration.showNotification(data.title || 'Flokefama', {
+      body: data.body || '',
+      icon: '/images/icon-192.png',
+      badge: '/images/icon-badge.png',
+      tag: data.tag,
+      renotify: Boolean(data.tag),
+      data: { url: data.url || '/' },
+    }),
+  );
+});
+
+// Tapping an alert opens what it is about, in an open portal window if there is one
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const url = new URL(event.notification.data?.url || '/', self.location.origin);
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((wins) => {
+      const same = wins.find((w) => new URL(w.url).pathname === url.pathname);
+      if (same) return same.navigate(url.href).then((w) => (w || same).focus());
+      return self.clients.openWindow(url.href);
+    }),
+  );
 });

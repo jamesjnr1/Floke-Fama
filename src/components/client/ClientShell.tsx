@@ -11,6 +11,7 @@ import { OrdersView } from '@/components/client/OrdersView';
 import { Overview } from '@/components/client/Overview';
 import { RequestsView } from '@/components/client/RequestsView';
 import { LogoMark, LogoWordmark } from '@/components/layout/logo';
+import { AlertsBanner, AlertsSwitch, useNotificationPopups } from '@/components/service/alerts';
 import { Notifications } from '@/components/service/Notifications';
 import { useAccessibility } from '@/components/layout/accessibility';
 import { Icon } from '@/components/ui/icon';
@@ -71,7 +72,19 @@ export function ClientShell({ user, products }: { user: { name: string; email: s
     setView('requests');
   }, []);
   const openAsset = useCallback((id: string) => setAssetId(id), []);
-  const onNotification = (n: Notification) => (n.ticketId ? openTicket(n.ticketId) : n.assetId ? openAsset(n.assetId) : undefined);
+  const onNotification = useCallback((n: Notification) => (n.ticketId ? openTicket(n.ticketId) : n.assetId ? openAsset(n.assetId) : undefined), [openTicket, openAsset]);
+  useNotificationPopups(notifications, ready, onNotification);
+
+  // Opened from an alert: /portal?ticket=TK-1043 or ?asset=AS-…
+  useEffect(() => {
+    if (!ready) return;
+    const q = new URLSearchParams(location.search);
+    const t = q.get('ticket');
+    const a = q.get('asset');
+    if (t) openTicket(t);
+    else if (a) openAsset(a);
+    if (t || a) history.replaceState(null, '', '/portal');
+  }, [ready, openTicket, openAsset]);
   const openCount = tickets.filter(isOpen).length;
   const installed = useMemo(() => assets.filter((a) => !a.installation), [assets]);
   const request = (assetId?: string) => {
@@ -146,6 +159,7 @@ export function ClientShell({ user, products }: { user: { name: string; email: s
         <div className="mt-auto border-t border-white/15 px-6 py-5 text-[0.8125rem]">
           <div className="space-y-2.5">
             <a href={contact.phoneHref} className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-phone-call" /> {contact.phone}</a>
+            <AlertsSwitch className="text-white/80 hover:text-white" />
             <button onClick={a11y.open} className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-universal-access" /> Accessibility</button>
             <Link href="/" className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-arrow-small-left" /> Flokefama website</Link>
             <form action={logout}>
@@ -194,6 +208,7 @@ export function ClientShell({ user, products }: { user: { name: string; email: s
             <div className="grid grid-cols-2 gap-3 xl:grid-cols-4" aria-busy="true">{[0, 1, 2, 3].map((i) => <div key={i} className="h-32 animate-pulse rounded-xl bg-mist" />)}</div>
           ) : (
             <>
+              {view === 'overview' && <AlertsBanner what="your engineer’s visits and updates" />}
               {view === 'overview' && <Overview name={user.name} facility={facility} orders={orders.length} assets={assets} tickets={tickets} onOpenTicket={openTicket} onOpenAsset={openAsset} onRequest={() => request()} onGo={setView} />}
               {view === 'requests' && <RequestsView assets={assets} tickets={tickets} selectedId={ticketId} onSelect={setTicketId} onRequest={() => request()} dispatch={dispatch} />}
               {view === 'equipment' && <EquipmentView assets={assets} tickets={tickets} onOpenAsset={openAsset} />}

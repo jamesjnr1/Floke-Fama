@@ -4,7 +4,7 @@ import { Analytics } from '@vercel/analytics/next';
 import { Toaster } from 'sonner';
 import { AccessibilityProvider } from '@/components/layout/accessibility';
 import { ServiceWorkerRegister } from '@/components/layout/sw-register';
-import { a11yBootScript } from '@/lib/a11y';
+import { a11yBootScript, revealNowScript } from '@/lib/a11y';
 import { SiteProvider } from '@/components/site-provider';
 import { getSite } from '@/lib/site';
 import type { Contact } from '@/lib/site-content';
@@ -72,6 +72,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         {/* Vercel Web Analytics: only on Vercel, where its script is served */}
         {process.env.VERCEL && <Analytics />}
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationLd(site.contact)) }} />
+        <script dangerouslySetInnerHTML={{ __html: revealNowScript }} />
       </body>
     </html>
   );

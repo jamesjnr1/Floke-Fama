@@ -13,6 +13,8 @@ export interface SessionUser {
   /** Hospital / facility / organisation the account belongs to. */
   facility?: string;
   phone?: string;
+  /** "Keep me signed in on this device": the session lasts 30 days instead of an hour. */
+  keep?: boolean;
   /** Expiry, seconds since epoch. */
   exp: number;
 }
@@ -20,6 +22,9 @@ export interface SessionUser {
 export const SESSION_COOKIE = 'ff_session';
 /** Sign-out after this long without activity: every visit to the site renews the session (sliding expiry). */
 export const SESSION_TTL_SECONDS = 60 * 60; // 1 hour
+/** With "Keep me signed in": 30 days without use (still renewed by every visit). */
+export const KEEP_TTL_SECONDS = 60 * 60 * 24 * 30;
+export const ttlFor = (user: { keep?: boolean }) => (user.keep ? KEEP_TTL_SECONDS : SESSION_TTL_SECONDS);
 
 /** Where each role lands after signing in. */
 export const roleHome: Record<Role, string> = { client: '/portal', engineer: '/engineer' };
@@ -74,17 +79,17 @@ export async function verifyPayload<T>(token: string | undefined): Promise<T | n
 }
 
 export async function signSession(user: Omit<SessionUser, 'exp'>): Promise<string> {
-  return signPayload({ ...user, exp: Math.floor(Date.now() / 1000) + SESSION_TTL_SECONDS } satisfies SessionUser);
+  return signPayload({ ...user, exp: Math.floor(Date.now() / 1000) + ttlFor(user) } satisfies SessionUser);
 }
 
-/** Cookie options for the session (also used when middleware renews it). */
-export const sessionCookie = {
+/** Cookie options for a session (also used when middleware renews it). */
+export const sessionCookie = (user: { keep?: boolean }) => ({
   httpOnly: true,
   secure: process.env.NODE_ENV === 'production',
   sameSite: 'lax' as const,
   path: '/',
-  maxAge: SESSION_TTL_SECONDS,
-};
+  maxAge: ttlFor(user),
+});
 
 /** Returns the session if the signature is valid and it hasn't expired; otherwise null. */
 export async function verifySession(token: string | undefined): Promise<SessionUser | null> {

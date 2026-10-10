@@ -48,6 +48,7 @@ for (const path of [...pages, ...Object.keys(protectedPages)]) {
     const errors = [];
     page.on('pageerror', (e) => errors.push(e.message));
     page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
+    page.on('response', (r) => r.status() >= 400 && errors.push(`${r.status()} ${r.url()}`));
     await page.goto(base + path, { waitUntil: 'load' });
     // Chrome reports below-the-fold lazy images as started but holds them until they near the viewport, so a page
     // can stay "busy" forever; wait for the network to settle, but not longer than a few seconds.
