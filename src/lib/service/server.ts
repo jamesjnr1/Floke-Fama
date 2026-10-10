@@ -2,6 +2,7 @@ import 'server-only';
 import { Query, type Models } from 'node-appwrite';
 import { appwrite, DATABASE_ID, TABLES } from '@/lib/appwrite';
 import type { SessionUser } from '@/lib/auth/session';
+import { pushNew } from '@/lib/push';
 import { createSeed, reducer, type Action, type Actor, type Asset, type Notification, type ServiceState, type Ticket } from '@/lib/service/desk';
 
 /**
@@ -128,6 +129,7 @@ export async function applyAction(s: SessionUser, action: Action): Promise<Servi
     const after = reducer(actorFor(s))(before, action);
     try {
       await saveChanges(before, after);
+      await pushNew(before, after); // alerts on phones and computers, for the new notifications
       return visibleTo(s, after);
     } catch (e) {
       if ((e as { code?: number }).code === 409 && attempt < 2) continue;
@@ -144,6 +146,7 @@ export async function registerPurchase(s: SessionUser, order: string, items: Ext
     const after = reducer(actorFor(s))({ ...before, purchases: [] }, { type: 'purchase', order, facility: facilityOf(s), items });
     try {
       await saveChanges(before, after);
+      await pushNew(before, after);
       return;
     } catch (e) {
       if ((e as { code?: number }).code === 409 && attempt < 2) continue;

@@ -31,8 +31,8 @@ export async function Hero() {
         />
       </svg>
 
-      <div className="mx-auto grid w-full max-w-[1280px] flex-1 items-center gap-10 px-5 pb-10 pt-28 md:px-10 md:pt-32 lg:grid-cols-12 lg:gap-12 lg:pb-8">
-        <div className="flex flex-col gap-7 lg:col-span-7">
+      <div className="mx-auto grid w-full max-w-[1280px] flex-1 grid-cols-1 items-center gap-10 px-5 pb-10 pt-28 md:px-10 md:pt-32 lg:grid-cols-12 lg:gap-12 lg:pb-8">
+        <div className="flex min-w-0 flex-col gap-7 lg:col-span-7">
           <Reveal>
             <h1 className="text-[clamp(2.5rem,1.4rem+3.2vw,4rem)] font-extrabold leading-[1.05] tracking-[-0.035em] text-white">
               {hero.title} <span className="block text-brand-300">
@@ -56,7 +56,7 @@ export async function Hero() {
         </div>
 
         {/* A slideshow of the machines Flokefama supplies */}
-        <Reveal delay={0.2} className="mx-auto w-full max-w-md lg:col-span-5 lg:max-w-none">
+        <Reveal delay={0.2} className="mx-auto w-full min-w-0 max-w-md lg:col-span-5 lg:max-w-none">
           <MachineSlideshow />
         </Reveal>
       </div>

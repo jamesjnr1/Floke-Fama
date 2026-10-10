@@ -26,11 +26,11 @@ export async function middleware(request: NextRequest) {
   // Each role's own area (client portal, engineer portal) is closed to other roles.
   if (area && session.role !== area.role) return NextResponse.redirect(new URL(roleHome[session.role], request.url));
 
-  // Activity renews the session (sliding expiry), so it only ends after an hour without use.
+  // Activity renews the session (sliding expiry), so it only ends after an hour without use (30 days with "Keep me signed in").
   const res = NextResponse.next();
   const { exp: _exp, ...user } = session;
   void _exp;
-  res.cookies.set(SESSION_COOKIE, await signSession(user), sessionCookie);
+  res.cookies.set(SESSION_COOKIE, await signSession(user), sessionCookie(user));
   res.headers.set('Cache-Control', 'private, no-store');
   return res;
 }
