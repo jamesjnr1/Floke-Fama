@@ -29,7 +29,7 @@ export function MachineSlideshow() {
   return heroStyle === 'carousel' ? <MachineCarousel /> : <MachineCard />;
 }
 
-/** Tile colours, in turn: light mint, light sea, light sage (light, so the white product photos blend in). */
+/** Tile colours, in turn: light mint, light sea, light sage (the hero photos have see-through backgrounds: public/images/hero, made by scripts/hero-cutouts.mjs). */
 const tones = [
   { bg: 'bg-[#cfe3de]', brand: 'text-[#0b6b45]', name: 'text-[#16232a]', btn: 'bg-[#0b1418] text-white' },
   { bg: 'bg-[#d3e5e8]', brand: 'text-[#075056]', name: 'text-[#16232a]', btn: 'bg-[#0b1418] text-white' },
@@ -92,7 +92,7 @@ function MachineCarousel() {
                   <p className={cn('text-[0.8125rem] font-medium uppercase tracking-[0.08em]', t.brand)}>{m.brand}</p>
                   <p className={cn('mt-1 max-w-[85%] text-xl font-semibold leading-snug', t.name)}>{m.name}</p>
                   <div className="relative mt-2 min-h-0 flex-1">
-                    <Image src={`/images/products/${m.slug}.webp`} alt="" fill priority={k === 0} sizes="(min-width: 1024px) 380px, 75vw" className="pointer-events-none object-contain p-4 mix-blend-multiply" draggable={false} />
+                    <Image src={`/images/hero/${m.slug}.webp`} alt="" fill priority={k === 0} loading={k === 0 ? undefined : 'eager'} sizes="(min-width: 1024px) 380px, 75vw" className="pointer-events-none object-contain p-4" draggable={false} />
                   </div>
                   <span className={cn('grid size-11 place-items-center rounded-full transition-transform duration-300 group-hover:translate-x-1', t.btn)} aria-hidden>
                     <svg viewBox="0 0 16 16" className="size-4"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -153,7 +153,7 @@ function MachineCard() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             >
-              <Image src={`/images/products/${m.slug}.webp`} alt={`${m.brand} ${m.name}`} fill priority={i === 0} sizes="(min-width: 1024px) 480px, 90vw" className="object-contain p-10 mix-blend-multiply md:p-12" />
+              <Image src={`/images/hero/${m.slug}.webp`} alt={`${m.brand} ${m.name}`} fill priority={i === 0} sizes="(min-width: 1024px) 480px, 90vw" className="object-contain p-10 md:p-12" />
             </motion.div>
           </AnimatePresence>
         </div>
