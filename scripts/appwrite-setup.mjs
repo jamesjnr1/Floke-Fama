@@ -83,6 +83,13 @@ const tables = [
     columns: [text('audience', 16), json('data')],
     indexes: [],
   },
+  // Devices that turned alerts on (Web Push): one row per device
+  {
+    id: 'push_subscriptions',
+    name: 'Alert devices',
+    columns: [text('account', 254), text('role', 16), text('facility', 160, false), json('data')],
+    indexes: [{ key: 'role_facility', type: 'key', columns: ['role', 'facility'] }],
+  },
 ];
 
 try {

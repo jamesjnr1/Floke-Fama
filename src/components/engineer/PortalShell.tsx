@@ -8,6 +8,7 @@ import { CalibrationView } from '@/components/engineer/CalibrationView';
 import { CommandPalette, type Command } from '@/components/engineer/CommandPalette';
 import { CalibrationDialog, LogFaultDialog, ResolveDialog } from '@/components/engineer/dialogs';
 import { AssetSheet, Inventory } from '@/components/engineer/inventory';
+import { AlertsBanner, AlertsSwitch, useNotificationPopups } from '@/components/service/alerts';
 import { Notifications } from '@/components/service/Notifications';
 import { Overview } from '@/components/engineer/Overview';
 import { SystemsView } from '@/components/engineer/SystemsView';
@@ -137,10 +138,23 @@ export function PortalShell({ user }: { user: { name: string; email: string } })
     [logFault],
   );
 
-  const onNotification = (n: Notification) => {
+  const onNotification = useCallback((n: Notification) => {
     if (n.ticketId) openTicket(n.ticketId);
     else if (n.assetId) openAsset(n.assetId);
-  };
+  }, [openTicket, openAsset]);
+  const mine = useMemo(() => state.notifications.filter((n) => n.audience === 'engineer'), [state.notifications]);
+  useNotificationPopups(mine, ready, onNotification);
+
+  // Opened from an alert: /engineer?ticket=TK-1043 or ?asset=AS-…
+  useEffect(() => {
+    if (!ready) return;
+    const q = new URLSearchParams(location.search);
+    const t = q.get('ticket');
+    const a = q.get('asset');
+    if (t) openTicket(t);
+    else if (a) openAsset(a);
+    if (t || a) history.replaceState(null, '', '/engineer');
+  }, [ready, openTicket, openAsset]);
 
   const themeButton = (
     <button
@@ -200,6 +214,7 @@ export function PortalShell({ user }: { user: { name: string; email: string } })
         <div className="mt-auto border-t border-white/15 px-6 py-5 text-[0.8125rem]">
           <div className="space-y-2.5">
             <a href={contact.phoneHref} className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-phone-call" /> {contact.phone}</a>
+            <AlertsSwitch className="text-white/80 hover:text-white" />
             <button onClick={a11y.open} className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-universal-access" /> Accessibility</button>
             <Link href="/" className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-arrow-small-left" /> Flokefama website</Link>
             <form action={logout}>
@@ -224,7 +239,7 @@ export function PortalShell({ user }: { user: { name: string; email: string } })
           </button>
           <button onClick={() => setPalette(true)} aria-label="Search" className="grid size-10 shrink-0 place-items-center rounded-md border border-line bg-paper text-ink xl:hidden"><Icon name="fi-rr-search" /></button>
           {themeButton}
-          <Notifications tone="light" items={state.notifications.filter((n) => n.audience === 'engineer')} onRead={(id) => rawDispatch({ type: 'read', id })} onReadAll={() => rawDispatch({ type: 'readAll', audience: 'engineer' })} onOpen={onNotification} />
+          <Notifications tone="light" items={mine} onRead={(id) => rawDispatch({ type: 'read', id })} onReadAll={() => rawDispatch({ type: 'readAll', audience: 'engineer' })} onOpen={onNotification} />
           <span className="hidden items-center gap-3 border-l border-line pl-4 md:flex">
             <span className="grid size-9 place-items-center rounded-md bg-brand-600 text-xs font-semibold text-white">{initials}</span>
             <span className="leading-tight">
@@ -251,6 +266,7 @@ export function PortalShell({ user }: { user: { name: string; email: string } })
             <div className="grid grid-cols-2 gap-3 xl:grid-cols-4" aria-busy="true">{[0, 1, 2, 3].map((i) => <div key={i} className="h-32 animate-pulse rounded-xl bg-mist" />)}</div>
           ) : (
             <>
+              {view === 'overview' && <AlertsBanner what="new service requests" />}
               {view === 'overview' && <Overview state={state} me={me} onOpenTicket={openTicket} onOpenAsset={openAsset} onGo={setView} onLogFault={logFault} />}
               {view === 'tickets' && (
                 <TicketsView state={state} me={me} selectedId={ticketId} onSelect={setTicketId} dispatch={dispatch} onResolve={setResolving} onOpenAsset={openAsset} onLogFault={logFault} />

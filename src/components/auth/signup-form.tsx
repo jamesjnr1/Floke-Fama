@@ -44,6 +44,9 @@ export function SignupForm({ next }: { next?: string }) {
         </span>,
       )}
       {row('confirm', 'Confirm password', <input name="confirm" type={show ? 'text' : 'password'} autoComplete="new-password" aria-invalid={!!e.confirm} className={field} />)}
+      <label className="flex items-center gap-2.5 text-sm text-ink-2">
+        <input type="checkbox" name="keep" className="size-4 accent-[#007a4d]" /> Keep me signed in
+      </label>
       <button type="submit" disabled={pending} className="!mt-6 flex h-12 w-full items-center justify-center rounded-xl bg-brand-600 text-[1.125rem] font-semibold text-white transition hover:bg-brand-700 disabled:opacity-60">
         {pending ? 'Creating your hospital account…' : 'Create hospital account'}
       </button>

@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
 import Link from 'next/link';
 import { SitePageHero } from '@/components/layout/site-page-hero';
 import { NewsGrid } from '@/components/media/news-grid';
@@ -112,14 +111,8 @@ function EventGrid({ events, past = false }: { events: EventItem[]; past?: boole
                     <Icon name="fi-rr-marker" className="shrink-0 text-ink-3" /> <span className="truncate">{e.venue}</span>
                   </span>
                 </span>
-                <span className="col-start-2 flex min-w-0 flex-col items-start gap-3 md:col-start-auto md:flex-row md:items-center md:gap-4">
-                  {e.image && (
-                    <span className="relative aspect-[16/10] w-full shrink-0 overflow-hidden rounded-md bg-midnight md:aspect-auto md:h-[88px] md:w-36">
-                      <Image src={e.image} alt="" fill sizes="(min-width: 768px) 144px, 60vw" className="object-cover object-top" />
-                    </span>
-                  )}
-                  <span className="min-w-0 font-medium leading-snug text-ink">{e.title}</span>
-                </span>
+                {/* No photo in the list: it shows on the event's own page, once the event is opened */}
+                <span className="col-start-2 min-w-0 text-[1.0625rem] font-medium leading-snug text-ink md:col-start-auto">{e.title}</span>
                 <Icon name="fi-rr-arrow-small-right" className="hidden text-xl text-ink-3 transition-transform group-hover:translate-x-1 group-hover:text-ink md:block" />
               </Link>
             </Reveal>

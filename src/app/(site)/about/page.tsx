@@ -76,7 +76,7 @@ export default async function AboutPage() {
       </section>
 
       {/* Leadership. Portrait from the current site's media library; text from the CEO profile supplied by Flokefama. */}
-      <section id="ceo" className="scroll-mt-28 bg-paper section-y">
+      <section id="ceo" className="scroll-mt-28 border-y border-line bg-canvas section-y">
         <div className="mx-auto grid max-w-[1280px] gap-10 px-5 md:px-10 lg:grid-cols-12 lg:gap-16">
           <Reveal className="lg:col-span-5">
             <div className="lg:sticky lg:top-28">
@@ -95,7 +95,7 @@ export default async function AboutPage() {
             <div className="mt-6 space-y-4 text-lg leading-relaxed text-ink-3">
               {ceo.bio.map((t) => <p key={t.slice(0, 40)}>{t}</p>)}
             </div>
-            <div className="mt-10 border border-line bg-canvas p-6 md:p-8">
+            <div className="mt-10 border border-line bg-paper p-6 md:p-8">
               <h3 className="flex items-center gap-3 text-xl font-bold tracking-[-0.02em]">
                 <span className="size-2 bg-signal" aria-hidden /> Business with a Purpose
               </h3>
@@ -114,7 +114,7 @@ export default async function AboutPage() {
       </section>
 
       {/* Industry experience and services (content from the current About page) */}
-      <section id="experience" className="scroll-mt-28 bg-canvas section-y">
+      <section id="experience" className="scroll-mt-28 bg-paper section-y">
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
           <div className="grid gap-10 lg:grid-cols-12 lg:items-center lg:gap-16">
             <Reveal className="lg:col-span-7">

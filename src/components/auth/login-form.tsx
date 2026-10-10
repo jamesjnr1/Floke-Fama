@@ -38,14 +38,19 @@ export function LoginForm({ next, notice }: { next?: string; notice?: string }) 
             </button>
           </span>
         </label>
-        <p className="-mt-2 text-right">
+        <div className="-mt-1 flex items-center justify-between gap-3">
+          <label className="flex items-center gap-2.5 whitespace-nowrap text-sm text-ink-2" title="Stay signed in on this device for 30 days. Not on shared computers.">
+            <input type="checkbox" name="keep" className="size-4 accent-[#007a4d]" /> Keep me signed in
+          </label>
+          <p className="text-right">
           <a
             href={`mailto:${contact.support}?subject=${encodeURIComponent('Client portal: password reset')}&body=${encodeURIComponent('Please reset the password for my client portal account.\n\nEmail on the account: ')}`}
-            className="text-sm font-medium text-brand-700 underline-offset-4 hover:underline"
+            className="whitespace-nowrap text-sm font-medium text-brand-700 underline-offset-4 hover:underline"
           >
             Forgot password?
           </a>
-        </p>
+          </p>
+        </div>
 
         {state.error && (
           <p role="alert" className="flex items-center gap-2 rounded-xl bg-signal/[0.06] px-4 py-3 text-sm text-signal-700 ring-1 ring-signal/30">
