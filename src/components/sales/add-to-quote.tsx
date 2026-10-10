@@ -41,7 +41,7 @@ export function AddToQuote({ item, compact, className }: { item: QuoteItem; comp
       onClick={onClick}
       aria-pressed={added}
       className={cn(
-        'inline-flex h-12 items-center gap-2 rounded-full px-5 text-sm font-medium ring-1 transition',
+        'inline-flex h-12 items-center gap-2 rounded-lg px-5 text-sm font-medium ring-1 transition',
         added ? 'bg-brand-50 text-brand-700 ring-brand-200' : 'text-ink ring-line hover:ring-ink/30',
         className,
       )}

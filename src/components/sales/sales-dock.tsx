@@ -89,7 +89,7 @@ export function SalesDock() {
                   track('quote_list_request', { items: items.length });
                   setOpen(false);
                 }}
-                className="flex h-12 items-center justify-center gap-2 rounded-full bg-brand-600 text-sm font-medium text-white transition hover:bg-brand-700"
+                className="flex h-12 items-center justify-center gap-2 rounded-lg bg-brand-600 text-sm font-medium text-white transition hover:bg-brand-700"
               >
                 Check out {items.length === 1 ? '1 item' : `${items.length} items`}
               </Link>
@@ -105,11 +105,11 @@ export function SalesDock() {
             type="button"
             onClick={() => setOpen((o) => !o)}
             aria-expanded={open}
-            className="flex h-12 items-center gap-2 rounded-full bg-midnight pl-4 pr-5 text-sm font-medium text-white shadow-[0_14px_30px_-12px_rgb(11_21_16/0.7)] transition hover:bg-black"
+            className="flex h-12 items-center gap-2 rounded-lg bg-midnight pl-4 pr-5 text-sm font-medium text-white shadow-[0_14px_30px_-12px_rgb(11_21_16/0.7)] transition hover:bg-black"
           >
             <Icon name="fi-rr-shopping-cart" className="text-base" />
             Cart
-            <span className="grid min-w-6 place-items-center rounded-full bg-brand-500 px-1.5 text-xs">{items.length}</span>
+            <span className="grid min-w-6 place-items-center rounded-[4px] bg-brand-500 px-1.5 text-xs">{items.length}</span>
           </button>
         )}
         <button

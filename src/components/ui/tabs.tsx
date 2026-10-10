@@ -28,7 +28,7 @@ export function Tabs({ defaultValue, value: controlled, onValueChange, className
 }
 
 export function TabsList({ className, ...props }: ComponentProps<typeof TabsPrimitive.List>) {
-  return <TabsPrimitive.List className={cn('inline-flex max-w-full items-center gap-1 overflow-x-auto rounded-full bg-mist p-1 [scrollbar-width:none]', className)} {...props} />;
+  return <TabsPrimitive.List className={cn('inline-flex max-w-full items-center gap-1 overflow-x-auto rounded-lg bg-mist p-1 [scrollbar-width:none]', className)} {...props} />;
 }
 
 export function TabsTrigger({ className, value, children, ...props }: ComponentProps<typeof TabsPrimitive.Trigger>) {
@@ -38,7 +38,7 @@ export function TabsTrigger({ className, value, children, ...props }: ComponentP
     <TabsPrimitive.Trigger
       value={value}
       className={cn(
-        'relative shrink-0 rounded-full px-4 py-2 text-sm font-medium text-ink-3 transition-colors hover:text-ink data-[state=active]:text-ink',
+        'relative shrink-0 rounded-md px-4 py-2 text-sm font-medium text-ink-3 transition-colors hover:text-ink data-[state=active]:text-ink',
         className,
       )}
       {...props}
@@ -46,7 +46,7 @@ export function TabsTrigger({ className, value, children, ...props }: ComponentP
       {active && (
         <motion.span
           layoutId={`tab-${ctx.group}`}
-          className="absolute inset-0 rounded-full bg-paper shadow-sm ring-1 ring-line"
+          className="absolute inset-0 rounded-md bg-paper shadow-sm ring-1 ring-line"
           transition={{ type: 'spring', bounce: 0.18, duration: 0.5 }}
         />
       )}
