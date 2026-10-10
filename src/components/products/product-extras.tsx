@@ -74,7 +74,7 @@ export function MobileQuoteBar({ product }: { product: Product }) {
       {/* pl-20 leaves room for the accessibility button bottom-left */}
       <div className="flex items-center gap-3">
         <AddToQuote item={{ slug: product.slug, name: product.name, brand: product.brand, image: product.image }} compact className="size-12 shrink-0 sm:size-12" />
-        <Link href={`/quote?product=${product.slug}`} className="flex h-12 flex-1 items-center justify-center gap-2 rounded-full bg-brand-600 text-sm font-medium text-white">
+        <Link href={`/quote?product=${product.slug}`} className="flex h-12 flex-1 items-center justify-center gap-2 rounded-lg bg-brand-600 text-sm font-medium text-white">
           Order now
         </Link>
       </div>

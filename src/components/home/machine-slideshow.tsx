@@ -9,12 +9,12 @@ import { cn } from '@/lib/utils';
 /** Machines from the Flokefama shop, with the product photos published there. */
 const machines = [
   { slug: 'auto-heamatology-analyzer-bc5150', name: 'BC-5150 Haematology Analyser', brand: 'Mindray' },
-  { slug: 'semi-automated-chemistry-analysermindray', name: 'BA-88A Semi-Auto Chemistry Analyser', brand: 'Mindray' },
+  { slug: 'omron-m7', name: 'M7 Blood Pressure Monitor', brand: 'Omron' },
   { slug: 'dp-10-ultrasound', name: 'DP-10 Ultrasound', brand: 'Mindray' },
   { slug: 'patient-monitor-comen', name: 'Patient Monitor', brand: 'Comen' },
   { slug: 'microscope-olympus-cx23', name: 'CX23 Microscope', brand: 'Olympus' },
-  { slug: 'urine-analyzer-ua-66', name: 'UA-66 Urine Analyser', brand: 'Mindray' },
-  { slug: 'defribillator', name: 'Defibrillator', brand: 'Comen' },
+  { slug: 'oxygen-cylinder-40l', name: 'Oxygen Cylinder 40L', brand: 'Floke' },
+  { slug: 'emergency-trolley', name: 'Emergency Trolley', brand: 'Floke' },
   { slug: 'cpap-machine', name: 'CPAP Machine', brand: 'Yuwell' },
 ];
 
@@ -33,8 +33,14 @@ export function MachineSlideshow() {
 
   return (
     <div className="relative" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocus={() => setPaused(true)} onBlur={() => setPaused(false)}>
-      <Link href={`/products/${m.slug}`} className="group block overflow-hidden rounded-lg bg-white" aria-label={`${m.brand} ${m.name}: view product`}>
-        <div className="relative h-[clamp(220px,calc(100svh-540px),420px)] bg-white">
+      {/* The card: thin low-contrast border, soft shadow, a small lift on hover */}
+      <Link
+        href={`/products/${m.slug}`}
+        className="group block overflow-hidden rounded-xl border border-white/10 bg-[#121d23] shadow-[0_18px_40px_-24px_rgb(0_0_0/0.6)] transition duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_26px_50px_-24px_rgb(0_0_0/0.7)] motion-reduce:hover:translate-y-0"
+        aria-label={`${m.brand} ${m.name}: view product`}
+      >
+        {/* Image area: one fixed height for every machine, soft off-white, room around the product */}
+        <div className="relative h-[clamp(220px,calc(100svh-560px),400px)] bg-[#F5F7F6]">
           <AnimatePresence mode="popLayout" initial={false}>
             <motion.div
               key={m.slug}
@@ -44,16 +50,18 @@ export function MachineSlideshow() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             >
-              <Image src={`/images/products/${m.slug}.webp`} alt={`${m.brand} ${m.name}`} fill priority={i === 0} sizes="(min-width: 1024px) 480px, 90vw" className="object-contain p-8" />
+              <Image src={`/images/products/${m.slug}.webp`} alt={`${m.brand} ${m.name}`} fill priority={i === 0} sizes="(min-width: 1024px) 480px, 90vw" className="object-contain p-10 mix-blend-multiply md:p-12" />
             </motion.div>
           </AnimatePresence>
         </div>
-        <div className="flex items-center justify-between gap-4 bg-[#121d23] px-5 py-3">
-          <div className="min-w-0">
-            <p className="text-sm font-semibold text-brand-300">{m.brand}</p>
-            <p className="truncate text-lg font-bold text-white">{m.name}</p>
+        <div className="px-6 py-5">
+          <p className="text-[0.8125rem] font-medium uppercase tracking-[0.08em] text-brand-300">{m.brand}</p>
+          <div className="mt-1.5 flex items-baseline justify-between gap-4">
+            <p className="truncate text-lg font-semibold leading-snug text-white">{m.name}</p>
+            <span className="inline-flex shrink-0 items-center gap-1 text-sm font-semibold text-white/75 transition group-hover:text-white">
+              View <svg aria-hidden viewBox="0 0 16 16" className="size-3.5 transition-transform duration-300 group-hover:translate-x-0.5"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            </span>
           </div>
-          <span className="shrink-0 text-sm font-semibold text-white/80 underline-offset-4 group-hover:text-white group-hover:underline">View</span>
         </div>
       </Link>
 

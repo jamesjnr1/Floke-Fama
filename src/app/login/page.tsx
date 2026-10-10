@@ -46,7 +46,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
 
       <section className="flex flex-col px-5 py-8 md:px-10 lg:min-h-[100svh] lg:px-16 lg:py-12">
         <div className="flex justify-end">
-          <Link href="/" className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm text-ink-3 transition hover:bg-mist hover:text-ink">
+          <Link href="/" className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm text-ink-3 transition hover:bg-mist hover:text-ink">
             <Icon name="fi-rr-arrow-small-left" /> Back to site
           </Link>
         </div>
