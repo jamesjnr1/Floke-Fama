@@ -28,7 +28,7 @@ export function NewArrivals({ products, categories }: { products: Product[]; cat
               >
                 <div className="relative">
                   <ProductVisual product={p} category={category} shared={false} sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 84vw" className="aspect-[4/3.2]" />
-                  <span className="absolute left-4 top-4 rounded-full bg-signal px-3 py-1 text-xs font-semibold text-white">New</span>
+                  <span className="absolute left-4 top-4 rounded-[4px] bg-signal px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.06em] text-white">New</span>
                 </div>
                 <div className="flex flex-1 flex-col p-5">
                   <p className="text-sm font-semibold text-brand-700">

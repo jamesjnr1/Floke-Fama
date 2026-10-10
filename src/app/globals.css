@@ -280,3 +280,14 @@ html[data-eng-theme='dark'] {
 }
 html[data-eng-theme='dark'] .eng-page { background: #111b20; }
 html[data-eng-theme='dark'] .eng-rail { background: linear-gradient(180deg, #0f3a2a 0%, #0c3022 55%, #0a281d 100%); }
+
+/* Drop-downs: the site's own chevron with room on the right (the browser's arrow hugs the edge). Outside the
+   layers on purpose, so it wins over padding utilities on the field. */
+select:not([multiple]):not([size]) {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5' fill='none' stroke='%237a8a8f' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 12px 12px;
+  padding-right: 2.75rem;
+}

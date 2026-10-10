@@ -70,7 +70,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
           </nav>
           <ul className="mt-8 flex flex-wrap gap-2">
             {a.categories.map((c) => (
-              <li key={c} className="rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-700 ring-1 ring-brand-100">{c}</li>
+              <li key={c} className="rounded-[4px] bg-brand-50 px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.06em] text-brand-700">{c}</li>
             ))}
           </ul>
           <h1 className="display mt-5 max-w-4xl text-[clamp(2.1rem,1.3rem+3vw,3.75rem)] leading-[1.05]">{a.title}</h1>
@@ -78,7 +78,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
             <p className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-ink-3">
               <span className="flex items-center gap-2"><Icon name="fi-rr-calendar" className="text-brand-600" /> <time dateTime={a.date}>{formatDate(a.date)}</time></span>
               <span className="flex items-center gap-2"><Icon name="fi-rr-clock" className="text-brand-600" /> {readingTime(a)} min read</span>
-              <span className="flex items-center gap-2"><Icon name="fi-rr-building" className="text-brand-600" /> Flokefama Media Centre</span>
+              <span className="flex items-center gap-2"><Icon name="fi-rr-newspaper" className="text-brand-600" /> Flokefama Media Centre</span>
             </p>
             <ShareButtons title={a.title} />
           </div>
