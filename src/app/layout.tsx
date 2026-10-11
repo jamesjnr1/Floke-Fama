@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: { default: 'Flokefama | Medical Equipment & Diagnostics in Ghana', template: '%s | Flokefama' },
   description:
-    'Flokefama supplies, installs and maintains world-class medical equipment and laboratory diagnostics for hospitals across Ghana and West Africa. Official distributor of Mindray, Biozek Holland and MR Global.',
+    'Flokefama supplies, installs and maintains world-class medical equipment and laboratory diagnostics for hospitals across Ghana and West Africa. Official distributor of Mindray.',
   openGraph: { type: 'website', siteName: 'Flokefama', images: ['/images/og-image.jpg'] },
   twitter: { card: 'summary_large_image' },
   icons: { icon: '/images/favicon.png' },

@@ -110,13 +110,15 @@ export const milestones: Milestone[] = [
   },
 ];
 
-export const distributors = ['Mindray', 'Biozek Holland', 'MR Global'];
+/**
+ * Manufacturer brands shown on the site. The CEO's review (Oct 2026): lead with the Flokefama identity and keep
+ * Mindray as the only visible manufacturer brand, so no other maker's logo appears (in code or from the Studio).
+ */
+export const visibleBrands = ['Mindray'];
 
-/** Technology partners (manufacturers Flokefama officially distributes). */
+/** Technology partners (manufacturers Flokefama officially distributes) that are shown on the site. */
 export const technologyPartners = [
   { name: 'Mindray', logo: '/images/partners/mindray.webp', w: 800, h: 190, role: 'Official distributor' },
-  { name: 'Biozek Holland', logo: '/images/partners/biozek.webp', w: 600, h: 160, role: 'Official distributor' },
-  { name: 'MR Global', logo: null, w: 0, h: 0, role: 'Official distributor' },
 ];
 
 /** Clientele shown on the current flokefama.com "Our Partners & Clientele" strip. */
@@ -198,7 +200,7 @@ export const servicesInBrief = [
 /** "Why choose Flokefama?", from the current Services page. */
 export const whyChoose = [
   { icon: 'fi-rr-link-alt', title: 'End-to-end solutions', body: 'From procurement and installation to training and maintenance.' },
-  { icon: 'fi-rr-globe', title: 'High-quality, globally recognized medical brands', body: 'We are the Official distributor of Mindray, Biozek Holland, and MR Global.' },
+  { icon: 'fi-rr-globe', title: 'High-quality, globally recognized medical brands', body: 'We are the official distributor of Mindray.' },
   { icon: 'fi-rr-headset', title: 'Reliable after-sales support', body: 'Reliable after-sales support and rapid response service.' },
   { icon: 'fi-rr-marker', title: 'Nationwide reach', body: 'Branches in Santa Maria, Korle-bu, Okaishie, Kumasi, Aflao and Techiman.' },
 ] as const;

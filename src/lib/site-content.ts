@@ -36,7 +36,15 @@ export interface SiteContent {
   coreValues: { title: string; icon: string; text: string }[];
   servicesInBrief: { icon: string; title: string; text: string }[];
   whyChoose: { icon: string; title: string; body: string }[];
-  ceo: { name: string; role: string; bio: string[] };
+  ceo: {
+    name: string;
+    role: string;
+    bio: string[];
+    education: { title: string; detail: string }[];
+    honours: { title: string; detail: string }[];
+    creed: string;
+    purpose: string;
+  };
   awards: Award[];
   faqs: Faq[];
   esgPillars: EsgPillar[];
@@ -67,7 +75,7 @@ export const defaultFaqs: Faq[] = [] = [
   },
   {
     q: 'Which brands do you supply?',
-    a: 'Flokefama is the official distributor of Mindray, Biozek Holland and MR Global, alongside other trusted manufacturers in the catalogue.',
+    a: 'Flokefama is the official distributor of Mindray, alongside other trusted manufacturers in the catalogue.',
   },
   {
     q: 'Do you install the equipment and train our staff?',
@@ -147,16 +155,30 @@ export const defaultSite: SiteContent = {
   servicesInBrief: seed.servicesInBrief.map((x) => ({ ...x })),
   // The original list repeated "High-quality, globally recognized medical brands"; keep each point once.
   whyChoose: seed.whyChoose.filter((x, i, all) => all.findIndex((y) => y.title === x.title) === i).map((x) => ({ ...x })),
+  // The CEO profile as written by the CEO (Website Redesign Review, Oct 2026)
   ceo: {
-    name: 'Mr. Emmanuel Kenney',
+    name: 'Teye Kwabena Kenney',
     role: 'Founder & Chief Executive Officer, Flokefama Company Limited',
     bio: [
-      "Behind Flokefama’s vision is Mr. Emmanuel Kenney, a Ghanaian entrepreneur and business leader whose journey into the healthcare industry is deeply personal.",
-      "Mr. Kenney brings a strong combination of academic preparation, leadership experience and entrepreneurial vision to his role as Chief Executive Officer. He is a graduate of Sanford Business School in the United States of America, where he developed a strong foundation in business management and leadership. He is also an alumnus of the prestigious St. Augustine’s College, Cape Coast, an institution renowned for academic excellence, discipline and leadership development.",
-      "As the Founder and Chief Executive Officer of Flokefama Company Limited, Mr. Kenney has built the company around a simple but powerful conviction: better healthcare should not be a privilege, it should be accessible, efficient and delivered with dignity and excellence.",
-      "His passion for healthcare was shaped in part by his own experience with surgery. Having personally experienced the challenges and difficulties associated with surgical care, he came away with a determination that others should not have to go through the same experience where better systems, technology and equipment could make a difference. That experience became one of the driving forces behind his commitment to improving healthcare delivery through access to modern medical equipment, technology and innovative solutions. Today, he leads Flokefama in providing world-class healthcare equipment and solutions across Ghana and West Africa.",
-      "Since its establishment in 2008, Flokefama has grown into a multiple award-winning company, including Ghana Club 100 company, and has a reputation for quality, reliability and innovation in the healthcare sector. Under Mr. Kenney’s leadership, the company has also championed partnerships with academic and professional institutions to help develop industry-ready engineers and technical professionals capable of supporting and transforming Ghana’s healthcare infrastructure.",
+      'Teye Kwabena Kenney is a transformational leader in African healthcare, dedicated to redefining diagnostic standards across the continent. As the Founder and CEO of FLOKEFAMA Company Limited, he has steered the company from a niche distributor to a dominant force in healthcare infrastructure. Driven by a mission to solve the “Impossible Triangle” of IVD (balancing Quality, Efficiency, and Cost), Teye is currently leading West Africa’s transition toward Total Laboratory Automation (TLA) and data-driven diagnostics.',
+      'A scientist by training and a graduate of the Stanford Graduate School of Business, Teye’s leadership is rooted in a unique blend of technical expertise and strategic discipline. In early 2026, he delivered a landmark keynote at the Mindray Africa Division Distributor’s Congress in Kenya, where he shared Flokefama’s roadmap for building modern diagnostic ecosystems. His vision extends beyond selling equipment; he is building the physical and operational backbone of West African healthcare through central distribution warehouses, quality-controlled logistics, and a world-class engineering support network.',
     ],
+    education: [
+      { title: 'Stanford Graduate School of Business', detail: 'Certificate in Leadership and Business Growth' },
+      { title: 'KNUST', detail: 'BSc in Sciences' },
+      { title: 'Chartered Institute of Marketing, UK', detail: 'Postgraduate Certification' },
+      { title: 'St. Augustine’s College (APSU 98)', detail: 'Proud alumnus and ongoing benefactor' },
+    ],
+    honours: [
+      { title: 'Keynote Speaker', detail: 'Mindray Africa Division Distributor’s Congress, Kenya (2026)' },
+      { title: 'CEO of the Year, Healthcare', detail: '9th Ghana CEO Summit' },
+      { title: 'EMY Africa Man of the Year in Health (2024)', detail: 'Recognizing his systemic impact on Ghanaian healthcare' },
+      { title: 'First-ever Honorary Member', detail: 'Ghana Association of Medical Laboratory Scientists (GAMLS)' },
+      { title: 'Podcast Host', detail: '“Diagnostics & Beyond”, exploring the intersection of lab medicine and health-tech' },
+    ],
+    creed: 'Labour not to be rich but to be a blessing unto others.',
+    purpose:
+      'Guided by this creed, Teye’s commitment to saving lives is tangible. From renovating the Korle-Bu Blood Bank to donating critical care equipment like ventilators and incubators to the University of Ghana Medical Centre (UGMC) and The Trust Hospital, his impact is felt across Ghana’s healthcare landscape. He continues to invest in human capital through “Laboratory Boot Camp” programs, ensuring the next generation of scientists can master the advanced technologies he brings to the region.',
   },
   awards: seed.awards.map((x) => ({ ...x })),
   faqs: defaultFaqs,

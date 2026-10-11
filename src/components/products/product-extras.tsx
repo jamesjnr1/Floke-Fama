@@ -7,7 +7,7 @@ import type { Category, Product } from '@/lib/types';
 /** Why buy from Flokefama: three short facts from the current Services page, linking to it. */
 export function BuyAssurance() {
   const facts = [
-    { icon: 'fi-rr-badge-check', text: 'Official distributor of Mindray, Biozek Holland and MR Global' },
+    { icon: 'fi-rr-badge-check', text: 'Official distributor of Mindray' },
     { icon: 'fi-rr-settings', text: 'Installation, calibration, training and maintenance' },
     { icon: 'fi-rr-marker', text: 'Branches in Accra, Kumasi, Aflao and Techiman' },
   ];
