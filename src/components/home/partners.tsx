@@ -41,9 +41,9 @@ export async function Partners({ heading = true, logos = true }: { heading?: boo
           <div className="grid overflow-hidden rounded-4xl border border-line bg-paper lg:grid-cols-[0.8fr_2fr]">
             <div className="flex flex-col justify-center gap-3 border-b border-line p-5 lg:border-b-0 lg:border-r lg:p-9">
               <p className="label flex items-center gap-2"><Icon name="fi-rr-badge-check" className="text-brand-600" /> Official distributor</p>
-              <p className="text-lg font-semibold leading-snug tracking-[-0.01em] text-ink">We are the Official distributor of Mindray, Biozek Holland, and MR Global.</p>
+              <p className="text-lg font-semibold leading-snug tracking-[-0.01em] text-ink">We are the official distributor of Mindray.</p>
             </div>
-            <ul className="grid grid-cols-3 divide-x divide-line">
+            <ul className="grid">
               {technologyPartners.map((p) => {
                 const box = p.logo ? logoBox(p.w, p.h, 7000, 190) : null;
                 return (

@@ -15,7 +15,7 @@ const accents = {
 const pillars = [
   {
     title: 'In-Vitro Diagnostics',
-    body: 'Analysers with matched reagents and controls, from the official distributor of Mindray and Biozek Holland.',
+    body: 'Analysers with matched reagents and controls, from the official distributor of Mindray.',
     points: ['Biochemistry & haematology analysers', 'Point-of-care testing', 'Microbiology equipment'],
     href: '/products?category=in-vitro-diagnostics',
     image: '/images/products/auto-heamatology-analyzer-bc5150.webp',
