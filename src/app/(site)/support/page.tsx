@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { PageHero } from '@/components/layout/page-hero';
 import { SupportForm } from '@/components/support/support-form';
 import { Icon } from '@/components/ui/icon';
 import { getSite } from '@/lib/site';
@@ -29,33 +30,26 @@ export default async function SupportPage() {
 
   return (
     <>
-      {/* Header */}
-      <section className="bg-[linear-gradient(135deg,#10191e_0%,#16232a_55%,#0b3b40_100%)] pb-16 pt-32 text-white md:pb-20 md:pt-40">
-        <div className="mx-auto max-w-[1280px] px-5 md:px-10">
-          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-brand-300">Technical Support</p>
-          <h1 className="mt-4 max-w-3xl text-[clamp(2.25rem,1.4rem+3vw,3.75rem)] font-bold leading-[1.05] tracking-[-0.03em] text-white">We keep your equipment running.</h1>
-          <p className="mt-5 max-w-2xl text-lg leading-relaxed text-white/80">Installation, maintenance, troubleshooting and repairs by Flokefama’s own engineers.</p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <a href="#request" className="inline-flex h-12 items-center gap-2 bg-cta px-6 font-semibold text-white transition hover:bg-cta-700">Report a fault</a>
-            <a href={contact.phoneHref} className="inline-flex h-12 items-center gap-2 border border-white/30 px-6 font-semibold text-white transition hover:border-white/60">
-              <Icon name="fi-rr-phone-call" /> {contact.phone}
-            </a>
-          </div>
-        </div>
-      </section>
+      {/* Header: health workers with an ultrasound machine (Pexels photo 29941469) */}
+      <PageHero
+        title={<>Technical <em>support</em></>}
+        lead="Installation, maintenance, troubleshooting and repairs by Flokefama’s own engineers."
+        image="/images/headers/support-ultrasound.webp"
+        position="50% 35%"
+      />
 
       {/* What we do */}
-      <section className="bg-paper py-14 md:py-20">
+      <section className="bg-canvas py-14 md:py-20">
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
           <h2 className="text-2xl font-bold tracking-[-0.02em] text-ink md:text-3xl">What we do</h2>
-          <ul className="mt-8 grid gap-x-8 sm:grid-cols-2 lg:grid-cols-5">
+          <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
             {services.map((s) => (
-              <li key={s.title} className="flex gap-4 border-t border-line py-5 lg:block lg:pt-6">
-                <Icon name={s.icon} className="mt-0.5 text-xl text-brand-600 lg:mt-0" />
-                <div className="lg:mt-4">
-                  <h3 className="font-semibold text-ink">{s.title}</h3>
-                  <p className="no-justify mt-1 text-ink-3">{s.text}</p>
-                </div>
+              <li key={s.title} className="flex flex-col rounded-lg border border-line bg-paper p-6">
+                <span className="grid size-11 place-items-center rounded-md bg-brand-600 text-lg text-white">
+                  <Icon name={s.icon} />
+                </span>
+                <h3 className="mt-5 font-semibold text-ink">{s.title}</h3>
+                <p className="no-justify mt-1.5 text-[0.9375rem] leading-relaxed text-ink-3">{s.text}</p>
               </li>
             ))}
           </ul>
@@ -63,17 +57,17 @@ export default async function SupportPage() {
       </section>
 
       {/* Report a fault or request help */}
-      <section id="request" className="scroll-mt-20 border-t border-line bg-canvas py-14 md:py-20">
+      <section id="request" className="scroll-mt-20 border-t border-line bg-paper py-14 md:py-20">
         <div className="mx-auto grid max-w-[1280px] gap-10 px-5 md:px-10 lg:grid-cols-12 lg:gap-12">
           <div className="lg:col-span-8">
             <h2 className="text-2xl font-bold tracking-[-0.02em] text-ink md:text-3xl">Report a fault or request help</h2>
             <p className="mt-2 text-ink-3">Tell us what you need and our support team will call you back.</p>
-            <div className="mt-6 border border-line bg-paper p-6 md:p-8">
+            <div className="mt-6 rounded-lg border border-line bg-canvas p-6 md:p-8">
               <SupportForm />
             </div>
           </div>
           <aside className="lg:col-span-4 lg:pt-[4.25rem]">
-            <div className="border border-line bg-paper">
+            <div className="overflow-hidden rounded-lg border border-line bg-paper">
               <p className="border-b border-line px-6 py-4 font-semibold text-ink">Contact the support team</p>
               <ul className="divide-y divide-line">
                 {channels.map((c) => (

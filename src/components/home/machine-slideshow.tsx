@@ -22,11 +22,11 @@ const machines = [
 ];
 
 /**
- * Hero picture style. 'carousel' (default): a row of product tiles with the next one peeking in; each tile
- * fades away as it moves off. 'card': the earlier single card with a cross-fade.
- * Switch with NEXT_PUBLIC_HERO_STYLE=card in Vercel (then redeploy).
+ * Hero picture style. 'card' (default): one Mindray machine in a still card. 'carousel': a row of product tiles
+ * with the next one peeking in, each fading away as it moves off.
+ * Switch with NEXT_PUBLIC_HERO_STYLE=carousel in Vercel (then redeploy).
  */
-const heroStyle: 'carousel' | 'card' = process.env.NEXT_PUBLIC_HERO_STYLE === 'card' ? 'card' : 'carousel';
+const heroStyle: 'carousel' | 'card' = process.env.NEXT_PUBLIC_HERO_STYLE === 'carousel' ? 'carousel' : 'card';
 
 export function MachineSlideshow() {
   return heroStyle === 'carousel' ? <MachineCarousel /> : <MachineCard />;
@@ -128,67 +128,30 @@ function MachineCarousel() {
   );
 }
 
-/** The earlier style: one machine at a time in a card, cross-fading every few seconds; pauses on hover or focus. */
+/** The Mindray machine the hero card shows (Mindray is the one manufacturer brand shown on the site). */
+const featured = { slug: 'dp-10-ultrasound', name: 'DP-10 Ultrasound', label: 'Mindray' };
+
+/** The card style: one Mindray machine, still, in a clean card with a small lift on hover. */
 function MachineCard() {
-  const [i, setI] = useState(0);
-  const [paused, setPaused] = useState(false);
-  const reduce = useReducedMotion();
-  const m = machines[i];
-
-  useEffect(() => {
-    if (paused || reduce) return;
-    const id = setTimeout(() => setI((n) => (n + 1) % machines.length), 4200);
-    return () => clearTimeout(id);
-  }, [i, paused, reduce]);
-
+  const m = featured;
   return (
-    <div className="relative" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocus={() => setPaused(true)} onBlur={() => setPaused(false)}>
-      {/* The card: thin low-contrast border, soft shadow, a small lift on hover */}
-      <Link
-        href={`/products/${m.slug}`}
-        className="group block overflow-hidden rounded-xl border border-white/10 bg-[#121d23] shadow-[0_18px_40px_-24px_rgb(0_0_0/0.6)] transition duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_26px_50px_-24px_rgb(0_0_0/0.7)] motion-reduce:hover:translate-y-0"
-        aria-label={`${m.label} ${m.name}: view product`}
-      >
-        {/* Image area: one fixed height for every machine, soft off-white, room around the product */}
-        <div className="relative h-[clamp(220px,calc(100svh-560px),400px)] bg-[#F5F7F6]">
-          {/* Every photo is in place (and loading) from the start; only the current one is visible, so none appears late */}
-          {machines.map((x, k) => (
-            <motion.div
-              key={x.slug}
-              className="absolute inset-0"
-              initial={false}
-              animate={{ opacity: k === i ? 1 : 0, scale: k === i ? 1 : 0.97 }}
-              transition={{ duration: reduce ? 0 : 0.7, ease: [0.16, 1, 0.3, 1] }}
-              aria-hidden={k !== i}
-            >
-              <Image src={`/images/hero/${x.slug}.webp`} alt={k === i ? `${x.name}` : ''} fill priority={k === 0} loading={k === 0 ? undefined : 'eager'} sizes="(min-width: 1024px) 480px, 90vw" className="object-contain p-10 md:p-12" />
-            </motion.div>
-          ))}
-        </div>
-        <div className="px-6 py-5">
-          <p className="text-[0.8125rem] font-medium uppercase tracking-[0.08em] text-brand-300">{m.label}</p>
-          <div className="mt-1.5 flex items-baseline justify-between gap-4">
-            <p className="truncate text-lg font-semibold leading-snug text-white">{m.name}</p>
-            <span className="inline-flex shrink-0 items-center gap-1 text-sm font-semibold text-white/75 transition group-hover:text-white">
-              View <svg aria-hidden viewBox="0 0 16 16" className="size-3.5 transition-transform duration-300 group-hover:translate-x-0.5"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
-            </span>
-          </div>
-        </div>
-      </Link>
-
-      <div className="mt-3 flex justify-center gap-2" role="tablist" aria-label="Choose a machine">
-        {machines.map((x, n) => (
-          <button
-            key={x.slug}
-            type="button"
-            role="tab"
-            aria-selected={n === i}
-            aria-label={`${x.name}`}
-            onClick={() => setI(n)}
-            className={cn('h-1.5 transition-all duration-500', n === i ? 'w-8 bg-brand-300' : 'w-3 bg-white/30 hover:bg-white/60')}
-          />
-        ))}
+    <Link
+      href={`/products/${m.slug}`}
+      className="group block overflow-hidden rounded-xl border border-white/10 bg-[#121d23] shadow-[0_18px_40px_-24px_rgb(0_0_0/0.6)] transition duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_26px_50px_-24px_rgb(0_0_0/0.7)] motion-reduce:hover:translate-y-0"
+      aria-label={`${m.label} ${m.name}: view product`}
+    >
+      <div className="relative h-[clamp(240px,calc(100svh-520px),420px)] bg-[#F5F7F6]">
+        <Image src={`/images/hero/${m.slug}.webp`} alt={`${m.label} ${m.name}`} fill priority sizes="(min-width: 1024px) 480px, 90vw" className="object-contain p-10 md:p-12" />
       </div>
-    </div>
+      <div className="flex items-baseline justify-between gap-4 px-6 py-5">
+        <div className="min-w-0">
+          <p className="text-[0.8125rem] font-medium uppercase tracking-[0.08em] text-brand-300">{m.label}</p>
+          <p className="mt-1 truncate text-lg font-semibold leading-snug text-white">{m.name}</p>
+        </div>
+        <span className="inline-flex shrink-0 items-center gap-1 text-sm font-semibold text-white/75 transition group-hover:text-white">
+          View <svg aria-hidden viewBox="0 0 16 16" className="size-3.5 transition-transform duration-300 group-hover:translate-x-0.5"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+        </span>
+      </div>
+    </Link>
   );
 }
