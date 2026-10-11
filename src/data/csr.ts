@@ -1,6 +1,6 @@
 /**
  * Corporate social responsibility (the CEO's review, point 4). Activities come from the CEO's own profile text and
- * from Flokefama's published news. Activities without a photo yet show an icon panel until photographs arrive.
+ * from Flokefama's published news. Activities without a photo are shown as text until photographs arrive.
  */
 export type CsrActivity = {
   title: string;
@@ -8,7 +8,6 @@ export type CsrActivity = {
   date?: string;
   image?: string;
   alt?: string;
-  icon: string;
   href?: string;
 };
 
@@ -20,12 +19,10 @@ export const csrGroups: { title: string; intro: string; items: CsrActivity[] }[]
       {
         title: 'Korle-Bu Blood Bank renovation',
         text: 'Renovation of the Blood Bank at Korle-Bu Teaching Hospital.',
-        icon: 'fi-rr-hospital',
       },
       {
         title: 'Critical care equipment donations',
         text: 'Ventilators and incubators donated to the University of Ghana Medical Centre (UGMC) and The Trust Hospital.',
-        icon: 'fi-rr-heart-rate',
       },
     ],
   },
@@ -36,7 +33,6 @@ export const csrGroups: { title: string; intro: string; items: CsrActivity[] }[]
       {
         title: 'Laboratory Boot Camp',
         text: 'Hands-on programmes that help the next generation of laboratory scientists master advanced diagnostic technology.',
-        icon: 'fi-rr-flask-gear',
       },
       {
         title: 'University of Ghana partnership',
@@ -44,7 +40,6 @@ export const csrGroups: { title: string; intro: string; items: CsrActivity[] }[]
         date: 'March 2026',
         image: '/images/csr/biomedical-students-industry-tour.webp',
         alt: 'University of Ghana Biomedical Engineering students outside Floke Pharmaceuticals',
-        icon: 'fi-rr-graduation-cap',
         href: '/news/flokefama-partners-with-university-of-ghana-to-shape-the-next-generation-of-biomedical-engineers',
       },
     ],
@@ -59,7 +54,6 @@ export const csrGroups: { title: string; intro: string; items: CsrActivity[] }[]
         date: 'March 2026',
         image: '/images/news/flokefama-supports-zodf-ramadan-distribution-programme-cover.webp',
         alt: 'Flokefama presenting its support to the Zongo Development Fund',
-        icon: 'fi-rr-hand-holding-heart',
         href: '/news/flokefama-supports-zodf-ramadan-distribution-programme',
       },
     ],
