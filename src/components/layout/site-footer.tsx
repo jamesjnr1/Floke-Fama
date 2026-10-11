@@ -18,8 +18,8 @@ const columns = [
     title: 'Services',
     links: [
       { label: 'Equipment Sales', href: '/services' },
-      { label: 'Installation', href: '/services' },
-      { label: 'Repairs & Parts', href: '/services' },
+      { label: 'Installation', href: '/support' },
+      { label: 'Repairs & Parts', href: '/support' },
       { label: 'Training', href: '/services' },
     ],
   },
@@ -29,6 +29,7 @@ const columns = [
       { label: 'About', href: '/about' },
       { label: 'Events', href: '/events' },
       { label: 'ESG', href: '/esg' },
+      { label: 'Technical support', href: '/support' },
       { label: 'Contact', href: '/contact' },
       { label: 'Client portal', href: '/portal' },
     ],
