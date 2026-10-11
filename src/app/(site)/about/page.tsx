@@ -75,17 +75,14 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      {/* Leadership. Portrait from the current site's media library; text from the CEO profile supplied by Flokefama. */}
+      {/* Leadership. Portrait from the current site's media library; the profile is the CEO's own text (Oct 2026). */}
       <section id="ceo" className="scroll-mt-28 border-y border-line bg-canvas section-y">
         <div className="mx-auto grid max-w-[1280px] gap-10 px-5 md:px-10 lg:grid-cols-12 lg:gap-16">
           <Reveal className="lg:col-span-5">
             <div className="lg:sticky lg:top-28">
               <figure className="relative mx-auto aspect-[4/5] max-w-md overflow-hidden rounded-lg bg-[#e9e6e3] lg:max-w-none">
-                <Image src="/images/ceo-emmanuel-kenney.jpg" alt="Mr. Emmanuel Kenney, Founder and Chief Executive Officer of Flokefama" fill sizes="(min-width: 1024px) 40vw, 100vw" className="object-cover object-top" />
+                <Image src="/images/ceo-emmanuel-kenney.jpg" alt={`${ceo.name}, Founder and Chief Executive Officer of Flokefama`} fill sizes="(min-width: 1024px) 40vw, 100vw" className="object-cover object-top" />
               </figure>
-              <blockquote className="mx-auto mt-6 max-w-md text-lg font-semibold leading-snug text-ink lg:max-w-none">
-                “Better healthcare should not be a privilege; it should be accessible, efficient and delivered with dignity and excellence.”
-              </blockquote>
             </div>
           </Reveal>
           <Reveal delay={0.08} className="lg:col-span-7">
@@ -95,19 +92,34 @@ export default async function AboutPage() {
             <div className="mt-6 space-y-4 text-lg leading-relaxed text-ink-3">
               {ceo.bio.map((t) => <p key={t.slice(0, 40)}>{t}</p>)}
             </div>
-            <div className="mt-10 border border-line bg-paper p-6 md:p-8">
+
+            <div className="mt-12 grid gap-10 md:grid-cols-2 md:gap-8">
+              {[
+                { heading: 'Education & Background', items: ceo.education },
+                { heading: 'Key Achievements & Honours', items: ceo.honours },
+              ].map((g) => (
+                <div key={g.heading}>
+                  <h3 className="flex items-center gap-3 text-lg font-bold tracking-[-0.01em] text-ink">
+                    <span className="size-2 bg-brand-600" aria-hidden /> {g.heading}
+                  </h3>
+                  <ul className="mt-4 divide-y divide-line border-y border-line">
+                    {g.items.map((x) => (
+                      <li key={x.title} className="py-3.5">
+                        <p className="font-semibold text-ink">{x.title}</p>
+                        <p className="mt-0.5 text-[0.9375rem] leading-snug text-ink-3">{x.detail}</p>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-12 border border-line bg-paper p-6 md:p-8">
               <h3 className="flex items-center gap-3 text-xl font-bold tracking-[-0.02em]">
-                <span className="size-2 bg-signal" aria-hidden /> Business with a Purpose
+                <span className="size-2 bg-signal" aria-hidden /> Philanthropy &amp; Purpose
               </h3>
-              <div className="mt-4 space-y-4 leading-relaxed text-ink-3">
-                <p>
-                  Many a CEO will do business for money and prestige, but there are rare ones like Mr. Kenney who do it for the welfare of society and for a better healthcare system. His vision goes beyond selling medical equipment. He is passionate about helping healthcare institutions gain access to the technology, expertise and systems they need to provide safer, more efficient and more dignified care.
-                </p>
-                <p>For Mr. Kenney, business success is measured not only by financial performance, but also by the lives improved, the healthcare systems strengthened and the difference made in society.</p>
-                <p>
-                  His leadership continues to position Flokefama not simply as a healthcare equipment company, but as a partner in building a stronger, more responsive and technology-driven healthcare system for Ghana and the wider West African region.
-                </p>
-              </div>
+              <p className="mt-4 text-lg font-semibold leading-snug text-ink">“{ceo.creed}”</p>
+              <p className="no-justify mt-4 leading-relaxed text-ink-3">{ceo.purpose}</p>
             </div>
           </Reveal>
         </div>
