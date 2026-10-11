@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { PurposeBlocks } from '@/components/about/purpose-blocks';
+import { CeoProfile } from '@/components/about/ceo-profile';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Branches } from '@/components/about/branches';
@@ -77,49 +78,18 @@ export default async function AboutPage() {
 
       {/* Leadership. Portrait from the current site's media library; the profile is the CEO's own text (Oct 2026). */}
       <section id="ceo" className="scroll-mt-28 border-y border-line bg-canvas section-y">
-        <div className="mx-auto grid max-w-[1280px] gap-10 px-5 md:px-10 lg:grid-cols-12 lg:gap-16">
+        <div className="mx-auto grid max-w-[1280px] gap-10 px-5 md:px-10 lg:grid-cols-12 lg:items-start lg:gap-16">
           <Reveal className="lg:col-span-5">
-            <div className="lg:sticky lg:top-28">
-              <figure className="relative mx-auto aspect-[4/5] max-w-md overflow-hidden rounded-lg bg-[#e9e6e3] lg:max-w-none">
-                <Image src="/images/ceo-emmanuel-kenney.jpg" alt={`${ceo.name}, Founder and Chief Executive Officer of Flokefama`} fill sizes="(min-width: 1024px) 40vw, 100vw" className="object-cover object-top" />
-              </figure>
-            </div>
+            <figure className="relative mx-auto aspect-[4/5] max-w-md overflow-hidden rounded-lg bg-[#e9e6e3] lg:max-w-none">
+              <Image src="/images/ceo-emmanuel-kenney.jpg" alt={`${ceo.name}, Founder and Chief Executive Officer of Flokefama`} fill sizes="(min-width: 1024px) 40vw, 100vw" className="object-cover object-top" />
+            </figure>
           </Reveal>
           <Reveal delay={0.08} className="lg:col-span-7">
             <h2 className="display text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">Meet our CEO</h2>
             <p className="mt-6 text-2xl font-bold tracking-[-0.02em] text-ink">{ceo.name}</p>
             <p className="mt-1 font-mono text-sm uppercase tracking-wider text-brand-700">{ceo.role}</p>
-            <div className="mt-6 space-y-4 text-lg leading-relaxed text-ink-3">
-              {ceo.bio.map((t) => <p key={t.slice(0, 40)}>{t}</p>)}
-            </div>
-
-            <div className="mt-12 grid gap-10 md:grid-cols-2 md:gap-8">
-              {[
-                { heading: 'Education & Background', items: ceo.education },
-                { heading: 'Key Achievements & Honours', items: ceo.honours },
-              ].map((g) => (
-                <div key={g.heading}>
-                  <h3 className="flex items-center gap-3 text-lg font-bold tracking-[-0.01em] text-ink">
-                    <span className="size-2 bg-brand-600" aria-hidden /> {g.heading}
-                  </h3>
-                  <ul className="mt-4 divide-y divide-line border-y border-line">
-                    {g.items.map((x) => (
-                      <li key={x.title} className="py-3.5">
-                        <p className="font-semibold text-ink">{x.title}</p>
-                        <p className="mt-0.5 text-[0.9375rem] leading-snug text-ink-3">{x.detail}</p>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-12 border border-line bg-paper p-6 md:p-8">
-              <h3 className="flex items-center gap-3 text-xl font-bold tracking-[-0.02em]">
-                <span className="size-2 bg-signal" aria-hidden /> Philanthropy &amp; Purpose
-              </h3>
-              <p className="mt-4 text-lg font-semibold leading-snug text-ink">“{ceo.creed}”</p>
-              <p className="no-justify mt-4 leading-relaxed text-ink-3">{ceo.purpose}</p>
+            <div className="mt-8">
+              <CeoProfile ceo={ceo} />
             </div>
           </Reveal>
         </div>
