@@ -157,10 +157,10 @@ export const defaultSite: SiteContent = {
   whyChoose: seed.whyChoose.filter((x, i, all) => all.findIndex((y) => y.title === x.title) === i).map((x) => ({ ...x })),
   // The CEO profile as written by the CEO (Website Redesign Review, Oct 2026)
   ceo: {
-    name: 'Teye Kwabena Kenney',
+    name: 'Emmanuel Teye Kwabena Kenney',
     role: 'Founder & Chief Executive Officer, Flokefama Company Limited',
     bio: [
-      'Teye Kwabena Kenney is a transformational leader in African healthcare, dedicated to redefining diagnostic standards across the continent. As the Founder and CEO of FLOKEFAMA Company Limited, he has steered the company from a niche distributor to a dominant force in healthcare infrastructure. Driven by a mission to solve the “Impossible Triangle” of IVD (balancing Quality, Efficiency, and Cost), Teye is currently leading West Africa’s transition toward Total Laboratory Automation (TLA) and data-driven diagnostics.',
+      'Emmanuel Teye Kwabena Kenney is a transformational leader in African healthcare, dedicated to redefining diagnostic standards across the continent. As the Founder and CEO of FLOKEFAMA Company Limited, he has steered the company from a niche distributor to a dominant force in healthcare infrastructure. Driven by a mission to solve the “Impossible Triangle” of IVD (balancing Quality, Efficiency, and Cost), Teye is currently leading West Africa’s transition toward Total Laboratory Automation (TLA) and data-driven diagnostics.',
       'A scientist by training and a graduate of the Stanford Graduate School of Business, Teye’s leadership is rooted in a unique blend of technical expertise and strategic discipline. In early 2026, he delivered a landmark keynote at the Mindray Africa Division Distributor’s Congress in Kenya, where he shared Flokefama’s roadmap for building modern diagnostic ecosystems. His vision extends beyond selling equipment; he is building the physical and operational backbone of West African healthcare through central distribution warehouses, quality-controlled logistics, and a world-class engineering support network.',
     ],
     education: [
