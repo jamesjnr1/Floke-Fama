@@ -13,29 +13,27 @@ export const metadata: Metadata = {
   alternates: { canonical: '/esg' },
 };
 
-/** One CSR activity: its photo (or an icon panel until photographs arrive), title, date and a short description. */
+/** One CSR activity as a row: date, title, a short description and the story link; its photo beside it when there is one. */
 function Activity({ a }: { a: CsrActivity }) {
-  const body = (
-    <>
-      <div className="relative aspect-[16/9] overflow-hidden bg-brand-50">
-        {a.image ? (
-          <Image src={a.image} alt={a.alt ?? ''} fill sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw" className="object-cover" />
-        ) : (
-          <span className="absolute inset-0 grid place-items-center text-5xl text-brand-600" aria-hidden>
-            <Icon name={a.icon} />
-          </span>
+  return (
+    <li className="grid gap-5 border-b border-line py-7 last:border-b-0 sm:grid-cols-[1fr_auto] sm:gap-8">
+      <div>
+        {a.date && <p className="text-[0.9375rem] text-ink-3">{a.date}</p>}
+        <h4 className="mt-1 text-xl font-semibold leading-snug tracking-[-0.01em] text-ink">{a.title}</h4>
+        <p className="no-justify mt-2 text-lg leading-relaxed text-ink-3">{a.text}</p>
+        {a.href && (
+          <Link href={a.href} className="mt-3 inline-flex items-center gap-1 font-semibold text-brand-700 hover:underline">
+            Read the story <Icon name="fi-rr-arrow-small-right" />
+          </Link>
         )}
       </div>
-      <div className="flex flex-1 flex-col p-5">
-        {a.date && <p className="text-sm text-ink-3">{a.date}</p>}
-        <h3 className="mt-1 text-lg font-semibold leading-snug text-ink">{a.title}</h3>
-        <p className="no-justify mt-2 leading-relaxed text-ink-3">{a.text}</p>
-        {a.href && <span className="mt-auto inline-flex items-center gap-1 pt-4 text-sm font-semibold text-brand-700 group-hover:underline">Read the story <Icon name="fi-rr-arrow-small-right" /></span>}
-      </div>
-    </>
+      {a.image && (
+        <div className="relative aspect-[3/2] w-full overflow-hidden rounded-lg bg-mist sm:w-64">
+          <Image src={a.image} alt={a.alt ?? ''} fill sizes="(min-width: 640px) 256px, 100vw" className="object-cover" />
+        </div>
+      )}
+    </li>
   );
-  const card = 'group flex h-full flex-col overflow-hidden rounded-lg border border-line bg-paper';
-  return a.href ? <Link href={a.href} className={`${card} transition hover:border-ink/20`}>{body}</Link> : <div className={card}>{body}</div>;
 }
 
 export default async function EsgPage() {
@@ -43,8 +41,8 @@ export default async function EsgPage() {
   const aim = purpose.find((p) => p.label === 'Aim') ?? purpose[purpose.length - 1];
   // ESG commitments beyond CSR: patient safety and governance (editable in the Studio), and local industry (our Aim)
   const esg = [
-    ...esgPillars.filter((p) => /patient safety|governance/i.test(p.label)).map((p) => ({ icon: p.icon, label: p.label, title: p.title, text: p.body })),
-    { icon: aim.icon, label: 'Economic · Local industry', title: 'Making it in Ghana.', text: aim.text },
+    ...esgPillars.filter((p) => /patient safety|governance/i.test(p.label)).map((p) => ({ label: p.label, title: p.title, text: p.body })),
+    { label: 'Economic · Local industry', title: 'Making it in Ghana.', text: aim.text },
   ];
 
   return (
@@ -59,17 +57,15 @@ export default async function EsgPage() {
             <p className="no-justify mt-4 text-lg leading-relaxed text-ink-3">Our work does not end with supplying equipment. We give back to the institutions, professionals and communities that make healthcare in Ghana possible.</p>
           </Reveal>
 
-          <div className="mt-12 divide-y divide-line border-y border-line">
+          <div className="mt-12 border-t border-line">
             {csrGroups.map((g) => (
-              <div key={g.title} className="grid gap-6 py-10 lg:grid-cols-12 lg:gap-10">
-                <div className="lg:col-span-4">
-                  <h3 className="text-xl font-bold tracking-[-0.01em] text-ink">{g.title}</h3>
-                  <p className="mt-1 text-ink-3">{g.intro}</p>
+              <div key={g.title} className="grid gap-2 border-b border-line py-8 lg:grid-cols-12 lg:gap-10 lg:py-10">
+                <div className="lg:col-span-4 lg:pt-7">
+                  <h3 className="text-2xl font-bold tracking-[-0.02em] text-ink">{g.title}</h3>
+                  <p className="no-justify mt-1.5 text-lg text-ink-3">{g.intro}</p>
                 </div>
-                <ul className="grid gap-4 sm:grid-cols-2 lg:col-span-8">
-                  {g.items.map((a) => (
-                    <li key={a.title}><Activity a={a} /></li>
-                  ))}
+                <ul className="lg:col-span-8">
+                  {g.items.map((a) => <Activity key={a.title} a={a} />)}
                 </ul>
               </div>
             ))}
@@ -83,10 +79,10 @@ export default async function EsgPage() {
           <h2 className="text-2xl font-bold tracking-[-0.02em] text-ink md:text-3xl">Our ESG commitments</h2>
           <ul className="mt-8 grid gap-4 md:grid-cols-3">
             {esg.map((e) => (
-              <li key={e.label} className="rounded-lg border border-line bg-canvas p-6">
-                <p className="flex items-center gap-2 text-sm font-medium text-brand-700"><Icon name={e.icon} /> {e.label}</p>
-                <h3 className="mt-3 text-lg font-semibold text-ink">{e.title}</h3>
-                <p className="no-justify mt-2 leading-relaxed text-ink-3">{e.text}</p>
+              <li key={e.label} className="rounded-lg border border-line bg-canvas p-7">
+                <p className="text-[0.9375rem] font-semibold text-brand-700">{e.label}</p>
+                <h3 className="mt-2 text-xl font-semibold tracking-[-0.01em] text-ink">{e.title}</h3>
+                <p className="no-justify mt-2 text-lg leading-relaxed text-ink-3">{e.text}</p>
               </li>
             ))}
           </ul>
