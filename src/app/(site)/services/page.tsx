@@ -8,7 +8,7 @@ import { getSite } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: 'Products & Services',
-  description: 'Medical equipment sales, installation, maintenance, calibration, repairs and training, from the official distributor of Mindray, Biozek Holland and MR Global.',
+  description: 'Medical equipment sales, installation, maintenance, calibration, repairs and training, from the official distributor of Mindray.',
   alternates: { canonical: '/services' },
 };
 
@@ -30,7 +30,7 @@ export default async function ServicesPage() {
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
           <Reveal>
             <h2 className="display max-w-3xl text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">
-              We are the Official distributor of <span className="text-brand-600">Mindray, Biozek Holland, and MR Global.</span>
+              We are the Official distributor of <span className="text-brand-600">Mindray.</span>
             </h2>
           </Reveal>
           <ul className="mt-10 grid gap-px border border-line bg-line sm:grid-cols-2 md:mt-12 lg:grid-cols-4">

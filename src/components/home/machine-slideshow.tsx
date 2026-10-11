@@ -6,16 +6,19 @@ import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 
-/** Machines from the Flokefama shop, with the product photos published there. */
+/**
+ * Machines from the Flokefama shop, with the product photos published there. `label` is the line above the name:
+ * the brand for Mindray (the one manufacturer brand shown on the site), otherwise what the machine is for.
+ */
 const machines = [
-  { slug: 'auto-heamatology-analyzer-bc5150', name: 'BC-5150 Haematology Analyser', brand: 'Mindray' },
-  { slug: 'omron-m7', name: 'M7 Blood Pressure Monitor', brand: 'Omron' },
-  { slug: 'dp-10-ultrasound', name: 'DP-10 Ultrasound', brand: 'Mindray' },
-  { slug: 'patient-monitor-comen', name: 'Patient Monitor', brand: 'Comen' },
-  { slug: 'microscope-olympus-cx23', name: 'CX23 Microscope', brand: 'Olympus' },
-  { slug: 'oxygen-cylinder-40l', name: 'Oxygen Cylinder 40L', brand: 'Floke' },
-  { slug: 'emergency-trolley', name: 'Emergency Trolley', brand: 'Floke' },
-  { slug: 'cpap-machine', name: 'CPAP Machine', brand: 'Yuwell' },
+  { slug: 'auto-heamatology-analyzer-bc5150', name: 'BC-5150 Haematology Analyser', label: 'Mindray' },
+  { slug: 'omron-m7', name: 'M7 Blood Pressure Monitor', label: 'Patient monitoring' },
+  { slug: 'dp-10-ultrasound', name: 'DP-10 Ultrasound', label: 'Mindray' },
+  { slug: 'patient-monitor-comen', name: 'Patient Monitor', label: 'Critical care' },
+  { slug: 'microscope-olympus-cx23', name: 'CX23 Microscope', label: 'Laboratory' },
+  { slug: 'oxygen-cylinder-40l', name: 'Oxygen Cylinder 40L', label: 'Respiratory care' },
+  { slug: 'emergency-trolley', name: 'Emergency Trolley', label: 'Hospital equipment' },
+  { slug: 'cpap-machine', name: 'CPAP Machine', label: 'Respiratory care' },
 ];
 
 /**
@@ -87,9 +90,9 @@ function MachineCarousel() {
                   tabIndex={current ? 0 : -1}
                   draggable={false}
                   className={cn('group relative flex h-full flex-col overflow-hidden rounded-[18px] p-6 transition-shadow duration-300 hover:shadow-[0_26px_50px_-26px_rgb(0_0_0/0.6)]', t.bg)}
-                  aria-label={`${m.brand} ${m.name}: view product`}
+                  aria-label={`${m.label} ${m.name}: view product`}
                 >
-                  <p className={cn('text-[0.8125rem] font-medium uppercase tracking-[0.08em]', t.brand)}>{m.brand}</p>
+                  <p className={cn('text-[0.8125rem] font-medium uppercase tracking-[0.08em]', t.brand)}>{m.label}</p>
                   <p className={cn('mt-1 max-w-[85%] text-xl font-semibold leading-snug', t.name)}>{m.name}</p>
                   <div className="relative mt-2 min-h-0 flex-1">
                     <Image src={`/images/hero/${m.slug}.webp`} alt="" fill priority={k === 0} loading={k === 0 ? undefined : 'eager'} sizes="(min-width: 1024px) 380px, 75vw" className="pointer-events-none object-contain p-4" draggable={false} />
@@ -115,7 +118,7 @@ function MachineCarousel() {
             type="button"
             role="tab"
             aria-selected={k === i}
-            aria-label={`${x.brand} ${x.name}`}
+            aria-label={`${x.name}`}
             onClick={() => setI(k)}
             className={cn('h-1.5 transition-all duration-500', k === i ? 'w-8 bg-brand-300' : 'w-3 bg-white/30 hover:bg-white/60')}
           />
@@ -144,7 +147,7 @@ function MachineCard() {
       <Link
         href={`/products/${m.slug}`}
         className="group block overflow-hidden rounded-xl border border-white/10 bg-[#121d23] shadow-[0_18px_40px_-24px_rgb(0_0_0/0.6)] transition duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_26px_50px_-24px_rgb(0_0_0/0.7)] motion-reduce:hover:translate-y-0"
-        aria-label={`${m.brand} ${m.name}: view product`}
+        aria-label={`${m.label} ${m.name}: view product`}
       >
         {/* Image area: one fixed height for every machine, soft off-white, room around the product */}
         <div className="relative h-[clamp(220px,calc(100svh-560px),400px)] bg-[#F5F7F6]">
@@ -158,12 +161,12 @@ function MachineCard() {
               transition={{ duration: reduce ? 0 : 0.7, ease: [0.16, 1, 0.3, 1] }}
               aria-hidden={k !== i}
             >
-              <Image src={`/images/hero/${x.slug}.webp`} alt={k === i ? `${x.brand} ${x.name}` : ''} fill priority={k === 0} loading={k === 0 ? undefined : 'eager'} sizes="(min-width: 1024px) 480px, 90vw" className="object-contain p-10 md:p-12" />
+              <Image src={`/images/hero/${x.slug}.webp`} alt={k === i ? `${x.name}` : ''} fill priority={k === 0} loading={k === 0 ? undefined : 'eager'} sizes="(min-width: 1024px) 480px, 90vw" className="object-contain p-10 md:p-12" />
             </motion.div>
           ))}
         </div>
         <div className="px-6 py-5">
-          <p className="text-[0.8125rem] font-medium uppercase tracking-[0.08em] text-brand-300">{m.brand}</p>
+          <p className="text-[0.8125rem] font-medium uppercase tracking-[0.08em] text-brand-300">{m.label}</p>
           <div className="mt-1.5 flex items-baseline justify-between gap-4">
             <p className="truncate text-lg font-semibold leading-snug text-white">{m.name}</p>
             <span className="inline-flex shrink-0 items-center gap-1 text-sm font-semibold text-white/75 transition group-hover:text-white">
@@ -180,7 +183,7 @@ function MachineCard() {
             type="button"
             role="tab"
             aria-selected={n === i}
-            aria-label={`${x.brand} ${x.name}`}
+            aria-label={`${x.name}`}
             onClick={() => setI(n)}
             className={cn('h-1.5 transition-all duration-500', n === i ? 'w-8 bg-brand-300' : 'w-3 bg-white/30 hover:bg-white/60')}
           />

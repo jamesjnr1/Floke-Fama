@@ -1,6 +1,7 @@
 import 'server-only';
 import { cache } from 'react';
 import { sanity } from '@/lib/sanity';
+import { visibleBrands } from '@/data/seed';
 import { defaultSite, withDerived, type Award, type EsgPillar, type Faq, type Logo, type PageHeader, type PageKey, type SiteContent } from '@/lib/site-content';
 
 const img = (f: string) => `"${f}": ${f}.asset->url, "${f}W": ${f}.asset->metadata.dimensions.width, "${f}H": ${f}.asset->metadata.dimensions.height`;
@@ -12,7 +13,7 @@ const query = `*[_id == "siteContent"][0]{
   clients[]{ name, role, ${img('logo')} },
   hero, testimonials[]{ quote, name, role },
   purpose[]{ label, icon, text }, coreValues[]{ title, icon, text }, servicesInBrief[]{ title, icon, text },
-  whyChoose[]{ title, icon, body }, ceo,
+  whyChoose[]{ title, icon, body },
   awards[]{ _key, title, year, body, alt, "image": image.asset->url },
   faqs[]{ q, a, linkLabel, linkHref },
   esgPillars[]{ label, icon, title, body, alt, "image": image.asset->url },
@@ -31,7 +32,6 @@ type Raw = Partial<{
   coreValues: SiteContent['coreValues'];
   servicesInBrief: SiteContent['servicesInBrief'];
   whyChoose: SiteContent['whyChoose'];
-  ceo: Partial<SiteContent['ceo']>;
   awards: (Partial<Award> & { _key?: string })[];
   faqs: { q: string; a: string; linkLabel?: string; linkHref?: string }[];
   esgPillars: Partial<EsgPillar>[];
@@ -48,6 +48,9 @@ const logos = (v: RawLogo[] | undefined, fallback: Logo[]): Logo[] =>
     fallback,
   );
 
+/** Studio text written before the CEO's review still names the other distributors; show Mindray alone. */
+const onlyMindray = (t: string) => t.replace(/Mindray,\s*Biozek Holland,?\s*and MR Global/g, 'Mindray');
+
 function merge(raw: Raw | null): SiteContent {
   if (!raw) return defaultSite;
   const d = defaultSite;
@@ -62,21 +65,23 @@ function merge(raw: Raw | null): SiteContent {
   return {
     ...withDerived(c, raw.contact?.mapEmbed || d.maps.embed),
     branches: list(raw.branches, d.branches),
-    technologyPartners: logos(raw.technologyPartners, d.technologyPartners),
+    // Only the brands the CEO wants visible (Mindray), even if the Studio still lists others
+    technologyPartners: logos(raw.technologyPartners, d.technologyPartners).filter((p) => visibleBrands.includes(p.name)),
     clients: logos(raw.clients, d.clients),
     hero: { ...d.hero, ...clean(raw.hero) },
     testimonials: list(raw.testimonials, d.testimonials),
     purpose: list(raw.purpose, d.purpose),
     coreValues: list(raw.coreValues, d.coreValues),
     servicesInBrief: list(raw.servicesInBrief, d.servicesInBrief),
-    whyChoose: list(raw.whyChoose, d.whyChoose),
-    ceo: { ...d.ceo, ...clean(raw.ceo), bio: list(raw.ceo?.bio, d.ceo.bio) },
+    whyChoose: list(raw.whyChoose, d.whyChoose).map((w) => ({ ...w, body: onlyMindray(w.body) })),
+    // The CEO profile is the one the CEO supplied (Oct 2026); the older Studio text no longer replaces it
+    ceo: d.ceo,
     awards: list(
       raw.awards?.filter((a) => a.title && a.image).map((a, i) => ({ id: a._key ?? `award-${i}`, title: a.title!, body: a.body ?? '', year: a.year ?? '', image: a.image!, alt: a.alt ?? a.title! })),
       d.awards,
     ),
     faqs: list(
-      raw.faqs?.filter((f) => f.q && f.a).map((f): Faq => ({ q: f.q, a: f.a, ...(f.linkHref && f.linkLabel ? { link: { href: f.linkHref, label: f.linkLabel } } : {}) })),
+      raw.faqs?.filter((f) => f.q && f.a).map((f): Faq => ({ q: f.q, a: onlyMindray(f.a), ...(f.linkHref && f.linkLabel ? { link: { href: f.linkHref, label: f.linkLabel } } : {}) })),
       d.faqs,
     ),
     esgPillars: list(
