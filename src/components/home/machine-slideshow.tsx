@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { useEffect, useState } from 'react';
+import { equipment } from '@/data/equipment';
 import { cn } from '@/lib/utils';
 
 /**
@@ -22,7 +23,7 @@ const machines = [
 ];
 
 /**
- * Hero picture style. 'card' (default): one Mindray machine in a still card. 'carousel': a row of product tiles
+ * Hero picture style. 'card' (default): the featured equipment categories in a cross-fading card. 'carousel': a row of product tiles
  * with the next one peeking in, each fading away as it moves off.
  * Switch with NEXT_PUBLIC_HERO_STYLE=carousel in Vercel (then redeploy).
  */
@@ -128,30 +129,68 @@ function MachineCarousel() {
   );
 }
 
-/** The Mindray machine the hero card shows (Mindray is the one manufacturer brand shown on the site). */
-const featured = { slug: 'dp-10-ultrasound', name: 'DP-10 Ultrasound', label: 'Mindray' };
-
-/** The card style: one Mindray machine, still, in a clean card with a small lift on hover. */
+/**
+ * The card style: the equipment categories the CEO's review asks to feature (MRI, CT, mammography, X-ray, dialysis,
+ * incubators, ventilators, ultrasound), one at a time in a still card that cross-fades every few seconds. Every
+ * photo is in place from the start, so none appears late. Pauses on hover or focus.
+ */
 function MachineCard() {
-  const m = featured;
+  const [i, setI] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const reduce = useReducedMotion();
+  const m = equipment[i];
+
+  useEffect(() => {
+    if (paused || reduce) return;
+    const id = setTimeout(() => setI((n) => (n + 1) % equipment.length), 4200);
+    return () => clearTimeout(id);
+  }, [i, paused, reduce]);
+
   return (
-    <Link
-      href={`/products/${m.slug}`}
-      className="group block overflow-hidden rounded-xl border border-white/10 bg-[#121d23] shadow-[0_18px_40px_-24px_rgb(0_0_0/0.6)] transition duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_26px_50px_-24px_rgb(0_0_0/0.7)] motion-reduce:hover:translate-y-0"
-      aria-label={`${m.label} ${m.name}: view product`}
-    >
-      <div className="relative h-[clamp(240px,calc(100svh-520px),420px)] bg-[#F5F7F6]">
-        <Image src={`/images/hero/${m.slug}.webp`} alt={`${m.label} ${m.name}`} fill priority sizes="(min-width: 1024px) 480px, 90vw" className="object-contain p-10 md:p-12" />
-      </div>
-      <div className="flex items-baseline justify-between gap-4 px-6 py-5">
-        <div className="min-w-0">
-          <p className="text-[0.8125rem] font-medium uppercase tracking-[0.08em] text-brand-300">{m.label}</p>
-          <p className="mt-1 truncate text-lg font-semibold leading-snug text-white">{m.name}</p>
+    <div className="relative" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocus={() => setPaused(true)} onBlur={() => setPaused(false)}>
+      <Link
+        href="/services#equipment"
+        className="group block overflow-hidden rounded-xl border border-white/10 bg-[#121d23] shadow-[0_18px_40px_-24px_rgb(0_0_0/0.6)] transition duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_26px_50px_-24px_rgb(0_0_0/0.7)] motion-reduce:hover:translate-y-0"
+        aria-label={`${m.title}: see the equipment we supply`}
+      >
+        <div className="relative h-[clamp(240px,calc(100svh-520px),420px)] bg-[#F5F7F6]">
+          {equipment.map((x, k) => (
+            <motion.div
+              key={x.slug}
+              className="absolute inset-0"
+              initial={false}
+              animate={{ opacity: k === i ? 1 : 0, scale: k === i ? 1 : 1.03 }}
+              transition={{ duration: reduce ? 0 : 0.8, ease: [0.16, 1, 0.3, 1] }}
+              aria-hidden={k !== i}
+            >
+              <Image src={x.image} alt={k === i ? x.title : ''} fill priority={k === 0} loading={k === 0 ? undefined : 'eager'} sizes="(min-width: 1024px) 480px, 90vw" className="object-cover" />
+            </motion.div>
+          ))}
         </div>
-        <span className="inline-flex shrink-0 items-center gap-1 text-sm font-semibold text-white/75 transition group-hover:text-white">
-          View <svg aria-hidden viewBox="0 0 16 16" className="size-3.5 transition-transform duration-300 group-hover:translate-x-0.5"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
-        </span>
+        <div className="flex items-baseline justify-between gap-4 px-6 py-5">
+          <div className="min-w-0">
+            <p className="text-[0.8125rem] font-medium uppercase tracking-[0.08em] text-brand-300">{m.group}</p>
+            <p className="mt-1 truncate text-lg font-semibold leading-snug text-white">{m.title}</p>
+          </div>
+          <span className="inline-flex shrink-0 items-center gap-1 text-sm font-semibold text-white/75 transition group-hover:text-white">
+            View <svg aria-hidden viewBox="0 0 16 16" className="size-3.5 transition-transform duration-300 group-hover:translate-x-0.5"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          </span>
+        </div>
+      </Link>
+
+      <div className="mt-3 flex justify-center gap-2" role="tablist" aria-label="Choose equipment">
+        {equipment.map((x, n) => (
+          <button
+            key={x.slug}
+            type="button"
+            role="tab"
+            aria-selected={n === i}
+            aria-label={x.title}
+            onClick={() => setI(n)}
+            className={cn('h-1.5 transition-all duration-500', n === i ? 'w-8 bg-brand-300' : 'w-3 bg-white/30 hover:bg-white/60')}
+          />
+        ))}
       </div>
-    </Link>
+    </div>
   );
 }
