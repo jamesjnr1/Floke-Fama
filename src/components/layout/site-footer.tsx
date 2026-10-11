@@ -28,7 +28,7 @@ const columns = [
     links: [
       { label: 'About', href: '/about' },
       { label: 'Events', href: '/events' },
-      { label: 'ESG', href: '/esg' },
+      { label: 'CSR', href: '/esg' },
       { label: 'Technical support', href: '/support' },
       { label: 'Contact', href: '/contact' },
       { label: 'Client portal', href: '/portal' },
