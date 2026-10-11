@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Services } from '@/components/home/services';
 import { SitePageHero } from '@/components/layout/site-page-hero';
+import { CatalogueGrid } from '@/components/products/catalogue-grid';
 import { Reveal } from '@/components/motion/reveal';
 import { Globe, Headset, Link2, MapPin } from 'lucide-react';
 import { ToneIcon } from '@/components/ui/tone-icon';
@@ -25,6 +26,7 @@ export default async function ServicesPage() {
     <>
       <SitePageHero page="services" />
       <Services />
+      <CatalogueGrid />
 
       <section id="why-choose-us" className="scroll-mt-28 bg-paper section-y">
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">

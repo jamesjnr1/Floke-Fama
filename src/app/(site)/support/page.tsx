@@ -13,11 +13,11 @@ export const metadata: Metadata = {
 
 /** The support the CEO's review lists (point 6), one line each. */
 const services = [
-  { icon: 'fi-rr-settings', title: 'Installation', text: 'Setup and commissioning of every system we supply.' },
-  { icon: 'fi-rr-shield-check', title: 'Preventive maintenance', text: 'Scheduled servicing and calibration to prevent breakdowns.' },
-  { icon: 'fi-rr-search-alt', title: 'Troubleshooting', text: 'Fast diagnosis by phone, WhatsApp or on site.' },
-  { icon: 'fi-rr-tool-box', title: 'Repairs', text: 'Repairs that get your equipment back in use quickly.' },
-  { icon: 'fi-rr-headset', title: 'Customer assistance', text: 'Training and help for your team whenever you need it.' },
+  { title: 'Installation', text: 'Setup and commissioning of every system we supply.' },
+  { title: 'Preventive maintenance', text: 'Scheduled servicing and calibration to prevent breakdowns.' },
+  { title: 'Troubleshooting', text: 'Fast diagnosis by phone, WhatsApp or on site.' },
+  { title: 'Repairs', text: 'Repairs that get your equipment back in use quickly.' },
+  { title: 'Customer assistance', text: 'Training and help for your team whenever you need it.' },
 ];
 
 export default async function SupportPage() {
@@ -38,21 +38,22 @@ export default async function SupportPage() {
         position="50% 40%"
       />
 
-      {/* What we do */}
-      <section className="bg-canvas py-14 md:py-20">
-        <div className="mx-auto max-w-[1280px] px-5 md:px-10">
-          <h2 className="text-2xl font-bold tracking-[-0.02em] text-ink md:text-3xl">What we do</h2>
-          <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-            {services.map((s) => (
-              <li key={s.title} className="flex flex-col rounded-lg border border-line bg-paper p-6">
-                <span className="grid size-11 place-items-center rounded-md bg-brand-600 text-lg text-white">
-                  <Icon name={s.icon} />
-                </span>
-                <h3 className="mt-5 font-semibold text-ink">{s.title}</h3>
-                <p className="no-justify mt-1.5 text-[0.9375rem] leading-relaxed text-ink-3">{s.text}</p>
+      {/* What we do: a simple numbered list */}
+      <section className="bg-canvas section-y">
+        <div className="mx-auto grid max-w-[1280px] gap-10 px-5 md:px-10 lg:grid-cols-12 lg:gap-16">
+          <div className="lg:col-span-4">
+            <h2 className="display text-[clamp(2rem,1.2rem+2.8vw,3.25rem)]">What we do</h2>
+            <p className="no-justify mt-4 text-lg leading-relaxed text-ink-3">Our engineers look after your equipment from the day it arrives.</p>
+          </div>
+          <ol className="border-t border-line lg:col-span-8">
+            {services.map((s, i) => (
+              <li key={s.title} className="grid grid-cols-[2.75rem_1fr] gap-x-4 border-b border-line py-6 md:grid-cols-[3.5rem_15rem_1fr] md:gap-x-6 md:py-7">
+                <span className="text-lg font-semibold tabular-nums text-brand-600">0{i + 1}</span>
+                <h3 className="text-xl font-semibold tracking-[-0.01em] text-ink">{s.title}</h3>
+                <p className="no-justify col-start-2 mt-1.5 text-lg leading-relaxed text-ink-3 md:col-start-3 md:mt-0">{s.text}</p>
               </li>
             ))}
-          </ul>
+          </ol>
         </div>
       </section>
 
