@@ -51,7 +51,7 @@ export function CeoProfile({ ceo }: { ceo: Ceo }) {
         {tab === 'honours' && list(ceo.honours)}
         {tab === 'purpose' && (
           <div>
-            <p className="border-l-2 border-signal pl-4 text-lg font-semibold leading-snug text-ink">“{ceo.creed}”</p>
+            <p className="text-lg font-semibold leading-snug text-ink">“{ceo.creed}”</p>
             <p className="mt-4">{ceo.purpose}</p>
           </div>
         )}
