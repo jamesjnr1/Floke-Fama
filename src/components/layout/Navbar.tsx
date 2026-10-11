@@ -30,7 +30,7 @@ const anchors: NavItem[] = [
   { href: '/services', label: 'Products & Services' },
   { href: '/events', label: 'Events & Activities' },
   { href: '/products', label: 'Shop' },
-  { href: '/esg', label: 'ESG' },
+  { href: '/esg', label: 'CSR' },
   { href: '/support', label: 'Support' },
   { href: '/contact', label: 'Contact' },
 ];
