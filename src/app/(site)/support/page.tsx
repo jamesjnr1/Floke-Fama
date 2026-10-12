@@ -11,13 +11,12 @@ export const metadata: Metadata = {
   alternates: { canonical: '/support' },
 };
 
-/** The support the CEO's review lists (point 6), one line each. */
+/** The support the CEO's review lists (point 6); installation is shown first, highlighted. */
 const services = [
-  { title: 'Installation', text: 'Setup and commissioning of every system we supply.' },
-  { title: 'Preventive maintenance', text: 'Scheduled servicing and calibration to prevent breakdowns.' },
-  { title: 'Troubleshooting', text: 'Fast diagnosis by phone, WhatsApp or on site.' },
-  { title: 'Repairs', text: 'Repairs that get your equipment back in use quickly.' },
-  { title: 'Customer assistance', text: 'Training and help for your team whenever you need it.' },
+  { icon: 'fi-rr-shield-check', title: 'Preventive maintenance', text: 'Scheduled servicing and calibration that keep equipment accurate and in peak condition, minimising downtime.' },
+  { icon: 'fi-rr-search-alt', title: 'Troubleshooting', text: 'Fast diagnosis by phone, WhatsApp or on site, so faults are understood and resolved quickly.' },
+  { icon: 'fi-rr-tool-box', title: 'Repairs & spare parts', text: 'Efficient repairs and genuine spare parts that get equipment back in service.' },
+  { icon: 'fi-rr-headset', title: 'Customer assistance', text: 'Ongoing help and training for clinical and laboratory teams, whenever they need it.' },
 ];
 
 export default async function SupportPage() {
@@ -38,22 +37,35 @@ export default async function SupportPage() {
         position="50% 40%"
       />
 
-      {/* What we do: a simple numbered list */}
+      {/* What we do: installation highlighted, the other four services as cards */}
       <section className="bg-canvas section-y">
-        <div className="mx-auto grid max-w-[1280px] gap-10 px-5 md:px-10 lg:grid-cols-12 lg:gap-16">
-          <div className="lg:col-span-4">
-            <h2 className="display text-[clamp(2rem,1.2rem+2.8vw,3.25rem)]">What we do</h2>
-            <p className="no-justify mt-4 text-lg leading-relaxed text-ink-3">Our engineers look after your equipment from the day it arrives.</p>
+        <div className="mx-auto max-w-[1280px] px-5 md:px-10">
+          <div className="grid gap-5 lg:grid-cols-12 lg:items-end">
+            <h2 className="display text-[clamp(2rem,1.2rem+2.8vw,3.25rem)] lg:col-span-7">What we do</h2>
+            <p className="no-justify text-lg leading-relaxed text-ink-3 lg:col-span-5">Our engineers look after your equipment from the day it arrives, for as long as you use it.</p>
           </div>
-          <ol className="border-t border-line lg:col-span-8">
-            {services.map((s, i) => (
-              <li key={s.title} className="grid grid-cols-[2.75rem_1fr] gap-x-4 border-b border-line py-6 md:grid-cols-[3.5rem_15rem_1fr] md:gap-x-6 md:py-7">
-                <span className="text-lg font-semibold tabular-nums text-brand-600">0{i + 1}</span>
-                <h3 className="text-xl font-semibold tracking-[-0.01em] text-ink">{s.title}</h3>
-                <p className="no-justify col-start-2 mt-1.5 text-lg leading-relaxed text-ink-3 md:col-start-3 md:mt-0">{s.text}</p>
+
+          <ul className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            <li className="rounded-2xl bg-midnight p-8 text-white md:col-span-2 md:p-10">
+              <span className="grid size-12 place-items-center rounded-lg bg-brand-600 text-xl text-white"><Icon name="fi-rr-settings" /></span>
+              <h3 className="mt-8 text-2xl font-semibold tracking-[-0.01em] text-white">Installation &amp; calibration</h3>
+              <p className="no-justify mt-3 max-w-xl text-lg leading-relaxed text-white/80">Every system is installed, commissioned and calibrated by our engineers, and your team is trained to use it before we hand over.</p>
+              <ul className="mt-7 grid gap-3 sm:grid-cols-3">
+                {['Installation & commissioning', 'Calibration for accuracy', 'Training at handover'].map((x) => (
+                  <li key={x} className="flex items-center gap-2.5 rounded-md bg-white/[0.07] px-4 py-3 text-[0.9375rem] text-white/90">
+                    <Icon name="fi-rr-check" className="text-brand-300" /> {x}
+                  </li>
+                ))}
+              </ul>
+            </li>
+            {services.map((s) => (
+              <li key={s.title} className="rounded-2xl border border-line bg-paper p-8">
+                <span className="grid size-12 place-items-center rounded-lg bg-brand-50 text-xl text-brand-700"><Icon name={s.icon} /></span>
+                <h3 className="mt-8 text-xl font-semibold tracking-[-0.01em] text-ink">{s.title}</h3>
+                <p className="no-justify mt-2.5 text-lg leading-relaxed text-ink-3">{s.text}</p>
               </li>
             ))}
-          </ol>
+          </ul>
         </div>
       </section>
 
