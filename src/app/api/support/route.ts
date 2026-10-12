@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { submitToCrm } from '@/lib/crm';
 import { supportSchema, supportSummary } from '@/lib/support-schema';
 
-/** Technical support requests from the Support page. Same delivery rules as /api/contact: CRM when configured, otherwise email/WhatsApp hand-off. */
+/** Technical support requests from the Support page. CRM when configured, otherwise email/WhatsApp hand-off. */
 export async function POST(request: Request) {
   const parsed = supportSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) {
