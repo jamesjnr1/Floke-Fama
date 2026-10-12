@@ -16,7 +16,7 @@ import { cn } from '@/lib/utils';
 
 type NavItem = { href: string; label: string; children?: { href: string; label: string; hint: string }[] };
 
-/** Primary navigation, matching the menu on flokefama.com, plus Support (CEO's review). Each tab is its own page. */
+/** Primary navigation, matching the menu on flokefama.com, with Support (CEO's review) in place of Contact. Each tab is its own page. */
 const anchors: NavItem[] = [
   { href: '/', label: 'Home' },
   {
@@ -32,7 +32,6 @@ const anchors: NavItem[] = [
   { href: '/products', label: 'Shop' },
   { href: '/esg', label: 'CSR' },
   { href: '/support', label: 'Support' },
-  { href: '/contact', label: 'Contact' },
 ];
 
 /** Flat list for the mobile menu. */
