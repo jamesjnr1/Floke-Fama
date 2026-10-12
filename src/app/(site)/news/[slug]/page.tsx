@@ -144,7 +144,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
             </div>
             <div className="flex flex-wrap gap-3">
               <Button asChild variant="glow" size="lg" arrow="up-right"><Link href="/quote">Order now</Link></Button>
-              <Button asChild variant="glass" size="lg" arrow="right"><Link href="/contact">Contact us</Link></Button>
+              <Button asChild variant="glass" size="lg" arrow="right"><Link href="/support">Contact us</Link></Button>
             </div>
           </div>
         </div>

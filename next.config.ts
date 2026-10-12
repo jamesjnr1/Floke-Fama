@@ -38,11 +38,13 @@ const nextConfig: NextConfig = {
       // News, blog and press posts: /index.php/2026/08/03/<slug>/ → /news/<slug>
       { source: '/index.php/:y(\\d{4})/:m(\\d{2})/:d(\\d{2})/:slug', destination: '/news/:slug', permanent: true },
       { source: '/index.php/category/:cat', destination: '/events#news', permanent: true },
-      { source: '/index.php/careers', destination: '/contact', permanent: true },
+      { source: '/index.php/careers', destination: '/support', permanent: true },
       { source: '/event/:slug', destination: '/events', permanent: true },
       { source: '/index.php/product-category/:slug', destination: '/products', permanent: true },
-      { source: '/index.php/contact', destination: '/contact', permanent: true },
-      { source: '/index.php/contact-us', destination: '/contact', permanent: true },
+      { source: '/index.php/contact', destination: '/support', permanent: true },
+      { source: '/index.php/contact-us', destination: '/support', permanent: true },
+      // The Contact page was folded into Support
+      { source: '/contact', destination: '/support', permanent: true },
       { source: '/index.php/services', destination: '/services', permanent: true },
       { source: '/index.php/about-us', destination: '/about', permanent: true },
       { source: '/index.php/awards', destination: '/awards', permanent: true },
