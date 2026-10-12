@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { BuyingFaq } from '@/components/products/buying-faq';
 import { Catalog } from '@/components/products/catalog';
 import { NewArrivals } from '@/components/products/new-arrivals';
 import { SitePageHero } from '@/components/layout/site-page-hero';
 import { getCategories, getProducts } from '@/lib/data';
+import type { Product } from '@/lib/types';
 
 export const metadata: Metadata = {
   title: 'Medical Equipment & Laboratory Catalogue',
@@ -12,14 +12,20 @@ export const metadata: Metadata = {
   alternates: { canonical: '/products' },
 };
 
-export default async function ProductsPage({ searchParams }: { searchParams: Promise<{ category?: string; q?: string; type?: string }> }) {
-  const [{ category, q, type }, products, categories] = await Promise.all([searchParams, getProducts(), getCategories()]);
-  const initialCategory = categories.some((c) => c.slug === category) ? category! : null;
+// Pre-built and cached like the other pages (refreshed every 10 minutes and on Studio publish); the catalogue reads
+// its filters from the address in the browser, so the page doesn't need rebuilding for every visit.
+export const revalidate = 600;
+
+/** What the grid and the search use, without the long descriptions, galleries and documents (a much lighter page). */
+const forListing = (p: Product): Product => ({ ...p, description: undefined, gallery: undefined, documents: [], source: undefined });
+
+export default async function ProductsPage() {
+  const [all, categories] = await Promise.all([getProducts(), getCategories()]);
+  const products = all.map(forListing);
   // "Explore Product Categories": the original shop categories, with how many products each lists
   const types = new Map<string, number>();
   for (const p of products) for (const t of p.types ?? []) types.set(t, (types.get(t) ?? 0) + 1);
   const typeList = [...types].sort((a, b) => a[0].localeCompare(b[0]));
-  const initialType = type && types.has(type) ? type : null;
 
   return (
     <div className="bg-canvas">
@@ -27,25 +33,8 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <NewArrivals products={products} categories={categories} />
         <div id="catalog" className="scroll-mt-24">
-          <Catalog key={`${initialCategory}|${q ?? ''}|${initialType}`} products={products} categories={categories} initialCategory={initialCategory} initialQuery={q ?? ''} initialType={initialType} />
+          <Catalog products={products} categories={categories} typeList={typeList} />
         </div>
-
-        <section aria-labelledby="explore-categories" className="border-t border-line pb-12 pt-12 md:pb-16">
-          <h2 id="explore-categories" className="text-2xl font-bold tracking-[-0.02em] text-ink">Explore Product Categories</h2>
-          <ul className="mt-6 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-            {typeList.map(([t, n]) => (
-              <li key={t}>
-                <Link
-                  href={`/products?type=${encodeURIComponent(t)}#catalog`}
-                  className="flex items-center justify-between gap-3 rounded-2xl border border-line bg-paper px-4 py-3 text-sm text-ink transition hover:border-brand-300 hover:bg-brand-50"
-                >
-                  <span>{t}</span>
-                  <span className="shrink-0 text-xs text-ink-3">{n} {n === 1 ? 'product' : 'products'}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
         <BuyingFaq />
       </div>
     </div>
