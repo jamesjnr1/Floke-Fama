@@ -50,7 +50,7 @@ export async function Hero() {
               <Link href="/products">Explore Solutions</Link>
             </Button>
             <Button asChild size="lg" variant="red" arrow="right">
-              <Link href="/contact">Contact Us</Link>
+              <Link href="/support">Contact Us</Link>
             </Button>
           </Reveal>
         </div>

@@ -7,7 +7,7 @@ import { mkdir } from 'node:fs/promises';
 import { chromium } from 'playwright';
 
 const base = process.argv[2] ?? 'http://localhost:3000';
-const pages = ['/', '/about', '/awards', '/services', '/events', '/esg', '/contact', '/products', '/products/auto-heamatology-analyzer-bc5150', '/news/quality-is-tested', '/quote', '/login', '/offline'];
+const pages = ['/', '/about', '/awards', '/services', '/events', '/esg', '/support', '/products', '/products/auto-heamatology-analyzer-bc5150', '/news/quality-is-tested', '/quote', '/login', '/offline'];
 // Protected pages are checked signed in. There are no demo accounts, so QA registers its own on a server started
 // without Appwrite (accounts then live in the browser cookie, nothing is stored) and with
 // ENGINEER_EMAILS=qa-engineer@example.com, so the second account opens the engineer portal.

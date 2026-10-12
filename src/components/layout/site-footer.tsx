@@ -30,7 +30,6 @@ const columns = [
       { label: 'Events', href: '/events' },
       { label: 'CSR', href: '/esg' },
       { label: 'Technical support', href: '/support' },
-      { label: 'Contact', href: '/contact' },
       { label: 'Client portal', href: '/portal' },
     ],
   },
