@@ -50,13 +50,6 @@ export default async function SupportPage() {
               <span className="grid size-12 place-items-center rounded-lg bg-brand-600 text-xl text-white"><Icon name="fi-rr-settings" /></span>
               <h3 className="mt-8 text-2xl font-semibold tracking-[-0.01em] text-white">Installation &amp; calibration</h3>
               <p className="no-justify mt-3 max-w-xl text-lg leading-relaxed text-white/80">Every system is installed, commissioned and calibrated by our engineers, and your team is trained to use it before we hand over.</p>
-              <ul className="mt-7 grid gap-3 sm:grid-cols-3">
-                {['Installation & commissioning', 'Calibration for accuracy', 'Training at handover'].map((x) => (
-                  <li key={x} className="flex items-center gap-2.5 rounded-md bg-white/[0.07] px-4 py-3 text-[0.9375rem] text-white/90">
-                    <Icon name="fi-rr-check" className="text-brand-300" /> {x}
-                  </li>
-                ))}
-              </ul>
             </li>
             {services.map((s) => (
               <li key={s.title} className="rounded-2xl border border-line bg-paper p-8">
