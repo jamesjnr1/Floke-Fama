@@ -94,7 +94,7 @@ export const defaultFaqs: Faq[] = [] = [
   {
     q: 'Where can we find you?',
     a: `Head office in Santa Maria, Accra, with branches at Korle-Bu, Okaishie, Kumasi, Aflao and Techiman. Call ${seed.contact.phone} or email ${seed.contact.sales}.`,
-    link: { href: '/contact', label: 'Contact and directions' },
+    link: { href: '/about#branches', label: 'Branches and directions' },
   },
 ];
 
