@@ -13,19 +13,19 @@ import { cn } from '@/lib/utils';
 
 /**
  * Interactive B2B catalogue: category switching and keystroke search morph the grid in place
- * (no reloads). State is mirrored to the URL so every view is shareable.
+ * (no reloads). State is mirrored to the URL so every view is shareable. The Shop page is pre-built and cached,
+ * so the starting filters (?category, ?q, ?type) are read from the address in the browser.
  */
-export function Catalog({ products, categories, initialCategory, initialQuery, initialType = null }: {
+export function Catalog({ products, categories, typeList }: {
   products: Product[];
   categories: Category[];
-  initialCategory: string | null;
-  initialQuery: string;
-  /** One of the original flokefama.com shop categories ("Hematology Analyzers"), from ?type= */
-  initialType?: string | null;
+  /** The original flokefama.com shop categories ("Hematology Analyzers") with their product counts, for ?type= */
+  typeList: [string, number][];
 }) {
-  const [category, setCategory] = useState<string | null>(initialCategory);
-  const [query, setQuery] = useState(initialQuery);
-  const [type, setType] = useState<string | null>(initialType);
+  const [category, setCategory] = useState<string | null>(null);
+  const [query, setQuery] = useState('');
+  const [type, setType] = useState<string | null>(null);
+  const [ready, setReady] = useState(false);
   const [remote, setRemote] = useState<string[] | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const bySlug = useMemo(() => new Map(products.map((p) => [p.slug, p])), [products]);
@@ -42,15 +42,36 @@ export function Catalog({ products, categories, initialCategory, initialQuery, i
     return () => clearTimeout(t);
   }, [query, category, products, localResults]);
 
-  // Mirror state to the URL without a navigation.
+  // Starting filters from the address (?category, ?q, ?type)
   useEffect(() => {
+    const sp = new URLSearchParams(window.location.search);
+    const c = sp.get('category');
+    const t = sp.get('type');
+    if (c && catBySlug.has(c)) setCategory(c);
+    if (sp.get('q')) setQuery(sp.get('q')!);
+    if (t && typeList.some(([x]) => x === t)) setType(t);
+    setReady(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- once, on arrival
+  }, []);
+
+  // Mirror state to the URL without a navigation (after the starting filters are read).
+  useEffect(() => {
+    if (!ready) return;
     const params = new URLSearchParams();
     if (category) params.set('category', category);
     if (query.trim()) params.set('q', query.trim());
     if (type) params.set('type', type);
     const next = `/products${params.size ? `?${params}` : ''}`;
     if (next !== `${location.pathname}${location.search}`) window.history.replaceState(null, '', next);
-  }, [category, query, type]);
+  }, [ready, category, query, type]);
+
+  // "Explore Product Categories": filter in place and go back up to the grid
+  const pickType = (t: string) => {
+    setType(t);
+    setCategory(null);
+    setQuery('');
+    document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   // "/" or ⌘K focuses search
   useEffect(() => {
@@ -144,6 +165,24 @@ export function Catalog({ products, categories, initialCategory, initialQuery, i
           </Link>
         </div>
       )}
+
+      <section aria-labelledby="explore-categories" className="border-t border-line pb-12 pt-12 md:pb-16">
+        <h2 id="explore-categories" className="text-2xl font-bold tracking-[-0.02em] text-ink">Explore Product Categories</h2>
+        <ul className="mt-6 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          {typeList.map(([t, n]) => (
+            <li key={t}>
+              <button
+                type="button"
+                onClick={() => pickType(t)}
+                className="flex w-full items-center justify-between gap-3 rounded-2xl border border-line bg-paper px-4 py-3 text-left text-sm text-ink transition hover:border-brand-300 hover:bg-brand-50"
+              >
+                <span>{t}</span>
+                <span className="shrink-0 text-xs text-ink-3">{n} {n === 1 ? 'product' : 'products'}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      </section>
     </LayoutGroup>
   );
 }

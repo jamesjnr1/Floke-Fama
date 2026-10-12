@@ -20,6 +20,9 @@ const nextConfig: NextConfig = {
   images: {
     // Next-gen formats for all equipment photography
     formats: ['image/avif', 'image/webp'],
+    // Fewer widths per image (the defaults list 16), so pages with many photos, like the Shop, stay light
+    deviceSizes: [640, 828, 1080, 1440, 1920],
+    imageSizes: [96, 256, 384],
     remotePatterns: [{ protocol: 'https', hostname: 'cdn.sanity.io' }],
   },
   async headers() {
