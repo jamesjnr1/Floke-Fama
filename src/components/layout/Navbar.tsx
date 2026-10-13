@@ -109,7 +109,7 @@ export function Navbar() {
             {anchors.map((a) => {
               const active = isActive(pathname, a);
               const itemClass = cn(
-                'relative flex items-center gap-1.5 whitespace-nowrap rounded-[4px] px-2.5 py-2 text-[1rem] transition-colors 2xl:px-3 2xl:text-sm duration-300 focus-visible:outline-none',
+                'relative flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-2 text-[1rem] transition-colors 2xl:px-3 2xl:text-sm duration-300 focus-visible:outline-none',
                 dark ? 'text-white/80 hover:text-white' : 'text-ink-2 hover:text-ink',
                 active && (dark ? 'text-white' : 'text-ink'),
               );
@@ -121,13 +121,13 @@ export function Navbar() {
                       aria-hidden
                       transition={{ type: 'spring', bounce: 0.18, duration: 0.45 }}
                       className={cn(
-                        'absolute inset-0 rounded-[4px]',
+                        'absolute inset-0 rounded-full',
                         dark ? 'bg-white/[0.08] shadow-[inset_0_1px_0_rgb(255_255_255/0.08)] ring-1 ring-white/10' : 'bg-ink/[0.045] ring-1 ring-ink/[0.06]',
                       )}
                     />
                   )}
                   {active && !hovered && (
-                    <motion.span layoutId="nav-active" aria-hidden className={cn('absolute inset-0 rounded-[4px]', dark ? 'bg-white/[0.06]' : 'bg-ink/[0.04]')} />
+                    <motion.span layoutId="nav-active" aria-hidden className={cn('absolute inset-0 rounded-full', dark ? 'bg-white/[0.06]' : 'bg-ink/[0.04]')} />
                   )}
                   <span className="relative flex items-center gap-2">
                     {active && <span aria-hidden className="size-1.5 rounded-full bg-brand-400" />}
