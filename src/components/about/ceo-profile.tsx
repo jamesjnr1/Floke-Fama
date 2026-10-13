@@ -29,7 +29,7 @@ export function CeoProfile({ ceo }: { ceo: Ceo }) {
 
   return (
     <div>
-      <div className="flex gap-6 overflow-x-auto border-b border-line" role="tablist" aria-label="About our CEO">
+      <div className="flex flex-wrap gap-x-6 border-b border-line" role="tablist" aria-label="About our CEO">
         {tabs.map((t) => (
           <button
             key={t.id}
