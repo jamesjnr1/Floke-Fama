@@ -25,7 +25,7 @@ export function ProductGallery({ product, category, sizes, priority, shared, cla
     <div className={cn('flex flex-col gap-3', className)}>
       <ProductVisual product={product} category={category} src={current} sizes={sizes} priority={priority} shared={shared} className={visualClassName} />
       {photos.length > 1 && (
-        <ul className={cn('flex gap-2 overflow-x-auto pb-1', thumbsClassName)} aria-label={`${product.name} photos`}>
+        <ul className={cn('flex gap-2 overflow-x-auto p-0.5 pb-1 [scrollbar-width:none]', thumbsClassName)} aria-label={`${product.name} photos`}>
           {photos.map((src, i) => (
             <li key={src} className="shrink-0">
               <button

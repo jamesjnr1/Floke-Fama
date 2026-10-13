@@ -105,7 +105,7 @@ export function Checkout() {
     <div className="grid grid-cols-1 overflow-hidden rounded-2xl bg-paper shadow-[0_40px_80px_-50px_rgb(11_21_16/0.45)] lg:grid-cols-[minmax(0,1fr)_380px]">
       {/* Steps + current step */}
       <div className="p-5 md:p-8 lg:p-10">
-        <nav aria-label="Checkout steps" className="-mx-1 flex overflow-x-auto border-b border-line">
+        <nav aria-label="Checkout steps" className="-mx-1 flex overflow-x-auto border-b border-line [scrollbar-width:none]">
           {steps.map((s, i) => {
             const done = i < step && step < 3;
             return (
