@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { HeroLogos } from '@/components/home/hero-logos';
 import { CatalogueBook } from '@/components/home/catalogue-book';
+import { CataloguePages } from '@/components/home/catalogue-pages';
 import { EquipmentStrips } from '@/components/home/equipment-strips';
 import { HeroBackdrop } from '@/components/home/hero-backdrop';
 import { MachineSlideshow } from '@/components/home/machine-slideshow';
@@ -12,8 +13,8 @@ import { cn } from '@/lib/utils';
 
 /**
  * Hero with the Partners & Clientele band across the bottom. Its background is set by heroBackground (the dark teal
- * by default). In the 'catalogue' style (default) the text sits on the left and an open product catalogue on the
- * right. In the 'strips' style the company line sits on the left with the text and
+ * by default). In the 'pages' style (default) the text sits on the left and a stack of catalogue pages on the
+ * right; 'catalogue' shows an open product catalogue there instead. In the 'strips' style the company line sits on the left with the text and
  * actions on its right, and the equipment runs underneath as photo strips. In the 'card' and 'carousel' styles the
  * text is on the left and a slideshow of equipment on the right (see heroStyle).
  */
@@ -24,7 +25,7 @@ export async function Hero({ bg = heroBackground }: { bg?: HeroBackground } = {}
     <section className={cn('relative isolate flex min-h-[100svh] flex-col overflow-hidden', light ? 'text-ink' : 'text-white')}>
       <HeroBackdrop bg={bg} />
 
-      {heroStyle === 'catalogue' && (
+      {(heroStyle === 'pages' || heroStyle === 'catalogue') && (
         <div className="mx-auto grid w-full max-w-[1280px] flex-1 grid-cols-1 items-center gap-12 px-5 pb-12 pt-28 md:px-10 md:pt-32 lg:grid-cols-12">
           <div className="flex min-w-0 flex-col gap-7 lg:col-span-5">
             <Reveal>
@@ -47,9 +48,9 @@ export async function Hero({ bg = heroBackground }: { bg?: HeroBackground } = {}
             </Reveal>
           </div>
 
-          {/* An open product catalogue, its page turning through the equipment we supply */}
+          {/* The equipment we supply: a stack of catalogue pages, or an open catalogue, turning through it */}
           <Reveal delay={0.2} className="min-w-0 lg:col-span-7">
-            <CatalogueBook />
+            {heroStyle === 'pages' ? <CataloguePages /> : <CatalogueBook />}
           </Reveal>
         </div>
       )}

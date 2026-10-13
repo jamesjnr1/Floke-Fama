@@ -1,14 +1,15 @@
 /**
- * Home hero style. 'catalogue' (default): the text on the left and an open Flokefama product catalogue on the right,
- * its page turning through the equipment the CEO's review lists. 'strips': the headline with the equipment as photo
+ * Home hero style. 'pages' (default): the text on the left and a stack of catalogue pages on the right, the top page
+ * turning through the equipment the CEO's review asks to feature. 'catalogue': an open Flokefama product catalogue instead, its page
+ * turning through that equipment. 'strips': the headline with the equipment as photo
  * strips underneath. 'card': the earlier hero with a cross-fading equipment card. 'carousel': the earlier hero with a
- * row of product tiles. Switch with NEXT_PUBLIC_HOME_HERO=strips (or card, carousel) in Vercel (then redeploy).
+ * row of product tiles. Switch with NEXT_PUBLIC_HOME_HERO=catalogue (or strips, card, carousel) in Vercel (then redeploy).
  * A new name: the older NEXT_PUBLIC_HERO_STYLE=card, still set in Vercel from before, would otherwise keep the
  * earlier hero.
  */
-const styles = ['catalogue', 'strips', 'card', 'carousel'] as const;
+const styles = ['pages', 'catalogue', 'strips', 'card', 'carousel'] as const;
 const style = process.env.NEXT_PUBLIC_HOME_HERO as (typeof styles)[number] | undefined;
-export const heroStyle: (typeof styles)[number] = style && styles.includes(style) ? style : 'catalogue';
+export const heroStyle: (typeof styles)[number] = style && styles.includes(style) ? style : 'pages';
 
 /**
  * Home hero background. 'teal' (default): the dark Mirage → Deep Sea gradient. 'navy', 'graphite', 'dots' and
