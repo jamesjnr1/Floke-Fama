@@ -14,13 +14,12 @@ const arrow = (dir: 'left' | 'right') => (
 );
 
 /**
- * The 'catalogue' hero picture: an open Flokefama product catalogue. The cover (with the brochure's own line,
- * "Purveyor of excellence in healthcare") on the left; on the right page, the equipment the CEO's review asks the
- * home showcase to feature (MRI, CT, mammography, X-ray, dialysis, incubators, ventilators, ultrasound), one per
- * page with its photo, category, name and description. The page turns every few seconds (paused on hover or focus);
+ * The 'catalogue' hero picture: an open Flokefama product catalogue, lying flat. The cover on the left; on the right
+ * page, the equipment the CEO's review asks the home showcase to feature (MRI, CT, mammography, X-ray, dialysis,
+ * incubators, ventilators, ultrasound), one per page with its photo, category, name and description. The page turns every few seconds (paused on hover or focus);
  * the arrows turn it by hand. On phones only the page is shown.
  */
-export function CatalogueBook({ products }: { products: number }) {
+export function CatalogueBook() {
   const [i, setI] = useState(0);
   const [paused, setPaused] = useState(false);
   const reduce = useReducedMotion();
@@ -36,14 +35,14 @@ export function CatalogueBook({ products }: { products: number }) {
   }, [i, paused, reduce]);
 
   return (
-    <div className="mx-auto flex w-full max-w-[640px] [perspective:1800px]">
+    <div className="mx-auto flex w-full max-w-[640px]">
       {/* Cover */}
-      <div className="relative hidden aspect-[3/4] w-1/2 origin-right flex-col bg-white p-7 text-ink shadow-[0_40px_80px_-30px_rgb(0_0_0/0.7)] [transform:rotateY(10deg)] md:flex">
+      <div className="relative hidden aspect-[3/4] w-1/2 flex-col bg-white p-7 text-ink md:flex">
         <div className="flex items-center gap-2">
           <LogoMark className="size-7" />
           <LogoWordmark className="h-[14px] text-[#00703A]" />
         </div>
-        <p className="mt-8 text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-brand-700">Purveyor of excellence in healthcare</p>
+        <p className="mt-8 text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-brand-700">What we have</p>
         <p className="mt-1.5 text-[2rem] font-extrabold leading-[1.05] tracking-[-0.03em]">
           Product
           <br />
@@ -52,15 +51,12 @@ export function CatalogueBook({ products }: { products: number }) {
         <div className="relative mt-4 min-h-0 flex-1">
           <Image src="/images/hero/auto-heamatology-analyzer-bc5150.webp" alt="" fill priority sizes="300px" className="object-contain" />
         </div>
-        <div className="-mx-7 -mb-7 mt-4 flex items-center justify-between bg-[#00703A] px-7 py-3 text-xs font-semibold text-white">
-          <span>{products} products</span>
-          <span>flokefama.com</span>
-        </div>
+        <div className="-mx-7 -mb-7 mt-4 bg-[#00703A] px-7 py-3 text-xs font-semibold text-white">flokefama.com</div>
       </div>
 
       {/* The page: one piece of equipment at a time */}
       <div
-        className="relative flex aspect-[3/4] w-full origin-left flex-col bg-[#f7f9f8] p-5 text-ink shadow-[0_40px_80px_-30px_rgb(0_0_0/0.7)] md:w-1/2 md:p-6 md:[transform:rotateY(-10deg)]"
+        className="relative flex aspect-[3/4] w-full flex-col bg-white p-5 text-ink md:w-1/2 md:border-l md:border-line md:p-6"
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
         onFocus={() => setPaused(true)}

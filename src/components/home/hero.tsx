@@ -7,7 +7,6 @@ import { MachineSlideshow } from '@/components/home/machine-slideshow';
 import { Reveal } from '@/components/motion/reveal';
 import { Button } from '@/components/ui/button';
 import { heroBackground, heroStyle, type HeroBackground } from '@/lib/hero-style';
-import { getProducts } from '@/lib/data';
 import { getSite } from '@/lib/site';
 import { cn } from '@/lib/utils';
 
@@ -19,7 +18,7 @@ import { cn } from '@/lib/utils';
  * text is on the left and a slideshow of equipment on the right (see heroStyle).
  */
 export async function Hero({ bg = heroBackground }: { bg?: HeroBackground } = {}) {
-  const [{ hero }, products] = await Promise.all([getSite(), getProducts()]);
+  const { hero } = await getSite();
   const light = bg === 'light';
   return (
     <section className={cn('relative isolate flex min-h-[100svh] flex-col overflow-hidden', light ? 'text-ink' : 'text-white')}>
@@ -50,7 +49,7 @@ export async function Hero({ bg = heroBackground }: { bg?: HeroBackground } = {}
 
           {/* An open product catalogue, its page turning through the equipment we supply */}
           <Reveal delay={0.2} className="min-w-0 lg:col-span-7">
-            <CatalogueBook products={products.length} />
+            <CatalogueBook />
           </Reveal>
         </div>
       )}
