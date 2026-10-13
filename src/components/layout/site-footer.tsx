@@ -3,7 +3,7 @@ import { ArrowUpRight, Mail, MapPin, Phone } from 'lucide-react';
 import { Logo } from '@/components/layout/logo';
 import { getSite } from '@/lib/site';
 
-/** Footer in the FLOKE_BOLT layout, with the original Flokefama logo and links to the real pages. */
+/** Footer: one plain dark colour with white and grey text only, the Flokefama logo and links to the real pages. */
 const columns = [
   {
     title: 'Solutions',
@@ -38,9 +38,8 @@ const columns = [
 export async function SiteFooter() {
   const { contact, maps } = await getSite();
   return (
-    <footer className="relative overflow-hidden border-t border-white/10 bg-[#10191e] text-white/75">
-      <div aria-hidden className="absolute inset-0 bg-[radial-gradient(30%_60%_at_100%_100%,rgb(13_155_168/0.1),transparent_70%)]" />
-      <div className="relative mx-auto max-w-[1280px] px-5 md:px-10">
+    <footer className="border-t border-white/10 bg-[#10191e] text-white/70">
+      <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <div className="grid grid-cols-2 gap-x-6 gap-y-8 py-8 md:grid-cols-3 lg:grid-cols-12 lg:gap-8 lg:py-10">
           <div className="col-span-2 flex flex-col gap-4 md:col-span-3 lg:col-span-3">
             <Logo tone="dark" />
@@ -48,17 +47,17 @@ export async function SiteFooter() {
             <ul className="flex flex-col gap-1.5 text-sm">
               <li>
                 <a href={maps.directions} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 transition-colors hover:text-white">
-                  <MapPin className="size-4 shrink-0 text-white" aria-hidden /> Santa Maria, Accra, Ghana
+                  <MapPin className="size-4 shrink-0 text-white/50" aria-hidden /> Santa Maria, Accra, Ghana
                 </a>
               </li>
               <li>
                 <a href={contact.phoneHref} className="flex items-center gap-3 transition-colors hover:text-white">
-                  <Phone className="size-4 shrink-0 text-white" aria-hidden /> {contact.phone}
+                  <Phone className="size-4 shrink-0 text-white/50" aria-hidden /> {contact.phone}
                 </a>
               </li>
               <li>
                 <a href={`mailto:${contact.info}`} className="flex items-center gap-3 transition-colors hover:text-white">
-                  <Mail className="size-4 shrink-0 text-white" aria-hidden /> {contact.info}
+                  <Mail className="size-4 shrink-0 text-white/50" aria-hidden /> {contact.info}
                 </a>
               </li>
             </ul>
@@ -66,11 +65,11 @@ export async function SiteFooter() {
 
           {columns.map((col) => (
             <nav key={col.title} aria-label={col.title} className="flex flex-col gap-2.5 lg:col-span-2">
-              <h2 className="text-xs font-semibold uppercase tracking-[0.12em] text-[#54cdd6]">{col.title}</h2>
+              <h2 className="text-sm font-semibold text-white">{col.title}</h2>
               <ul className="flex flex-col gap-1.5 text-sm">
                 {col.links.map((l) => (
                   <li key={l.label}>
-                    <Link href={l.href} className="transition-colors hover:text-brand-300">
+                    <Link href={l.href} className="transition-colors hover:text-white">
                       {l.label}
                     </Link>
                   </li>
@@ -79,25 +78,22 @@ export async function SiteFooter() {
             </nav>
           ))}
 
-          <div className="col-span-2 md:col-span-3 lg:col-span-3">
-            <div className="flex flex-col gap-3 border border-[#54cdd6]/20 bg-gradient-to-br from-[#16262d] to-[#0b3b40] p-5">
-              <p className="text-sm font-bold leading-snug text-white">Get a technical proposal for your facility.</p>
-              <Link href="/quote" className="group flex items-center justify-between gap-4 bg-cta px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-cta-700">
-                Start Request
-                <ArrowUpRight className="size-5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden />
-              </Link>
-            </div>
+          <div className="col-span-2 flex flex-col gap-2.5 md:col-span-3 lg:col-span-3">
+            <h2 className="text-sm font-semibold text-white">Need equipment?</h2>
+            <p className="text-sm">Get a technical proposal for your facility.</p>
+            <Link href="/quote" className="group inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-white underline-offset-4 hover:underline">
+              Request a quote
+              <ArrowUpRight className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden />
+            </Link>
           </div>
         </div>
 
-        <div className="flex flex-col gap-4 border-t border-white/10 pb-24 pt-4 text-xs md:flex-row md:items-center md:justify-between md:pb-4">
-          <ul className="flex flex-wrap items-center gap-x-4 gap-y-2">
-            <li className="text-white/60">© {new Date().getFullYear()} Flokefama Company Limited</li>
-            <li className="border-l border-white/15 pl-4 font-semibold text-brand-300">Ghana Club 100</li>
-            <li className="border-l border-white/15 pl-4 font-semibold text-brand-300">Forbes Africa</li>
-            <li className="border-l border-white/15 pl-4 font-semibold text-[#54cdd6]">Mindray Best in IVD</li>
-          </ul>
-          <p className="text-white/60">Saving lives since 2008</p>
+        <div className="flex flex-col gap-4 border-t border-white/10 pb-24 pt-4 text-xs text-white/55 md:flex-row md:items-center md:justify-between md:pb-4">
+          <div className="flex flex-col gap-2 md:flex-row md:gap-6">
+            <p>© {new Date().getFullYear()} Flokefama Company Limited</p>
+            <p>Ghana Club 100 · Forbes Africa · Mindray Best in IVD</p>
+          </div>
+          <p>Saving lives since 2008</p>
         </div>
       </div>
     </footer>
