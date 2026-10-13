@@ -56,7 +56,6 @@ export function Navbar() {
   const [hovered, setHovered] = useState<string | null>(null);
   const [menu, setMenu] = useState<string | null>(null);
   const [account, setAccount] = useState(false);
-  const [search, setSearch] = useState(false);
   const session = useSession();
   const user = session.user;
   const home = user ? roleHome[user.role] : '/login';
@@ -66,7 +65,6 @@ export function Navbar() {
     setOpen(false);
     setMenu(null);
     setAccount(false);
-    setSearch(false);
   }, [pathname]);
   useEffect(() => {
     if (!account) return;
@@ -78,15 +76,11 @@ export function Navbar() {
     };
   }, [account]);
   useEffect(() => {
-    if (!menu && !search) return;
-    const close = (e: KeyboardEvent) => {
-      if (e.key !== 'Escape') return;
-      setMenu(null);
-      setSearch(false);
-    };
+    if (!menu) return;
+    const close = (e: KeyboardEvent) => e.key === 'Escape' && setMenu(null);
     window.addEventListener('keydown', close);
     return () => window.removeEventListener('keydown', close);
-  }, [menu, search]);
+  }, [menu]);
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : '';
   }, [open]);
@@ -209,17 +203,6 @@ export function Navbar() {
         </nav>
 
         <div className="flex items-center gap-3">
-          {/* Site search: opens a search field under the bar */}
-          <button
-            type="button"
-            onClick={() => setSearch((x) => !x)}
-            aria-expanded={search}
-            aria-controls="site-search"
-            aria-label={search ? 'Close search' : 'Search the site'}
-            className="hidden size-12 place-items-center rounded-[4px] border border-white/15 text-lg text-white transition hover:border-white/30 hover:bg-white/[0.06] xl:grid"
-          >
-            <Icon name={search ? 'fi-rr-cross-small' : 'fi-rr-search'} />
-          </button>
           <Link
             href="/checkout"
             className="hidden items-center whitespace-nowrap rounded-[4px] border border-white/15 px-3.5 py-3 text-[1rem] font-medium text-white 2xl:px-4 2xl:text-sm transition hover:border-white/30 hover:bg-white/[0.06] xl:inline-flex"
@@ -307,21 +290,6 @@ export function Navbar() {
       </div>
 
       <AnimatePresence>
-        {search && (
-          <motion.div
-            id="site-search"
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-            className="hidden border-t border-white/10 bg-midnight shadow-[0_20px_40px_-20px_rgb(0_0_0/0.6)] xl:block"
-          >
-            <SearchForm autoFocus className="mx-auto max-w-[1280px] px-10 py-5" />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
         {open && (
           <motion.nav
             id="mobile-nav"
@@ -335,7 +303,6 @@ export function Navbar() {
               bar ? 'inset-x-0 bottom-0 top-[72px] border-t border-white/10' : 'inset-x-3 bottom-3 top-[92px] rounded-2xl border border-white/10',
             )}
           >
-            <SearchForm className="mb-3" />
             <ul className="divide-y divide-white/10">
               {[...flat, { href: '/checkout', label: 'Cart' }, user ? { href: home, label: homeLabel } : { href: '/login', label: 'Sign in' }].map((item, i) => (
                 <motion.li key={item.href} initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.04 * i }}>
@@ -364,27 +331,5 @@ export function Navbar() {
         )}
       </AnimatePresence>
     </header>
-  );
-}
-
-/** The site search field (results on /search): a square field with the search button at its end. */
-function SearchForm({ autoFocus, className }: { autoFocus?: boolean; className?: string }) {
-  return (
-    <form action="/search" role="search" className={className}>
-      <div className="flex h-12 items-center rounded-[4px] bg-white/[0.08] ring-1 ring-white/10 focus-within:ring-white/30">
-        <input
-          name="q"
-          type="search"
-          autoFocus={autoFocus}
-          required
-          placeholder="Search equipment, products, news…"
-          aria-label="Search the site"
-          className="h-full min-w-0 flex-1 bg-transparent px-4 text-base text-white outline-none placeholder:text-white/50 [&::-webkit-search-cancel-button]:hidden"
-        />
-        <button type="submit" aria-label="Search" className="grid h-full w-12 shrink-0 place-items-center rounded-r-[4px] bg-cta text-white transition hover:bg-cta-700">
-          <Icon name="fi-rr-search" />
-        </button>
-      </div>
-    </form>
   );
 }
