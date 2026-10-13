@@ -5,7 +5,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Branches } from '@/components/about/branches';
 import { CoreValues } from '@/components/about/core-values';
-import { Impact } from '@/components/about/impact';
 import { SitePageHero } from '@/components/layout/site-page-hero';
 import { Reveal } from '@/components/motion/reveal';
 import { Button } from '@/components/ui/button';
@@ -15,7 +14,6 @@ import { Icon } from '@/components/ui/icon';
 import { ToneIcon } from '@/components/ui/tone-icon';
 import { brochureUrl, experienceFigures } from '@/data/seed';
 import { getSite } from '@/lib/site';
-import { getMetrics } from '@/lib/data';
 
 export const revalidate = 600;
 
@@ -36,7 +34,6 @@ const briefIcons = [
 
 export default async function AboutPage() {
   const { servicesInBrief, ceo } = await getSite();
-  const metrics = await getMetrics();
   return (
     <>
       <SitePageHero page="about" />
@@ -151,10 +148,6 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      <Impact metrics={metrics} />
-
-      <Branches />
-
       {/* Core values */}
       <section id="values" className="scroll-mt-28 bg-canvas section-y">
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
@@ -166,6 +159,7 @@ export default async function AboutPage() {
         </div>
       </section>
 
+      <Branches />
     </>
   );
 }
