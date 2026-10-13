@@ -13,6 +13,8 @@
   --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-grotesk), ui-sans-serif, system-ui, sans-serif;
   --font-serif: var(--font-instrument), ui-serif, Georgia, serif;
+  /* Mona Sans: the menu bar only (the typeface of the menu in the Dribbble reference) */
+  --font-nav: var(--font-mona), var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
 
   /* Text sizes one step up from Tailwind's defaults, so everything stays readable */
   --text-xs: 0.875rem;
@@ -217,6 +219,7 @@ html[data-font='readable'] {
   --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
   --font-mono: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
   --font-serif: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+  --font-nav: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
 }
 html[data-font='readable'] body { letter-spacing: 0.012em; word-spacing: 0.08em; }
 html[data-font='readable'] .display { letter-spacing: 0; }
