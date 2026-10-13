@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Instrument_Serif, Plus_Jakarta_Sans, Space_Grotesk } from 'next/font/google';
+import { Instrument_Serif, Mona_Sans, Plus_Jakarta_Sans, Space_Grotesk } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
 import { Toaster } from 'sonner';
 import { AccessibilityProvider } from '@/components/layout/accessibility';
@@ -16,6 +16,8 @@ import './globals.css';
 const jakarta = Plus_Jakarta_Sans({ subsets: ['latin'], weight: ['400', '500', '600', '700', '800'], variable: '--font-jakarta', display: 'swap' });
 const grotesk = Space_Grotesk({ subsets: ['latin'], weight: ['400', '500', '600', '700'], variable: '--font-grotesk', display: 'swap' });
 // Italic serif for the accent words in page headers
+// Mona Sans: the menu bar only
+const mona = Mona_Sans({ subsets: ['latin'], weight: ['400', '500', '600', '700'], variable: '--font-mona', display: 'swap' });
 const serif = Instrument_Serif({ subsets: ['latin'], weight: '400', style: 'italic', variable: '--font-instrument', display: 'swap' });
 
 export const metadata: Metadata = {
@@ -46,7 +48,7 @@ const organizationLd = (contact: Contact) => ({
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const site = await getSite();
   return (
-    <html lang="en-GH" className={`${jakarta.variable} ${grotesk.variable} ${serif.variable}`} suppressHydrationWarning>
+    <html lang="en-GH" className={`${jakarta.variable} ${grotesk.variable} ${serif.variable} ${mona.variable}`} suppressHydrationWarning>
       <head>
         {/* Apply saved accessibility preferences before first paint */}
         <script dangerouslySetInnerHTML={{ __html: a11yBootScript }} />

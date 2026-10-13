@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { useEffect, useState } from 'react';
 import { equipment } from '@/data/equipment';
+import { heroStyle } from '@/lib/hero-style';
 import { cn } from '@/lib/utils';
 
 /**
@@ -22,13 +23,7 @@ const machines = [
   { slug: 'cpap-machine', name: 'CPAP Machine', label: 'Respiratory care' },
 ];
 
-/**
- * Hero picture style. 'card' (default): the featured equipment categories in a cross-fading card. 'carousel': a row of product tiles
- * with the next one peeking in, each fading away as it moves off.
- * Switch with NEXT_PUBLIC_HERO_STYLE=carousel in Vercel (then redeploy).
- */
-const heroStyle: 'carousel' | 'card' = process.env.NEXT_PUBLIC_HERO_STYLE === 'carousel' ? 'carousel' : 'card';
-
+/** The picture beside the text in the 'card' and 'carousel' hero styles (see heroStyle). */
 export function MachineSlideshow() {
   return heroStyle === 'carousel' ? <MachineCarousel /> : <MachineCard />;
 }

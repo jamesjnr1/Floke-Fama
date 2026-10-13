@@ -56,6 +56,7 @@ export function Navbar() {
   const [hovered, setHovered] = useState<string | null>(null);
   const [menu, setMenu] = useState<string | null>(null);
   const [account, setAccount] = useState(false);
+  const [search, setSearch] = useState(false);
   const session = useSession();
   const user = session.user;
   const home = user ? roleHome[user.role] : '/login';
@@ -65,6 +66,7 @@ export function Navbar() {
     setOpen(false);
     setMenu(null);
     setAccount(false);
+    setSearch(false);
   }, [pathname]);
   useEffect(() => {
     if (!account) return;
@@ -76,11 +78,15 @@ export function Navbar() {
     };
   }, [account]);
   useEffect(() => {
-    if (!menu) return;
-    const close = (e: KeyboardEvent) => e.key === 'Escape' && setMenu(null);
+    if (!menu && !search) return;
+    const close = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      setMenu(null);
+      setSearch(false);
+    };
     window.addEventListener('keydown', close);
     return () => window.removeEventListener('keydown', close);
-  }, [menu]);
+  }, [menu, search]);
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : '';
   }, [open]);
@@ -90,7 +96,7 @@ export function Navbar() {
   const solid = open || scrolled || !darkTop.includes(pathname);
 
   return (
-    <header className={cn('fixed inset-x-0 top-0 z-50', !bar && 'px-3 pt-3 md:px-6 md:pt-4')}>
+    <header className={cn('fixed inset-x-0 top-0 z-50 font-nav', !bar && 'px-3 pt-3 md:px-6 md:pt-4')}>
       <div
         className={cn(
           // No shadow at the top, where the bar sits on the dark hero; a light one once the page scrolls under it
@@ -109,7 +115,7 @@ export function Navbar() {
             {anchors.map((a) => {
               const active = isActive(pathname, a);
               const itemClass = cn(
-                'relative flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-2 text-[1rem] transition-colors 2xl:px-3 2xl:text-sm duration-300 focus-visible:outline-none',
+                'relative flex items-center gap-1.5 whitespace-nowrap rounded-[4px] px-2.5 py-2 text-[1rem] transition-colors 2xl:px-3 2xl:text-sm duration-300 focus-visible:outline-none',
                 dark ? 'text-white/80 hover:text-white' : 'text-ink-2 hover:text-ink',
                 active && (dark ? 'text-white' : 'text-ink'),
               );
@@ -121,13 +127,13 @@ export function Navbar() {
                       aria-hidden
                       transition={{ type: 'spring', bounce: 0.18, duration: 0.45 }}
                       className={cn(
-                        'absolute inset-0 rounded-full',
+                        'absolute inset-0 rounded-[4px]',
                         dark ? 'bg-white/[0.08] shadow-[inset_0_1px_0_rgb(255_255_255/0.08)] ring-1 ring-white/10' : 'bg-ink/[0.045] ring-1 ring-ink/[0.06]',
                       )}
                     />
                   )}
                   {active && !hovered && (
-                    <motion.span layoutId="nav-active" aria-hidden className={cn('absolute inset-0 rounded-full', dark ? 'bg-white/[0.06]' : 'bg-ink/[0.04]')} />
+                    <motion.span layoutId="nav-active" aria-hidden className={cn('absolute inset-0 rounded-[4px]', dark ? 'bg-white/[0.06]' : 'bg-ink/[0.04]')} />
                   )}
                   <span className="relative flex items-center gap-2">
                     {active && <span aria-hidden className="size-1.5 rounded-full bg-brand-400" />}
@@ -160,7 +166,7 @@ export function Navbar() {
                             transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
                             className="absolute left-1/2 top-full w-64 -translate-x-1/2 pt-3"
                           >
-                            <ul className="rounded-2xl border border-white/10 bg-midnight p-2 shadow-[0_30px_60px_-20px_rgb(0_0_0/0.6)] backdrop-blur-xl">
+                            <ul className="rounded-[4px] border border-white/10 bg-midnight p-2 shadow-[0_30px_60px_-20px_rgb(0_0_0/0.6)] backdrop-blur-xl">
                               {a.children.map((c) => {
                                 const on = matches(pathname, c.href);
                                 return (
@@ -168,7 +174,7 @@ export function Navbar() {
                                     <Link
                                       href={c.href}
                                       aria-current={on ? 'page' : undefined}
-                                      className={cn('group flex items-center justify-between gap-3 rounded-xl px-4 py-3 transition hover:bg-white/[0.06] focus-visible:bg-white/[0.06] focus-visible:outline-none', on && 'bg-white/[0.04]')}
+                                      className={cn('group flex items-center justify-between gap-3 rounded-[4px] px-4 py-3 transition hover:bg-white/[0.06] focus-visible:bg-white/[0.06] focus-visible:outline-none', on && 'bg-white/[0.04]')}
                                     >
                                       <span>
                                         <span className="flex items-center gap-2 text-sm font-medium text-white">
@@ -203,9 +209,20 @@ export function Navbar() {
         </nav>
 
         <div className="flex items-center gap-3">
+          {/* Site search: opens a search field under the bar */}
+          <button
+            type="button"
+            onClick={() => setSearch((x) => !x)}
+            aria-expanded={search}
+            aria-controls="site-search"
+            aria-label={search ? 'Close search' : 'Search the site'}
+            className="hidden size-12 place-items-center rounded-[4px] border border-white/15 text-lg text-white transition hover:border-white/30 hover:bg-white/[0.06] xl:grid"
+          >
+            <Icon name={search ? 'fi-rr-cross-small' : 'fi-rr-search'} />
+          </button>
           <Link
             href="/checkout"
-            className="hidden items-center whitespace-nowrap rounded-xl border border-white/15 px-3.5 py-3 text-[1rem] font-medium text-white 2xl:px-4 2xl:text-sm transition hover:border-white/30 hover:bg-white/[0.06] xl:inline-flex"
+            className="hidden items-center whitespace-nowrap rounded-[4px] border border-white/15 px-3.5 py-3 text-[1rem] font-medium text-white 2xl:px-4 2xl:text-sm transition hover:border-white/30 hover:bg-white/[0.06] xl:inline-flex"
           >
             <Icon name="fi-rr-shopping-cart" className="mr-2 text-base" /> Cart
           </Link>
@@ -234,7 +251,7 @@ export function Navbar() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 6 }}
                     transition={{ duration: 0.18 }}
-                    className="absolute right-0 top-[calc(100%+12px)] w-72 overflow-hidden rounded-xl border border-white/10 bg-[#0f1d22] shadow-[0_30px_60px_-20px_rgb(0_0_0/0.65)]"
+                    className="absolute right-0 top-[calc(100%+12px)] w-72 overflow-hidden rounded-[4px] border border-white/10 bg-[#0f1d22] shadow-[0_30px_60px_-20px_rgb(0_0_0/0.65)]"
                   >
                     <div className="flex items-center gap-3 border-b border-white/[0.08] p-4">
                       <HospitalMark facility={user.role === 'client' ? user.facility : undefined} name={user.name} className="size-10 rounded-md" fallbackClassName="bg-white text-sm text-[#006b42]" />
@@ -270,7 +287,7 @@ export function Navbar() {
           ) : (
             <Link
               href="/login"
-              className="group hidden items-center gap-2 whitespace-nowrap rounded-xl bg-cta px-4 py-3 text-[1rem] font-semibold text-white 2xl:px-6 2xl:text-sm transition hover:bg-cta-700 sm:inline-flex"
+              className="group hidden items-center gap-2 whitespace-nowrap rounded-[4px] bg-cta px-4 py-3 text-[1rem] font-semibold text-white 2xl:px-6 2xl:text-sm transition hover:bg-cta-700 sm:inline-flex"
             >
               Sign in
             </Link>
@@ -281,13 +298,28 @@ export function Navbar() {
             aria-expanded={open}
             aria-controls="mobile-nav"
             aria-label={open ? 'Close menu' : 'Open menu'}
-            className={cn('relative size-11 rounded-xl border xl:hidden', dark ? 'border-white/15 text-white' : 'border-line text-ink')}
+            className={cn('relative size-11 rounded-[4px] border xl:hidden', dark ? 'border-white/15 text-white' : 'border-line text-ink')}
           >
             <span className={cn('absolute left-3 right-3 h-[1.5px] rounded bg-current transition-all duration-500 ease-out-expo', open ? 'top-[21px] rotate-45' : 'top-[17px]')} />
             <span className={cn('absolute left-3 right-3 h-[1.5px] rounded bg-current transition-all duration-500 ease-out-expo', open ? 'top-[21px] -rotate-45' : 'top-[25px]')} />
           </button>
         </div>
       </div>
+
+      <AnimatePresence>
+        {search && (
+          <motion.div
+            id="site-search"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            className="hidden border-t border-white/10 bg-midnight shadow-[0_20px_40px_-20px_rgb(0_0_0/0.6)] xl:block"
+          >
+            <SearchForm autoFocus className="mx-auto max-w-[1280px] px-10 py-5" />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <AnimatePresence>
         {open && (
@@ -303,6 +335,7 @@ export function Navbar() {
               bar ? 'inset-x-0 bottom-0 top-[72px] border-t border-white/10' : 'inset-x-3 bottom-3 top-[92px] rounded-2xl border border-white/10',
             )}
           >
+            <SearchForm className="mb-3" />
             <ul className="divide-y divide-white/10">
               {[...flat, { href: '/checkout', label: 'Cart' }, user ? { href: home, label: homeLabel } : { href: '/login', label: 'Sign in' }].map((item, i) => (
                 <motion.li key={item.href} initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.04 * i }}>
@@ -318,18 +351,40 @@ export function Navbar() {
             </ul>
             {user && (
               <form action={logout} className="mt-4">
-                <button type="submit" className="flex w-full items-center justify-between rounded-xl border border-white/10 p-4 text-left text-white">
+                <button type="submit" className="flex w-full items-center justify-between rounded-[4px] border border-white/10 p-4 text-left text-white">
                   <span><span className="block font-semibold">{user.name}</span><span className="text-sm text-white/65">Sign out</span></span>
                   <Icon name="fi-rr-sign-out-alt" className="text-brand-300" />
                 </button>
               </form>
             )}
-            <a href={contact.phoneHref} className="mt-auto flex items-center gap-3 rounded-xl border border-white/10 p-4 font-mono text-sm text-white">
+            <a href={contact.phoneHref} className="mt-auto flex items-center gap-3 rounded-[4px] border border-white/10 p-4 font-mono text-sm text-white">
               <Icon name="fi-rr-phone-call" className="text-brand-400" /> {contact.phone}
             </a>
           </motion.nav>
         )}
       </AnimatePresence>
     </header>
+  );
+}
+
+/** The site search field (results on /search): a square field with the search button at its end. */
+function SearchForm({ autoFocus, className }: { autoFocus?: boolean; className?: string }) {
+  return (
+    <form action="/search" role="search" className={className}>
+      <div className="flex h-12 items-center rounded-[4px] bg-white/[0.08] ring-1 ring-white/10 focus-within:ring-white/30">
+        <input
+          name="q"
+          type="search"
+          autoFocus={autoFocus}
+          required
+          placeholder="Search equipment, products, news…"
+          aria-label="Search the site"
+          className="h-full min-w-0 flex-1 bg-transparent px-4 text-base text-white outline-none placeholder:text-white/50 [&::-webkit-search-cancel-button]:hidden"
+        />
+        <button type="submit" aria-label="Search" className="grid h-full w-12 shrink-0 place-items-center rounded-r-[4px] bg-cta text-white transition hover:bg-cta-700">
+          <Icon name="fi-rr-search" />
+        </button>
+      </div>
+    </form>
   );
 }
