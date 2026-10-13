@@ -13,25 +13,51 @@ export const metadata: Metadata = {
   alternates: { canonical: '/esg' },
 };
 
-/** One CSR activity as a row: date, title, a short description and the story link; its photo beside it when there is one. */
-function Activity({ a }: { a: CsrActivity }) {
+type Item = CsrActivity & { group: string };
+
+/** The activity's photo, or a placeholder until the photograph arrives (requested from the CEO). */
+function Photo({ a, sizes }: { a: Item; sizes: string }) {
   return (
-    <li className="grid gap-5 border-b border-line py-7 last:border-b-0 sm:grid-cols-[1fr_auto] sm:gap-8">
-      <div>
-        {a.date && <p className="text-[0.9375rem] text-ink-3">{a.date}</p>}
-        <h4 className="mt-1 text-xl font-semibold leading-snug tracking-[-0.01em] text-ink">{a.title}</h4>
-        <p className="no-justify mt-2 text-lg leading-relaxed text-ink-3">{a.text}</p>
-        {a.href && (
-          <Link href={a.href} className="mt-3 inline-flex items-center gap-1 font-semibold text-brand-700 hover:underline">
-            Read the story <Icon name="fi-rr-arrow-small-right" />
-          </Link>
-        )}
-      </div>
-      {a.image && (
-        <div className="relative aspect-[3/2] w-full overflow-hidden rounded-lg bg-mist sm:w-64">
-          <Image src={a.image} alt={a.alt ?? ''} fill sizes="(min-width: 640px) 256px, 100vw" className="object-cover" />
+    <div className="relative aspect-[16/10] overflow-hidden rounded-[4px] bg-mist">
+      {a.image ? (
+        <Image src={a.image} alt={a.alt ?? ''} fill sizes={sizes} className="object-cover transition-transform duration-500 group-hover:scale-[1.03]" />
+      ) : (
+        <div className="absolute inset-0 grid place-items-center bg-[repeating-linear-gradient(135deg,transparent_0,transparent_14px,rgb(22_35_42/0.035)_14px,rgb(22_35_42/0.035)_15px)] text-ink-3">
+          <span className="flex flex-col items-center gap-2 text-[0.9375rem]">
+            <Icon name="fi-rr-camera" className="text-2xl" />
+            Photo coming soon
+          </span>
         </div>
       )}
+    </div>
+  );
+}
+
+/** Date or area above the title. */
+const Meta = ({ a }: { a: Item }) => <p className="text-[0.9375rem] font-semibold text-brand-700">{a.group}{a.date && ` · ${a.date}`}</p>;
+
+/** The activities with a published story, as large stories. */
+function Story({ a }: { a: Item }) {
+  const body = (
+    <>
+      <Photo a={a} sizes="(min-width: 768px) 620px, 100vw" />
+      <div className="mt-5"><Meta a={a} /></div>
+      <h3 className="mt-1.5 text-2xl font-bold leading-snug tracking-[-0.02em] text-ink group-hover:text-brand-700">{a.title}</h3>
+      <p className="no-justify mt-2 text-lg leading-relaxed text-ink-3">{a.text}</p>
+      {a.href && <span className="mt-3 inline-flex items-center gap-1 font-semibold text-brand-700">Read the story <Icon name="fi-rr-arrow-small-right" /></span>}
+    </>
+  );
+  return a.href ? <Link href={a.href} className="group block">{body}</Link> : <div>{body}</div>;
+}
+
+/** The other activities, smaller, with their photo or a placeholder. */
+function Card({ a }: { a: Item }) {
+  return (
+    <li className="flex flex-col">
+      <Photo a={a} sizes="(min-width: 768px) 400px, 100vw" />
+      <div className="mt-5"><Meta a={a} /></div>
+      <h3 className="mt-1.5 text-xl font-bold leading-snug tracking-[-0.01em] text-ink">{a.title}</h3>
+      <p className="no-justify mt-2 text-lg leading-relaxed text-ink-3">{a.text}</p>
     </li>
   );
 }
@@ -45,31 +71,29 @@ export default async function EsgPage() {
     { label: 'Economic · Local industry', title: 'Making it in Ghana.', text: aim.text },
   ];
 
+  const all: Item[] = csrGroups.flatMap((g) => g.items.map((a) => ({ ...a, group: g.title })));
+  const stories = all.filter((a) => a.href);
+  const others = all.filter((a) => !a.href);
+
   return (
     <>
       <SitePageHero page="esg" />
 
-      {/* Corporate social responsibility, grouped as in the CEO's review */}
+      {/* Corporate social responsibility (the CEO's review, point 4): published stories first, then the other activities */}
       <section className="bg-canvas section-y">
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
-          <Reveal className="max-w-2xl">
-            <h2 className="display text-[clamp(2rem,1.2rem+2.8vw,3.25rem)]">Corporate Social Responsibility</h2>
-            <p className="no-justify mt-4 text-lg leading-relaxed text-ink-3">Our work does not end with supplying equipment. We give back to the institutions, professionals and communities that make healthcare in Ghana possible.</p>
+          <Reveal className="grid gap-5 lg:grid-cols-12 lg:items-end lg:gap-10">
+            <h2 className="display text-[clamp(2rem,1.2rem+2.8vw,3.25rem)] lg:col-span-7">Giving back to the people behind Ghana’s healthcare</h2>
+            <p className="no-justify text-lg leading-relaxed text-ink-3 lg:col-span-5">Our work does not end with supplying equipment. We invest in hospitals, in the next generation of professionals and in communities.</p>
           </Reveal>
 
-          <div className="mt-12 border-t border-line">
-            {csrGroups.map((g) => (
-              <div key={g.title} className="grid gap-2 border-b border-line py-8 lg:grid-cols-12 lg:gap-10 lg:py-10">
-                <div className="lg:col-span-4 lg:pt-7">
-                  <h3 className="text-2xl font-bold tracking-[-0.02em] text-ink">{g.title}</h3>
-                  <p className="no-justify mt-1.5 text-lg text-ink-3">{g.intro}</p>
-                </div>
-                <ul className="lg:col-span-8">
-                  {g.items.map((a) => <Activity key={a.title} a={a} />)}
-                </ul>
-              </div>
-            ))}
+          <div className="mt-12 grid gap-10 md:grid-cols-2 md:gap-6">
+            {stories.map((a) => <Story key={a.title} a={a} />)}
           </div>
+
+          <ul className="mt-14 grid gap-10 border-t border-line pt-12 sm:grid-cols-2 md:gap-6 lg:grid-cols-3">
+            {others.map((a) => <Card key={a.title} a={a} />)}
+          </ul>
         </div>
       </section>
 
