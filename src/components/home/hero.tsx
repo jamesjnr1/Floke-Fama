@@ -20,10 +20,10 @@ import { cn } from '@/lib/utils';
  * text is on the left and a slideshow of equipment on the right (see heroStyle).
  */
 export async function Hero({ bg = heroBackground }: { bg?: HeroBackground } = {}) {
-  if (heroStyle === 'collage') {
+  if (heroStyle === 'collage' || heroStyle === 'feature') {
     return (
       <>
-        <CollageHero />
+        <CollageHero feature={heroStyle === 'feature'} />
         <HeroLogos />
       </>
     );
