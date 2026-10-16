@@ -2,12 +2,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Reveal } from '@/components/motion/reveal';
 import { Button } from '@/components/ui/button';
-import { Seal } from '@/components/home/collage-hero';
 import { equipment } from '@/data/equipment';
 import { getSite } from '@/lib/site';
 
 /**
- * The 'simple' hero: everything centred on the green gradient (seal, headline, lead and the two actions), with the
+ * The 'simple' hero: everything centred on the green gradient (headline, lead and the two actions), with the
  * eight equipment types in one even row of photos underneath. No slideshow.
  */
 export async function SimpleHero() {
@@ -18,8 +17,7 @@ export async function SimpleHero() {
 
       <div className="flex w-full flex-1 flex-col items-center gap-10 px-5 py-12 md:px-10 lg:min-h-0 lg:gap-8 lg:px-8 lg:pb-8 lg:pt-7">
         <Reveal className="flex flex-col items-center text-center">
-          <Seal className="!size-[80px] lg:absolute lg:left-10 lg:top-[96px]" />
-          <h1 className="mt-6 max-w-[1100px] lg:mt-0 text-[clamp(2.375rem,1.3rem+2.4vw,3.5rem)] font-extrabold leading-[1.04] tracking-[-0.04em] text-white">
+          <h1 className="max-w-[1100px] text-[clamp(2.375rem,1.3rem+2.4vw,3.5rem)] font-extrabold leading-[1.04] tracking-[-0.04em] text-white">
             {hero.title} {hero.highlight.replace(/\.$/, '')}<span className="text-signal">.</span>
           </h1>
           <p className="no-justify mt-4 max-w-[760px] text-[1.0625rem] lg:max-w-[880px] leading-relaxed text-white/85">
