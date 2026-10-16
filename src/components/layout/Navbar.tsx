@@ -48,6 +48,8 @@ const isActive = (pathname: string, item: NavItem) => (item.children ? item.chil
 const bar = navStyle === 'bar';
 /** The green home hero runs up behind the menu bar, so the bar is see-through there until the page scrolls. */
 const greenHero = heroStyle === 'feature' || heroStyle === 'collage';
+/** Pages that open on a full photo header (PageHero): the bar is see-through over it too, so it takes the photo's colours. */
+const photoHeaders = ['/about', '/awards', '/services', '/events', '/products', '/esg', '/support'];
 
 /** Global Header, 72px tall: a full-width dark bar, or the floating glass bar (see navStyle). */
 export function Navbar() {
@@ -91,7 +93,7 @@ export function Navbar() {
   // The header is always the dark glass bar; on pages that open light it is solid from the start.
   const dark = true;
   const solid = open || scrolled || !darkTop.includes(pathname);
-  const overHero = bar && greenHero && pathname === '/' && !scrolled && !open;
+  const overHero = bar && !scrolled && !open && ((greenHero && pathname === '/') || photoHeaders.includes(pathname));
 
   return (
     <header className={cn('fixed inset-x-0 top-0 z-50 font-nav', !bar && 'px-3 pt-3 md:px-6 md:pt-4')}>
