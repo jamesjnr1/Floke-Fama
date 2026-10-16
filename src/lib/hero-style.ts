@@ -1,5 +1,6 @@
 /**
- * Home hero style. 'simple' (default): everything centred on the green gradient, with the eight equipment types in one
+ * Home hero style. 'moving': a large row of the eight equipment photos moving slowly across under the menu
+ * bar, with the headline on the left and the short text and actions on the right underneath. 'simple' (default): everything centred on the green gradient, with the eight equipment types in one
  * row of photos underneath; a hovered photo widens in the row. 'spotlight': the text on the green gradient, one equipment photo filling the right side and
  * melting into the green, with a numbered index of the eight types between them. 'feature': the text on a calm green gradient beside one equipment photo shown large, with
  * all eight types as thumbnails under it. 'collage': the same with the
@@ -11,7 +12,7 @@
  * A new name again: NEXT_PUBLIC_HOME_HERO=card (and the older NEXT_PUBLIC_HERO_STYLE=card), still set in Vercel
  * from before, would otherwise keep the earlier hero.
  */
-const styles = ['collage', 'feature', 'spotlight', 'simple', 'pages', 'catalogue', 'strips', 'card', 'carousel'] as const;
+const styles = ['collage', 'feature', 'spotlight', 'simple', 'moving', 'pages', 'catalogue', 'strips', 'card', 'carousel'] as const;
 const style = process.env.NEXT_PUBLIC_HERO_LAYOUT as (typeof styles)[number] | undefined;
 export const heroStyle: (typeof styles)[number] = style && styles.includes(style) ? style : 'simple';
 
