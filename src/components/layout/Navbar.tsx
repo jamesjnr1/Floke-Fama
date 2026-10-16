@@ -47,7 +47,7 @@ const isActive = (pathname: string, item: NavItem) => (item.children ? item.chil
 
 const bar = navStyle === 'bar';
 /** The green home hero runs up behind the menu bar, so the bar is see-through there until the page scrolls. */
-const greenHero = heroStyle === 'feature' || heroStyle === 'collage';
+const greenHero = heroStyle === 'feature' || heroStyle === 'collage' || heroStyle === 'spotlight';
 /** Pages that open on a full photo header (PageHero): the bar is see-through over it too, so it takes the photo's colours. */
 const photoHeaders = ['/about', '/awards', '/services', '/events', '/products', '/esg', '/support'];
 

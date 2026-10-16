@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils';
 const span = ['lg:col-span-2 lg:row-span-2', 'lg:row-span-2', '', '', '', '', '', ''];
 
 /** Circular "Saving lives · since 2008 · Ghana" seal with the Flokefama mark in the middle, turning slowly. */
-function Seal({ className }: { className?: string }) {
+export function Seal({ className }: { className?: string }) {
   return (
     <div className={cn('relative size-[112px] rounded-full bg-[#0b3d2a] text-white shadow-[0_20px_40px_-15px_rgb(0_0_0/0.6)]', className)}>
       <svg viewBox="0 0 132 132" className="absolute inset-0 animate-[spin_24s_linear_infinite] motion-reduce:animate-none" aria-hidden>
