@@ -35,11 +35,11 @@ export async function HeroLogos() {
     });
 
   return (
-    <div className="border-t border-line bg-white py-5 text-ink md:py-6">
+    <div className="shrink-0 border-t border-line bg-white py-5 text-ink md:py-6">
       <h2 className="mx-auto max-w-[1280px] px-5 text-[clamp(1.375rem,1.1rem+0.8vw,1.875rem)] font-bold tracking-[-0.03em] md:px-10">
         Our Clients &amp; Partners
       </h2>
-      <div className="mt-3 overflow-hidden">
+      <div className="mt-2 overflow-hidden py-2">
         <ul className="flex w-max animate-marquee hover:[animation-play-state:paused]">
           {row(false)}
           {row(true)}
