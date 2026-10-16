@@ -35,14 +35,17 @@ export async function SimpleHero() {
           </div>
         </Reveal>
 
-        <ul className="grid w-full grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-8">
+        {/* On hover a photo widens in the row (the others narrow to make room) and shows what it is */}
+        <ul className="grid w-full grid-cols-2 gap-3 sm:grid-cols-4 lg:flex lg:h-[150px]">
           {equipment.map((e) => (
-            <li key={e.slug}>
-              <Link href="/services#equipment" className="group block">
-                <span className="relative block aspect-[16/10] overflow-hidden">
-                  <Image src={e.image} alt="" fill sizes="(min-width: 1024px) 160px, 50vw" className="object-cover transition-transform duration-500 [filter:saturate(0.85)] group-hover:scale-105" />
+            <li key={e.slug} className="min-w-0 lg:flex-1 lg:transition-[flex-grow] lg:duration-500 lg:ease-[cubic-bezier(0.16,1,0.3,1)] lg:hover:flex-[3] lg:focus-within:flex-[3]">
+              <Link href="/services#equipment" className="group flex h-full flex-col">
+                <span className="relative block aspect-[16/10] overflow-hidden lg:aspect-auto lg:flex-1">
+                  <Image src={e.image} alt="" fill sizes="(min-width: 1024px) 420px, 50vw" className="object-cover [filter:saturate(0.85)] transition-[filter] duration-500 group-hover:[filter:saturate(1)]" />
+                  <span aria-hidden className="absolute inset-0 hidden bg-[linear-gradient(transparent_30%,rgb(4_40_24/0.85))] opacity-0 transition-opacity duration-500 group-hover:opacity-100 lg:block" />
+                  <span className="absolute inset-x-3 bottom-2.5 hidden text-[0.8125rem] leading-snug text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-hover:delay-200 lg:line-clamp-2">{e.text}</span>
                 </span>
-                <span className="mt-2 block text-[0.8125rem] font-medium text-white/80 transition-colors group-hover:text-white">{e.title}</span>
+                <span className="mt-2 block truncate text-[0.8125rem] font-medium text-white/80 transition-colors group-hover:text-white">{e.title}</span>
               </Link>
             </li>
           ))}
