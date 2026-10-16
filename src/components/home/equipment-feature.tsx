@@ -14,7 +14,7 @@ const grade = 'object-cover [filter:saturate(0.82)_contrast(1.06)_brightness(0.9
  * One equipment photo shown large, with all eight as thumbnails underneath. Every few seconds the next one comes up
  * (paused on hover or focus); a thumbnail brings its photo up straight away.
  */
-export function EquipmentFeature() {
+export function EquipmentFeature({ light = false, tint = true, fade = 'rgb(4 30 18 / 0.82)' }: { light?: boolean; tint?: boolean; fade?: string } = {}) {
   const [i, setI] = useState(0);
   const [paused, setPaused] = useState(false);
   const reduce = useReducedMotion();
@@ -34,10 +34,10 @@ export function EquipmentFeature() {
             <Image src={e.image} alt="" fill priority={i === 0} sizes="(min-width: 1024px) 46vw, 100vw" className={grade} />
           </motion.div>
         </AnimatePresence>
-        <span aria-hidden className="absolute inset-0 bg-[#0a4a2c] opacity-[0.16] mix-blend-color" />
-        <span aria-hidden className="absolute inset-x-0 bottom-0 h-1/2 bg-[linear-gradient(transparent,rgb(4_30_18/0.82))]" />
+        {tint && <span aria-hidden className="absolute inset-0 bg-[#0a4a2c] opacity-[0.16] mix-blend-color" />}
+        <span aria-hidden className="absolute inset-x-0 bottom-0 h-1/2" style={{ backgroundImage: `linear-gradient(transparent, ${fade})` }} />
         <span className="absolute bottom-6 left-6 right-6">
-          <span className="block text-sm font-medium text-[#7fd1a5]">{e.group}</span>
+          <span className={cn('block text-sm font-medium', tint ? 'text-[#7fd1a5]' : 'text-white/80')}>{e.group}</span>
           <span className="mt-1 block text-2xl font-bold tracking-[-0.02em] text-white md:text-3xl">{e.title}</span>
           <span className="mt-1.5 hidden max-w-lg text-white/80 sm:block">{e.text}</span>
         </span>
@@ -46,10 +46,10 @@ export function EquipmentFeature() {
       <div className="grid grid-cols-4 gap-2 sm:grid-cols-8" role="tablist" aria-label="Choose equipment">
         {equipment.map((x, n) => (
           <button key={x.slug} type="button" role="tab" aria-selected={n === i} aria-label={x.title} onClick={() => setI(n)} className="group text-left">
-            <span className={cn('relative block aspect-[4/3] overflow-hidden ring-2 transition', n === i ? 'ring-[#7fd1a5]' : 'ring-transparent opacity-70 hover:opacity-100')}>
+            <span className={cn('relative block aspect-[4/3] overflow-hidden ring-2 transition', n === i ? (light ? 'ring-[#0f7a4b]' : 'ring-[#7fd1a5]') : 'ring-transparent opacity-70 hover:opacity-100')}>
               <Image src={x.image} alt="" fill sizes="120px" className={grade} />
             </span>
-            <span className={cn('mt-1.5 block truncate text-[0.6875rem]', n === i ? 'text-white' : 'text-white/60')}>{x.title.replace(/ (machines|systems)$/, '')}</span>
+            <span className={cn('mt-1.5 block truncate text-[0.6875rem]', light ? (n === i ? 'font-semibold text-[#0b2a1e]' : 'text-[#5d6a64]') : n === i ? 'text-white' : 'text-white/60')}>{x.title.replace(/ (machines|systems)$/, '')}</span>
           </button>
         ))}
       </div>
