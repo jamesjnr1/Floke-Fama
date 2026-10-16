@@ -22,10 +22,11 @@ import { cn } from '@/lib/utils';
 export async function Hero({ bg = heroBackground }: { bg?: HeroBackground } = {}) {
   if (heroStyle === 'collage' || heroStyle === 'feature') {
     return (
-      <>
+      // Hero and the Clients & Partners band share the first screen, so the logos show without scrolling
+      <div className="flex flex-col lg:h-[100svh] lg:min-h-[860px]">
         <CollageHero feature={heroStyle === 'feature'} />
         <HeroLogos />
-      </>
+      </div>
     );
   }
   const { hero } = await getSite();
