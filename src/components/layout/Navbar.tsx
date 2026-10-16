@@ -100,13 +100,23 @@ export function Navbar() {
       <div
         className={cn(
           // No shadow at the top, where the bar sits on the dark hero; a light one once the page scrolls under it
-          bar && cn('flex h-[72px] w-full items-center justify-between gap-6 px-4 transition-[background-color,box-shadow] duration-300 md:px-8 xl:px-10', overHero ? 'bg-transparent' : 'bg-midnight', scrolled && 'shadow-[0_8px_24px_-16px_rgb(11_21_16/0.45)]'),
+          bar && cn('relative isolate flex h-[72px] w-full items-center justify-between gap-6 px-4 transition-shadow duration-300 md:px-8 xl:px-10', scrolled && 'shadow-[0_8px_24px_-16px_rgb(11_21_16/0.45)]'),
           !bar && 'mx-auto flex h-[72px] max-w-[1280px] items-center 2xl:max-w-[1400px] justify-between gap-6 rounded-2xl border px-4 transition-[background-color,border-color,box-shadow] duration-500 md:px-6',
           !bar && (dark
             ? cn('border-white/10', solid ? 'bg-midnight/[0.97] shadow-[0_20px_50px_-20px_rgb(0_0_0/0.6)]' : 'bg-midnight/40')
             : cn('border-line', scrolled ? 'bg-paper/[0.97] shadow-[0_20px_50px_-30px_rgb(11_21_16/0.35)]' : 'bg-paper/90')),
         )}
       >
+        {/* The bar's colour: a deep forest-green gradient, faded out where the bar sits over the home hero or a photo header */}
+        {bar && (
+          <span
+            aria-hidden
+            className={cn(
+              'pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(100deg,#0b3d2a_0%,#0d4a33_45%,#0a3a28_75%,#072e20_100%)] transition-opacity duration-300',
+              overHero ? 'opacity-0' : 'opacity-100',
+            )}
+          />
+        )}
         <Logo tone={dark ? 'dark' : 'light'} />
 
         {/* Hover: a soft glass pill glides between items (shared layoutId). No underline. */}
