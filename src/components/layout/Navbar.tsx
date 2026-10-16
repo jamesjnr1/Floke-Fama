@@ -10,6 +10,7 @@ import { Icon } from '@/components/ui/icon';
 import { useSite } from '@/components/site-provider';
 import { logout } from '@/lib/auth/actions';
 import { roleHome } from '@/lib/auth/session';
+import { heroStyle } from '@/lib/hero-style';
 import { navStyle } from '@/lib/nav-style';
 import { useSession } from '@/lib/auth/use-session';
 import { cn } from '@/lib/utils';
@@ -45,6 +46,8 @@ const matches = (pathname: string, href: string) => (href === '/' ? pathname ===
 const isActive = (pathname: string, item: NavItem) => (item.children ? item.children.some((c) => matches(pathname, c.href)) : matches(pathname, item.href));
 
 const bar = navStyle === 'bar';
+/** The green home hero runs up behind the menu bar, so the bar is see-through there until the page scrolls. */
+const greenHero = heroStyle === 'feature' || heroStyle === 'collage';
 
 /** Global Header, 72px tall: a full-width dark bar, or the floating glass bar (see navStyle). */
 export function Navbar() {
@@ -88,13 +91,14 @@ export function Navbar() {
   // The header is always the dark glass bar; on pages that open light it is solid from the start.
   const dark = true;
   const solid = open || scrolled || !darkTop.includes(pathname);
+  const overHero = bar && greenHero && pathname === '/' && !scrolled && !open;
 
   return (
     <header className={cn('fixed inset-x-0 top-0 z-50 font-nav', !bar && 'px-3 pt-3 md:px-6 md:pt-4')}>
       <div
         className={cn(
           // No shadow at the top, where the bar sits on the dark hero; a light one once the page scrolls under it
-          bar && cn('flex h-[72px] w-full items-center justify-between gap-6 bg-midnight px-4 transition-shadow duration-300 md:px-8 xl:px-10', scrolled && 'shadow-[0_8px_24px_-16px_rgb(11_21_16/0.45)]'),
+          bar && cn('flex h-[72px] w-full items-center justify-between gap-6 px-4 transition-[background-color,box-shadow] duration-300 md:px-8 xl:px-10', overHero ? 'bg-transparent' : 'bg-midnight', scrolled && 'shadow-[0_8px_24px_-16px_rgb(11_21_16/0.45)]'),
           !bar && 'mx-auto flex h-[72px] max-w-[1280px] items-center 2xl:max-w-[1400px] justify-between gap-6 rounded-2xl border px-4 transition-[background-color,border-color,box-shadow] duration-500 md:px-6',
           !bar && (dark
             ? cn('border-white/10', solid ? 'bg-midnight/[0.97] shadow-[0_20px_50px_-20px_rgb(0_0_0/0.6)]' : 'bg-midnight/40')

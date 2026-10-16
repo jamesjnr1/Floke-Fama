@@ -28,7 +28,7 @@ function Seal({ className }: { className?: string }) {
 }
 
 /**
- * The 'collage' hero: a calm green gradient with a faint ring-and-heartbeat design behind the text, and the eight
+ * The 'collage' hero: a calm green gradient with a faint pattern of small medical crosses and soft light bands behind the text, and the eight
  * equipment types the CEO's review asks to feature (MRI, CT, mammography, X-ray, dialysis, incubators, ventilators,
  * ultrasound) as floating photo tiles on the right. The photos share one colour grade (slightly softer, cooler,
  * with a green tint in the shadows) so the mixed sources read as one set.
@@ -40,33 +40,48 @@ export const heroTones = {
   forest: 'bg-[linear-gradient(160deg,#1d3b2c_0%,#13291f_55%,#0c1c15_100%)]',
   emerald: 'bg-[linear-gradient(150deg,#007a4d_0%,#06623f_45%,#075056_100%)]',
   midnight: 'bg-[linear-gradient(160deg,#0f2233_0%,#0b1a28_55%,#08131d_100%)]',
+  // Drawn from the photos themselves (clinical whites, light greys, warm beige), so they sit seamlessly on it
+  stone: 'bg-[linear-gradient(160deg,#f4f2ec_0%,#ebe8e0_55%,#e0ddd3_100%)]',
+  mist: 'bg-[linear-gradient(160deg,#f3f6f6_0%,#e7ecec_55%,#d9e0e0_100%)]',
+  graphite: 'bg-[linear-gradient(160deg,#34322e_0%,#26241f_55%,#1b1a17_100%)]',
 } as const;
+/** Light backgrounds take dark text. */
+const lightTones: HeroTone[] = ['stone', 'mist'];
+/** Backgrounds drawn from the photos keep the photos' own colours (no green tint). */
+const neutralTones: HeroTone[] = ['stone', 'mist', 'graphite'];
+/** The dark shade each photo's caption fade uses, taken from its background, so photo and page meet without a seam. */
+const fades: Partial<Record<HeroTone, string>> = { stone: 'rgb(52 48 40 / 0.78)', mist: 'rgb(30 42 44 / 0.75)', graphite: 'rgb(27 26 23 / 0.85)', teal: 'rgb(11 30 34 / 0.82)', midnight: 'rgb(8 19 29 / 0.85)' };
 export type HeroTone = keyof typeof heroTones;
 
 export async function CollageHero({ feature = false, tone = 'green' }: { feature?: boolean; tone?: HeroTone } = {}) {
+  const light = lightTones.includes(tone);
+  const tint = !neutralTones.includes(tone);
   const { hero } = await getSite();
   return (
-    <section className={cn('relative isolate overflow-hidden pt-[72px]', heroTones[tone], 'text-white lg:h-[100svh] lg:min-h-[720px]')}>
-      {/* Faint design: soft light, concentric rings and a heartbeat line, barely visible */}
+    <section className={cn('relative isolate overflow-hidden pt-[72px]', heroTones[tone], light ? 'text-ink' : 'text-white', 'flex flex-col lg:h-[100svh] lg:min-h-[720px]')}>
+      {/* Faint design: soft light, a fine grid of small medical crosses fading out, and two gentle diagonal light bands */}
       <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(50%_45%_at_15%_15%,rgb(127_209_165/0.14),transparent_70%)]" />
-      <svg aria-hidden className="absolute -bottom-40 left-[22%] -z-10 size-[620px] text-white/[0.05]" viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeWidth="0.6">
-        {[30, 45, 60, 75, 90].map((r) => <circle key={r} cx="100" cy="100" r={r} />)}
-      </svg>
-      <svg aria-hidden className="absolute inset-x-0 bottom-[18%] -z-10 h-20 w-1/2 text-white/[0.06]" viewBox="0 0 700 100" preserveAspectRatio="none" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <path d="M0,50 L180,50 L200,50 L210,20 L220,80 L230,50 L330,50 L340,10 L350,90 L360,50 L700,50" />
-      </svg>
+      <div
+        aria-hidden
+        className="absolute inset-0 -z-10 [mask-image:radial-gradient(70%_80%_at_20%_60%,black,transparent_75%)]"
+        style={{
+          backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='44' height='44'><path d='M22 17v10M17 22h10' stroke='${light ? '%230b2a1e' : 'white'}' stroke-opacity='${light ? 0.08 : 0.07}' stroke-width='1.4' stroke-linecap='round'/></svg>")`,
+        }}
+      />
+      <div aria-hidden className={cn('absolute -left-[10%] top-0 -z-10 h-full w-[60%] -skew-x-[24deg]', light ? 'bg-[linear-gradient(90deg,transparent,rgb(255_255_255/0.5),transparent)]' : 'bg-[linear-gradient(90deg,transparent,rgb(255_255_255/0.035),transparent)]')} />
+      <div aria-hidden className={cn('absolute left-[18%] top-0 -z-10 h-full w-[18%] -skew-x-[24deg]', light ? 'bg-[linear-gradient(90deg,transparent,rgb(255_255_255/0.4),transparent)]' : 'bg-[linear-gradient(90deg,transparent,rgb(255_255_255/0.025),transparent)]')} />
 
-      <div className="grid h-full lg:grid-cols-2">
+      <div className="grid min-h-0 flex-1 lg:grid-cols-2">
         <div className="flex items-center px-5 py-14 md:px-10 lg:px-16 lg:py-0">
           <Reveal className="max-w-[540px]">
-            <h1 className="text-[clamp(2.5rem,1.4rem+3.6vw,4.5rem)] font-extrabold leading-[1.02] tracking-[-0.04em] text-white">
+            <h1 className={cn('text-[clamp(2.5rem,1.4rem+3.6vw,4.5rem)] font-extrabold leading-[1.02] tracking-[-0.04em]', light ? 'text-[#0b2a1e]' : 'text-white')}>
               {hero.title} {hero.highlight.replace(/\.$/, '')}<span className="text-signal">.</span>
             </h1>
-            <p className="no-justify mt-7 text-[1.1875rem] leading-relaxed text-white/90">
+            <p className={cn('no-justify mt-7 text-[1.1875rem] leading-relaxed', light ? 'text-[#3d4b45]' : 'text-white/90')}>
               From MRI and CT to dialysis, neonatal and critical care: medical equipment supplied, installed and supported for hospitals and laboratories across Ghana and West Africa since 2008.
             </p>
             <div className="mt-9 flex flex-wrap gap-3">
-              <Button asChild size="lg" arrow="up-right" className="bg-white text-[#00703A] hover:bg-white/90">
+              <Button asChild size="lg" arrow="up-right" className={light ? 'bg-[#0b3d2a] text-white hover:bg-[#062a1d]' : 'bg-white text-[#00703A] hover:bg-white/90'}>
                 <Link href="/products">Explore Solutions</Link>
               </Button>
               <Button asChild size="lg" variant="red" arrow="right">
@@ -77,7 +92,7 @@ export async function CollageHero({ feature = false, tone = 'green' }: { feature
         </div>
 
         {feature ? (
-          <div className="min-h-0 px-5 pb-10 md:px-10 lg:p-6 lg:pl-2"><EquipmentFeature /></div>
+          <div className="min-h-0 px-5 pb-10 md:px-10 lg:p-6 lg:pl-2"><EquipmentFeature light={light} tint={tint} fade={fades[tone]} /></div>
         ) : (
         <div className="grid min-h-0 grid-cols-2 gap-3 px-5 pb-10 sm:grid-cols-3 md:px-10 lg:grid-rows-4 lg:p-6 lg:pl-2">
           {equipment.map((e, k) => (
@@ -95,7 +110,7 @@ export async function CollageHero({ feature = false, tone = 'green' }: { feature
                 className="object-cover transition-transform duration-700 [filter:saturate(0.82)_contrast(1.06)_brightness(0.97)] group-hover:scale-[1.04]"
               />
               {/* Shared grade: green in the shadows, then a soft fade for the label */}
-              <span aria-hidden className="absolute inset-0 bg-[#0a4a2c] opacity-[0.16] mix-blend-color" />
+              {tint && <span aria-hidden className="absolute inset-0 bg-[#0a4a2c] opacity-[0.16] mix-blend-color" />}
               <span aria-hidden className="absolute inset-0 bg-[linear-gradient(200deg,rgb(255_244_225/0.10),transparent_45%)] mix-blend-soft-light" />
               <span aria-hidden className="absolute inset-x-0 bottom-0 h-1/2 bg-[linear-gradient(transparent,rgb(4_30_18/0.78))]" />
               <span className={cn('absolute bottom-3 left-3 font-semibold text-white', k === 0 ? 'text-xl' : 'text-sm')}>{e.title}</span>
