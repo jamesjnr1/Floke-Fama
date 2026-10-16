@@ -5,12 +5,12 @@
  * turning through the equipment the CEO's review asks to feature. 'catalogue': an open Flokefama product catalogue instead, its page
  * turning through that equipment. 'strips': the headline with the equipment as photo
  * strips underneath. 'card': the earlier hero with a cross-fading equipment card. 'carousel': the earlier hero with a
- * row of product tiles. Switch with NEXT_PUBLIC_HOME_HERO=pages (or catalogue, strips, card, carousel) in Vercel (then redeploy).
- * A new name: the older NEXT_PUBLIC_HERO_STYLE=card, still set in Vercel from before, would otherwise keep the
- * earlier hero.
+ * row of product tiles. Switch with NEXT_PUBLIC_HERO_LAYOUT=pages (or catalogue, strips, card, carousel) in Vercel (then redeploy).
+ * A new name again: NEXT_PUBLIC_HOME_HERO=card (and the older NEXT_PUBLIC_HERO_STYLE=card), still set in Vercel
+ * from before, would otherwise keep the earlier hero.
  */
 const styles = ['collage', 'feature', 'pages', 'catalogue', 'strips', 'card', 'carousel'] as const;
-const style = process.env.NEXT_PUBLIC_HOME_HERO as (typeof styles)[number] | undefined;
+const style = process.env.NEXT_PUBLIC_HERO_LAYOUT as (typeof styles)[number] | undefined;
 export const heroStyle: (typeof styles)[number] = style && styles.includes(style) ? style : 'feature';
 
 /**
