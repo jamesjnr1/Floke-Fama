@@ -33,10 +33,20 @@ function Seal({ className }: { className?: string }) {
  * ultrasound) as floating photo tiles on the right. The photos share one colour grade (slightly softer, cooler,
  * with a green tint in the shadows) so the mixed sources read as one set.
  */
-export async function CollageHero({ feature = false }: { feature?: boolean } = {}) {
+/** Background colour options for the hero gradient (see heroTone). */
+export const heroTones = {
+  green: 'bg-[linear-gradient(160deg,#0a5a33_0%,#06482a_55%,#043822_100%)]',
+  teal: 'bg-[linear-gradient(150deg,#10191e_0%,#16232a_35%,#0b3b40_75%,#0d4a46_100%)]',
+  forest: 'bg-[linear-gradient(160deg,#1d3b2c_0%,#13291f_55%,#0c1c15_100%)]',
+  emerald: 'bg-[linear-gradient(150deg,#007a4d_0%,#06623f_45%,#075056_100%)]',
+  midnight: 'bg-[linear-gradient(160deg,#0f2233_0%,#0b1a28_55%,#08131d_100%)]',
+} as const;
+export type HeroTone = keyof typeof heroTones;
+
+export async function CollageHero({ feature = false, tone = 'green' }: { feature?: boolean; tone?: HeroTone } = {}) {
   const { hero } = await getSite();
   return (
-    <section className="relative isolate overflow-hidden bg-[linear-gradient(160deg,#0a5a33_0%,#06482a_55%,#043822_100%)] pt-[72px] text-white lg:h-[100svh] lg:min-h-[720px]">
+    <section className={cn('relative isolate overflow-hidden pt-[72px]', heroTones[tone], 'text-white lg:h-[100svh] lg:min-h-[720px]')}>
       {/* Faint design: soft light, concentric rings and a heartbeat line, barely visible */}
       <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(50%_45%_at_15%_15%,rgb(127_209_165/0.14),transparent_70%)]" />
       <svg aria-hidden className="absolute -bottom-40 left-[22%] -z-10 size-[620px] text-white/[0.05]" viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeWidth="0.6">
