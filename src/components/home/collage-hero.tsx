@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { LogoMark } from '@/components/layout/logo';
 import { Reveal } from '@/components/motion/reveal';
 import { Button } from '@/components/ui/button';
+import { EquipmentFeature } from '@/components/home/equipment-feature';
 import { equipment } from '@/data/equipment';
 import { getSite } from '@/lib/site';
 import { cn } from '@/lib/utils';
@@ -32,7 +33,7 @@ function Seal({ className }: { className?: string }) {
  * ultrasound) as floating photo tiles on the right. The photos share one colour grade (slightly softer, cooler,
  * with a green tint in the shadows) so the mixed sources read as one set.
  */
-export async function CollageHero() {
+export async function CollageHero({ feature = false }: { feature?: boolean } = {}) {
   const { hero } = await getSite();
   return (
     <section className="relative isolate overflow-hidden bg-[linear-gradient(160deg,#0a5a33_0%,#06482a_55%,#043822_100%)] pt-[72px] text-white lg:h-[100svh] lg:min-h-[720px]">
@@ -65,6 +66,9 @@ export async function CollageHero() {
           </Reveal>
         </div>
 
+        {feature ? (
+          <div className="min-h-0 px-5 pb-10 md:px-10 lg:p-6 lg:pl-2"><EquipmentFeature /></div>
+        ) : (
         <div className="grid min-h-0 grid-cols-2 gap-3 px-5 pb-10 sm:grid-cols-3 md:px-10 lg:grid-rows-4 lg:p-6 lg:pl-2">
           {equipment.map((e, k) => (
             <Link
@@ -89,6 +93,7 @@ export async function CollageHero() {
             </Link>
           ))}
         </div>
+        )}
       </div>
 
       <Seal className="absolute left-1/2 top-[110px] z-20 hidden -translate-x-1/2 lg:block" />
