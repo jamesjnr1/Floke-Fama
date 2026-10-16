@@ -14,14 +14,14 @@ const span = ['lg:col-span-2 lg:row-span-2', 'lg:row-span-2', '', '', '', '', ''
 /** Circular "Saving lives · since 2008 · Ghana" seal with the Flokefama mark in the middle, turning slowly. */
 function Seal({ className }: { className?: string }) {
   return (
-    <div className={cn('relative size-[132px] rounded-full bg-[#0b3d2a] text-white shadow-[0_20px_40px_-15px_rgb(0_0_0/0.6)]', className)}>
+    <div className={cn('relative size-[112px] rounded-full bg-[#0b3d2a] text-white shadow-[0_20px_40px_-15px_rgb(0_0_0/0.6)]', className)}>
       <svg viewBox="0 0 132 132" className="absolute inset-0 animate-[spin_24s_linear_infinite] motion-reduce:animate-none" aria-hidden>
         <defs><path id="hero-seal" d="M66,66 m-47,0 a47,47 0 1,1 94,0 a47,47 0 1,1 -94,0" /></defs>
         <text className="fill-current text-[10.5px] font-semibold uppercase tracking-[0.32em]">
           <textPath href="#hero-seal" textLength="292" lengthAdjust="spacing">Saving lives · since 2008 · Ghana · </textPath>
         </text>
       </svg>
-      <LogoMark className="absolute left-1/2 top-1/2 size-11 -translate-x-1/2 -translate-y-1/2" />
+      <LogoMark className="absolute left-1/2 top-1/2 size-9 -translate-x-1/2 -translate-y-1/2" />
       <span className="sr-only">Saving lives since 2008</span>
     </div>
   );
@@ -74,10 +74,10 @@ export async function CollageHero({ feature = false, tone = 'green' }: { feature
       <div className="grid min-h-0 flex-1 lg:grid-cols-2">
         <div className="flex items-center px-5 py-14 md:px-10 lg:px-16 lg:py-0">
           <Reveal className="max-w-[540px]">
-            <h1 className={cn('text-[clamp(2.5rem,1.4rem+3.6vw,4.5rem)] font-extrabold leading-[1.02] tracking-[-0.04em]', light ? 'text-[#0b2a1e]' : 'text-white')}>
+            <h1 className={cn('text-[clamp(2.5rem,1.4rem+2.8vw,3.875rem)] font-extrabold leading-[1.02] tracking-[-0.04em]', light ? 'text-[#0b2a1e]' : 'text-white')}>
               {hero.title} {hero.highlight.replace(/\.$/, '')}<span className="text-signal">.</span>
             </h1>
-            <p className={cn('no-justify mt-7 text-[1.1875rem] leading-relaxed', light ? 'text-[#3d4b45]' : 'text-white/90')}>
+            <p className={cn('no-justify mt-6 max-w-[480px] text-[1.0625rem] leading-relaxed', light ? 'text-[#3d4b45]' : 'text-white/90')}>
               From MRI and CT to dialysis, neonatal and critical care: medical equipment supplied, installed and supported for hospitals and laboratories across Ghana and West Africa since 2008.
             </p>
             <div className="mt-9 flex flex-wrap gap-3">
@@ -92,7 +92,7 @@ export async function CollageHero({ feature = false, tone = 'green' }: { feature
         </div>
 
         {feature ? (
-          <div className="min-h-0 px-5 pb-10 md:px-10 lg:p-6 lg:pl-2"><EquipmentFeature light={light} tint={tint} fade={fades[tone]} /></div>
+          <div className="min-h-0 px-5 pb-10 md:px-10 lg:py-12 lg:pl-4 lg:pr-12"><EquipmentFeature light={light} tint={tint} fade={fades[tone]} /></div>
         ) : (
         <div className="grid min-h-0 grid-cols-2 gap-3 px-5 pb-10 sm:grid-cols-3 md:px-10 lg:grid-rows-4 lg:p-6 lg:pl-2">
           {equipment.map((e, k) => (
@@ -121,7 +121,7 @@ export async function CollageHero({ feature = false, tone = 'green' }: { feature
         )}
       </div>
 
-      <Seal className="absolute left-1/2 top-[110px] z-20 hidden -translate-x-1/2 lg:block" />
+      <Seal className="absolute left-1/2 top-[116px] z-20 hidden -translate-x-1/2 lg:block" />
     </section>
   );
 }
