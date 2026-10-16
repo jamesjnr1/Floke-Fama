@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { HeroLogos } from '@/components/home/hero-logos';
 import { CatalogueBook } from '@/components/home/catalogue-book';
+import { CollageHero } from '@/components/home/collage-hero';
 import { CataloguePages } from '@/components/home/catalogue-pages';
 import { EquipmentStrips } from '@/components/home/equipment-strips';
 import { HeroBackdrop } from '@/components/home/hero-backdrop';
@@ -19,6 +20,14 @@ import { cn } from '@/lib/utils';
  * text is on the left and a slideshow of equipment on the right (see heroStyle).
  */
 export async function Hero({ bg = heroBackground }: { bg?: HeroBackground } = {}) {
+  if (heroStyle === 'collage') {
+    return (
+      <>
+        <CollageHero />
+        <HeroLogos />
+      </>
+    );
+  }
   const { hero } = await getSite();
   const light = bg === 'light';
   return (
