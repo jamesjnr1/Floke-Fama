@@ -1,5 +1,6 @@
 /**
- * Home hero style. 'feature' (default): the text on a calm green gradient beside one equipment photo shown large, with
+ * Home hero style. 'spotlight': the text on the green gradient, one equipment photo filling the right side and
+ * melting into the green, with a numbered index of the eight types between them. 'feature' (default): the text on a calm green gradient beside one equipment photo shown large, with
  * all eight types as thumbnails under it. 'collage': the same with the
  * eight as a photo collage. 'pages': the text on the left and a stack of catalogue pages on the right, the top page
  * turning through the equipment the CEO's review asks to feature. 'catalogue': an open Flokefama product catalogue instead, its page
@@ -9,7 +10,7 @@
  * A new name again: NEXT_PUBLIC_HOME_HERO=card (and the older NEXT_PUBLIC_HERO_STYLE=card), still set in Vercel
  * from before, would otherwise keep the earlier hero.
  */
-const styles = ['collage', 'feature', 'pages', 'catalogue', 'strips', 'card', 'carousel'] as const;
+const styles = ['collage', 'feature', 'spotlight', 'pages', 'catalogue', 'strips', 'card', 'carousel'] as const;
 const style = process.env.NEXT_PUBLIC_HERO_LAYOUT as (typeof styles)[number] | undefined;
 export const heroStyle: (typeof styles)[number] = style && styles.includes(style) ? style : 'feature';
 
