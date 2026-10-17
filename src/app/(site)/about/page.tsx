@@ -47,29 +47,34 @@ export default async function AboutPage() {
 
       {/* Who we are */}
       <section id="who-we-are" className="scroll-mt-28 bg-paper section-y">
-        <div className="mx-auto grid max-w-[1280px] items-center gap-12 px-5 md:px-10 lg:grid-cols-2 lg:gap-16">
+        {/* The heading across the top; under it the text and actions on the left, the head-office photo larger on the right, both starting on the same line */}
+        <div className="mx-auto max-w-[1280px] px-5 md:px-10">
           <Reveal>
-            <h2 className="display text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">Redefining healthcare delivery in Ghana and across Africa.</h2>
-            <div className="mt-6 space-y-4 text-lg leading-relaxed text-ink-3">
-              <p>
-                <strong className="font-semibold text-ink">FLOKEFAMA LIMITED</strong>, founded in 2008, is a registered company specializing in delivering world-class healthcare equipment across Ghana and West Africa.
-              </p>
-              <p>
-                With a strong presence in both the private and public sectors, we represent diverse medical equipment manufacturers, bringing innovative technology to our clients and contributing significantly to the development of healthcare in the markets we serve.
-              </p>
-              <p>As a trusted healthcare solutions provider and a Ghana Club 100 company, we focus on standardization, accessibility, and innovation in healthcare systems.</p>
-            </div>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Button asChild><a href={brochureUrl} download>Download Our Brochure <Icon name="fi-rr-download" /></a></Button>
-              <Button asChild variant="outline" arrow="right"><Link href="/services">See Our Products &amp; Services</Link></Button>
-            </div>
+            <h2 className="display max-w-[24ch] text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">Redefining healthcare delivery in Ghana and across Africa.</h2>
           </Reveal>
-          <Reveal delay={0.1}>
-            <figure className="relative aspect-[4/3.6] overflow-hidden rounded-lg bg-midnight">
-              <Image src="/images/office-team.webp" alt="Inside the Flokefama head office: the ‘Together we do great things’ wall" fill sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />
-              <figcaption className="absolute bottom-4 left-4 rounded-[4px] bg-paper/90 px-3 py-1.5 text-xs font-medium text-ink backdrop-blur">Head office · Santa Maria, Accra</figcaption>
-            </figure>
-          </Reveal>
+          <div className="mt-10 grid gap-10 lg:mt-12 lg:grid-cols-12 lg:items-start lg:gap-16">
+            <Reveal className="lg:col-span-5">
+              <div className="space-y-4 text-lg leading-relaxed text-ink-3">
+                <p>
+                  <strong className="font-semibold text-ink">FLOKEFAMA LIMITED</strong>, founded in 2008, is a registered company specializing in delivering world-class healthcare equipment across Ghana and West Africa.
+                </p>
+                <p>
+                  With a strong presence in both the private and public sectors, we represent diverse medical equipment manufacturers, bringing innovative technology to our clients and contributing significantly to the development of healthcare in the markets we serve.
+                </p>
+                <p>As a trusted healthcare solutions provider and a Ghana Club 100 company, we focus on standardization, accessibility, and innovation in healthcare systems.</p>
+              </div>
+              <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+                <Button asChild className="w-full justify-between"><a href={brochureUrl} download>Download Our Brochure <Icon name="fi-rr-download" /></a></Button>
+                <Button asChild variant="outline" arrow="right" className="w-full justify-between"><Link href="/services">See Our Products &amp; Services</Link></Button>
+              </div>
+            </Reveal>
+            <Reveal delay={0.1} className="lg:col-span-7">
+              <figure className="relative aspect-[4/3] overflow-hidden bg-midnight">
+                <Image src="/images/office-team.webp" alt="Inside the Flokefama head office: the ‘Together we do great things’ wall" fill sizes="(min-width: 1024px) 60vw, 100vw" className="object-cover" />
+                <figcaption className="absolute bottom-4 left-4 bg-paper/90 px-3 py-1.5 text-xs font-medium text-ink backdrop-blur">Head office · Santa Maria, Accra</figcaption>
+              </figure>
+            </Reveal>
+          </div>
         </div>
       </section>
 
