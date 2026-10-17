@@ -15,7 +15,7 @@ export async function SimpleHero() {
     <section className="relative isolate flex flex-col overflow-hidden bg-[linear-gradient(180deg,#0a5a33_0%,#06482a_60%,#043822_100%)] pt-[72px] text-white lg:min-h-0 lg:flex-1">
       <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(55%_50%_at_50%_20%,rgb(127_209_165/0.14),transparent_70%)]" />
 
-      <div className="flex w-full flex-1 flex-col items-center gap-10 px-5 py-12 md:px-10 lg:min-h-0 lg:gap-8 lg:px-8 lg:pb-8 lg:pt-7">
+      <div className="flex w-full flex-1 flex-col items-center gap-10 px-5 py-12 md:px-10 lg:min-h-0 lg:gap-10 lg:px-8 lg:pb-8 lg:pt-16 [@media(min-height:1000px)]:lg:gap-12 [@media(min-height:1000px)]:lg:pt-24">
         <Reveal className="flex flex-col items-center text-center">
           <h1 className="max-w-[1100px] text-[clamp(2.375rem,1.3rem+2.4vw,3.5rem)] font-extrabold leading-[1.04] tracking-[-0.04em] text-white">
             {hero.title} {hero.highlight.replace(/\.$/, '')}<span className="text-signal">.</span>
@@ -34,7 +34,7 @@ export async function SimpleHero() {
         </Reveal>
 
         {/* On hover a photo widens in the row (the others narrow to make room) and shows what it is */}
-        <ul className="grid w-full grid-cols-2 gap-3 sm:grid-cols-4 lg:flex lg:min-h-[240px] lg:flex-1">
+        <ul className="grid w-full grid-cols-2 gap-3 sm:grid-cols-4 lg:flex lg:min-h-[200px] lg:flex-1">
           {equipment.map((e) => (
             <li key={e.slug} className="min-w-0 lg:flex-1 lg:transition-[flex-grow] lg:duration-500 lg:ease-[cubic-bezier(0.16,1,0.3,1)] lg:hover:flex-[3] lg:focus-within:flex-[3]">
               <Link href="/services#equipment" className="group flex h-full flex-col">
