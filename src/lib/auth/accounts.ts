@@ -60,11 +60,21 @@ const fromRow = (r: Record<string, unknown>): StoredAccount => ({
   hash: String(r.hash),
 });
 
+/** Thrown when Appwrite is configured but can't be reached or refuses the request (wrong key, missing table…). */
+export class AccountsUnavailable extends Error {
+  name = 'AccountsUnavailable';
+}
+
 async function findByEmail(email: string): Promise<StoredAccount | null> {
   const e = email.trim().toLowerCase();
   if (!appwrite) return (await readCookieAccounts()).find((a) => a.email === e) ?? null;
-  const res = await appwrite.tables.listRows({ databaseId: DATABASE_ID, tableId: TABLES.accounts, queries: [Query.equal('email', e), Query.limit(1)] });
-  return res.rows[0] ? fromRow(res.rows[0]) : null;
+  try {
+    const res = await appwrite.tables.listRows({ databaseId: DATABASE_ID, tableId: TABLES.accounts, queries: [Query.equal('email', e), Query.limit(1)] });
+    return res.rows[0] ? fromRow(res.rows[0]) : null;
+  } catch (err) {
+    console.error('[accounts] Appwrite lookup failed (check APPWRITE_* in Vercel and run `npm run appwrite:setup`):', err);
+    throw new AccountsUnavailable('accounts unavailable');
+  }
 }
 
 /** Whether an account already uses this email. */
@@ -75,7 +85,12 @@ export async function accountExists(email: string) {
 export async function saveAccount(account: StoredAccount) {
   if (!appwrite) return saveCookieAccount(account);
   const { id, ...data } = account;
-  await appwrite.tables.upsertRow({ databaseId: DATABASE_ID, tableId: TABLES.accounts, rowId: id, data });
+  try {
+    await appwrite.tables.upsertRow({ databaseId: DATABASE_ID, tableId: TABLES.accounts, rowId: id, data });
+  } catch (err) {
+    console.error('[accounts] Appwrite save failed:', err);
+    throw new AccountsUnavailable('accounts unavailable');
+  }
 }
 
 const sameHash = (a: string, b: string) => {

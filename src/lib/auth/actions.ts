@@ -3,7 +3,7 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
-import { accountExists, findSavedAccount, hashPassword, saveAccount } from '@/lib/auth/accounts';
+import { AccountsUnavailable, accountExists, findSavedAccount, hashPassword, saveAccount, type StoredAccount } from '@/lib/auth/accounts';
 import { nextFor, safeNext, SESSION_COOKIE, sessionCookie, signSession, type SessionUser } from '@/lib/auth/session';
 import { roleFor } from '@/lib/auth/users';
 
@@ -38,6 +38,19 @@ const signup = z
   })
   .refine((v) => v.password === v.confirm, { path: ['confirm'], message: 'The passwords don’t match' });
 
+/** Shown instead of a crash when the accounts database can't be reached. */
+const UNAVAILABLE = 'Our accounts service isn’t responding right now. Please try again in a few minutes, or call us on +233 53 339 2863.';
+
+/** Runs an accounts lookup; a database failure becomes `unavailable` instead of an error page. */
+async function guarded<T>(work: () => Promise<T>): Promise<{ ok: true; value: T } | { ok: false }> {
+  try {
+    return { ok: true, value: await work() };
+  } catch (err) {
+    if (err instanceof AccountsUnavailable || (err as Error)?.name === 'AccountsUnavailable') return { ok: false };
+    throw err;
+  }
+}
+
 async function startSession(user: Omit<SessionUser, 'exp'>, next: string | undefined) {
   (await cookies()).set(SESSION_COOKIE, await signSession(user), sessionCookie(user));
   redirect(nextFor(user.role, safeNext(next)));
@@ -47,7 +60,9 @@ export async function login(_prev: LoginState, form: FormData): Promise<LoginSta
   const parsed = credentials.safeParse({ email: form.get('email'), password: form.get('password'), next: form.get('next') ?? undefined, keep: form.get('keep') ?? undefined });
   if (!parsed.success) return { error: parsed.error.issues[0]?.message, email: String(form.get('email') ?? '') };
 
-  const saved = await findSavedAccount(parsed.data.email, parsed.data.password);
+  const found = await guarded(() => findSavedAccount(parsed.data.email, parsed.data.password));
+  if (!found.ok) return { error: UNAVAILABLE, email: parsed.data.email };
+  const saved: StoredAccount | null = found.value;
   // One generic message: never reveal whether the email or the password was wrong.
   if (!saved) return { error: 'That email and password don’t match an account.', email: parsed.data.email };
 
@@ -66,12 +81,14 @@ export async function register(_prev: SignupState, form: FormData): Promise<Sign
   }
   const d = parsed.data;
   if (d.website) return {};
-  const taken = await accountExists(d.email);
-  if (taken) return { errors: { email: 'There is already an account with this email. Sign in instead.' }, values };
+  const taken = await guarded(() => accountExists(d.email));
+  if (!taken.ok) return { errors: { form: UNAVAILABLE }, values };
+  if (taken.value) return { errors: { email: 'There is already an account with this email. Sign in instead.' }, values };
 
   const { salt, hash } = await hashPassword(d.password);
   const id = `hos-${crypto.randomUUID().slice(0, 8)}`;
-  await saveAccount({ id, name: d.name, email: d.email, organisation: d.organisation, phone: d.phone, salt, hash });
+  const saved = await guarded(() => saveAccount({ id, name: d.name, email: d.email, organisation: d.organisation, phone: d.phone, salt, hash }));
+  if (!saved.ok) return { errors: { form: UNAVAILABLE }, values };
   await startSession({ sub: id, name: d.name, email: d.email, role: roleFor(d.email), facility: d.organisation, phone: d.phone, keep: d.keep === 'on' }, d.next);
   return {};
 }
