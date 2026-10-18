@@ -11,6 +11,7 @@ import { useSite } from '@/components/site-provider';
 import { logout } from '@/lib/auth/actions';
 import { roleHome } from '@/lib/auth/session';
 import { heroStyle } from '@/lib/hero-style';
+import { homeLayout } from '@/lib/home-layout';
 import { navStyle } from '@/lib/nav-style';
 import { useSession } from '@/lib/auth/use-session';
 import { cn } from '@/lib/utils';
@@ -47,7 +48,7 @@ const isActive = (pathname: string, item: NavItem) => (item.children ? item.chil
 
 const bar = navStyle === 'bar';
 /** The green home hero runs up behind the menu bar, so the bar is see-through there until the page scrolls. */
-const greenHero = heroStyle === 'feature' || heroStyle === 'collage' || heroStyle === 'spotlight' || heroStyle === 'simple' || heroStyle === 'moving';
+const greenHero = homeLayout === 'classic' && (heroStyle === 'feature' || heroStyle === 'collage' || heroStyle === 'spotlight' || heroStyle === 'simple' || heroStyle === 'moving');
 /** Pages that open on a full photo header (PageHero): the bar is see-through over it too, so it takes the photo's colours. */
 const photoHeaders = ['/about', '/awards', '/services', '/events', '/products', '/esg', '/support'];
 
