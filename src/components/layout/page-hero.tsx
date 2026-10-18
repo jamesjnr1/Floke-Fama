@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { LogoMark, LogoWordmark } from '@/components/layout/logo';
 import { Reveal } from '@/components/motion/reveal';
 import { headerImageSrc } from '@/lib/header-image';
 
@@ -34,6 +35,14 @@ export function PageHero({
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_45%_at_50%_55%,rgb(10_16_20/0.28),transparent_75%)]" />
       </div>
       <div className="mx-auto w-full max-w-[1280px] px-5 pb-16 pt-36 md:px-16 md:pb-24 md:pt-40">
+        <Reveal>
+          {/* The company name over every page title */}
+          <p className="mb-6 inline-flex items-center gap-2 [filter:drop-shadow(0_2px_12px_rgb(0_0_0/0.35))]">
+            <LogoMark className="size-9 md:size-11" />
+            <LogoWordmark className="h-[22px] text-white md:h-[26px]" />
+            <span className="sr-only">Flokefama</span>
+          </p>
+        </Reveal>
         <Reveal delay={0.06}>
           <h1 className="mx-auto max-w-5xl text-balance text-[clamp(2.5rem,1.1rem+4.6vw,5.25rem)] font-medium leading-[1.02] tracking-[-0.03em] text-white [text-shadow:0_2px_24px_rgb(0_0_0/0.35)] [&_em]:font-serif [&_em]:font-normal [&_em]:tracking-[-0.01em]">
             {title}

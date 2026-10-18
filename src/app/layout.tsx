@@ -22,7 +22,7 @@ const serif = Instrument_Serif({ subsets: ['latin'], weight: '400', style: 'ital
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: { default: 'Flokefama | Medical Equipment & Diagnostics in Ghana', template: '%s | Flokefama' },
+  title: { default: 'Flokefama | Ghana’s No.1 Healthcare Company', template: '%s | Flokefama' },
   description:
     'Flokefama supplies, installs and maintains world-class medical equipment and laboratory diagnostics for hospitals across Ghana and West Africa. Official distributor of Mindray.',
   openGraph: { type: 'website', siteName: 'Flokefama', images: ['/images/og-image.jpg'] },
