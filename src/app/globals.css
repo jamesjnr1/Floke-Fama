@@ -294,3 +294,54 @@ select:not([multiple]):not([size]) {
   background-size: 12px 12px;
   padding-right: 2.75rem;
 }
+
+/*
+ * Faint background patterns for light sections, so the site isn't plain white: a fine grid, a dot field or small
+ * medical crosses, fading out from one corner, with a soft green light. Turned off with NEXT_PUBLIC_PATTERNS=off.
+ */
+.pattern-grid,
+.pattern-dots,
+.pattern-cross {
+  position: relative;
+  isolation: isolate;
+}
+.pattern-grid::before,
+.pattern-dots::before,
+.pattern-cross::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  -webkit-mask-image: radial-gradient(85% 90% at var(--pattern-at, 0% 0%), #000 10%, transparent 80%);
+  mask-image: radial-gradient(85% 90% at var(--pattern-at, 0% 0%), #000 10%, transparent 80%);
+}
+.pattern-grid::after,
+.pattern-dots::after,
+.pattern-cross::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: radial-gradient(40% 45% at var(--pattern-at, 0% 0%), rgb(0 122 77 / 0.09), transparent 70%);
+}
+.pattern-grid::before {
+  background-image: linear-gradient(rgb(11 61 42 / 0.085) 1px, transparent 1px), linear-gradient(90deg, rgb(11 61 42 / 0.085) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+.pattern-dots::before {
+  background-image: radial-gradient(rgb(11 61 42 / 0.2) 1.2px, transparent 1.7px);
+  background-size: 22px 22px;
+}
+.pattern-cross::before {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='44' height='44'><path d='M22 17v10M17 22h10' stroke='%230b3d2a' stroke-opacity='0.17' stroke-width='1.4' stroke-linecap='round'/></svg>");
+}
+.pattern-tr { --pattern-at: 100% 0%; }
+.pattern-bl { --pattern-at: 0% 100%; }
+.pattern-br { --pattern-at: 100% 100%; }
+.pattern-top { --pattern-at: 50% 0%; }
+[data-patterns='off'] :is(.pattern-grid, .pattern-dots, .pattern-cross)::before,
+[data-patterns='off'] :is(.pattern-grid, .pattern-dots, .pattern-cross)::after {
+  display: none;
+}
