@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { PurposeBlocks } from '@/components/about/purpose-blocks';
 import { CeoProfile } from '@/components/about/ceo-profile';
+import { CeoFeature } from '@/components/about/ceo-feature';
+import { ceoStyle } from '@/lib/ceo-style';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Branches } from '@/components/about/branches';
@@ -79,6 +81,9 @@ export default async function AboutPage() {
       </section>
 
       {/* Leadership. Portrait from the current site's media library; the profile is the CEO's own text (Oct 2026). */}
+      {ceoStyle === 'feature' ? (
+        <CeoFeature ceo={ceo} />
+      ) : (
       <section id="ceo" className="scroll-mt-28 border-y border-line bg-canvas section-y">
         <div className="mx-auto grid max-w-[1280px] gap-10 px-5 md:px-10 lg:grid-cols-12 lg:items-start lg:gap-16">
           <Reveal className="lg:col-span-5">
@@ -96,6 +101,7 @@ export default async function AboutPage() {
           </Reveal>
         </div>
       </section>
+      )}
 
       {/* Industry experience and services (content from the current About page) */}
       <section id="experience" className="scroll-mt-28 bg-paper section-y">
