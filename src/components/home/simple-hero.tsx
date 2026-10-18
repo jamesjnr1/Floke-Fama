@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Reveal } from '@/components/motion/reveal';
+import { LogoMark, LogoWordmark } from '@/components/layout/logo';
 import { Button } from '@/components/ui/button';
 import { equipment } from '@/data/equipment';
 import { getSite } from '@/lib/site';
@@ -17,8 +18,16 @@ export async function SimpleHero() {
 
       <div className="flex w-full flex-1 flex-col items-center gap-10 px-5 py-12 md:px-10 lg:min-h-0 lg:gap-10 lg:px-8 lg:pb-8 lg:pt-16 [@media(min-height:1000px)]:lg:gap-12 [@media(min-height:1000px)]:lg:pt-24">
         <Reveal className="flex flex-col items-center text-center">
-          <h1 className="max-w-[1100px] text-[clamp(2.375rem,1.3rem+2.4vw,3.5rem)] font-extrabold leading-[1.04] tracking-[-0.04em] text-white">
-            {hero.title} {hero.highlight.replace(/\.$/, '')}<span className="text-signal">.</span>
+          {/* The company name first, as its own logotype, then the claim */}
+          <h1 className="flex max-w-[1100px] flex-col items-center text-white">
+            <span className="flex items-center gap-[0.35em] text-[clamp(3rem,1.6rem+4.4vw,5.5rem)]">
+              <LogoMark className="size-[1.05em]" />
+              <LogoWordmark className="h-[0.7em] text-white" />
+              <span className="sr-only">Flokefama,</span>
+            </span>
+            <span className="mt-4 text-[clamp(1.75rem,1.1rem+1.9vw,3rem)] font-extrabold leading-[1.08] tracking-[-0.035em]">
+              {hero.title} {hero.highlight.replace(/\.$/, '')}<span className="text-signal">.</span>
+            </span>
           </h1>
           <p className="no-justify mt-4 max-w-[760px] text-[1.0625rem] lg:max-w-[880px] leading-relaxed text-white/85">
             From MRI and CT to dialysis, neonatal and critical care: medical equipment supplied, installed and supported for hospitals and laboratories across Ghana and West Africa since 2008.
