@@ -29,12 +29,13 @@ export default async function SupportPage() {
 
   return (
     <>
-      {/* Header: a support agent with a headset (Pexels photo 7709184) */}
+      {/* Header: hands fitting puzzle pieces together, under the darker veil so the text reads */}
       <PageHero
         title={<>Technical <em>support</em></>}
         lead="Installation, maintenance, troubleshooting and repairs by Flokefama’s own engineers."
-        image="/images/headers/support-agent.webp"
-        position="50% 40%"
+        image="/images/headers/support-puzzle.webp"
+        position="50% 50%"
+        veil="strong"
       />
 
       {/* What we do: installation highlighted, the other four services as cards */}
