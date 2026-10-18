@@ -218,10 +218,10 @@ export function Navbar() {
           </ul>
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-6">
           <Link
             href="/checkout"
-            className="hidden items-center whitespace-nowrap rounded-[4px] border border-white/15 px-3.5 py-3 text-[1rem] font-medium text-white 2xl:px-4 2xl:text-sm transition hover:border-white/30 hover:bg-white/[0.06] xl:inline-flex"
+            className="hidden items-center whitespace-nowrap py-3 text-[1rem] font-medium text-white/90 transition hover:text-white 2xl:text-sm xl:inline-flex"
           >
             <Icon name="fi-rr-shopping-cart" className="mr-2 text-base" /> Cart
           </Link>
@@ -286,7 +286,7 @@ export function Navbar() {
           ) : (
             <Link
               href="/login"
-              className="group hidden items-center gap-2 whitespace-nowrap rounded-[4px] bg-cta px-4 py-3 text-[1rem] font-semibold text-white 2xl:px-6 2xl:text-sm transition hover:bg-cta-700 sm:inline-flex"
+              className="group hidden items-center gap-2 whitespace-nowrap py-3 text-[1rem] font-semibold text-white transition hover:text-white/75 2xl:text-sm sm:inline-flex"
             >
               Sign in
             </Link>
