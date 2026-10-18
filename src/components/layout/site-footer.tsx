@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { ArrowUpRight, Mail, MapPin, Phone } from 'lucide-react';
-import { Logo } from '@/components/layout/logo';
+import { Logo, LogoWordmark } from '@/components/layout/logo';
 import { getSite } from '@/lib/site';
 
 /** Footer: one plain dark colour with white and grey text only, the Flokefama logo and links to the real pages. */
@@ -87,6 +87,9 @@ export async function SiteFooter() {
             </Link>
           </div>
         </div>
+
+        {/* The company name across the full width */}
+        <LogoWordmark className="mb-8 mt-4 h-auto w-full text-white/[0.12]" />
 
         <div className="flex flex-col gap-4 border-t border-white/10 pb-24 pt-4 text-xs text-white/55 md:flex-row md:items-center md:justify-between md:pb-4">
           <div className="flex flex-col gap-2 md:flex-row md:gap-6">
