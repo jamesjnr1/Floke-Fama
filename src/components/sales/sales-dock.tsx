@@ -99,7 +99,7 @@ export function SalesDock() {
         )}
       </AnimatePresence>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-end gap-2">
         {items.length > 0 && !onQuotePage && (
           <button
             type="button"
@@ -112,14 +112,12 @@ export function SalesDock() {
             <span className="grid min-w-6 place-items-center rounded-[4px] bg-brand-500 px-1.5 text-xs">{items.length}</span>
           </button>
         )}
-        <button
-          type="button"
-          onClick={whatsapp}
-          aria-label="Chat with Flokefama sales on WhatsApp"
-          title="Chat on WhatsApp"
-          className="grid size-12 place-items-center rounded-full bg-[#25D366] text-2xl text-white shadow-[0_8px_20px_-8px_rgb(11_21_16/0.35)] transition hover:scale-105"
-        >
-          <Icon name="fi-brands-whatsapp" />
+        {/* WhatsApp, with "Contact us" under the icon */}
+        <button type="button" onClick={whatsapp} aria-label="Contact Flokefama on WhatsApp" title="Chat on WhatsApp" className="group flex flex-col items-center gap-1">
+          <span className="grid size-12 place-items-center rounded-full bg-[#25D366] text-2xl text-white shadow-[0_8px_20px_-8px_rgb(11_21_16/0.35)] transition group-hover:scale-105">
+            <Icon name="fi-brands-whatsapp" />
+          </span>
+          <span className="whitespace-nowrap bg-paper px-1.5 py-0.5 text-[0.6875rem] font-semibold text-ink shadow-[0_4px_12px_-4px_rgb(11_21_16/0.35)]">Contact us</span>
         </button>
       </div>
     </div>

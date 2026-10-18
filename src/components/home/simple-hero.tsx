@@ -16,7 +16,7 @@ export async function SimpleHero() {
     <section className="relative isolate flex flex-col overflow-hidden bg-[linear-gradient(180deg,#0a5a33_0%,#06482a_60%,#043822_100%)] pt-[72px] text-white lg:min-h-0 lg:flex-1">
       <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(55%_50%_at_50%_20%,rgb(127_209_165/0.14),transparent_70%)]" />
 
-      <div className="flex w-full flex-1 flex-col items-center gap-10 px-5 py-12 md:px-10 lg:min-h-0 lg:gap-10 lg:px-8 lg:pb-8 lg:pt-16 [@media(min-height:1000px)]:lg:gap-12 [@media(min-height:1000px)]:lg:pt-24">
+      <div className="flex w-full flex-1 flex-col items-center gap-10 px-5 py-12 md:px-10 lg:min-h-0 lg:gap-8 lg:px-8 lg:pb-6 lg:pt-14 [@media(min-height:1000px)]:lg:gap-12 [@media(min-height:1000px)]:lg:pt-24">
         <Reveal className="flex flex-col items-center text-center">
           {/* The company name first, as its own logotype, then the claim */}
           <h1 className="flex max-w-[1100px] flex-col items-center text-white">
@@ -43,14 +43,14 @@ export async function SimpleHero() {
         </Reveal>
 
         {/* The equipment photos move slowly from right to left in one row (paused on hover; still if motion is reduced) */}
-        <div className="w-full overflow-hidden lg:min-h-[200px] lg:flex-1">
-          <ul className="flex h-[200px] w-max animate-marquee [animation-duration:60s] hover:[animation-play-state:paused] motion-reduce:animate-none lg:h-full">
+        <div className="w-full overflow-hidden lg:min-h-[215px] lg:flex-1">
+          <ul className="flex h-[230px] w-max animate-marquee [animation-duration:60s] hover:[animation-play-state:paused] motion-reduce:animate-none lg:h-full">
             {[false, true].flatMap((hidden) =>
               equipment.map((e) => (
                 <li key={`${e.slug}${hidden ? '-2' : ''}`} aria-hidden={hidden || undefined} className="h-full shrink-0 pr-3">
-                  <Link href="/services#equipment" tabIndex={hidden ? -1 : undefined} className="group flex h-full w-[clamp(220px,20vw,340px)] flex-col">
+                  <Link href="/services#equipment" tabIndex={hidden ? -1 : undefined} className="group flex h-full w-[clamp(260px,25vw,440px)] flex-col">
                     <span className="relative block min-h-0 flex-1 overflow-hidden">
-                      <Image src={e.image} alt={hidden ? '' : e.title} fill sizes="340px" className="object-cover [filter:saturate(0.85)] transition-[filter,transform] duration-500 group-hover:scale-[1.03] group-hover:[filter:saturate(1)]" />
+                      <Image src={e.image} alt={hidden ? '' : e.title} fill sizes="440px" className="object-cover [filter:saturate(0.85)] transition-[filter,transform] duration-500 group-hover:scale-[1.03] group-hover:[filter:saturate(1)]" />
                     </span>
                     <span className="mt-2 block truncate text-[0.8125rem] font-medium text-white/80 transition-colors group-hover:text-white">{e.title}</span>
                   </Link>
