@@ -14,6 +14,7 @@ export function PageHero({
   image = '/images/news/the-forgotten-stage-of-quality-cover.webp',
   position = '50% 40%',
   flip = false,
+  veil,
 }: {
   /** Kept for the callers; the small label above the title is no longer shown. */
   label?: string;
@@ -25,13 +26,19 @@ export function PageHero({
   position?: string;
   /** Mirror the photo (only for photos without text). */
   flip?: boolean;
+  /** 'strong': a darker veil, so white text reads on a bright photo. */
+  veil?: 'strong';
 }) {
   return (
     <section className="relative isolate grid min-h-[34rem] place-items-center overflow-hidden bg-[#10191e] text-center text-white md:min-h-[min(47.5rem,92svh)]">
       <div aria-hidden className="absolute inset-0 -z-10">
         <Image src={headerImageSrc(image)} alt="" fill priority unoptimized className={flip ? '-scale-x-100 object-cover' : 'object-cover'} style={{ objectPosition: position }} />
         {/* Light veil, as on youversion.com: the photo stays vivid; a little deeper behind the menu and the title */}
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(10_16_20/0.5)_0%,rgb(10_16_20/0.22)_30%,rgb(10_16_20/0.3)_60%,rgb(10_16_20/0.62)_100%)]" />
+        {veil === 'strong' ? (
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(6_20_14/0.72)_0%,rgb(6_20_14/0.55)_35%,rgb(6_20_14/0.6)_65%,rgb(6_20_14/0.8)_100%)]" />
+        ) : (
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(10_16_20/0.5)_0%,rgb(10_16_20/0.22)_30%,rgb(10_16_20/0.3)_60%,rgb(10_16_20/0.62)_100%)]" />
+        )}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_45%_at_50%_55%,rgb(10_16_20/0.28),transparent_75%)]" />
       </div>
       <div className="mx-auto w-full max-w-[1280px] px-5 pb-16 pt-36 md:px-16 md:pb-24 md:pt-40">
