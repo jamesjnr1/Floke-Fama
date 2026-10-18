@@ -10,7 +10,7 @@ import { equipment } from '@/data/equipment';
 export function EquipmentShowcase() {
   const credited = equipment.filter((e) => e.credit);
   return (
-    <section id="equipment" className="scroll-mt-28 border-t border-line bg-paper section-y">
+    <section id="equipment" className="pattern-dots scroll-mt-28 border-t border-line bg-paper section-y">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <div className="max-w-2xl">
           <h2 className="display text-[clamp(2rem,1.2rem+2.8vw,3.25rem)]">Medical equipment we supply</h2>
