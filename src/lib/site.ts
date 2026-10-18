@@ -59,6 +59,8 @@ function merge(raw: Raw | null): SiteContent {
     (Object.keys(d.pageHeaders) as PageKey[]).map((k) => {
       const h = clean(raw.headers?.[k]);
       // A new photo from the Studio is centred; the built-in ones keep their tuned crop.
+      // A header photo chosen in the code (lockImage) wins over a Studio photo; the Studio text still applies.
+      if (d.pageHeaders[k].lockImage) return [k, { ...d.pageHeaders[k], ...h, image: d.pageHeaders[k].image, position: d.pageHeaders[k].position }];
       return [k, { ...d.pageHeaders[k], ...h, ...(h.image ? { position: '50% 40%' } : {}) }];
     }),
   ) as Record<PageKey, PageHeader>;
