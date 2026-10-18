@@ -48,7 +48,7 @@ const organizationLd = (contact: Contact) => ({
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const site = await getSite();
   return (
-    <html lang="en-GH" className={`${jakarta.variable} ${grotesk.variable} ${serif.variable} ${mona.variable}`} suppressHydrationWarning>
+    <html lang="en-GH" data-patterns={process.env.NEXT_PUBLIC_PATTERNS === 'off' ? 'off' : undefined} className={`${jakarta.variable} ${grotesk.variable} ${serif.variable} ${mona.variable}`} suppressHydrationWarning>
       <head>
         {/* Apply saved accessibility preferences before first paint */}
         <script dangerouslySetInnerHTML={{ __html: a11yBootScript }} />

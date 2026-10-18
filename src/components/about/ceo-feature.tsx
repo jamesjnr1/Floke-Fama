@@ -12,7 +12,7 @@ type Ceo = SiteContent['ceo'];
  */
 export function CeoFeature({ ceo }: { ceo: Ceo }) {
   return (
-    <section id="ceo" aria-labelledby="ceo-title" className="scroll-mt-28 bg-canvas">
+    <section id="ceo" aria-labelledby="ceo-title" className="pattern-dots pattern-bl scroll-mt-28 bg-canvas">
       <div className="bg-[linear-gradient(135deg,#0a5a33_0%,#06482a_60%,#043822_100%)] text-white">
         <div className="mx-auto grid max-w-[1280px] gap-10 px-5 pt-16 md:px-10 lg:grid-cols-12 lg:items-center lg:gap-16 lg:pt-20">
           <Reveal className="lg:col-span-7 lg:pt-24">

@@ -38,7 +38,7 @@ export default async function SupportPage() {
       />
 
       {/* What we do: installation highlighted, the other four services as cards */}
-      <section className="bg-canvas section-y">
+      <section className="pattern-cross pattern-tr bg-canvas section-y">
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
           <div className="grid gap-5 lg:grid-cols-12 lg:items-end">
             <h2 className="display text-[clamp(2rem,1.2rem+2.8vw,3.25rem)] lg:col-span-7">What we do</h2>
@@ -63,7 +63,7 @@ export default async function SupportPage() {
       </section>
 
       {/* Report a fault or request help */}
-      <section id="request" className="scroll-mt-20 border-t border-line bg-paper py-14 md:py-20">
+      <section id="request" className="pattern-dots scroll-mt-20 border-t border-line bg-paper py-14 md:py-20">
         <div className="mx-auto grid max-w-[1280px] gap-10 px-5 md:px-10 lg:grid-cols-12 lg:gap-12">
           <div className="lg:col-span-8">
             <h2 className="text-2xl font-bold tracking-[-0.02em] text-ink md:text-3xl">Report a fault or request help</h2>

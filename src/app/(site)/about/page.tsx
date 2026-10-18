@@ -48,7 +48,7 @@ export default async function AboutPage() {
       </section>
 
       {/* Who we are */}
-      <section id="who-we-are" className="scroll-mt-28 bg-paper section-y">
+      <section id="who-we-are" className="pattern-grid scroll-mt-28 bg-paper section-y">
         {/* The heading across the top; under it the text and actions on the left, the head-office photo larger on the right, both starting on the same line */}
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
           <Reveal>
@@ -104,7 +104,7 @@ export default async function AboutPage() {
       )}
 
       {/* Industry experience and services (content from the current About page) */}
-      <section id="experience" className="scroll-mt-28 bg-paper section-y">
+      <section id="experience" className="pattern-dots pattern-tr scroll-mt-28 bg-paper section-y">
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
           {/* Industry experience: the text on the left, the two figures in a green panel on the right, level with the text */}
           <div className="grid gap-10 lg:grid-cols-12 lg:gap-16">
@@ -158,7 +158,7 @@ export default async function AboutPage() {
       </section>
 
       {/* Core values */}
-      <section id="values" className="scroll-mt-28 bg-canvas section-y">
+      <section id="values" className="pattern-cross pattern-bl scroll-mt-28 bg-canvas section-y">
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
           <Reveal>
             <h2 className="display max-w-3xl text-[clamp(2rem,1.2rem+2.8vw,3.5rem)] text-ink">The principles that define who we are.</h2>

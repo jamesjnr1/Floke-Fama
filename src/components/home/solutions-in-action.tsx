@@ -67,7 +67,7 @@ export function SolutionsInAction() {
 
   const film = films[current];
   return (
-    <section aria-labelledby="in-action-title" className="bg-paper section-y">
+    <section aria-labelledby="in-action-title" className="pattern-grid bg-paper section-y">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal className="grid gap-5 lg:grid-cols-[1fr_1fr] lg:items-end lg:gap-16">
           <h2 id="in-action-title" className="display text-[clamp(2rem,1.2rem+2.8vw,3.5rem)] text-ink">

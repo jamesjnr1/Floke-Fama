@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
  */
 export function BeyondSupply() {
   return (
-    <section aria-labelledby="beyond-supply-title" className="bg-paper section-y">
+    <section aria-labelledby="beyond-supply-title" className="pattern-dots pattern-tr bg-paper section-y">
       <div className="mx-auto grid max-w-[1280px] items-center gap-10 px-5 md:px-16 lg:grid-cols-[1.15fr_1fr] lg:gap-16">
         <Reveal>
           <h2 id="beyond-supply-title" className="display text-[clamp(2rem,1.3rem+2vw,2.875rem)] leading-[1.1] text-ink">

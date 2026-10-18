@@ -19,7 +19,7 @@ export async function CatalogueGrid() {
     .filter((c) => c.count > 0);
 
   return (
-    <section id="catalogue" className="scroll-mt-28 border-t border-line bg-paper section-y">
+    <section id="catalogue" className="pattern-grid pattern-tr scroll-mt-28 border-t border-line bg-paper section-y">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
           <div className="max-w-2xl">

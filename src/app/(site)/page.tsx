@@ -19,7 +19,7 @@ export default function HomePage() {
       <SolutionsInAction />
       <Partners heading={false} logos={false} />
       <BeyondSupply />
-      <section aria-label="Our mission, vision and aim" className="bg-canvas section-y">
+      <section aria-label="Our mission, vision and aim" className="pattern-cross pattern-bl bg-canvas section-y">
         <div className="mx-auto max-w-[1280px] px-5 md:px-16">
           <PurposeBlocks />
         </div>
