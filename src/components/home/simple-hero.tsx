@@ -42,21 +42,23 @@ export async function SimpleHero() {
           </div>
         </Reveal>
 
-        {/* On hover a photo widens in the row (the others narrow to make room) and shows what it is */}
-        <ul className="grid w-full grid-cols-2 gap-3 sm:grid-cols-4 lg:flex lg:min-h-[200px] lg:flex-1">
-          {equipment.map((e) => (
-            <li key={e.slug} className="min-w-0 lg:flex-1 lg:transition-[flex-grow] lg:duration-500 lg:ease-[cubic-bezier(0.16,1,0.3,1)] lg:hover:flex-[3] lg:focus-within:flex-[3]">
-              <Link href="/services#equipment" className="group flex h-full flex-col">
-                <span className="relative block aspect-[16/10] overflow-hidden lg:aspect-auto lg:flex-1">
-                  <Image src={e.image} alt="" fill sizes="(min-width: 1024px) 420px, 50vw" className="object-cover [filter:saturate(0.85)] transition-[filter] duration-500 group-hover:[filter:saturate(1)]" />
-                  <span aria-hidden className="absolute inset-0 hidden bg-[linear-gradient(transparent_30%,rgb(4_40_24/0.85))] opacity-0 transition-opacity duration-500 group-hover:opacity-100 lg:block" />
-                  <span className="absolute inset-x-3 bottom-2.5 hidden text-[0.8125rem] leading-snug text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-hover:delay-200 lg:line-clamp-2">{e.text}</span>
-                </span>
-                <span className="mt-2 block truncate text-[0.8125rem] font-medium text-white/80 transition-colors group-hover:text-white">{e.title}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
+        {/* The equipment photos move slowly from right to left in one row (paused on hover; still if motion is reduced) */}
+        <div className="w-full overflow-hidden lg:min-h-[200px] lg:flex-1">
+          <ul className="flex h-[200px] w-max animate-marquee [animation-duration:60s] hover:[animation-play-state:paused] motion-reduce:animate-none lg:h-full">
+            {[false, true].flatMap((hidden) =>
+              equipment.map((e) => (
+                <li key={`${e.slug}${hidden ? '-2' : ''}`} aria-hidden={hidden || undefined} className="h-full shrink-0 pr-3">
+                  <Link href="/services#equipment" tabIndex={hidden ? -1 : undefined} className="group flex h-full w-[clamp(220px,20vw,340px)] flex-col">
+                    <span className="relative block min-h-0 flex-1 overflow-hidden">
+                      <Image src={e.image} alt={hidden ? '' : e.title} fill sizes="340px" className="object-cover [filter:saturate(0.85)] transition-[filter,transform] duration-500 group-hover:scale-[1.03] group-hover:[filter:saturate(1)]" />
+                    </span>
+                    <span className="mt-2 block truncate text-[0.8125rem] font-medium text-white/80 transition-colors group-hover:text-white">{e.title}</span>
+                  </Link>
+                </li>
+              )),
+            )}
+          </ul>
+        </div>
       </div>
     </section>
   );
