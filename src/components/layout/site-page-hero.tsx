@@ -13,6 +13,7 @@ export async function SitePageHero({ page, flip, vars = {} }: { page: PageKey; f
     <PageHero
       image={h.image}
       position={h.position}
+      veil={h.veil}
       flip={flip}
       title={
         <>
