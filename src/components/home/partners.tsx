@@ -26,7 +26,7 @@ function logoBox(w: number, h: number, area: number, maxW: number) {
 export async function Partners({ heading = true, logos = true }: { heading?: boolean; logos?: boolean }) {
   const { clients, technologyPartners } = await getSite();
   return (
-    <section id="partners" className="scroll-mt-28 border-b border-line bg-canvas py-12 md:py-20">
+    <section id="partners" className="pattern-cross pattern-br scroll-mt-28 border-b border-line bg-canvas py-12 md:py-20">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         {heading && (
           <Reveal className="mb-8 flex flex-col items-center text-center md:mb-14">

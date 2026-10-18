@@ -13,7 +13,7 @@ export const formatDate = (iso: string) => new Date(`${iso}T12:00:00Z`).toLocale
 export async function NewsGrid() {
   const articles = await getArticles();
   return (
-    <section id="news" className="scroll-mt-28 bg-paper section-y">
+    <section id="news" className="pattern-dots pattern-tr scroll-mt-28 bg-paper section-y">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <h2 className="display text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">News, Blog &amp; Press</h2>
         <NewsMore initial={6}>

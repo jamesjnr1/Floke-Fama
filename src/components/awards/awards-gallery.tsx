@@ -16,7 +16,7 @@ const layout = [
 export async function AwardsGallery() {
   const { awards } = await getSite();
   return (
-    <section className="bg-canvas section-y">
+    <section className="pattern-cross pattern-tr bg-canvas section-y">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal>
           <h2 className="display max-w-3xl text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">We are proud to share some of the awards that celebrate our passion and progress.</h2>

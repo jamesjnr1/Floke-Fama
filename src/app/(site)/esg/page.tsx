@@ -80,7 +80,7 @@ export default async function EsgPage() {
       <SitePageHero page="esg" />
 
       {/* Corporate social responsibility (the CEO's review, point 4): published stories first, then the other activities */}
-      <section className="bg-canvas section-y">
+      <section className="pattern-cross pattern-tr bg-canvas section-y">
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
           <Reveal className="grid gap-5 lg:grid-cols-12 lg:items-end lg:gap-10">
             <h2 className="display text-[clamp(2rem,1.2rem+2.8vw,3.25rem)] lg:col-span-7">Giving back to the people behind Ghana’s healthcare</h2>
@@ -98,7 +98,7 @@ export default async function EsgPage() {
       </section>
 
       {/* ESG commitments */}
-      <section className="border-t border-line bg-paper section-y">
+      <section className="pattern-dots pattern-bl border-t border-line bg-paper section-y">
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
           <h2 className="text-2xl font-bold tracking-[-0.02em] text-ink md:text-3xl">Our ESG commitments</h2>
           <ul className="mt-8 grid gap-4 md:grid-cols-3">

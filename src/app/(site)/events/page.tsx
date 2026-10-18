@@ -42,7 +42,7 @@ export default async function EventsPage() {
     <>
       <SitePageHero page="events" />
 
-      <section className="bg-paper section-y">
+      <section className="pattern-grid bg-paper section-y">
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
           <Reveal>
             <h2 className="text-2xl font-semibold tracking-[-0.01em] text-ink">Upcoming events</h2>
