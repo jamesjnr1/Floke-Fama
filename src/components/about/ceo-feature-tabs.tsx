@@ -15,7 +15,7 @@ const tabs = [
 
 /**
  * Profile, Education, Honours and Philanthropy & Purpose behind four square buttons, so the section stays short. The
- * buttons sit beside the portrait; the text runs the full width of the section below it, in two columns.
+ * buttons sit beside the portrait; the text runs the full width of the section below it.
  */
 export function CeoFeatureTabs({ ceo }: { ceo: Ceo }) {
   const [tab, setTab] = useState<(typeof tabs)[number]['id']>('profile');
@@ -55,7 +55,7 @@ export function CeoFeatureTabs({ ceo }: { ceo: Ceo }) {
       {/* Starts below the portrait, which reaches 10rem under the band */}
       <div id="ceo-panel" role="tabpanel" aria-labelledby={`ceo-tab-${tab}`} className="mt-8 lg:mt-16">
         {tab === 'profile' && (
-          <div className="no-justify gap-16 text-[1.1875rem] leading-[1.75] text-ink-2 lg:columns-2 [&>p+p]:mt-6">
+          <div className="no-justify space-y-6 text-[1.1875rem] leading-[1.75] text-ink-2">
             {ceo.bio.map((t) => <p key={t.slice(0, 40)}>{t}</p>)}
           </div>
         )}
