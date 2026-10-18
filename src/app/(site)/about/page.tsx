@@ -10,11 +10,10 @@ import { CoreValues } from '@/components/about/core-values';
 import { SitePageHero } from '@/components/layout/site-page-hero';
 import { Reveal } from '@/components/motion/reveal';
 import { Button } from '@/components/ui/button';
-import { CountUp } from '@/components/motion/count-up';
 import { Cog, Gauge, GraduationCap, Settings, ShieldCheck, ShoppingCart } from 'lucide-react';
 import { Icon } from '@/components/ui/icon';
 import { ToneIcon } from '@/components/ui/tone-icon';
-import { brochureUrl, experienceFigures } from '@/data/seed';
+import { brochureUrl } from '@/data/seed';
 import { getSite } from '@/lib/site';
 
 export const revalidate = 600;
@@ -103,34 +102,12 @@ export default async function AboutPage() {
       </section>
       )}
 
-      {/* Industry experience and services (content from the current About page) */}
+      {/* Our services (content from the current About page) */}
       <section id="experience" className="pattern-dots pattern-tr scroll-mt-28 bg-paper section-y">
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
-          {/* Industry experience: the text on the left, the two figures in a green panel on the right, level with the text */}
-          <div className="grid gap-10 lg:grid-cols-12 lg:gap-16">
-            <Reveal className="lg:col-span-7">
-              <h2 className="display text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">Industry Experience</h2>
-              <p className="no-justify mt-6 max-w-2xl text-lg leading-relaxed text-ink-3">
-                FLOKEFAMA is recognized as one of the most reputable and trusted medical equipment suppliers in Ghana. Our years of experience have enabled us to establish strong partnerships with leading medical clients across the nation, allowing us to deliver high-quality equipment tailored to meet specific needs. Whether it’s cutting-edge technology or reliable essentials, FLOKEFAMA is committed to fulfilling all medical equipment requirements with excellence.
-              </p>
-            </Reveal>
-            <Reveal delay={0.08} className="lg:col-span-5 lg:self-center">
-              <dl className="flex bg-[#0b3d2a] text-white">
-                {experienceFigures.map((f, n) => (
-                  <div key={f.label} className={n ? 'flex-1 border-l border-white/15 px-8 py-10' : 'flex-1 px-8 py-10'}>
-                    <dd className="text-[clamp(2.75rem,2rem+2.4vw,4rem)] font-bold leading-none tracking-[-0.04em] text-white">
-                      <CountUp value={f.value} />
-                    </dd>
-                    <dt className="mt-3 text-white/80">{f.label}</dt>
-                  </div>
-                ))}
-              </dl>
-            </Reveal>
-          </div>
-
           {/* Our services: heading and intro stacked, then the cards */}
-          <Reveal className="mt-20 border-t border-line pt-14 md:mt-24">
-            <h3 className="display text-[clamp(1.75rem,1.2rem+1.8vw,2.75rem)]">Our Services</h3>
+          <Reveal>
+            <h2 className="display text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">Our Services</h2>
             <p className="no-justify mt-4 max-w-3xl text-lg leading-relaxed text-ink-3">
               FLOKEFAMA LTD offers an extensive range of high-quality medical equipment, services, and supplies. Our dedicated team works closely with customers to develop tailored solutions that reduce costs and enhance healthcare delivery.
             </p>
