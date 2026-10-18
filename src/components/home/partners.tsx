@@ -91,7 +91,7 @@ export async function Partners({ heading = true, logos = true }: { heading?: boo
         {/* The results: one balanced band (figures from the current homepage) */}
         <Reveal delay={0.1}>
           <div className={`relative isolate overflow-hidden bg-[linear-gradient(135deg,#0a5a33_0%,#06482a_60%,#043822_100%)] text-white${logos ? ' mt-10' : ''}`}>
-            <div className="grid md:grid-cols-3">
+            <div className="grid divide-y divide-white/20 md:grid-cols-3 md:divide-x md:divide-y-0">
               {metrics.slice(0, 2).map((m, i) => (
                 <div key={m.label} className="flex flex-col gap-5 p-7 md:p-10">
                   <p className="text-[clamp(2.75rem,2rem+2.4vw,4rem)] font-bold leading-none tracking-[-0.04em]">
