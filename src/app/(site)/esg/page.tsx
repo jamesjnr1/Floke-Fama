@@ -77,7 +77,7 @@ export default async function EsgPage() {
 
   return (
     <>
-      <SitePageHero page="esg" />
+      <SitePageHero page="esg" kicker="Corporate Social Responsibility" />
 
       {/* Corporate social responsibility (the CEO's review, point 4): published stories first, then the other activities */}
       <section className="pattern-cross pattern-tr bg-canvas section-y">

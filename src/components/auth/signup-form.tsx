@@ -44,12 +44,6 @@ export function SignupForm({ next }: { next?: string }) {
         </span>,
       )}
       {row('confirm', 'Confirm password', <input name="confirm" type={show ? 'text' : 'password'} autoComplete="new-password" aria-invalid={!!e.confirm} className={field} />)}
-      <details className="group" open={!!e.staffCode}>
-        <summary className="cursor-pointer text-sm font-medium text-ink-3 hover:text-ink">Flokefama staff?</summary>
-        <div className="mt-3">
-          {row('staffCode', 'Staff code', <input name="staffCode" type="password" autoComplete="off" aria-invalid={!!e.staffCode} className={field} />)}
-        </div>
-      </details>
       <label className="flex items-center gap-2.5 text-sm text-ink-2">
         <input type="checkbox" name="keep" className="size-4 accent-[#007a4d]" /> Keep me signed in
       </label>
