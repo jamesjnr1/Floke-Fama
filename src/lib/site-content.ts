@@ -21,7 +21,7 @@ export interface Logo { name: string; logo: string | null; w: number; h: number;
 export interface Award { id: string; title: string; body: string; year: string; image: string; alt: string }
 export interface Faq { q: string; a: string; link?: { href: string; label: string } }
 export interface EsgPillar { label: string; icon: string; title: string; body: string; image: string; alt: string }
-export interface PageHeader { title: string; highlight: string; lead: string; image?: string; position?: string; /** 'strong': a darker veil, for bright photos */ veil?: 'strong'; /** Keep this built-in photo even when a photo is set in the Studio */ lockImage?: boolean; /** Keep this built-in title even when one is set in the Studio */ lockTitle?: boolean }
+export interface PageHeader { title: string; highlight: string; lead: string; image?: string; position?: string; /** 'strong': a darker veil, for bright photos */ veil?: 'strong'; /** Keep this built-in photo even when a photo is set in the Studio */ lockImage?: boolean }
 export type PageKey = 'about' | 'services' | 'shop' | 'events' | 'awards' | 'esg' | 'contact';
 
 export interface SiteContent {
@@ -139,7 +139,7 @@ export const defaultPageHeaders: Record<PageKey, PageHeader> = {
   shop: { title: 'Clinical-grade equipment.', highlight: 'Instantly searchable.', lead: '{count} products for hospitals and laboratories, with installation, training and after-sales support on everything we supply.', image: '/images/headers/shop.webp', position: '50% 35%' },
   events: { title: 'Moments that', highlight: 'bring us together', lead: 'Celebrations, community programmes and industry events from across the Flokefama family.', image: '/images/headers/events-parade.webp', position: '50% 45%' },
   awards: { title: 'Recognitions that', highlight: 'reflect our impact', lead: 'Our commitment to excellence, innovation and service, recognized through prestigious awards and honors.', image: '/images/headers/awards-trophy.webp', position: '50% 45%' },
-  esg: { title: 'Corporate Social', highlight: 'Responsibility', lead: 'Our corporate social responsibility: supporting healthcare institutions, developing professionals and serving communities across Ghana.', image: '/images/headers/esg-care.webp', position: '30% 60%', veil: 'strong', lockImage: true, lockTitle: true },
+  esg: { title: 'Healthcare that', highlight: 'gives back', lead: 'Our corporate social responsibility: supporting healthcare institutions, developing professionals and serving communities across Ghana.', image: '/images/headers/esg-care.webp', position: '30% 60%', veil: 'strong', lockImage: true },
   contact: { title: 'Get in touch', highlight: 'with us', lead: 'We’re here to provide total healthcare solutions. Reach out to us anytime.', image: '/images/headers/contact-support.webp', position: '50% 30%' },
 };
 
