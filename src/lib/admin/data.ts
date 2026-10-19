@@ -112,7 +112,6 @@ export function configChecks() {
     { label: 'Session secret', ok: set(process.env.SESSION_SECRET), detail: set(process.env.SESSION_SECRET) ? 'SESSION_SECRET is set.' : 'Set SESSION_SECRET (openssl rand -base64 48) so sign-ins are signed with your own key.' },
     { label: 'Admins', ok: count(process.env.ADMIN_EMAILS) > 0, detail: `${count(process.env.ADMIN_EMAILS)} email(s) in ADMIN_EMAILS.` },
     { label: 'Engineers', ok: count(process.env.ENGINEER_EMAILS) > 0, detail: `${count(process.env.ENGINEER_EMAILS)} email(s) in ENGINEER_EMAILS.` },
-    { label: 'Staff sign-up code', ok: set(process.env.STAFF_SIGNUP_CODE), detail: set(process.env.STAFF_SIGNUP_CODE) ? 'STAFF_SIGNUP_CODE is set: staff emails need it to register.' : 'STAFF_SIGNUP_CODE not set: staff emails cannot register new accounts.' },
     { label: 'Content (Sanity)', ok: set(process.env.NEXT_PUBLIC_SANITY_PROJECT_ID), detail: set(process.env.NEXT_PUBLIC_SANITY_PROJECT_ID) ? `Project ${process.env.NEXT_PUBLIC_SANITY_PROJECT_ID}` : 'The site shows its built-in content.' },
     { label: 'Content webhook', ok: set(process.env.SANITY_REVALIDATE_SECRET), detail: set(process.env.SANITY_REVALIDATE_SECRET) ? 'Studio changes go live straight away.' : 'SANITY_REVALIDATE_SECRET not set: Studio changes appear within the cache time.' },
     { label: 'Quotes & messages (HubSpot)', ok: set(process.env.HUBSPOT_PORTAL_ID) && set(process.env.HUBSPOT_FORM_GUID), detail: 'Quote, demo and support requests are delivered to HubSpot; view them there.' },

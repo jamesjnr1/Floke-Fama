@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { AccountsUnavailable, accountExists, findSavedAccount, hashPassword, saveAccount, type StoredAccount } from '@/lib/auth/accounts';
 import { nextFor, safeNext, SESSION_COOKIE, sessionCookie, signSession, type SessionUser } from '@/lib/auth/session';
-import { isStaffEmail, roleFor, staffCodeOk } from '@/lib/auth/users';
+import { roleFor } from '@/lib/auth/users';
 
 export interface LoginState {
   error?: string;
@@ -13,7 +13,7 @@ export interface LoginState {
 }
 
 export interface SignupState {
-  errors?: Partial<Record<'name' | 'organisation' | 'phone' | 'email' | 'password' | 'confirm' | 'staffCode' | 'form', string>>;
+  errors?: Partial<Record<'name' | 'organisation' | 'phone' | 'email' | 'password' | 'confirm' | 'form', string>>;
   values?: Record<string, string>;
 }
 
@@ -34,7 +34,6 @@ const signup = z
     confirm: z.string(),
     next: z.string().optional(),
     keep: z.literal('on').optional(),
-    staffCode: z.string().max(200).optional(),
     website: z.string().max(0).optional().or(z.literal('')), // honeypot
   })
   .refine((v) => v.password === v.confirm, { path: ['confirm'], message: 'The passwords don’t match' });
@@ -116,10 +115,6 @@ export async function register(_prev: SignupState, form: FormData): Promise<Sign
   }
   const d = parsed.data;
   if (d.website) return {};
-  // Staff emails (ADMIN_EMAILS, ENGINEER_EMAILS) get staff access, so registering one needs the staff code.
-  if (isStaffEmail(d.email) && !staffCodeOk(d.staffCode ?? '')) {
-    return { errors: { staffCode: 'This email is reserved for Flokefama staff. Enter your staff code.' }, values };
-  }
   const taken = await guarded(() => accountExists(d.email));
   if (!taken.ok) return { errors: { form: UNAVAILABLE }, values };
   if (taken.value) return { errors: { email: 'There is already an account with this email. Sign in instead.' }, values };

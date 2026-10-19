@@ -16,6 +16,7 @@ export function PageHero({
   position = '50% 40%',
   flip = false,
   veil,
+  kicker,
 }: {
   /** Kept for the callers; the small label above the title is no longer shown. */
   label?: string;
@@ -29,6 +30,8 @@ export function PageHero({
   flip?: boolean;
   /** 'strong': a darker veil, so white text reads on a bright photo. */
   veil?: 'strong';
+  /** A line under the logo, above the title (e.g. "Corporate Social Responsibility"). */
+  kicker?: string;
 }) {
   return (
     <section className="relative isolate grid min-h-[34rem] place-items-center overflow-hidden bg-[#10191e] text-center text-white md:min-h-[min(47.5rem,92svh)]">
@@ -45,13 +48,14 @@ export function PageHero({
       <div className="mx-auto w-full max-w-[1280px] px-5 pb-16 pt-36 md:px-16 md:pb-24 md:pt-40">
         <Reveal>
           {/* The company name over every page title */}
-          <p className="mb-6 inline-flex items-center gap-2 [filter:drop-shadow(0_2px_12px_rgb(0_0_0/0.35))]">
+          <p className="inline-flex items-center gap-2 [filter:drop-shadow(0_2px_12px_rgb(0_0_0/0.35))]">
             <LogoMark className="size-9 md:size-11" />
             <LogoWordmark className="h-[22px] text-white md:h-[26px]" />
             <span className="sr-only">Flokefama</span>
           </p>
+          {kicker && <p className="mt-3 text-[0.9375rem] font-semibold uppercase tracking-[0.18em] text-white/90 [text-shadow:0_1px_12px_rgb(0_0_0/0.4)] md:text-base">{kicker}</p>}
         </Reveal>
-        <Reveal delay={0.06}>
+        <Reveal delay={0.06} className="mt-6">
           <h1 className="mx-auto max-w-5xl text-balance text-[clamp(2.5rem,1.1rem+4.6vw,5.25rem)] font-medium leading-[1.02] tracking-[-0.03em] text-white [text-shadow:0_2px_24px_rgb(0_0_0/0.35)] [&_em]:font-serif [&_em]:font-normal [&_em]:tracking-[-0.01em]">
             {title}
           </h1>
