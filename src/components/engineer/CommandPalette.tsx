@@ -77,7 +77,7 @@ export function CommandPalette({ open, onOpenChange, state, actions, onOpenTicke
           <ul id="palette-results" role="listbox" className="max-h-[50vh] overflow-y-auto p-2">
             {results.map((c, i) => (
               <li key={`${c.group}-${c.id}`} id={`cmd-${c.id}`} role="option" aria-selected={i === index}>
-                {(i === 0 || results[i - 1].group !== c.group) && <p className="px-3 pb-1 pt-3 text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-ink-3">{c.group === 'Tickets' ? 'Requests' : c.group === 'Systems' ? 'Equipment' : c.group}</p>}
+                {(i === 0 || results[i - 1].group !== c.group) && <p className="px-3 pb-1 pt-3 text-[0.8125rem] font-semibold uppercase tracking-[0.1em] text-ink-3">{c.group === 'Tickets' ? 'Requests' : c.group === 'Systems' ? 'Equipment' : c.group}</p>}
                 <button
                   onMouseEnter={() => setIndex(i)}
                   onClick={() => run(c)}

@@ -16,7 +16,7 @@ export function CardTitle({ children, action }: { children: React.ReactNode; act
 }
 
 /** Small square status tag (no pills). Combine with a colour from statusStyle / urgency. */
-export const tag = 'inline-flex shrink-0 items-center gap-1.5 rounded-[4px] px-2 py-1 text-[0.6875rem] font-semibold uppercase leading-none tracking-[0.07em]';
+export const tag = 'inline-flex shrink-0 items-center gap-1.5 rounded-[4px] px-2 py-1 text-[0.8125rem] font-semibold uppercase leading-none tracking-[0.07em]';
 
 export const statusStyle: Record<TicketStatus, string> = {
   new: 'bg-[#eef1f4] text-[#3f5260]',

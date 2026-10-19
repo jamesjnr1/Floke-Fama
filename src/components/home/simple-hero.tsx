@@ -4,11 +4,26 @@ import { Reveal } from '@/components/motion/reveal';
 import { LogoMark, LogoWordmark } from '@/components/layout/logo';
 import { Button } from '@/components/ui/button';
 import { equipment } from '@/data/equipment';
+
+/**
+ * The moving row on the hero: the first six large systems (MRI to incubators), then everyday essentials from the
+ * shop, so visitors see both. Shop items are product photos on white, shown whole.
+ */
+const essentials = [
+  { slug: 'autoclave-machine-35l', title: 'Autoclave Machine 35L' },
+  { slug: 'biological-microscope', title: 'Biological Microscope' },
+  { slug: 'cpap-machine', title: 'CPAP Machine' },
+  { slug: 'dp-10-ultrasound', title: 'DP-10 Ultrasound' },
+];
+const heroItems = [
+  ...equipment.slice(0, 6).map((e) => ({ key: e.slug, title: e.title, image: e.image, href: '/products', cutout: false })),
+  ...essentials.map((p) => ({ key: p.slug, title: p.title, image: `/images/products/${p.slug}.webp`, href: `/products/${p.slug}`, cutout: true })),
+];
 import { getSite } from '@/lib/site';
 
 /**
  * The 'simple' hero: everything centred on the green gradient (headline, lead and the two actions), with the
- * eight equipment types in one even row of photos underneath. No slideshow.
+ * equipment row underneath (see heroItems) moving slowly across.
  */
 export async function SimpleHero() {
   const { hero } = await getSite();
@@ -46,11 +61,17 @@ export async function SimpleHero() {
         <div className="w-full overflow-hidden lg:min-h-[215px] lg:flex-1">
           <ul className="flex h-[230px] w-max animate-marquee [animation-duration:60s] hover:[animation-play-state:paused] motion-reduce:animate-none lg:h-full">
             {[false, true].flatMap((hidden) =>
-              equipment.map((e) => (
-                <li key={`${e.slug}${hidden ? '-2' : ''}`} aria-hidden={hidden || undefined} className="h-full shrink-0 pr-3">
-                  <Link href="/services#equipment" tabIndex={hidden ? -1 : undefined} className="group flex h-full w-[clamp(260px,25vw,440px)] flex-col">
-                    <span className="relative block min-h-0 flex-1 overflow-hidden">
-                      <Image src={e.image} alt={hidden ? '' : e.title} fill sizes="440px" className="object-cover [filter:saturate(0.85)] transition-[filter,transform] duration-500 group-hover:scale-[1.03] group-hover:[filter:saturate(1)]" />
+              heroItems.map((e) => (
+                <li key={`${e.key}${hidden ? '-2' : ''}`} aria-hidden={hidden || undefined} className="h-full shrink-0 pr-3">
+                  <Link href={e.href} tabIndex={hidden ? -1 : undefined} className="group flex h-full w-[clamp(260px,25vw,440px)] flex-col">
+                    <span className={e.cutout ? 'relative block min-h-0 flex-1 overflow-hidden bg-white' : 'relative block min-h-0 flex-1 overflow-hidden'}>
+                      <Image
+                        src={e.image}
+                        alt={hidden ? '' : e.title}
+                        fill
+                        sizes="440px"
+                        className={e.cutout ? 'object-contain p-5 transition-transform duration-500 group-hover:scale-[1.04]' : 'object-cover [filter:saturate(0.85)] transition-[filter,transform] duration-500 group-hover:scale-[1.03] group-hover:[filter:saturate(1)]'}
+                      />
                     </span>
                     <span className="mt-2 block truncate text-[0.8125rem] font-medium text-white/80 transition-colors group-hover:text-white">{e.title}</span>
                   </Link>

@@ -13,7 +13,6 @@ import { RequestsView } from '@/components/client/RequestsView';
 import { LogoMark, LogoWordmark } from '@/components/layout/logo';
 import { AlertsBanner, AlertsSwitch, useNotificationPopups } from '@/components/service/alerts';
 import { Notifications } from '@/components/service/Notifications';
-import { useAccessibility } from '@/components/layout/accessibility';
 import { Icon } from '@/components/ui/icon';
 import { LogoChanger } from '@/components/client/logo-changer';
 import { useSite } from '@/components/site-provider';
@@ -41,7 +40,6 @@ export function ClientShell({ user, products }: { user: { name: string; email: s
   const facility = user.facility ?? user.name;
   const orders = useOrders(user.email);
   const actor = useMemo(() => ({ name: user.name, role: 'client' as const, facility }), [user.name, facility]);
-  const a11y = useAccessibility();
   const { state, dispatch: rawDispatch, ready, remote } = useServiceStore(actor);
   const [view, setView] = useState<View>('overview');
   // Deep links such as /portal?view=orders (from checkout)
@@ -120,7 +118,7 @@ export function ClientShell({ user, products }: { user: { name: string; email: s
         <Link href="/" aria-label="Flokefama home" className="flex h-[76px] items-center gap-1.5 border-b border-white/15 px-6">
           <LogoMark />
           <LogoWordmark className="h-[17px] text-white" />
-          <span className="ml-auto text-[0.6875rem] font-semibold uppercase tracking-[0.18em] text-white/80">Care</span>
+          <span className="ml-auto text-[0.8125rem] font-semibold uppercase tracking-[0.18em] text-white/80">Care</span>
         </Link>
         <div className="flex items-center gap-3 px-6 py-6">
           <LogoChanger facility={facility} className="size-10 rounded-md" fallbackClassName="bg-white text-sm text-[#006b42]">
@@ -129,7 +127,7 @@ export function ClientShell({ user, products }: { user: { name: string; email: s
           </LogoChanger>
         </div>
         <nav aria-label="Client portal" className="px-3">
-          <p className="px-3 pb-2 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-white/60">Menu</p>
+          <p className="px-3 pb-2 text-[0.8125rem] font-semibold uppercase tracking-[0.14em] text-white/60">Menu</p>
           <ul className="space-y-0.5">
             {nav.map((n) => {
               const on = view === n.id;
@@ -160,7 +158,6 @@ export function ClientShell({ user, products }: { user: { name: string; email: s
           <div className="space-y-2.5">
             <a href={contact.phoneHref} className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-phone-call" /> {contact.phone}</a>
             <AlertsSwitch className="text-white/80 hover:text-white" />
-            <button onClick={a11y.open} className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-universal-access" /> Accessibility</button>
             <Link href="/" className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-arrow-small-left" /> Flokefama website</Link>
             <form action={logout}>
               <button type="submit" className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-sign-out-alt" /> Sign out</button>
@@ -188,7 +185,6 @@ export function ClientShell({ user, products }: { user: { name: string; email: s
               <span className="block text-xs text-ink-3">{user.email}</span>
             </span>
           </span>
-          <button onClick={a11y.open} aria-label="Accessibility options" className="grid size-10 place-items-center rounded-md border border-line bg-paper text-ink lg:hidden"><Icon name="fi-rr-universal-access" /></button>
           <form action={logout} className="lg:hidden">
             <button type="submit" aria-label="Sign out" className="grid size-10 place-items-center rounded-md border border-line bg-paper text-ink"><Icon name="fi-rr-sign-out-alt" /></button>
           </form>

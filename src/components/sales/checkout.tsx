@@ -192,7 +192,7 @@ export function Checkout() {
                           <span className="min-w-0 flex-1">
                             <span className="flex flex-wrap items-center justify-between gap-2">
                               <span className="font-semibold text-ink">{m.label}</span>
-                              <span className="flex gap-1">{m.badges.map((b) => <span key={b} className="rounded border border-line bg-paper px-1.5 py-0.5 text-[0.6875rem] font-bold uppercase tracking-wide text-ink-2">{b}</span>)}</span>
+                              <span className="flex gap-1">{m.badges.map((b) => <span key={b} className="rounded border border-line bg-paper px-1.5 py-0.5 text-[0.8125rem] font-bold uppercase tracking-wide text-ink-2">{b}</span>)}</span>
                             </span>
                             <span className="mt-1 block text-sm text-ink-3">{m.hint}</span>
                           </span>

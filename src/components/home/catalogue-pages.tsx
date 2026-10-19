@@ -54,7 +54,7 @@ export function CataloguePages() {
           exit={{ opacity: 0, rotate: -8, x: -70, y: 10 }}
           transition={{ duration: reduce ? 0 : 0.7, ease: [0.16, 1, 0.3, 1] }}
         >
-          <Link href="/services#equipment" className="group flex h-full flex-col bg-white p-5 text-ink sm:p-6" aria-label={`${e.title}: see the equipment we supply`}>
+          <Link href="/products" className="group flex h-full flex-col bg-white p-5 text-ink sm:p-6" aria-label={`${e.title}: see the equipment we supply`}>
             <span className="flex items-center justify-between">
               <span className="flex items-center gap-2">
                 <LogoMark className="size-6" />
@@ -64,7 +64,7 @@ export function CataloguePages() {
             </span>
             <span className="relative mt-5 min-h-0 flex-1 overflow-hidden bg-mist">
               <Image src={e.image} alt="" fill priority={i === 0} sizes="(min-width: 1024px) 400px, 90vw" className="object-cover transition-transform duration-700 group-hover:scale-[1.03]" />
-              {e.credit && <span className="absolute bottom-0 right-0 bg-black/45 px-1.5 py-0.5 text-[0.625rem] text-white">Photo: {e.credit.author}, {e.credit.license}</span>}
+              {e.credit && <span className="absolute bottom-0 right-0 bg-black/45 px-1.5 py-0.5 text-[0.8125rem] text-white">Photo: {e.credit.author}, {e.credit.license}</span>}
             </span>
             <span className="mt-5 w-fit rounded-[4px] bg-brand-50 px-2 py-0.5 text-xs font-semibold text-brand-700">{e.group}</span>
             <span className="mt-2 text-2xl font-bold tracking-[-0.02em]">{e.title}</span>
