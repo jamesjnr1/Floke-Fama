@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Icon } from '@/components/ui/icon';
 import { getSite } from '@/lib/site';
+import { jsonLdHtml } from '@/lib/utils';
 
 /** Buying from Flokefama: the questions a hospital or lab asks before it buys. Editable in Sanity (Site content → Buying FAQ). */
 
@@ -62,7 +63,7 @@ export async function BuyingFaq() {
           </details>
         ))}
       </div>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdHtml(jsonLd) }} />
     </section>
   );
 }

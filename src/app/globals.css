@@ -304,10 +304,3 @@ select:not([multiple]):not([size]) {
 [data-patterns='off'] :is(.pattern-grid, .pattern-dots, .pattern-cross)::after {
   display: none;
 }
-
-/* The mouse wheel in the page-header scroll cue (ScrollCue) */
-@keyframes scroll-cue {
-  0% { transform: translateY(0); opacity: 0; }
-  30% { opacity: 1; }
-  100% { transform: translateY(12px); opacity: 0; }
-}

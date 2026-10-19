@@ -1,11 +1,11 @@
 'use server';
 
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { AccountsUnavailable, accountExists, findSavedAccount, hashPassword, saveAccount, type StoredAccount } from '@/lib/auth/accounts';
 import { nextFor, safeNext, SESSION_COOKIE, sessionCookie, signSession, type SessionUser } from '@/lib/auth/session';
-import { roleFor } from '@/lib/auth/users';
+import { isStaffEmail, roleFor, staffCodeOk } from '@/lib/auth/users';
 
 export interface LoginState {
   error?: string;
@@ -13,7 +13,7 @@ export interface LoginState {
 }
 
 export interface SignupState {
-  errors?: Partial<Record<'name' | 'organisation' | 'phone' | 'email' | 'password' | 'confirm' | 'form', string>>;
+  errors?: Partial<Record<'name' | 'organisation' | 'phone' | 'email' | 'password' | 'confirm' | 'staffCode' | 'form', string>>;
   values?: Record<string, string>;
 }
 
@@ -34,6 +34,7 @@ const signup = z
     confirm: z.string(),
     next: z.string().optional(),
     keep: z.literal('on').optional(),
+    staffCode: z.string().max(200).optional(),
     website: z.string().max(0).optional().or(z.literal('')), // honeypot
   })
   .refine((v) => v.password === v.confirm, { path: ['confirm'], message: 'The passwords don’t match' });
@@ -51,6 +52,34 @@ async function guarded<T>(work: () => Promise<T>): Promise<{ ok: true; value: T 
   }
 }
 
+/** Failed sign-ins per IP and email in the last window (per server instance): slows down password guessing. */
+const attempts = new Map<string, { count: number; first: number }>();
+const WINDOW = 15 * 60 * 1000;
+const MAX_ATTEMPTS = 8;
+
+async function attemptKey(email: string) {
+  const h = await headers();
+  const ip = (h.get('x-forwarded-for') ?? '').split(',')[0].trim() || h.get('x-real-ip') || 'unknown';
+  return `${ip}|${email.toLowerCase()}`;
+}
+
+function blocked(key: string) {
+  const a = attempts.get(key);
+  if (!a) return false;
+  if (Date.now() - a.first > WINDOW) {
+    attempts.delete(key);
+    return false;
+  }
+  return a.count >= MAX_ATTEMPTS;
+}
+
+function failed(key: string) {
+  const a = attempts.get(key);
+  if (!a || Date.now() - a.first > WINDOW) attempts.set(key, { count: 1, first: Date.now() });
+  else a.count += 1;
+  if (attempts.size > 5000) attempts.delete(attempts.keys().next().value!);
+}
+
 async function startSession(user: Omit<SessionUser, 'exp'>, next: string | undefined) {
   (await cookies()).set(SESSION_COOKIE, await signSession(user), sessionCookie(user));
   redirect(nextFor(user.role, safeNext(next)));
@@ -60,11 +89,17 @@ export async function login(_prev: LoginState, form: FormData): Promise<LoginSta
   const parsed = credentials.safeParse({ email: form.get('email'), password: form.get('password'), next: form.get('next') ?? undefined, keep: form.get('keep') ?? undefined });
   if (!parsed.success) return { error: parsed.error.issues[0]?.message, email: String(form.get('email') ?? '') };
 
+  const key = await attemptKey(parsed.data.email);
+  if (blocked(key)) return { error: 'Too many sign-in attempts. Please wait 15 minutes and try again.', email: parsed.data.email };
   const found = await guarded(() => findSavedAccount(parsed.data.email, parsed.data.password));
   if (!found.ok) return { error: UNAVAILABLE, email: parsed.data.email };
   const saved: StoredAccount | null = found.value;
   // One generic message: never reveal whether the email or the password was wrong.
-  if (!saved) return { error: 'That email and password don’t match an account.', email: parsed.data.email };
+  if (!saved) {
+    failed(key);
+    return { error: 'That email and password don’t match an account.', email: parsed.data.email };
+  }
+  attempts.delete(key);
 
   await startSession({ sub: saved.id, name: saved.name, email: saved.email, role: roleFor(saved.email), facility: saved.organisation, phone: saved.phone, keep: parsed.data.keep === 'on' }, parsed.data.next);
   return {};
@@ -81,6 +116,10 @@ export async function register(_prev: SignupState, form: FormData): Promise<Sign
   }
   const d = parsed.data;
   if (d.website) return {};
+  // Staff emails (ADMIN_EMAILS, ENGINEER_EMAILS) get staff access, so registering one needs the staff code.
+  if (isStaffEmail(d.email) && !staffCodeOk(d.staffCode ?? '')) {
+    return { errors: { staffCode: 'This email is reserved for Flokefama staff. Enter your staff code.' }, values };
+  }
   const taken = await guarded(() => accountExists(d.email));
   if (!taken.ok) return { errors: { form: UNAVAILABLE }, values };
   if (taken.value) return { errors: { email: 'There is already an account with this email. Sign in instead.' }, values };

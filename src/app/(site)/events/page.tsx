@@ -7,7 +7,7 @@ import { Icon } from '@/components/ui/icon';
 import { getEvents } from '@/lib/data';
 import { longDate } from '@/lib/events';
 import type { EventItem } from '@/lib/types';
-import { cn, siteUrl } from '@/lib/utils';
+import { cn, siteUrl, jsonLdHtml } from '@/lib/utils';
 
 // Re-render daily so events move from Upcoming to Past, and the countdown stays right.
 export const revalidate = 86400;
@@ -65,7 +65,7 @@ export default async function EventsPage() {
       </section>
 
       <NewsGrid />
-      {jsonLd.length > 0 && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />}
+      {jsonLd.length > 0 && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdHtml(jsonLd) }} />}
     </>
   );
 }
