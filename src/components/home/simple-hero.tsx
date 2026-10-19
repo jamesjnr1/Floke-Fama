@@ -1,9 +1,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Reveal } from '@/components/motion/reveal';
-import { LogoMark, LogoWordmark } from '@/components/layout/logo';
+import { LogoWordmark } from '@/components/layout/logo';
 import { Button } from '@/components/ui/button';
-import { Icon } from '@/components/ui/icon';
 import { getSite } from '@/lib/site';
 
 /** The moving row on the hero: products from the shop, as product photos on white, shown whole. */
@@ -31,9 +30,9 @@ export async function SimpleHero() {
         <Reveal className="flex flex-col items-center text-center">
           {/* The company name first, as its own logotype, then the claim */}
           <h1 className="flex max-w-[1100px] flex-col items-center text-white">
-            <span className="flex items-center gap-[0.35em] text-[clamp(3rem,1.6rem+4.4vw,5.5rem)]">
-              <LogoMark className="size-[1.05em]" />
-              <LogoWordmark className="h-[0.7em] text-white" />
+            {/* The wordmark alone: the menu bar already shows the symbol */}
+            <span className="flex items-center text-[clamp(3rem,1.6rem+4.4vw,5.5rem)]">
+              <LogoWordmark className="h-[0.75em] text-white" />
               <span className="sr-only">Flokefama,</span>
             </span>
             <span className="mt-4 text-[clamp(1.75rem,1.1rem+1.9vw,3rem)] font-extrabold leading-[1.08] tracking-[-0.035em]">
@@ -43,17 +42,13 @@ export async function SimpleHero() {
           <p className="no-justify mt-4 max-w-[760px] text-[1.0625rem] lg:max-w-[880px] leading-relaxed text-white/85">
             Sterilisation, laboratory, respiratory, imaging, monitoring and emergency equipment: supplied, installed and supported for hospitals and laboratories across Ghana and West Africa since 2008.
           </p>
-          <div className="mt-7 flex flex-wrap items-center justify-center gap-x-3 gap-y-5">
+          <div className="mt-7 flex flex-wrap justify-center gap-3">
             <Button asChild size="lg" arrow="up-right" className="bg-white text-[#00703A] hover:bg-white/90">
               <Link href="/products">Explore Solutions</Link>
             </Button>
             <Button asChild size="lg" variant="red" arrow="right">
               <Link href="/support">Contact Us</Link>
             </Button>
-            {/* A small text link to the CEO's profile and message on the About page */}
-            <Link href="/about#ceo" className="group flex w-full items-center justify-center gap-1.5 text-[0.9375rem] font-medium text-white/80 transition-colors hover:text-white lg:ml-4 lg:w-auto">
-              <span className="underline decoration-white/30 underline-offset-4 group-hover:decoration-white">A message from our CEO</span> <Icon name="fi-rr-arrow-small-right" />
-            </Link>
           </div>
         </Reveal>
 
