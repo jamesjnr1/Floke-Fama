@@ -40,7 +40,7 @@ export function EquipmentStrips() {
               style={{ flexBasis: 0 }}
               onMouseEnter={() => { setI(k); setPaused(true); }}
             >
-              <Link href="/services#equipment" onFocus={() => { setI(k); setPaused(true); }} className="group absolute inset-0 block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-300" aria-label={`${e.title}: see the equipment we supply`}>
+              <Link href="/products" onFocus={() => { setI(k); setPaused(true); }} className="group absolute inset-0 block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-300" aria-label={`${e.title}: see the equipment we supply`}>
                 <Image src={e.image} alt="" fill priority={k < 3} sizes="(min-width: 1280px) 640px, 50vw" className={cn('object-cover transition-transform duration-700', open && 'group-hover:scale-[1.02]')} />
                 <span aria-hidden className="absolute inset-x-0 bottom-0 h-3/5 bg-[linear-gradient(transparent,rgb(10_16_20/0.85))]" />
                 <span className={cn('absolute bottom-6 left-6 right-6 text-white transition-opacity duration-500', open ? 'opacity-100 delay-200' : 'opacity-0')}>
@@ -60,7 +60,7 @@ export function EquipmentStrips() {
       <ul className="-mx-5 flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-2 [scrollbar-width:none] md:hidden">
         {equipment.map((e, k) => (
           <li key={e.slug} className="w-[78%] shrink-0 snap-start">
-            <Link href="/services#equipment" className="relative block h-72 overflow-hidden rounded-[4px]">
+            <Link href="/products" className="relative block h-72 overflow-hidden rounded-[4px]">
               <Image src={e.image} alt="" fill priority={k === 0} sizes="80vw" className="object-cover" />
               <span aria-hidden className="absolute inset-x-0 bottom-0 h-3/5 bg-[linear-gradient(transparent,rgb(10_16_20/0.85))]" />
               <span className="absolute bottom-5 left-5 right-5 text-white">

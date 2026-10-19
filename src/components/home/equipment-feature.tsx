@@ -28,7 +28,7 @@ export function EquipmentFeature({ light = false, tint = true, fade = 'rgb(4 30 
 
   return (
     <div className="flex h-full min-h-0 flex-col gap-3" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocus={() => setPaused(true)} onBlur={() => setPaused(false)}>
-      <Link href="/services#equipment" className="group relative block min-h-[280px] flex-1 overflow-hidden shadow-[0_30px_60px_-30px_rgb(0_0_0/0.8)]" aria-label={`${e.title}: see the equipment we supply`}>
+      <Link href="/products" className="group relative block min-h-[280px] flex-1 overflow-hidden shadow-[0_30px_60px_-30px_rgb(0_0_0/0.8)]" aria-label={`${e.title}: see the equipment we supply`}>
         <AnimatePresence initial={false}>
           <motion.div key={e.slug} className="absolute inset-0" initial={{ opacity: 0, scale: 1.04 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} transition={{ duration: reduce ? 0 : 0.8, ease: [0.16, 1, 0.3, 1] }}>
             <Image src={e.image} alt="" fill priority={i === 0} sizes="(min-width: 1024px) 46vw, 100vw" className={grade} />
@@ -41,7 +41,7 @@ export function EquipmentFeature({ light = false, tint = true, fade = 'rgb(4 30 
           <span className="mt-1 block text-2xl font-bold tracking-[-0.02em] text-white md:text-3xl">{e.title}</span>
           <span className="mt-1.5 hidden max-w-lg text-white/80 sm:block">{e.text}</span>
         </span>
-        {e.credit && <span className="absolute right-2 top-2 bg-black/40 px-1.5 text-[0.625rem] text-white/85">Photo: {e.credit.author}, {e.credit.license}</span>}
+        {e.credit && <span className="absolute right-2 top-2 bg-black/40 px-1.5 text-[0.8125rem] text-white/85">Photo: {e.credit.author}, {e.credit.license}</span>}
       </Link>
       <div className="grid grid-cols-4 gap-2 sm:grid-cols-8" role="tablist" aria-label="Choose equipment">
         {equipment.map((x, n) => (
@@ -49,7 +49,7 @@ export function EquipmentFeature({ light = false, tint = true, fade = 'rgb(4 30 
             <span className={cn('relative block aspect-[4/3] overflow-hidden ring-2 transition', n === i ? (light ? 'ring-[#0f7a4b]' : 'ring-[#7fd1a5]') : 'ring-transparent opacity-70 hover:opacity-100')}>
               <Image src={x.image} alt="" fill sizes="120px" className={grade} />
             </span>
-            <span className={cn('mt-1.5 block truncate text-[0.6875rem]', light ? (n === i ? 'font-semibold text-[#0b2a1e]' : 'text-[#5d6a64]') : n === i ? 'text-white' : 'text-white/60')}>{x.title.replace(/ (machines|systems)$/, '')}</span>
+            <span className={cn('mt-1.5 block truncate text-[0.8125rem]', light ? (n === i ? 'font-semibold text-[#0b2a1e]' : 'text-[#5d6a64]') : n === i ? 'text-white' : 'text-white/60')}>{x.title.replace(/ (machines|systems)$/, '')}</span>
           </button>
         ))}
       </div>

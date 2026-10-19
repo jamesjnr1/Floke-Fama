@@ -2,8 +2,11 @@
  * Signed session tokens (HMAC-SHA-256 via Web Crypto), usable in middleware (edge) and on the server.
  * Token = base64url(JSON payload) + "." + base64url(signature).
  */
-/** client: a hospital or facility account (everyone who signs up on the site). engineer: Flokefama's service engineers. */
-export type Role = 'client' | 'engineer';
+/**
+ * client: a hospital or facility account (everyone who signs up on the site). engineer: Flokefama's service engineers.
+ * admin: the site administrators (the /admin console).
+ */
+export type Role = 'client' | 'engineer' | 'admin';
 
 export interface SessionUser {
   sub: string;
@@ -27,12 +30,13 @@ export const KEEP_TTL_SECONDS = 60 * 60 * 24 * 30;
 export const ttlFor = (user: { keep?: boolean }) => (user.keep ? KEEP_TTL_SECONDS : SESSION_TTL_SECONDS);
 
 /** Where each role lands after signing in. */
-export const roleHome: Record<Role, string> = { client: '/portal', engineer: '/engineer' };
+export const roleHome: Record<Role, string> = { client: '/portal', engineer: '/engineer', admin: '/admin' };
 
 /** Areas only one role may open. Everything else (shop, checkout, quotes) is open to any signed-in user. */
 export const roleAreas: { prefix: string; role: Role }[] = [
   { prefix: '/portal', role: 'client' },
   { prefix: '/engineer', role: 'engineer' },
+  { prefix: '/admin', role: 'admin' },
 ];
 
 /** Pages that need a signed-in user of any role. */
@@ -46,10 +50,15 @@ export function nextFor(role: Role, next: string | null) {
 }
 
 /**
- * IMPORTANT: set SESSION_SECRET (32+ random characters) in Vercel before real accounts or data
- * are connected. The fallback exists only so local development works without it.
+ * The key that signs sessions. Set SESSION_SECRET (32+ random characters) in Vercel. Without it a key is derived
+ * from the Appwrite API key (also private); with neither, production uses a random key per server instance, so
+ * sessions can never be forged (visitors may just be asked to sign in again). Only local development and previews
+ * fall back to a fixed key.
  */
-const secret = process.env.SESSION_SECRET?.trim() || 'flokefama-preview-only-secret--set-SESSION_SECRET';
+const secret =
+  process.env.SESSION_SECRET?.trim() ||
+  (process.env.APPWRITE_API_KEY?.trim() ? `ff-session:${process.env.APPWRITE_API_KEY.trim()}` : '') ||
+  (process.env.VERCEL_ENV === 'production' ? crypto.randomUUID() + crypto.randomUUID() : 'flokefama-preview-only-secret--set-SESSION_SECRET');
 
 const enc = new TextEncoder();
 let keyPromise: Promise<CryptoKey> | null = null;

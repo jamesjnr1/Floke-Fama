@@ -14,7 +14,6 @@ import { Overview } from '@/components/engineer/Overview';
 import { SystemsView } from '@/components/engineer/SystemsView';
 import { TicketsView } from '@/components/engineer/TicketsView';
 import { LogoMark, LogoWordmark } from '@/components/layout/logo';
-import { useAccessibility } from '@/components/layout/accessibility';
 import { Icon } from '@/components/ui/icon';
 import { useSite } from '@/components/site-provider';
 import { logout } from '@/lib/auth/actions';
@@ -73,7 +72,6 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
   const { contact } = useSite();
   const me = user.name;
   const initials = me.split(/\s+/).map((w) => w[0]).slice(0, 2).join('').toUpperCase();
-  const a11y = useAccessibility();
   const { theme, toggle } = useTheme();
   const { state, dispatch: rawDispatch, ready } = useEngineerStore(me);
   const [view, setView] = useState<View>('overview');
@@ -181,7 +179,7 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
         <Link href="/" aria-label="Flokefama home" className="flex h-[76px] items-center gap-1.5 border-b border-white/15 px-6">
           <LogoMark />
           <LogoWordmark className="h-[17px] text-white" />
-          <span className="ml-auto text-[0.6875rem] font-semibold uppercase tracking-[0.18em] text-white/80">Service</span>
+          <span className="ml-auto text-[0.8125rem] font-semibold uppercase tracking-[0.18em] text-white/80">Service</span>
         </Link>
         <div className="flex items-center gap-3 px-6 py-6">
           <span className="grid size-10 shrink-0 place-items-center rounded-md bg-white text-sm font-semibold text-[#006b42]">{initials}</span>
@@ -191,7 +189,7 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
           </span>
         </div>
         <nav aria-label="Engineer portal" className="px-3">
-          <p className="px-3 pb-2 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-white/60">Menu</p>
+          <p className="px-3 pb-2 text-[0.8125rem] font-semibold uppercase tracking-[0.14em] text-white/60">Menu</p>
           <ul className="space-y-0.5">
             {nav.map((n) => {
               const on = view === n.id;
@@ -222,7 +220,6 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
           <div className="space-y-2.5">
             <a href={contact.phoneHref} className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-phone-call" /> {contact.phone}</a>
             <AlertsSwitch className="text-white/80 hover:text-white" />
-            <button onClick={a11y.open} className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-universal-access" /> Accessibility</button>
             <Link href="/" className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-arrow-small-left" /> Flokefama website</Link>
             <form action={logout}>
               <button type="submit" className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-sign-out-alt" /> Sign out</button>

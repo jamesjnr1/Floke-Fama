@@ -142,7 +142,7 @@ export function Overview({ name, facility, assets, tickets, orders, onOpenTicket
         {stats.map((s, i) => (
           <li key={s.label} className={cn('min-w-0 border-line', i % 2 === 1 && 'border-l', i >= 2 && 'border-t xl:border-t-0', i === 2 && 'xl:border-l')}>
             <button onClick={() => onGo(s.go)} className="group flex h-full w-full flex-col p-5 text-left transition hover:bg-canvas/60 md:p-6">
-              <span className="text-[0.75rem] font-semibold uppercase tracking-[0.09em] text-ink-3">{s.label}</span>
+              <span className="text-[0.8125rem] font-semibold uppercase tracking-[0.09em] text-ink-3">{s.label}</span>
               <span className="mt-4 flex items-baseline gap-1">
                 <span className="text-[2.5rem] font-semibold leading-none tracking-[-0.04em] text-ink tabular-nums">{s.value}</span>
                 {s.suffix && <span className="text-sm text-ink-3">{s.suffix}</span>}
@@ -268,7 +268,7 @@ export function Overview({ name, facility, assets, tickets, orders, onOpenTicket
                     <button onClick={() => onOpenAsset(a.id)} className="flex w-full items-center gap-4 py-3.5 text-left">
                       <span className={cn('grid w-11 shrink-0 border-l-2 pl-2.5 leading-none', d < 0 ? 'border-[#c8213a]' : d <= 30 ? 'border-[#d39a1c]' : 'border-[#c4ccc8]')}>
                         <span className="text-lg font-semibold text-ink tabular-nums">{dt.getDate()}</span>
-                        <span className="mt-0.5 text-[0.6875rem] font-semibold uppercase tracking-wider text-ink-3">{months[dt.getMonth()]}</span>
+                        <span className="mt-0.5 text-[0.8125rem] font-semibold uppercase tracking-wider text-ink-3">{months[dt.getMonth()]}</span>
                       </span>
                       <span className="min-w-0 flex-1 truncate text-sm text-ink">{a.name}</span>
                       <span className={cn('shrink-0 text-xs', d < 0 ? 'font-semibold text-[#a3172a]' : d <= 30 ? 'font-medium text-[#7a5200]' : 'text-ink-3')}>{dueLabel(a.nextCalibration)}</span>
@@ -282,7 +282,7 @@ export function Overview({ name, facility, assets, tickets, orders, onOpenTicket
           {/* Support */}
           <div className="overflow-hidden rounded-xl bg-[linear-gradient(150deg,#00804f_0%,#005a38_100%)] text-white">
             <div className="p-6">
-              <p className="text-[0.75rem] font-semibold uppercase tracking-[0.09em] text-white/75">Flokefama support</p>
+              <p className="text-[0.8125rem] font-semibold uppercase tracking-[0.09em] text-white/75">Flokefama support</p>
               <p className="mt-3 text-lg font-semibold">Here when you need us.</p>
               <a href={contact.phoneHref} className="mt-4 block text-2xl font-semibold tracking-[-0.02em] hover:text-white/85">{contact.phone}</a>
               <a href={`mailto:${contact.support}`} className="mt-1 block text-sm text-white/70 hover:text-white">{contact.support}</a>

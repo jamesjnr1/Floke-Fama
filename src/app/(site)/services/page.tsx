@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import { Services } from '@/components/home/services';
 import { SitePageHero } from '@/components/layout/site-page-hero';
 import { CatalogueGrid } from '@/components/products/catalogue-grid';
-import { EquipmentShowcase } from '@/components/products/equipment-showcase';
 import { Reveal } from '@/components/motion/reveal';
 import { Globe, Headset, Link2, MapPin } from 'lucide-react';
 import { ToneIcon } from '@/components/ui/tone-icon';
@@ -26,9 +25,9 @@ export default async function ServicesPage() {
   return (
     <>
       <SitePageHero page="services" />
-      <Services />
-      <EquipmentShowcase />
+      {/* The product catalogue first, then the end-to-end solutions */}
       <CatalogueGrid />
+      <Services />
 
       <section id="why-choose-us" className="pattern-cross scroll-mt-28 bg-paper section-y">
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">

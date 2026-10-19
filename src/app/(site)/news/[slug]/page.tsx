@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import type { Article } from '@/data/articles';
 import { getArticles } from '@/lib/data';
-import { siteUrl } from '@/lib/utils';
+import { siteUrl, jsonLdHtml } from '@/lib/utils';
 
 // New posts published in Sanity get a page on first visit; existing ones are built ahead of time.
 export const revalidate = 600;
@@ -57,7 +57,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
   return (
     <>
       <ReadingProgress />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdHtml(jsonLd) }} />
 
       {/* Header */}
       <header className="relative isolate overflow-hidden bg-canvas pb-12 pt-32 md:pb-16 md:pt-40">

@@ -38,6 +38,8 @@ export async function POST(req: NextRequest) {
   if (!sameOrigin(req)) return NextResponse.json({ error: 'Not allowed.' }, { status: 403 });
   const s = await getSession();
   if (!s) return NextResponse.json({ error: 'Your session has ended. Please sign in again.' }, { status: 401 });
+  // The admin console only reads the desk; engineers and hospitals make the changes.
+  if (s.role === 'admin') return NextResponse.json({ error: 'Not allowed.' }, { status: 403 });
 
   const raw = await req.text();
   if (raw.length > MAX_BODY) return NextResponse.json({ error: 'That is too long.' }, { status: 413 });

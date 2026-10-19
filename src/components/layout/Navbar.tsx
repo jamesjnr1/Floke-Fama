@@ -64,7 +64,7 @@ export function Navbar() {
   const session = useSession();
   const user = session.user;
   const home = user ? roleHome[user.role] : '/login';
-  const homeLabel = user?.role === 'engineer' ? 'Engineer portal' : 'Hospital dashboard';
+  const homeLabel = user?.role === 'engineer' ? 'Engineer portal' : user?.role === 'admin' ? 'Admin console' : 'Hospital dashboard';
   useMotionValueEvent(scrollY, 'change', (y) => setScrolled(y > 24));
   useEffect(() => {
     setOpen(false);
