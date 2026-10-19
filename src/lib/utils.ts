@@ -36,3 +36,8 @@ function normalizeUrl(value: string | undefined, fallback: string): string {
     return fallback;
   }
 }
+
+/** JSON for a <script type="application/ld+json">: `<` escaped so text from the CMS can never close the script tag. */
+export function jsonLdHtml(data: unknown) {
+  return JSON.stringify(data).replace(/</g, '\\u003c');
+}

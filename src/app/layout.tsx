@@ -8,7 +8,7 @@ import { bootScript, revealNowScript } from '@/lib/a11y';
 import { SiteProvider } from '@/components/site-provider';
 import { getSite } from '@/lib/site';
 import type { Contact } from '@/lib/site-content';
-import { allowIndexing, siteUrl } from '@/lib/utils';
+import { allowIndexing, siteUrl, jsonLdHtml } from '@/lib/utils';
 import '@/styles/uicons/uicons.css';
 import './globals.css';
 
@@ -72,7 +72,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <ServiceWorkerRegister />
         {/* Vercel Web Analytics: only on Vercel, where its script is served */}
         {process.env.VERCEL && <Analytics />}
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationLd(site.contact)) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdHtml(organizationLd(site.contact)) }} />
         <script dangerouslySetInnerHTML={{ __html: revealNowScript }} />
       </body>
     </html>

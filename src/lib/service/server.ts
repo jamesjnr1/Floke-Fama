@@ -71,12 +71,13 @@ async function saveChanges(before: ServiceState, after: ServiceState) {
 }
 
 /** Who is acting, from the session (never from the request). */
-export const actorFor = (s: SessionUser): Actor => ({ name: s.name, role: s.role, facility: s.role === 'client' ? s.facility ?? s.name : undefined });
+export const actorFor = (s: SessionUser): Actor => ({ name: s.name, role: s.role === 'client' ? 'client' : 'engineer', facility: s.role === 'client' ? s.facility ?? s.name : undefined });
 
 const facilityOf = (s: SessionUser) => s.facility ?? s.name;
 
 /** What an account may see: engineers see every facility; a hospital only its own equipment and requests. */
 export function visibleTo(s: SessionUser, state: ServiceState): ServiceState {
+  if (s.role === 'admin') return state; // the admin console sees everything (read-only)
   if (s.role === 'engineer') return { ...state, notifications: state.notifications.filter((n) => n.audience === 'engineer'), purchases: [] };
   const assets = state.assets.filter((a) => a.facility === facilityOf(s));
   const ids = new Set(assets.map((a) => a.id));
