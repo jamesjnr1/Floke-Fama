@@ -3,23 +3,18 @@ import Link from 'next/link';
 import { Reveal } from '@/components/motion/reveal';
 import { LogoMark, LogoWordmark } from '@/components/layout/logo';
 import { Button } from '@/components/ui/button';
-import { equipment } from '@/data/equipment';
+import { getSite } from '@/lib/site';
 
-/**
- * The moving row on the hero: the first six large systems (MRI to incubators), then everyday essentials from the
- * shop, so visitors see both. Shop items are product photos on white, shown whole.
- */
-const essentials = [
+/** The moving row on the hero: products from the shop, as product photos on white, shown whole. */
+const heroItems = [
   { slug: 'autoclave-machine-35l', title: 'Autoclave Machine 35L' },
   { slug: 'biological-microscope', title: 'Biological Microscope' },
   { slug: 'cpap-machine', title: 'CPAP Machine' },
   { slug: 'dp-10-ultrasound', title: 'DP-10 Ultrasound' },
-];
-const heroItems = [
-  ...equipment.slice(0, 6).map((e) => ({ key: e.slug, title: e.title, image: e.image, href: '/products', cutout: false })),
-  ...essentials.map((p) => ({ key: p.slug, title: p.title, image: `/images/products/${p.slug}.webp`, href: `/products/${p.slug}`, cutout: true })),
-];
-import { getSite } from '@/lib/site';
+  { slug: 'omron-m7', title: 'Omron M7 Blood Pressure Monitor' },
+  { slug: 'oxygen-cylinder-40l', title: 'Oxygen Cylinder 40L' },
+  { slug: 'emergency-trolley', title: 'Emergency Trolley' },
+].map((p) => ({ key: p.slug, title: p.title, image: `/images/products/${p.slug}.webp`, href: `/products/${p.slug}`, cutout: true }));
 
 /**
  * The 'simple' hero: everything centred on the green gradient (headline, lead and the two actions), with the
