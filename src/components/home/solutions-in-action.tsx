@@ -1,7 +1,9 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
 import { Reveal } from '@/components/motion/reveal';
+import { Icon } from '@/components/ui/icon';
 import { prefersReducedMotion } from '@/lib/a11y';
 
 /**
@@ -70,9 +72,16 @@ export function SolutionsInAction() {
     <section aria-labelledby="in-action-title" className="pattern-grid bg-paper section-y">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal className="grid gap-5 lg:grid-cols-[1fr_1fr] lg:items-end lg:gap-16">
-          <h2 id="in-action-title" className="display text-[clamp(2rem,1.2rem+2.8vw,3.5rem)] text-ink">
-            Healthcare Solutions in Action
-          </h2>
+          <div>
+            <h2 id="in-action-title" className="display text-[clamp(2rem,1.2rem+2.8vw,3.5rem)] text-ink">
+              Healthcare Solutions in Action
+            </h2>
+            {/* A small text link to the CEO's profile and message on the About page */}
+            <Link href="/about#ceo" className="group mt-4 inline-flex items-center gap-1.5 text-[1.0625rem] font-semibold text-brand-700 transition-colors hover:text-brand-800">
+              <span className="underline decoration-brand-700/30 underline-offset-4 group-hover:decoration-brand-800">A message from our CEO</span>
+              <Icon name="fi-rr-arrow-small-right" className="transition-transform group-hover:translate-x-0.5" />
+            </Link>
+          </div>
           <p className="no-justify max-w-xl text-lg leading-relaxed text-ink-3">
             From our laboratories and warehouse in Accra to hospitals across Ghana and West Africa: see how Flokefama supplies, installs and maintains the equipment that keeps care running.
           </p>
