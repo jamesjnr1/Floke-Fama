@@ -66,7 +66,7 @@ export function Overview({ state, me, onOpenTicket, onOpenAsset, onGo, onLogFaul
         {stats.map((s, i) => (
           <li key={s.label} className={cn('min-w-0 border-line', i % 2 === 1 && 'border-l', i >= 2 && 'border-t xl:border-t-0', i === 2 && 'xl:border-l')}>
             <button onClick={() => onGo(s.go)} className="flex h-full w-full flex-col p-5 text-left transition hover:bg-canvas md:p-6">
-              <span className="text-[0.75rem] font-semibold uppercase tracking-[0.09em] text-ink-3">{s.label}</span>
+              <span className="text-[0.8125rem] font-semibold uppercase tracking-[0.09em] text-ink-3">{s.label}</span>
               <span className="mt-4 flex items-baseline gap-1">
                 <span className="text-[2.5rem] font-semibold leading-none tracking-[-0.04em] text-ink tabular-nums">{s.value}</span>
                 {s.suffix && <span className="text-sm text-ink-3">{s.suffix}</span>}
@@ -193,7 +193,7 @@ export function Overview({ state, me, onOpenTicket, onOpenAsset, onGo, onLogFaul
                     <button onClick={() => onOpenAsset(a.id)} className="flex w-full items-center gap-4 py-3.5 text-left">
                       <span className={cn('grid w-11 shrink-0 border-l-2 pl-2.5 leading-none', d < 0 ? 'border-bad' : d <= 30 ? 'border-warn' : 'border-line')}>
                         <span className="text-lg font-semibold text-ink tabular-nums">{dt.getDate()}</span>
-                        <span className="mt-0.5 text-[0.6875rem] font-semibold uppercase tracking-wider text-ink-3">{months[dt.getMonth()]}</span>
+                        <span className="mt-0.5 text-[0.8125rem] font-semibold uppercase tracking-wider text-ink-3">{months[dt.getMonth()]}</span>
                       </span>
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-sm text-ink">{a.name}</span>

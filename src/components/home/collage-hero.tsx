@@ -98,7 +98,7 @@ export async function CollageHero({ feature = false, tone = 'green' }: { feature
           {equipment.map((e, k) => (
             <Link
               key={e.slug}
-              href="/services#equipment"
+              href="/products"
               className={cn('group relative aspect-[4/3] overflow-hidden shadow-[0_20px_40px_-20px_rgb(0_0_0/0.7)] lg:aspect-auto', (k === 0 || k === 7) && 'col-span-2', k === 7 && 'sm:col-span-1', span[k])}
             >
               <Image
@@ -114,7 +114,7 @@ export async function CollageHero({ feature = false, tone = 'green' }: { feature
               <span aria-hidden className="absolute inset-0 bg-[linear-gradient(200deg,rgb(255_244_225/0.10),transparent_45%)] mix-blend-soft-light" />
               <span aria-hidden className="absolute inset-x-0 bottom-0 h-1/2 bg-[linear-gradient(transparent,rgb(4_30_18/0.78))]" />
               <span className={cn('absolute bottom-3 left-3 font-semibold text-white', k === 0 ? 'text-xl' : 'text-sm')}>{e.title}</span>
-              {e.credit && <span className="absolute right-1.5 top-1.5 bg-black/40 px-1 text-[0.5625rem] text-white/85">{e.credit.author}, {e.credit.license}</span>}
+              {e.credit && <span className="absolute right-1.5 top-1.5 bg-black/40 px-1 text-[0.8125rem] text-white/85">{e.credit.author}, {e.credit.license}</span>}
             </Link>
           ))}
         </div>

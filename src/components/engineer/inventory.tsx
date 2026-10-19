@@ -158,7 +158,7 @@ function Sheet({ asset, tickets, onLogFault, onRecord, onOpenTicket }: {
                 <caption className="sr-only">Certificate history</caption>
                 <thead>
                   <tr className="border-b border-line bg-canvas text-left">
-                    {['Certificate', 'Date', 'Result', ''].map((x) => <th key={x} scope="col" className="px-4 py-3 text-[0.75rem] font-semibold uppercase tracking-[0.08em] text-ink-3">{x}</th>)}
+                    {['Certificate', 'Date', 'Result', ''].map((x) => <th key={x} scope="col" className="px-4 py-3 text-[0.8125rem] font-semibold uppercase tracking-[0.08em] text-ink-3">{x}</th>)}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-line">

@@ -32,7 +32,7 @@ export function EquipmentSpotlight({ children }: { children: ReactNode }) {
   return (
     <>
       {/* The photo: full height on large screens, blended into the background on the left */}
-      <Link href="/services#equipment" aria-label={`${e.title}: see the equipment we supply`} className="relative -z-10 order-last block aspect-[4/3] overflow-hidden lg:absolute lg:inset-y-0 lg:left-[40%] lg:right-0 lg:aspect-auto lg:[mask-image:linear-gradient(90deg,transparent_0%,rgb(0_0_0/0.35)_18%,black_50%)]" {...hold}>
+      <Link href="/products" aria-label={`${e.title}: see the equipment we supply`} className="relative -z-10 order-last block aspect-[4/3] overflow-hidden lg:absolute lg:inset-y-0 lg:left-[40%] lg:right-0 lg:aspect-auto lg:[mask-image:linear-gradient(90deg,transparent_0%,rgb(0_0_0/0.35)_18%,black_50%)]" {...hold}>
         <AnimatePresence initial={false}>
           <motion.div key={e.slug} className="absolute inset-0" initial={{ opacity: 0, scale: 1.05 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} transition={{ duration: reduce ? 0 : 1.1, ease: [0.16, 1, 0.3, 1] }}>
             <Image src={e.image} alt="" fill priority={i === 0} sizes="(min-width: 1024px) 56vw, 100vw" className={grade} />
@@ -46,7 +46,7 @@ export function EquipmentSpotlight({ children }: { children: ReactNode }) {
           <span className="block text-sm font-medium text-[#7fd1a5]">{e.group}</span>
           <span className="mt-0.5 block text-2xl font-bold tracking-[-0.02em] text-white">{e.title}</span>
         </span>
-        {e.credit && <span className="absolute bottom-2 right-2 bg-black/40 px-1.5 text-[0.625rem] text-white/85">Photo: {e.credit.author}, {e.credit.license}</span>}
+        {e.credit && <span className="absolute bottom-2 right-2 bg-black/40 px-1.5 text-[0.8125rem] text-white/85">Photo: {e.credit.author}, {e.credit.license}</span>}
       </Link>
 
       <div className="mx-auto grid w-full max-w-[1440px] flex-1 items-center gap-10 px-5 py-14 md:px-10 lg:grid-cols-[minmax(0,1.2fr)_290px_minmax(0,0.55fr)] lg:gap-10 lg:px-16 lg:py-10">

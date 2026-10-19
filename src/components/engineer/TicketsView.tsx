@@ -187,7 +187,7 @@ function TicketDetail({ ticket: t, state, me, dispatch, onResolve, onOpenAsset }
         {/* Next action */}
         {t.status !== 'resolved' && (
           <div className="mt-6 flex flex-wrap items-center gap-2 rounded-lg border border-line bg-canvas p-3">
-            <span className="mr-auto pl-1 text-[0.75rem] font-semibold uppercase tracking-[0.08em] text-ink-3">Next step</span>
+            <span className="mr-auto pl-1 text-[0.8125rem] font-semibold uppercase tracking-[0.08em] text-ink-3">Next step</span>
             {(t.status === 'new' || (!mine && t.status !== 'onsite')) && (
               <PrimaryButton onClick={() => dispatch({ type: 'assign', id: t.id, engineer: me })}>
                 <Icon name="fi-rr-user-add" /> {t.status === 'new' ? 'Assign to me' : 'Take over'}

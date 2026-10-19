@@ -42,7 +42,7 @@ export function CatalogueBook() {
           <LogoMark className="size-7" />
           <LogoWordmark className="h-[14px] text-[#00703A]" />
         </div>
-        <p className="mt-8 text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-brand-700">What we have</p>
+        <p className="mt-8 text-[0.8125rem] font-semibold uppercase tracking-[0.12em] text-brand-700">What we have</p>
         <p className="mt-1.5 text-[2rem] font-extrabold leading-[1.05] tracking-[-0.03em]">
           Product
           <br />
@@ -62,7 +62,7 @@ export function CatalogueBook() {
         onFocus={() => setPaused(true)}
         onBlur={() => setPaused(false)}
       >
-        <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-ink-3">Medical equipment we supply</p>
+        <p className="text-[0.8125rem] font-semibold uppercase tracking-[0.12em] text-ink-3">Medical equipment we supply</p>
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={e.slug}
@@ -72,18 +72,18 @@ export function CatalogueBook() {
             exit={{ opacity: 0, x: -18 }}
             transition={{ duration: reduce ? 0 : 0.45, ease: [0.16, 1, 0.3, 1] }}
           >
-            <Link href="/services#equipment" className="group flex min-h-0 flex-1 flex-col" aria-label={`${e.title}: see the equipment we supply`}>
+            <Link href="/products" className="group flex min-h-0 flex-1 flex-col" aria-label={`${e.title}: see the equipment we supply`}>
               <div className="relative min-h-0 flex-1 overflow-hidden bg-mist">
                 <Image src={e.image} alt="" fill sizes="(min-width: 768px) 320px, 90vw" className="object-cover transition-transform duration-700 group-hover:scale-[1.03]" />
-                {e.credit && <span className="absolute bottom-0 right-0 bg-black/45 px-1.5 py-0.5 text-[0.5625rem] text-white">Photo: {e.credit.author}, {e.credit.license}</span>}
+                {e.credit && <span className="absolute bottom-0 right-0 bg-black/45 px-1.5 py-0.5 text-[0.8125rem] text-white">Photo: {e.credit.author}, {e.credit.license}</span>}
               </div>
-              <span className="mt-3 w-fit rounded-[4px] bg-brand-50 px-2 py-0.5 text-[0.6875rem] font-semibold text-brand-700">{e.group}</span>
+              <span className="mt-3 w-fit rounded-[4px] bg-brand-50 px-2 py-0.5 text-[0.8125rem] font-semibold text-brand-700">{e.group}</span>
               <span className="mt-1.5 text-lg font-bold leading-tight tracking-[-0.01em]">{e.title}</span>
               <span className="mt-1 line-clamp-2 text-[0.8125rem] leading-snug text-ink-3">{e.text}</span>
             </Link>
           </motion.div>
         </AnimatePresence>
-        <div className="mt-3 flex items-center justify-end text-[0.75rem] text-ink-3">
+        <div className="mt-3 flex items-center justify-end text-[0.8125rem] text-ink-3">
           <span className="flex items-center gap-1">
             <button type="button" onClick={() => go(-1)} aria-label="Previous equipment" className="grid size-7 place-items-center rounded-[4px] text-ink-2 transition hover:bg-ink/[0.06]">{arrow('left')}</button>
             <span className="tabular-nums" aria-live="polite">{String(i + 1).padStart(2, '0')} / {String(n).padStart(2, '0')}</span>

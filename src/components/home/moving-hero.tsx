@@ -10,7 +10,7 @@ function Photos({ hidden = false }: { hidden?: boolean }) {
     <>
       {equipment.map((e, k) => (
         <li key={`${e.slug}${hidden ? '-2' : ''}`} aria-hidden={hidden || undefined} className="h-full shrink-0 pr-3">
-          <Link href="/services#equipment" tabIndex={hidden ? -1 : undefined} className="group relative block h-full w-[clamp(260px,24vw,420px)] overflow-hidden">
+          <Link href="/products" tabIndex={hidden ? -1 : undefined} className="group relative block h-full w-[clamp(260px,24vw,420px)] overflow-hidden">
             <Image src={e.image} alt={hidden ? '' : e.title} fill priority={!hidden && k < 4} sizes="(min-width: 1024px) 420px, 260px" className="object-cover [filter:saturate(0.85)] transition-[filter,transform] duration-500 group-hover:scale-[1.03] group-hover:[filter:saturate(1)]" />
             <span aria-hidden className="absolute inset-x-0 bottom-0 h-1/3 bg-[linear-gradient(transparent,rgb(4_40_24/0.75))]" />
             <span className="absolute bottom-4 left-4 text-[0.9375rem] font-semibold text-white">{e.title}</span>

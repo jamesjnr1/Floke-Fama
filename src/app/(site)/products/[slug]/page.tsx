@@ -6,7 +6,7 @@ import { ProductGallery } from '@/components/products/product-gallery';
 import { SpecActions, SpecHeader, SpecTabs } from '@/components/products/spec-sheet';
 import { Icon } from '@/components/ui/icon';
 import { getCategories, getProduct, getProducts } from '@/lib/data';
-import { siteUrl } from '@/lib/utils';
+import { siteUrl, jsonLdHtml } from '@/lib/utils';
 
 export const revalidate = 600;
 
@@ -73,7 +73,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
       </div>
       <RelatedProducts products={related} category={category} />
       <MobileQuoteBar product={product} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdHtml(jsonLd) }} />
     </div>
   );
 }

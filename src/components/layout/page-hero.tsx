@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { LogoMark, LogoWordmark } from '@/components/layout/logo';
 import { Reveal } from '@/components/motion/reveal';
+import { ScrollCue } from '@/components/layout/scroll-cue';
 import { headerImageSrc } from '@/lib/header-image';
 
 /**
@@ -61,6 +62,7 @@ export function PageHero({
           </Reveal>
         )}
       </div>
+      <ScrollCue />
     </section>
   );
 }

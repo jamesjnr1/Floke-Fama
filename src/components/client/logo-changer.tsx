@@ -48,7 +48,7 @@ export function LogoChanger({ facility, className, fallbackClassName, children }
       {children && (
         <div className="min-w-0">
           {children}
-          <p className="mt-0.5 flex gap-2 text-[0.6875rem] text-white/75">
+          <p className="mt-0.5 flex gap-2 text-[0.8125rem] text-white/75">
             <button type="button" onClick={() => input.current?.click()} className="underline-offset-2 hover:text-white hover:underline">
               {logo ? 'Change logo' : 'Add your logo'}
             </button>
