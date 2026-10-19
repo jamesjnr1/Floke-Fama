@@ -14,7 +14,7 @@ export const fieldClass =
   'w-full rounded-lg border border-line bg-paper px-3 text-sm text-ink outline-none transition placeholder:text-ink-3/70 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15';
 
 /** Small square status tag (no pills). Pair with a colour from status.ts. */
-export const tag = 'inline-flex shrink-0 items-center gap-1.5 rounded-[4px] px-2 py-1 text-[0.6875rem] font-semibold uppercase leading-none tracking-[0.07em]';
+export const tag = 'inline-flex shrink-0 items-center gap-1.5 rounded-[4px] px-2 py-1 text-[0.8125rem] font-semibold uppercase leading-none tracking-[0.07em]';
 
 export function SectionLabel({ children, className }: { children: React.ReactNode; className?: string }) {
   return <h2 className={cn('text-[0.8125rem] font-semibold uppercase tracking-[0.08em] text-ink-3', className)}>{children}</h2>;

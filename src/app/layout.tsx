@@ -2,9 +2,9 @@ import type { Metadata, Viewport } from 'next';
 import { Instrument_Serif, Mona_Sans, Plus_Jakarta_Sans, Space_Grotesk } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
 import { Toaster } from 'sonner';
-import { AccessibilityProvider } from '@/components/layout/accessibility';
+import { MotionProvider } from '@/components/layout/motion-provider';
 import { ServiceWorkerRegister } from '@/components/layout/sw-register';
-import { a11yBootScript, revealNowScript } from '@/lib/a11y';
+import { bootScript, revealNowScript } from '@/lib/a11y';
 import { SiteProvider } from '@/components/site-provider';
 import { getSite } from '@/lib/site';
 import type { Contact } from '@/lib/site-content';
@@ -50,15 +50,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en-GH" data-patterns={process.env.NEXT_PUBLIC_PATTERNS === 'off' ? 'off' : undefined} className={`${jakarta.variable} ${grotesk.variable} ${serif.variable} ${mona.variable}`} suppressHydrationWarning>
       <head>
-        {/* Apply saved accessibility preferences before first paint */}
-        <script dangerouslySetInnerHTML={{ __html: a11yBootScript }} />
+        <script dangerouslySetInnerHTML={{ __html: bootScript }} />
       </head>
       <body className="font-sans">
         <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-brand-600 focus:px-4 focus:py-2 focus:text-white">
           Skip to content
         </a>
         <SiteProvider value={site}>
-          <AccessibilityProvider>{children}</AccessibilityProvider>
+          <MotionProvider>{children}</MotionProvider>
         </SiteProvider>
         <Toaster
           position="top-right"

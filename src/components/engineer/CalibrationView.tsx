@@ -21,7 +21,7 @@ export function CalibrationView({ state, onRecord, onOpenAsset }: { state: Engin
       <ul className="grid grid-cols-3 overflow-hidden rounded-xl border border-line bg-paper">
         {stats.map((s, i) => (
           <li key={s.label} className={cn('min-w-0 p-5 md:p-6', i > 0 && 'border-l border-line')}>
-            <p className="text-[0.75rem] font-semibold uppercase tracking-[0.09em] text-ink-3">{s.label}</p>
+            <p className="text-[0.8125rem] font-semibold uppercase tracking-[0.09em] text-ink-3">{s.label}</p>
             <p className={cn('mt-3 text-[2rem] font-semibold leading-none tracking-[-0.04em] tabular-nums', s.tone)}>{s.value}</p>
           </li>
         ))}
@@ -34,7 +34,7 @@ export function CalibrationView({ state, onRecord, onOpenAsset }: { state: Engin
             <thead>
               <tr className="border-b border-line bg-canvas text-left">
                 {['System', 'Facility', 'Last', 'Next due', 'Interval', ''].map((h) => (
-                  <th key={h} scope="col" className="px-5 py-3 text-[0.75rem] font-semibold uppercase tracking-[0.08em] text-ink-3">{h}</th>
+                  <th key={h} scope="col" className="px-5 py-3 text-[0.8125rem] font-semibold uppercase tracking-[0.08em] text-ink-3">{h}</th>
                 ))}
               </tr>
             </thead>

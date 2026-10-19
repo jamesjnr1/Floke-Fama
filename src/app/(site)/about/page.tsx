@@ -47,7 +47,7 @@ export default async function AboutPage() {
       </section>
 
       {/* Who we are */}
-      <section id="who-we-are" className="pattern-grid scroll-mt-28 bg-paper section-y">
+      <section id="who-we-are" className="pattern-grid scroll-mt-28 bg-paper pb-16 pt-12 md:pb-32 md:pt-16">
         {/* The heading across the top; under it the text and actions on the left, the head-office photo larger on the right, both starting on the same line */}
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
           <Reveal>

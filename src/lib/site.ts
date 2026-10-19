@@ -60,7 +60,10 @@ function merge(raw: Raw | null): SiteContent {
       const h = clean(raw.headers?.[k]);
       // A new photo from the Studio is centred; the built-in ones keep their tuned crop.
       // A header photo chosen in the code (lockImage) wins over a Studio photo; the Studio text still applies.
-      if (d.pageHeaders[k].lockImage) return [k, { ...d.pageHeaders[k], ...h, image: d.pageHeaders[k].image, position: d.pageHeaders[k].position }];
+      const base = d.pageHeaders[k];
+      const title = base.lockTitle ? { title: base.title, highlight: base.highlight } : {};
+      if (base.lockImage) return [k, { ...base, ...h, image: base.image, position: base.position, ...title }];
+      if (base.lockTitle) return [k, { ...base, ...h, ...(h.image ? { position: '50% 40%' } : {}), ...title }];
       return [k, { ...d.pageHeaders[k], ...h, ...(h.image ? { position: '50% 40%' } : {}) }];
     }),
   ) as Record<PageKey, PageHeader>;
