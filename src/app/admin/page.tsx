@@ -65,54 +65,106 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
   const data = await loadAdminData();
   const now = data.source === 'sample' ? Date.UTC(2026, 9, 19, 12) : Date.now();
 
+  const initials = session.name.split(/\s+/).map((w) => w[0]).slice(0, 2).join('').toUpperCase();
+  const menu = tabs.filter((t) => t.id !== 'system');
+  const href = (id: Tab) => (id === 'overview' ? '/admin' : `/admin?tab=${id}`);
+  const item = (active: boolean) =>
+    cn('flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-[0.9375rem] font-medium transition', active ? 'bg-brand-50 text-brand-800 shadow-[inset_0_0_0_1px_rgb(0_122_77/0.12)]' : 'text-ink-3 hover:bg-[#f1f4f2] hover:text-ink');
+
   return (
-    <div className="min-h-svh bg-canvas text-ink">
-      <header className="sticky top-0 z-30 border-b border-white/10 bg-midnight text-white">
-        <div className="mx-auto flex h-16 max-w-[1440px] items-center gap-4 px-5 md:px-8">
-          <Link href="/" className="flex items-center gap-2">
-            <LogoMark className="size-8" />
-            <LogoWordmark className="h-[18px] text-white" />
+    <div className="min-h-svh bg-[#e9eeeb] p-3 text-ink md:p-4">
+      <div className="mx-auto flex max-w-[1600px] gap-4">
+        {/* Sidebar */}
+        <aside className="sticky top-4 hidden h-[calc(100svh-2rem)] w-64 shrink-0 flex-col rounded-[1.75rem] bg-white p-5 shadow-[0_1px_2px_rgb(16_25_30/0.04)] lg:flex">
+          <Link href="/" className="flex items-center gap-2 px-2 pt-1">
+            <LogoMark className="size-9" />
+            <LogoWordmark className="h-[19px] text-brand-800" />
           </Link>
-          <span className="whitespace-nowrap border-l border-white/20 pl-4 text-[0.9375rem] font-semibold tracking-wide">Admin<span className="hidden sm:inline"> console</span></span>
-          <span className="ml-auto hidden text-[0.9375rem] text-white/70 sm:block">{session.name}</span>
-          <form action={logout}>
-            <button className="h-10 whitespace-nowrap border border-white/25 px-4 text-[0.9375rem] font-medium hover:bg-white/10">Sign out</button>
-          </form>
-        </div>
-        <nav aria-label="Admin sections" className="mx-auto flex max-w-[1440px] gap-1 overflow-x-auto px-3 md:px-6">
-          {tabs.map((t) => (
-            <Link
-              key={t.id}
-              href={t.id === 'overview' ? '/admin' : `/admin?tab=${t.id}`}
-              aria-current={t.id === tab ? 'page' : undefined}
-              className={cn('flex shrink-0 items-center gap-2 border-b-2 px-3 py-3 text-[0.9375rem] font-medium transition', t.id === tab ? 'border-brand-300 text-white' : 'border-transparent text-white/65 hover:text-white')}
-            >
-              <Icon name={t.icon} /> {t.label}
+          <p className="mt-9 px-3.5 text-[0.8125rem] font-semibold tracking-[0.08em] text-ink-3">MENU</p>
+          <nav aria-label="Admin sections" className="mt-2 space-y-1">
+            {menu.map((t) => (
+              <Link key={t.id} href={href(t.id)} aria-current={t.id === tab ? 'page' : undefined} className={item(t.id === tab)}>
+                <Icon name={t.icon} className={t.id === tab ? 'text-brand-600' : ''} /> {t.label}
+              </Link>
+            ))}
+          </nav>
+          <p className="mt-8 px-3.5 text-[0.8125rem] font-semibold tracking-[0.08em] text-ink-3">GENERAL</p>
+          <div className="mt-2 space-y-1">
+            <Link href={href('system')} aria-current={tab === 'system' ? 'page' : undefined} className={item(tab === 'system')}>
+              <Icon name="fi-rr-database" className={tab === 'system' ? 'text-brand-600' : ''} /> Database &amp; settings
             </Link>
-          ))}
-        </nav>
-      </header>
+            <Link href="/" className={item(false)}>
+              <Icon name="fi-rr-globe" /> View website
+            </Link>
+            <form action={logout}>
+              <button className={cn(item(false), 'w-full')}>
+                <Icon name="fi-rr-sign-out-alt" /> Sign out
+              </button>
+            </form>
+          </div>
 
-      <main className="mx-auto max-w-[1440px] px-5 py-8 md:px-8 md:py-10">
-        {data.source === 'off' && (
-          <Notice tone="warn">
-            The database (Appwrite) isn’t connected, so there is nothing to show yet. Add APPWRITE_ENDPOINT, APPWRITE_PROJECT_ID and APPWRITE_API_KEY in Vercel, then run <code>npm run appwrite:setup</code>. See <Link href="/admin?tab=system" className="font-semibold underline">Database &amp; settings</Link>.
-          </Notice>
-        )}
-        {data.source === 'sample' && <Notice tone="info">Sample data for a local preview: the database isn’t connected on this computer. The live site shows the real figures.</Notice>}
-        {data.tables.some((t) => !t.ok) && (
-          <Notice tone="warn">
-            Some tables couldn’t be read. See <Link href="/admin?tab=system" className="font-semibold underline">Database &amp; settings</Link>.
-          </Notice>
-        )}
+          <div className="relative mt-auto overflow-hidden rounded-2xl bg-[radial-gradient(120%_90%_at_10%_0%,#0d7a4b_0%,#06482a_55%,#032a19_100%)] p-5 text-white">
+            <div aria-hidden className="absolute -right-10 -top-10 size-36 rounded-full border border-white/10" />
+            <div aria-hidden className="absolute -right-4 top-6 size-24 rounded-full border border-white/10" />
+            <span className="grid size-9 place-items-center rounded-full bg-white/10"><Icon name="fi-rr-download" /></span>
+            <p className="mt-4 text-lg font-semibold leading-tight">Export your data</p>
+            <p className="mt-1 text-[0.875rem] text-white/70">Every order as a spreadsheet, ready for Excel.</p>
+            <a href="/api/admin/export?table=orders" className="mt-4 flex h-11 items-center justify-center rounded-xl bg-white text-[0.9375rem] font-semibold text-brand-800 transition hover:bg-brand-50">
+              Download orders
+            </a>
+          </div>
+        </aside>
 
-        {tab === 'overview' && <Overview data={data} now={now} />}
-        {tab === 'orders' && <Orders data={data} status={params.status} q={params.q} />}
-        {tab === 'accounts' && <Accounts data={data} q={params.q} />}
-        {tab === 'products' && <Products data={data} />}
-        {tab === 'service' && <Service data={data} now={now} />}
-        {tab === 'system' && <System data={data} />}
-      </main>
+        <div className="min-w-0 flex-1 space-y-4">
+          {/* Profile bar */}
+          <header className="flex items-center gap-4 rounded-[1.75rem] bg-white px-5 py-4 shadow-[0_1px_2px_rgb(16_25_30/0.04)]">
+            <Link href="/" className="flex items-center gap-2 lg:hidden">
+              <LogoMark className="size-8" />
+            </Link>
+            <span className="grid size-11 shrink-0 place-items-center rounded-full bg-[linear-gradient(135deg,#0d7a4b,#04331f)] text-[0.9375rem] font-semibold text-white">{initials}</span>
+            <div className="min-w-0">
+              <p className="truncate font-semibold">{session.name}</p>
+              <p className="truncate text-[0.875rem] text-ink-3">{session.email}</p>
+            </div>
+            <p className="ml-auto hidden items-center gap-2 rounded-xl bg-[#f1f4f2] px-4 py-2.5 text-[0.9375rem] text-ink-2 md:flex">
+              <Icon name="fi-rr-calendar" className="text-brand-600" /> {dateFmt.format(new Date(now))}
+            </p>
+            <form action={logout} className="ml-auto md:ml-0 lg:hidden">
+              <button className="h-10 whitespace-nowrap rounded-xl border border-line px-4 text-[0.9375rem] font-medium">Sign out</button>
+            </form>
+          </header>
+
+          {/* Sections on phones and tablets */}
+          <nav aria-label="Admin sections" className="flex gap-1 overflow-x-auto rounded-2xl bg-white p-2 lg:hidden">
+            {tabs.map((t) => (
+              <Link key={t.id} href={href(t.id)} aria-current={t.id === tab ? 'page' : undefined} className={cn(item(t.id === tab), 'shrink-0 whitespace-nowrap')}>
+                <Icon name={t.icon} /> {t.label}
+              </Link>
+            ))}
+          </nav>
+
+          <main className="rounded-[1.75rem] bg-[#f6f8f7] p-5 md:p-8">
+            {data.source === 'off' && (
+              <Notice tone="warn">
+                The database (Appwrite) isn’t connected, so there is nothing to show yet. Add APPWRITE_ENDPOINT, APPWRITE_PROJECT_ID and APPWRITE_API_KEY in Vercel, then run <code>npm run appwrite:setup</code>. See <Link href="/admin?tab=system" className="font-semibold underline">Database &amp; settings</Link>.
+              </Notice>
+            )}
+            {data.source === 'sample' && <Notice tone="info">Sample data for a local preview: the database isn’t connected on this computer. The live site shows the real figures.</Notice>}
+            {data.tables.some((t) => !t.ok) && (
+              <Notice tone="warn">
+                Some tables couldn’t be read. See <Link href="/admin?tab=system" className="font-semibold underline">Database &amp; settings</Link>.
+              </Notice>
+            )}
+
+            {tab === 'overview' && <Overview data={data} now={now} />}
+            {tab === 'orders' && <Orders data={data} status={params.status} q={params.q} />}
+            {tab === 'accounts' && <Accounts data={data} q={params.q} />}
+            {tab === 'products' && <Products data={data} />}
+            {tab === 'service' && <Service data={data} now={now} />}
+            {tab === 'system' && <System data={data} />}
+          </main>
+        </div>
+      </div>
     </div>
   );
 }
@@ -121,27 +173,30 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
 
 function Notice({ tone, children }: { tone: 'warn' | 'info'; children: React.ReactNode }) {
   return (
-    <p className={cn('mb-6 border-l-4 px-4 py-3 text-[0.9375rem] leading-relaxed', tone === 'warn' ? 'border-signal bg-[#fdecec] text-ink' : 'border-brand-600 bg-brand-50 text-ink')}>
-      {children}
+    <p className={cn('mb-6 flex gap-3 rounded-2xl px-4 py-3 text-[0.9375rem] leading-relaxed', tone === 'warn' ? 'bg-[#fdecec] text-ink' : 'bg-brand-50 text-ink')}>
+      <Icon name={tone === 'warn' ? 'fi-rr-exclamation' : 'fi-rr-info'} className={cn('mt-1', tone === 'warn' ? 'text-signal-700' : 'text-brand-600')} />
+      <span>{children}</span>
     </p>
   );
 }
 
 function Heading({ title, lead, action }: { title: string; lead?: string; action?: React.ReactNode }) {
   return (
-    <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+    <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
       <div>
-        <h1 className="text-[1.75rem] font-bold tracking-[-0.02em]">{title}</h1>
-        {lead && <p className="mt-1 text-ink-3">{lead}</p>}
+        <h1 className="text-[clamp(2rem,1.6rem+1.2vw,2.625rem)] font-semibold leading-tight tracking-[-0.03em]">{title}</h1>
+        {lead && <p className="mt-1.5 text-ink-3">{lead}</p>}
       </div>
       {action}
     </div>
   );
 }
 
+const card = 'rounded-[1.25rem] bg-white shadow-[0_1px_2px_rgb(16_25_30/0.04),0_8px_24px_-12px_rgb(16_25_30/0.08)]';
+
 function Panel({ title, children, className, action }: { title: string; children: React.ReactNode; className?: string; action?: React.ReactNode }) {
   return (
-    <section className={cn('border border-line bg-paper p-5 md:p-6', className)}>
+    <section className={cn(card, 'p-5 md:p-6', className)}>
       <div className="mb-5 flex items-center justify-between gap-3">
         <h2 className="text-lg font-semibold tracking-[-0.01em]">{title}</h2>
         {action}
@@ -151,21 +206,35 @@ function Panel({ title, children, className, action }: { title: string; children
   );
 }
 
-function Stat({ label, value, note, icon }: { label: string; value: string | number; note?: string; icon: string }) {
+/** A figure; `feature` is the green card that leads the row. */
+function Stat({ label, value, note, href, feature }: { label: string; value: string | number; note?: string; href: string; feature?: boolean }) {
   return (
-    <div className="border border-line bg-paper p-5">
-      <p className="flex items-center gap-2 text-[0.9375rem] font-medium text-ink-3">
-        <Icon name={icon} className="text-brand-600" /> {label}
-      </p>
-      <p className="mt-2 text-[2rem] font-bold leading-none tracking-[-0.02em] tabular-nums">{typeof value === 'number' ? value.toLocaleString() : value}</p>
-      {note && <p className="mt-2 text-[0.875rem] text-ink-3">{note}</p>}
-    </div>
+    <Link
+      href={href}
+      className={cn(
+        'group relative flex flex-col overflow-hidden rounded-[1.25rem] p-5 transition hover:-translate-y-0.5',
+        feature ? 'bg-[radial-gradient(130%_120%_at_0%_0%,#0f8a55_0%,#06482a_55%,#032a19_100%)] text-white shadow-[0_12px_30px_-14px_rgb(4_56_34/0.7)]' : `${card} text-ink`,
+      )}
+    >
+      <span className="flex items-start justify-between gap-3">
+        <span className="text-[1.0625rem] font-medium">{label}</span>
+        <span className={cn('grid size-9 shrink-0 place-items-center rounded-full transition group-hover:rotate-45', feature ? 'bg-white text-brand-800' : 'border border-line text-ink-2')}>
+          <Icon name="fi-rr-arrow-up-right" className="text-[0.8125rem]" />
+        </span>
+      </span>
+      <span className="mt-4 text-[2.75rem] font-semibold leading-none tracking-[-0.03em] tabular-nums">{typeof value === 'number' ? value.toLocaleString() : value}</span>
+      {note && (
+        <span className={cn('mt-4 flex items-center gap-2 text-[0.875rem]', feature ? 'text-white/80' : 'text-ink-3')}>
+          <Icon name="fi-rr-arrow-trend-up" className={feature ? 'text-brand-300' : 'text-brand-600'} /> {note}
+        </span>
+      )}
+    </Link>
   );
 }
 
 function Csv({ table, label = 'Download CSV' }: { table: string; label?: string }) {
   return (
-    <a href={`/api/admin/export?table=${table}`} className="inline-flex h-10 items-center gap-2 border border-line bg-paper px-4 text-[0.9375rem] font-medium hover:border-brand-600 hover:text-brand-700">
+    <a href={`/api/admin/export?table=${table}`} className="inline-flex h-11 items-center gap-2 rounded-xl border border-line bg-white px-4 text-[0.9375rem] font-medium transition hover:border-brand-600 hover:text-brand-700">
       <Icon name="fi-rr-download" /> {label}
     </a>
   );
@@ -173,12 +242,12 @@ function Csv({ table, label = 'Download CSV' }: { table: string; label?: string 
 
 function Table({ head, children, empty }: { head: string[]; children: React.ReactNode; empty?: boolean }) {
   return (
-    <div className="overflow-x-auto border border-line bg-paper">
+    <div className={cn(card, 'overflow-x-auto')}>
       <table className="w-full min-w-[760px] text-left text-[0.9375rem]">
-        <thead className="border-b border-line bg-mist/60 text-[0.875rem] text-ink-3">
-          <tr>{head.map((h) => <th key={h} className="px-4 py-3 font-semibold">{h}</th>)}</tr>
+        <thead className="text-[0.875rem] text-ink-3">
+          <tr className="border-b border-[#edf1ef]">{head.map((h) => <th key={h} className="px-5 py-4 font-medium">{h}</th>)}</tr>
         </thead>
-        <tbody className="divide-y divide-line">{children}</tbody>
+        <tbody className="divide-y divide-[#edf1ef] [&_td]:px-5 [&_td]:py-3.5 [&_tr:hover]:bg-[#fafbfa]">{children}</tbody>
       </table>
       {empty && <p className="px-4 py-10 text-center text-ink-3">Nothing to show.</p>}
     </div>
@@ -186,19 +255,27 @@ function Table({ head, children, empty }: { head: string[]; children: React.Reac
 }
 
 const Badge = ({ children, tone = 'neutral' }: { children: React.ReactNode; tone?: 'neutral' | 'good' | 'warn' | 'bad' }) => (
-  <span className={cn('inline-block whitespace-nowrap px-2 py-0.5 text-[0.8125rem] font-semibold', { neutral: 'bg-mist text-ink-2', good: 'bg-brand-50 text-brand-700', warn: 'bg-[#fff4d6] text-[#7a5300]', bad: 'bg-[#fdecec] text-signal-700' }[tone])}>
+  <span
+    className={cn(
+      'inline-block whitespace-nowrap rounded-md border px-2 py-0.5 text-[0.8125rem] font-medium',
+      { neutral: 'border-line bg-[#f6f8f7] text-ink-2', good: 'border-[#9fdcbb] bg-[#effaf4] text-brand-700', warn: 'border-[#f2d37a] bg-[#fffaeb] text-[#7a5300]', bad: 'border-[#f3a7ab] bg-[#fff3f3] text-signal-700' }[tone],
+    )}
+  >
     {children}
   </span>
 );
-const orderTone = (s: OrderStatus) => (s === 'delivered' ? 'good' : s === 'awaiting-payment' ? 'warn' : 'neutral');
+const orderTone = (s: OrderStatus) => (s === 'delivered' ? 'good' : s === 'awaiting-payment' ? 'bad' : 'warn');
 
 function SearchBox({ tab, q, placeholder, extra }: { tab: Tab; q?: string; placeholder: string; extra?: Record<string, string | undefined> }) {
   return (
     <form className="flex gap-2" action="/admin">
       <input type="hidden" name="tab" value={tab} />
       {Object.entries(extra ?? {}).map(([k, v]) => v && <input key={k} type="hidden" name={k} value={v} />)}
-      <input name="q" defaultValue={q} placeholder={placeholder} className="h-10 w-64 border border-line bg-paper px-3 text-[0.9375rem] outline-none focus:border-brand-600" />
-      <button className="h-10 bg-brand-600 px-4 text-[0.9375rem] font-semibold text-white hover:bg-brand-700">Search</button>
+      <span className="relative">
+        <Icon name="fi-rr-search" className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-3" />
+        <input name="q" defaultValue={q} placeholder={placeholder} className="h-11 w-64 rounded-xl border border-line bg-white pl-10 pr-3 text-[0.9375rem] outline-none focus:border-brand-600" />
+      </span>
+      <button className="h-11 rounded-xl bg-brand-700 px-4 text-[0.9375rem] font-semibold text-white hover:bg-brand-800">Search</button>
     </form>
   );
 }
@@ -212,72 +289,69 @@ function Overview({ data, now }: { data: AdminData; now: number }) {
   const open = data.desk.tickets.filter((t) => t.status !== 'resolved');
   const rated = data.desk.tickets.filter((t) => t.rating);
   const dueSoon = data.desk.assets.filter((a) => a.nextCalibration && a.nextCalibration < since(-30));
-
-  const activity = [
-    ...data.orders.slice(0, 8).map((o) => ({ at: o.placedAt, icon: 'fi-rr-box-open', text: `${o.reference}: ${units(o)} item${units(o) === 1 ? '' : 's'} ordered by ${data.accounts.find((a) => a.email === o.account)?.organisation ?? o.account}` })),
-    ...data.accounts.slice(0, 8).map((a) => ({ at: a.createdAt, icon: 'fi-rr-user-add', text: `${a.organisation} registered (${a.name})` })),
-    ...data.desk.tickets.slice(0, 8).map((t) => ({ at: t.openedAt, icon: 'fi-rr-tools', text: `${t.id}: ${t.title} (${t.priority})` })),
-  ]
-    .sort((a, b) => b.at.localeCompare(a.at))
-    .slice(0, 10);
+  const orgOf = (email: string) => data.accounts.find((a) => a.email === email)?.organisation ?? email;
+  const initialsOf = (s: string) => s.split(/\s+/).filter((w) => /^[A-Za-z]/.test(w)).map((w) => w[0]).slice(0, 2).join('').toUpperCase();
 
   return (
     <>
-      <Heading title="Overview" lead="Everything happening on the site at a glance. Figures update on every visit." />
-      <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
-        <Stat icon="fi-rr-hospital" label="Hospital accounts" value={clients.length} note={`${clients.filter((a) => a.createdAt > since(30)).length} new in the last 30 days`} />
-        <Stat icon="fi-rr-shopping-bag" label="Hospitals that bought" value={buyers.size} note={clients.length ? `${Math.round((buyers.size / clients.length) * 100)}% of accounts` : undefined} />
-        <Stat icon="fi-rr-box-open" label="Orders" value={data.orders.length} note={`${data.orders.filter((o) => o.placedAt > since(30)).length} in the last 30 days`} />
-        <Stat icon="fi-rr-boxes" label="Items ordered" value={data.orders.reduce((n, o) => n + units(o), 0)} note={`${data.orders.filter((o) => o.status === 'awaiting-payment').length} orders awaiting payment`} />
-        <Stat icon="fi-rr-tools" label="Open service requests" value={open.length} note={`${open.filter((t) => t.priority === 'critical').length} critical`} />
-        <Stat icon="fi-rr-microscope" label="Equipment under care" value={data.desk.assets.length} note={`${dueSoon.length} due for calibration within 30 days`} />
-        <Stat icon="fi-rr-star" label="Service rating" value={rated.length ? (rated.reduce((n, t) => n + (t.rating ?? 0), 0) / rated.length).toFixed(1) : '—'} note={`${rated.length} rated visits (out of 5)`} />
-        <Stat icon="fi-rr-bell" label="Phones with alerts on" value={data.pushSubscriptions} note="Push notification subscribers" />
+      <Heading title="Dashboard" lead="Who registers, who buys and what the service desk is doing. Figures update on every visit." />
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <Stat feature href="/admin?tab=orders" label="Orders" value={data.orders.length} note={`${data.orders.filter((o) => o.placedAt > since(30)).length} in the last 30 days`} />
+        <Stat href="/admin?tab=accounts" label="Hospital accounts" value={clients.length} note={`${clients.filter((a) => a.createdAt > since(30)).length} new in the last 30 days`} />
+        <Stat href="/admin?tab=accounts" label="Hospitals that bought" value={buyers.size} note={clients.length ? `${Math.round((buyers.size / clients.length) * 100)}% of accounts` : 'No accounts yet'} />
+        <Stat href="/admin?tab=products" label="Items ordered" value={data.orders.reduce((n, o) => n + units(o), 0)} note={`${data.orders.filter((o) => o.status === 'awaiting-payment').length} orders awaiting payment`} />
+      </div>
+      <div className="mt-4 grid grid-cols-2 gap-4 xl:grid-cols-4">
+        <Mini label="Open service requests" value={open.length} note={`${open.filter((t) => t.priority === 'critical').length} critical`} />
+        <Mini label="Equipment under care" value={data.desk.assets.length} note={`${dueSoon.length} due for calibration`} />
+        <Mini label="Service rating" value={rated.length ? `${(rated.reduce((n, t) => n + (t.rating ?? 0), 0) / rated.length).toFixed(1)}/5` : '—'} note={`${rated.length} rated visits`} />
+        <Mini label="Phones with alerts on" value={data.pushSubscriptions} note="Push subscribers" />
       </div>
 
-      <div className="mt-4 grid gap-4 lg:grid-cols-2">
-        <Panel title="Orders per week (last 12 weeks)">
+      <div className="mt-4 grid gap-4 xl:grid-cols-12">
+        <Panel title="Orders per week" className="xl:col-span-7" action={<span className="text-[0.875rem] text-ink-3">Last 12 weeks</span>}>
           <Columns label="Orders per week" data={weekly(data.orders.map((o) => o.placedAt), 12, now)} />
         </Panel>
-        <Panel title="New accounts per week (last 12 weeks)">
-          <Columns label="New accounts per week" data={weekly(data.accounts.map((a) => a.createdAt), 12, now)} />
-        </Panel>
-      </div>
-
-      <div className="mt-4 grid gap-4 lg:grid-cols-3">
-        <Panel title="Most ordered products" action={<Link href="/admin?tab=products" className="text-[0.9375rem] font-semibold text-brand-700">All</Link>}>
-          <Bars data={tally(data.orders.flatMap((o) => o.items), (i) => tidy(i.name), (i) => i.qty).slice(0, 6)} />
-        </Panel>
-        <Panel title="Orders by region">
-          <Bars data={tally(data.orders, (o) => o.region || 'Not given').slice(0, 6)} />
-        </Panel>
-        <Panel title="Recent activity">
-          {activity.length ? (
-            <ol className="space-y-3">
-              {activity.map((a, i) => (
-                <li key={i} className="flex gap-3 text-[0.9375rem]">
-                  <Icon name={a.icon} className="mt-1 text-brand-600" />
-                  <span>
-                    <span className="text-ink-2">{a.text}</span>
-                    <span className="block text-[0.8125rem] text-ink-3">{timeFmt.format(new Date(a.at))}</span>
+        <Panel title="Recent orders" className="xl:col-span-5" action={<Link href="/admin?tab=orders" className="rounded-lg border border-ink px-3 py-1.5 text-[0.875rem] font-medium hover:bg-ink hover:text-white">View all</Link>}>
+          {data.orders.length ? (
+            <ul className="space-y-4">
+              {data.orders.slice(0, 5).map((o) => (
+                <li key={o.reference} className="flex items-center gap-3">
+                  <span className="grid size-11 shrink-0 place-items-center rounded-full bg-[#eaf5ef] text-[0.875rem] font-semibold text-brand-800 ring-2 ring-white">{initialsOf(orgOf(o.account)) || 'FF'}</span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate font-medium">{orgOf(o.account)}</span>
+                    <span className="block truncate text-[0.8125rem] text-ink-3">{o.reference} · {units(o)} item{units(o) === 1 ? '' : 's'} · {timeFmt.format(new Date(o.placedAt))}</span>
                   </span>
+                  <Badge tone={orderTone(o.status)}>{orderStatusLabel[o.status]}</Badge>
                 </li>
               ))}
-            </ol>
+            </ul>
           ) : (
-            <p className="text-ink-3">Nothing yet.</p>
+            <p className="text-ink-3">No orders yet.</p>
           )}
         </Panel>
       </div>
 
-      <div className="mt-4 grid gap-4 lg:grid-cols-3">
+      <div className="mt-4 grid gap-4 xl:grid-cols-12">
+        <Panel title="New accounts per week" className="xl:col-span-7" action={<span className="text-[0.875rem] text-ink-3">Last 12 weeks</span>}>
+          <Columns label="New accounts per week" data={weekly(data.accounts.map((a) => a.createdAt), 12, now)} />
+        </Panel>
+        <Panel title="Most ordered products" className="xl:col-span-5" action={<Link href="/admin?tab=products" className="rounded-lg border border-ink px-3 py-1.5 text-[0.875rem] font-medium hover:bg-ink hover:text-white">View all</Link>}>
+          <Bars data={tally(data.orders.flatMap((o) => o.items), (i) => tidy(i.name), (i) => i.qty).slice(0, 6)} />
+        </Panel>
+      </div>
+
+      <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <Panel title="Order status">
           <Bars data={(Object.keys(orderStatusLabel) as OrderStatus[]).map((s) => ({ label: orderStatusLabel[s], value: data.orders.filter((o) => o.status === s).length }))} />
+        </Panel>
+        <Panel title="Orders by region">
+          <Bars data={tally(data.orders, (o) => o.region || 'Not given').slice(0, 5)} />
         </Panel>
         <Panel title="Payment methods">
           <Bars data={tally(data.orders, (o) => methodLabel[o.method] ?? o.method)} />
         </Panel>
-        <Panel title="Service requests by status">
+        <Panel title="Service requests">
           <Bars data={Object.keys(ticketLabel).map((s) => ({ label: ticketLabel[s], value: data.desk.tickets.filter((t) => t.status === s).length }))} />
         </Panel>
       </div>
@@ -288,6 +362,18 @@ function Overview({ data, now }: { data: AdminData; now: number }) {
         <a href="https://app.hubspot.com" target="_blank" rel="noreferrer" className="font-semibold text-brand-700 underline">HubSpot</a>.
       </p>
     </>
+  );
+}
+
+function Mini({ label, value, note }: { label: string; value: string | number; note: string }) {
+  return (
+    <div className={cn(card, 'px-5 py-4')}>
+      <p className="text-[0.875rem] text-ink-3">{label}</p>
+      <p className="mt-1 flex items-baseline gap-2">
+        <span className="text-[1.75rem] font-semibold tracking-[-0.02em] tabular-nums">{typeof value === 'number' ? value.toLocaleString() : value}</span>
+        <span className="text-[0.8125rem] text-ink-3">{note}</span>
+      </p>
+    </div>
   );
 }
 
@@ -306,7 +392,7 @@ function Orders({ data, status, q }: { data: AdminData; status?: string; q?: str
             <Link
               key={s ?? 'all'}
               href={`/admin?tab=orders${s ? `&status=${s}` : ''}${q ? `&q=${encodeURIComponent(q)}` : ''}`}
-              className={cn('h-10 border px-3 py-2 text-[0.9375rem] font-medium', status === s ? 'border-brand-600 bg-brand-600 text-white' : 'border-line bg-paper hover:border-brand-600')}
+              className={cn('rounded-xl border px-3.5 py-2.5 text-[0.9375rem] font-medium transition', status === s ? 'border-brand-700 bg-brand-700 text-white' : 'border-line bg-white hover:border-brand-600')}
             >
               {s ? orderStatusLabel[s] : 'All'} ({s ? data.orders.filter((o) => o.status === s).length : data.orders.length})
             </Link>
@@ -317,29 +403,29 @@ function Orders({ data, status, q }: { data: AdminData; status?: string; q?: str
       <Table head={['Reference', 'Placed', 'Hospital', 'Items', 'Payment', 'Region', 'Status']} empty={!list.length}>
         {list.map((o) => (
           <tr key={o.reference} className="align-top">
-            <td className="px-4 py-3 font-mono text-[0.875rem] font-semibold">{o.reference}</td>
-            <td className="whitespace-nowrap px-4 py-3">{fmt(o.placedAt)}</td>
-            <td className="px-4 py-3">
+            <td className="font-mono text-[0.875rem] font-semibold">{o.reference}</td>
+            <td className="whitespace-nowrap">{fmt(o.placedAt)}</td>
+            <td>
               {orgOf(o.account) || '—'}
               <span className="block text-[0.8125rem] text-ink-3">{o.account}</span>
             </td>
-            <td className="px-4 py-3">
+            <td>
               {o.items.map((i) => (
                 <span key={i.slug} className="block">
                   {i.qty} × {tidy(i.name)}
                 </span>
               ))}
             </td>
-            <td className="whitespace-nowrap px-4 py-3">{methodLabel[o.method] ?? o.method}</td>
-            <td className="px-4 py-3">{o.region || '—'}</td>
-            <td className="px-4 py-3">
+            <td className="whitespace-nowrap">{methodLabel[o.method] ?? o.method}</td>
+            <td>{o.region || '—'}</td>
+            <td>
               {data.source === 'live' ? (
                 <form action={setOrderStatus} className="flex items-center gap-2">
                   <input type="hidden" name="reference" value={o.reference} />
-                  <select name="status" defaultValue={o.status} aria-label={`Status of ${o.reference}`} className="h-9 border border-line bg-paper px-2 text-[0.9375rem]">
+                  <select name="status" defaultValue={o.status} aria-label={`Status of ${o.reference}`} className="h-9 rounded-lg border border-line bg-white px-2 text-[0.9375rem]">
                     {(Object.keys(orderStatusLabel) as OrderStatus[]).map((s) => <option key={s} value={s}>{orderStatusLabel[s]}</option>)}
                   </select>
-                  <button className="h-9 border border-brand-600 px-3 text-[0.875rem] font-semibold text-brand-700 hover:bg-brand-50">Save</button>
+                  <button className="h-9 rounded-lg bg-brand-700 px-3 text-[0.875rem] font-semibold text-white hover:bg-brand-800">Save</button>
                 </form>
               ) : (
                 <Badge tone={orderTone(o.status)}>{orderStatusLabel[o.status]}</Badge>
@@ -367,16 +453,16 @@ function Accounts({ data, q }: { data: AdminData; q?: string }) {
           const orders = ordersOf(a.email);
           return (
             <tr key={a.id}>
-              <td className="px-4 py-3 font-medium">{a.organisation}</td>
-              <td className="px-4 py-3">
+              <td className="font-medium">{a.organisation}</td>
+              <td>
                 {a.name}
                 <span className="block text-[0.8125rem] text-ink-3">{a.email}</span>
               </td>
-              <td className="whitespace-nowrap px-4 py-3">{a.phone || '—'}</td>
-              <td className="px-4 py-3"><Badge tone={a.role === 'client' ? 'neutral' : 'good'}>{a.role === 'client' ? 'Hospital' : a.role === 'engineer' ? 'Engineer' : 'Admin'}</Badge></td>
-              <td className="whitespace-nowrap px-4 py-3">{fmt(a.createdAt)}</td>
-              <td className="px-4 py-3 tabular-nums">{orders.length}</td>
-              <td className="whitespace-nowrap px-4 py-3">{fmt(orders[0]?.placedAt)}</td>
+              <td className="whitespace-nowrap">{a.phone || '—'}</td>
+              <td><Badge tone={a.role === 'client' ? 'neutral' : 'good'}>{a.role === 'client' ? 'Hospital' : a.role === 'engineer' ? 'Engineer' : 'Admin'}</Badge></td>
+              <td className="whitespace-nowrap">{fmt(a.createdAt)}</td>
+              <td className="tabular-nums">{orders.length}</td>
+              <td className="whitespace-nowrap">{fmt(orders[0]?.placedAt)}</td>
             </tr>
           );
         })}
@@ -414,14 +500,14 @@ function Products({ data }: { data: AdminData }) {
       <Table head={['Product', 'Category', 'Items ordered', 'Orders', 'Hospitals', 'Last ordered']} empty={!list.length}>
         {list.map(([slug, r]) => (
           <tr key={slug}>
-            <td className="px-4 py-3 font-medium">
+            <td className="font-medium">
               <Link href={`/products/${slug}`} className="hover:text-brand-700 hover:underline">{r.name}</Link>
             </td>
-            <td className="px-4 py-3">{categoryName(categoryOf.get(slug) ?? '—')}</td>
-            <td className="px-4 py-3 tabular-nums">{r.units}</td>
-            <td className="px-4 py-3 tabular-nums">{r.orders}</td>
-            <td className="px-4 py-3 tabular-nums">{r.hospitals.size}</td>
-            <td className="whitespace-nowrap px-4 py-3">{fmt(r.last)}</td>
+            <td>{categoryName(categoryOf.get(slug) ?? '—')}</td>
+            <td className="tabular-nums">{r.units}</td>
+            <td className="tabular-nums">{r.orders}</td>
+            <td className="tabular-nums">{r.hospitals.size}</td>
+            <td className="whitespace-nowrap">{fmt(r.last)}</td>
           </tr>
         ))}
       </Table>
@@ -454,17 +540,17 @@ function Service({ data, now }: { data: AdminData; now: number }) {
           const a = assetOf(t.assetId);
           return (
             <tr key={t.id}>
-              <td className="px-4 py-3">
+              <td>
                 <span className="font-mono text-[0.875rem] font-semibold">{t.id}</span>
                 <span className="block text-[0.8125rem] text-ink-3">{t.title}</span>
               </td>
-              <td className="whitespace-nowrap px-4 py-3">{fmt(t.openedAt)}</td>
-              <td className="px-4 py-3">{a ? tidy(a.name) : t.assetId}</td>
-              <td className="px-4 py-3">{a?.facility ?? '—'}</td>
-              <td className="px-4 py-3"><Badge tone={t.priority === 'critical' ? 'bad' : t.priority === 'high' ? 'warn' : 'neutral'}>{t.priority}</Badge></td>
-              <td className="px-4 py-3"><Badge tone={t.status === 'resolved' ? 'good' : 'neutral'}>{ticketLabel[t.status]}</Badge></td>
-              <td className="px-4 py-3">{t.engineer ?? <span className="text-signal-700">Unassigned</span>}</td>
-              <td className="px-4 py-3">{t.rating ? `${t.rating}/5` : '—'}</td>
+              <td className="whitespace-nowrap">{fmt(t.openedAt)}</td>
+              <td>{a ? tidy(a.name) : t.assetId}</td>
+              <td>{a?.facility ?? '—'}</td>
+              <td><Badge tone={t.priority === 'critical' ? 'bad' : t.priority === 'high' ? 'warn' : 'neutral'}>{t.priority[0].toUpperCase() + t.priority.slice(1)}</Badge></td>
+              <td><Badge tone={t.status === 'resolved' ? 'good' : 'neutral'}>{ticketLabel[t.status]}</Badge></td>
+              <td>{t.engineer ?? <span className="text-signal-700">Unassigned</span>}</td>
+              <td>{t.rating ? `${t.rating}/5` : '—'}</td>
             </tr>
           );
         })}
@@ -474,12 +560,12 @@ function Service({ data, now }: { data: AdminData; now: number }) {
       <Table head={['Equipment', 'Serial', 'Hospital', 'Location', 'Last calibration', 'Due']} empty={!due.length}>
         {due.map((a) => (
           <tr key={a.id}>
-            <td className="px-4 py-3 font-medium">{tidy(a.name)}</td>
-            <td className="px-4 py-3 font-mono text-[0.875rem]">{a.serial}</td>
-            <td className="px-4 py-3">{a.facility}</td>
-            <td className="px-4 py-3">{a.location}</td>
-            <td className="whitespace-nowrap px-4 py-3">{fmt(a.lastCalibration)}</td>
-            <td className="whitespace-nowrap px-4 py-3">
+            <td className="font-medium">{tidy(a.name)}</td>
+            <td className="font-mono text-[0.875rem]">{a.serial}</td>
+            <td>{a.facility}</td>
+            <td>{a.location}</td>
+            <td className="whitespace-nowrap">{fmt(a.lastCalibration)}</td>
+            <td className="whitespace-nowrap">
               <Badge tone={a.nextCalibration < new Date(now).toISOString() ? 'bad' : 'warn'}>{fmt(a.nextCalibration)}</Badge>
             </td>
           </tr>
@@ -497,7 +583,7 @@ function System({ data }: { data: AdminData }) {
       <div className="grid gap-4 lg:grid-cols-2">
         <Panel title="Database tables (Appwrite)">
           {data.tables.length ? (
-            <ul className="divide-y divide-line">
+            <ul className="divide-y divide-[#edf1ef]">
               {data.tables.map((t) => (
                 <li key={t.table} className="flex items-start justify-between gap-4 py-3">
                   <span>
@@ -518,7 +604,7 @@ function System({ data }: { data: AdminData }) {
           </p>
         </Panel>
         <Panel title="Settings">
-          <ul className="divide-y divide-line">
+          <ul className="divide-y divide-[#edf1ef]">
             {checks.map((c) => (
               <li key={c.label} className="flex items-start gap-3 py-3">
                 <Icon name={c.ok ? 'fi-rr-check-circle' : 'fi-rr-exclamation'} className={cn('mt-1', c.ok ? 'text-brand-600' : 'text-[#b07800]')} />
