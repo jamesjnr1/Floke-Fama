@@ -6,6 +6,8 @@
 .fi-rr-apps::before{content:"\f16c"}
 .fi-rr-arrow-small-left::before{content:"\f19d"}
 .fi-rr-arrow-small-right::before{content:"\f19e"}
+.fi-rr-arrow-trend-up::before{content:"\f1a9"}
+.fi-rr-arrow-up-right::before{content:"\f1b4"}
 .fi-rr-award::before{content:"\f1df"}
 .fi-rr-baby::before{content:"\f1e4"}
 .fi-rr-badge-check::before{content:"\f1eb"}
@@ -13,7 +15,6 @@
 .fi-rr-bell::before{content:"\f239"}
 .fi-rr-book-alt::before{content:"\f274"}
 .fi-rr-box-open::before{content:"\f2b3"}
-.fi-rr-boxes::before{content:"\f2b7"}
 .fi-rr-bullseye-arrow::before{content:"\f307"}
 .fi-rr-calendar::before{content:"\f339"}
 .fi-rr-calendar-plus::before{content:"\f332"}
@@ -56,7 +57,6 @@
 .fi-rr-search-alt::before{content:"\fbb6"}
 .fi-rr-settings::before{content:"\fbd2"}
 .fi-rr-shield-check::before{content:"\fbdb"}
-.fi-rr-shopping-bag::before{content:"\fbf7"}
 .fi-rr-shopping-cart::before{content:"\fbfc"}
 .fi-rr-sign-out-alt::before{content:"\fc0c"}
 .fi-rr-star::before{content:"\fce9"}
