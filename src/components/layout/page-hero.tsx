@@ -28,8 +28,8 @@ export function PageHero({
   position?: string;
   /** Mirror the photo (only for photos without text). */
   flip?: boolean;
-  /** 'strong': a darker veil, so white text reads on a bright photo. */
-  veil?: 'strong';
+  /** 'strong': a darker veil, so white text reads on a bright photo; 'deep': darker still, for very bright photos. */
+  veil?: 'strong' | 'deep';
   /** A line under the logo, above the title (e.g. "Corporate Social Responsibility"). */
   kicker?: string;
 }) {
@@ -38,7 +38,9 @@ export function PageHero({
       <div aria-hidden className="absolute inset-0 -z-10">
         <Image src={headerImageSrc(image)} alt="" fill priority unoptimized className={flip ? '-scale-x-100 object-cover' : 'object-cover'} style={{ objectPosition: position }} />
         {/* Light veil, as on youversion.com: the photo stays vivid; a little deeper behind the menu and the title */}
-        {veil === 'strong' ? (
+        {veil === 'deep' ? (
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(6_20_14/0.8)_0%,rgb(6_20_14/0.68)_35%,rgb(6_20_14/0.72)_65%,rgb(6_20_14/0.86)_100%)]" />
+        ) : veil === 'strong' ? (
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(6_20_14/0.72)_0%,rgb(6_20_14/0.55)_35%,rgb(6_20_14/0.6)_65%,rgb(6_20_14/0.8)_100%)]" />
         ) : (
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(10_16_20/0.5)_0%,rgb(10_16_20/0.22)_30%,rgb(10_16_20/0.3)_60%,rgb(10_16_20/0.62)_100%)]" />
