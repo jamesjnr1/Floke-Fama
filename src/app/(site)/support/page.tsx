@@ -40,7 +40,7 @@ export default async function SupportPage() {
       />
 
       {/* 24/7 call centre (from Flokefama's client service presentation, Oct 2026) */}
-      <section aria-labelledby="call-centre" className="border-b border-line bg-paper py-12 md:py-16">
+      <section aria-labelledby="call-centre" className="pattern-grid pattern-bl border-b border-line bg-paper py-12 md:py-16">
         <div className="mx-auto grid max-w-[1280px] gap-10 px-5 md:px-10 lg:grid-cols-12 lg:items-center lg:gap-14">
           <div className="lg:col-span-7">
             <p className="text-[0.9375rem] font-semibold uppercase tracking-[0.08em] text-brand-700">Client service · 24/7 call centre</p>
