@@ -8,7 +8,7 @@ const img = (f: string) => `"${f}": ${f}.asset->url, "${f}W": ${f}.asset->metada
 const header = (k: string) => `"${k}": pageHeaders.${k}{ title, highlight, lead, "image": image.asset->url }`;
 
 const query = `*[_id == "siteContent"][0]{
-  contact, branches[]{ name, detail },
+  contact, branches[]{ name, detail, phone },
   technologyPartners[]{ name, role, ${img('logo')} },
   clients[]{ name, role, ${img('logo')} },
   hero, testimonials[]{ quote, name, role },
@@ -23,7 +23,7 @@ const query = `*[_id == "siteContent"][0]{
 type RawLogo = { name?: string; role?: string; logo?: string; logoW?: number; logoH?: number };
 type Raw = Partial<{
   contact: Partial<{ phone: string; info: string; sales: string; support: string; address: string; lat: number; lng: number; mapEmbed: string }>;
-  branches: { name: string; detail: string }[];
+  branches: { name: string; detail: string; phone?: string }[];
   technologyPartners: RawLogo[];
   clients: RawLogo[];
   hero: Partial<SiteContent['hero']>;
@@ -66,7 +66,8 @@ function merge(raw: Raw | null): SiteContent {
   ) as Record<PageKey, PageHeader>;
   return {
     ...withDerived(c, raw.contact?.mapEmbed || d.maps.embed),
-    branches: list(raw.branches, d.branches),
+    // A branch from the Studio without a phone keeps the built-in number for that branch
+    branches: list(raw.branches, d.branches).map((b) => ({ ...b, phone: b.phone || d.branches.find((x) => x.name.toLowerCase().replace(/\W/g, '') === b.name.toLowerCase().replace(/\W/g, ''))?.phone })),
     // Only the brands the CEO wants visible (Mindray), even if the Studio still lists others
     technologyPartners: logos(raw.technologyPartners, d.technologyPartners).filter((p) => visibleBrands.includes(p.name)),
     clients: logos(raw.clients, d.clients),
