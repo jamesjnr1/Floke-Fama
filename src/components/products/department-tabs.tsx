@@ -7,22 +7,27 @@ import { Icon } from '@/components/ui/icon';
 import type { Department } from '@/data/solutions';
 import { cn } from '@/lib/utils';
 
-type Item = { name: string; label: string; text?: string; image: string; href?: string };
-export type ResolvedDepartment = Omit<Department, 'groups'> & { groups: { title: string; points?: string[]; items: Item[] }[] };
+export type ResolvedItem = { name: string; label: string; text?: string; image: string; href?: string; photo?: boolean; credit?: { author: string; license: string; source: string } };
+export type ResolvedDepartment = Omit<Department, 'groups'> & { groups: { title: string; points?: string[]; items: ResolvedItem[] }[] };
 type Packages = { tier: string; models: string[]; samples: string[] }[];
 type Disciplines = { name: string; tests: string }[];
 
 /** A product on white, its photo shown whole; shop products open their page. */
-function Card({ it }: { it: Item }) {
+function Card({ it }: { it: ResolvedItem }) {
   const body = (
     <>
       <span className="relative block aspect-[4/3] overflow-hidden bg-white">
-        <Image src={it.image} alt={it.name} fill sizes="(min-width: 1024px) 280px, 50vw" className="object-contain p-4 mix-blend-multiply transition-transform duration-500 group-hover:scale-[1.04]" />
+        <Image src={it.image} alt={it.name} fill sizes="(min-width: 1024px) 280px, 50vw" className={cn('transition-transform duration-500 group-hover:scale-[1.04]', it.photo ? 'object-cover' : 'object-contain p-4 mix-blend-multiply')} />
       </span>
       <span className="block border-t border-line p-4">
         <span className="block text-[0.8125rem] font-semibold uppercase tracking-[0.06em] text-brand-700">{it.label}</span>
         <span className="mt-1 block text-lg font-bold leading-snug tracking-[-0.01em] text-ink group-hover:text-brand-700">{it.name}</span>
         {it.text && <span className="no-justify mt-1 block text-[0.9375rem] leading-relaxed text-ink-3">{it.text}</span>}
+        {it.credit && (
+          <span className="mt-2 block text-[0.8125rem] text-ink-3">
+            Photo: <a href={it.credit.source} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-brand-700">{it.credit.author}</a>, {it.credit.license}
+          </span>
+        )}
         {it.href && <span className="mt-2 inline-flex items-center gap-1 text-[0.9375rem] font-semibold text-brand-700">View product <Icon name="fi-rr-arrow-small-right" /></span>}
       </span>
     </>
