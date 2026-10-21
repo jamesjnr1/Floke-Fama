@@ -1,13 +1,28 @@
+import { equipment } from '@/data/equipment';
+
 /**
  * Solutions by department, from Flokefama's product presentation (support centre, Oct 2026). An item with `slug`
  * is a shop product (its photo and page come from the catalogue); the others use photos from the presentation.
  */
-export type SolutionItem = { name: string; label: string; text?: string; slug?: string; image?: string };
+export type SolutionItem = { name: string; label: string; text?: string; slug?: string; image?: string; /** A full photo (shown filling its frame) rather than a product cut-out */ photo?: boolean; credit?: { author: string; license: string; source: string } };
 export type Department = { id: string; name: string; title: string; text: string; groups: { title: string; points?: string[]; items: SolutionItem[] }[] };
 
 const img = (n: string) => `/images/solutions/${n}.webp`;
 
 export const departments: Department[] = [
+  // The equipment categories the CEO's review asks to feature (point 1)
+  {
+    id: 'imaging-critical-care',
+    name: 'Imaging & critical care',
+    title: 'Imaging, renal, neonatal & critical care',
+    text: 'MRI, CT, mammography, digital X-ray and ultrasound for diagnosis; dialysis, incubators and ventilators for treatment and life support.',
+    groups: [
+      {
+        title: 'Imaging, renal, neonatal & critical care',
+        items: equipment.map((e) => ({ name: e.title, label: e.group, text: e.text, image: e.image, photo: true, credit: e.credit })),
+      },
+    ],
+  },
   {
     id: 'laboratory',
     name: 'Laboratory',
