@@ -41,3 +41,9 @@ function normalizeUrl(value: string | undefined, fallback: string): string {
 export function jsonLdHtml(data: unknown) {
   return JSON.stringify(data).replace(/</g, '\\u003c');
 }
+
+/** A Ghana number as written locally (020 025 0127) as a tel: link (tel:+233200250127). */
+export function telHref(phone: string) {
+  const d = phone.replace(/\D/g, '');
+  return `tel:+${d.startsWith('233') ? d : `233${d.replace(/^0/, '')}`}`;
+}

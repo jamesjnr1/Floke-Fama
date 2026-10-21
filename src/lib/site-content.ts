@@ -18,6 +18,8 @@ export interface Contact {
   support: string;
 }
 export interface Logo { name: string; logo: string | null; w: number; h: number; role?: string }
+/** A branch; `phone` as written locally, e.g. 020 025 0127. */
+export interface Branch { name: string; detail: string; phone?: string }
 export interface Award { id: string; title: string; body: string; year: string; image: string; alt: string }
 export interface Faq { q: string; a: string; link?: { href: string; label: string } }
 export interface EsgPillar { label: string; icon: string; title: string; body: string; image: string; alt: string }
@@ -27,7 +29,7 @@ export type PageKey = 'about' | 'services' | 'shop' | 'events' | 'awards' | 'esg
 export interface SiteContent {
   contact: Contact;
   maps: { embed: string; directions: string; open: string };
-  branches: { name: string; detail: string }[];
+  branches: Branch[];
   technologyPartners: Logo[];
   clients: Logo[];
   hero: { title: string; highlight: string; lead: string };

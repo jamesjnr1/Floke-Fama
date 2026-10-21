@@ -4,6 +4,7 @@ import { PageHero } from '@/components/layout/page-hero';
 import { SupportForm } from '@/components/support/support-form';
 import { Icon } from '@/components/ui/icon';
 import { getSite } from '@/lib/site';
+import { telHref } from '@/lib/utils';
 
 export const metadata: Metadata = {
   title: 'Technical Support',
@@ -20,7 +21,7 @@ const services = [
 ];
 
 export default async function SupportPage() {
-  const { contact } = await getSite();
+  const { contact, branches } = await getSite();
   const channels = [
     { icon: 'fi-rr-phone-call', label: 'Call', value: contact.phone, href: contact.phoneHref },
     { icon: 'fi-brands-whatsapp', label: 'WhatsApp', value: contact.phone, href: contact.whatsapp, external: true },
@@ -85,6 +86,22 @@ export default async function SupportPage() {
                         <span className="block text-sm text-ink-3">{c.label}</span>
                         <span className="block truncate font-medium text-ink group-hover:text-brand-700">{c.value}</span>
                       </span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="mt-5 overflow-hidden rounded-lg border border-line bg-paper">
+              <p className="border-b border-line px-6 py-4 font-semibold text-ink">Call your nearest branch</p>
+              <ul className="divide-y divide-line">
+                {branches.filter((b) => b.phone).map((b) => (
+                  <li key={b.name}>
+                    <a href={telHref(b.phone!)} className="group flex items-center justify-between gap-4 px-6 py-3.5 transition-colors hover:bg-canvas">
+                      <span className="min-w-0 text-ink-2">
+                        {b.name}
+                        {b.detail.toLowerCase().includes('head office') && <span className="block text-sm text-ink-3">Head office</span>}
+                      </span>
+                      <span className="shrink-0 whitespace-nowrap font-medium tabular-nums text-ink group-hover:text-brand-700">{b.phone}</span>
                     </a>
                   </li>
                 ))}

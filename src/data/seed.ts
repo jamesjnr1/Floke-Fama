@@ -133,12 +133,13 @@ export const clients = [
 ];
 
 export const branches = [
-  { name: 'Santa Maria', detail: 'Flokefama Company Ltd. Head Office' },
-  { name: 'Korle-bu', detail: 'Opposite Main Korle-bu Teaching Hospital' },
-  { name: 'Okaishie', detail: 'Adepa Building, Ground Floor' },
+  // Phone numbers from the Flokefama support centre (Oct 2026)
+  { name: 'Santa Maria', detail: 'Flokefama Company Ltd. Head Office', phone: '024 423 7783' },
+  { name: 'Korle-bu', detail: 'Opposite Main Korle-bu Teaching Hospital', phone: '020 025 0127' },
+  { name: 'Okaishie', detail: 'Adepa Building, Ground Floor', phone: '055 266 6970' },
   { name: 'Kumasi', detail: 'Kwadaso Estate' },
-  { name: 'Aflao', detail: '200 metres From Makavo Junction' },
-  { name: 'Techiman', detail: 'Near Melcom Techiman' },
+  { name: 'Aflao', detail: '200 metres From Makavo Junction', phone: '020 552 7993' },
+  { name: 'Techiman', detail: 'Near Melcom Techiman', phone: '020 042 0999' },
 ]
 
 export const contact = {
