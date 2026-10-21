@@ -248,6 +248,39 @@ export const awards = [
     image: '/images/mindray-award.webp',
     alt: 'The Flokefama team receiving the Mindray IVD awards on stage in Nairobi',
   },
+  // From Flokefama's honours & awards presentation (support centre, Oct 2026)
+  {
+    id: 'ceo-excellence-2025',
+    title: 'CEO Excellence Award, Healthcare Leadership',
+    body: 'Healthcare Leadership award at the 2025 CEO Excellence Awards.',
+    year: '2025',
+    image: '/images/awards/ceo-excellence-2025.webp',
+    alt: 'Emmanuel Teye Kwabena Kenney receiving the CEO Excellence Award in Healthcare Leadership',
+  },
+  {
+    id: 'church-of-pentecost',
+    title: 'Special Health Sector Recognition',
+    body: 'The Church of Pentecost: special recognition for outstanding contributions to the health sector in the country.',
+    year: '2025',
+    image: '/images/awards/church-of-pentecost-recognition.webp',
+    alt: 'Emmanuel Teye Kwabena Kenney receiving a special recognition at the Church of Pentecost General Council Meetings',
+  },
+  {
+    id: 'trust-hospital-laboratory',
+    title: 'Laboratory Services Award',
+    body: 'The Trust Hospital: awarded for contributing immensely to the development of laboratory services.',
+    year: '2024',
+    image: '/images/awards/trust-hospital-laboratory-award.webp',
+    alt: 'The Trust Hospital Laboratory award presented to Flokefama Co. Ltd',
+  },
+  {
+    id: 'gamls-honorary',
+    title: 'Honorary Membership, GAMLS',
+    body: 'Ghana Association of Medical Laboratory Scientists: recognised for exceptional performance, leadership and outstanding contributions to laboratory science.',
+    year: 'Honorary membership',
+    image: '/images/awards/gamls-honorary-membership.webp',
+    alt: 'Flokefama receiving honorary membership of the Ghana Association of Medical Laboratory Scientists',
+  },
 ];
 
 /** Events & Activities (the current site lists past events only). */
