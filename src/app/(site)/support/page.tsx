@@ -46,12 +46,14 @@ export default async function SupportPage() {
             <p className="text-[0.9375rem] font-semibold uppercase tracking-[0.08em] text-brand-700">Client service · 24/7 call centre</p>
             <h2 id="call-centre" className="display mt-2 text-[clamp(1.875rem,1.2rem+2.2vw,2.75rem)]">We answer around the clock</h2>
             <div className="mt-7 grid gap-6 sm:grid-cols-2">
-              <div className="border-l-2 border-brand-600 pl-5">
-                <h3 className="text-xl font-semibold text-ink">24/7 dedicated call centre</h3>
+              <div>
+                <span className="grid size-11 place-items-center bg-brand-50 text-xl text-brand-700"><Icon name="fi-rr-time-twenty-four" /></span>
+                <h3 className="mt-4 text-xl font-semibold text-ink">24/7 dedicated call centre</h3>
                 <p className="no-justify mt-1.5 text-lg leading-relaxed text-ink-3">Our helpline runs continuously, day and night, for immediate client support and rapid service response.</p>
               </div>
-              <div className="border-l-2 border-brand-600 pl-5">
-                <h3 className="text-xl font-semibold text-ink">Seamless operational assistance</h3>
+              <div>
+                <span className="grid size-11 place-items-center bg-brand-50 text-xl text-brand-700"><Icon name="fi-rr-headset" /></span>
+                <h3 className="mt-4 text-xl font-semibold text-ink">Seamless operational assistance</h3>
                 <p className="no-justify mt-1.5 text-lg leading-relaxed text-ink-3">Full business coverage from experienced call centre agents committed to excellence.</p>
               </div>
             </div>
