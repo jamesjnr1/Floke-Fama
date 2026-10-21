@@ -79,10 +79,11 @@ function merge(raw: Raw | null): SiteContent {
     whyChoose: list(raw.whyChoose, d.whyChoose).map((w) => ({ ...w, body: onlyMindray(w.body) })),
     // The CEO profile is the one the CEO supplied (Oct 2026); the older Studio text no longer replaces it
     ceo: d.ceo,
+    // The Studio's awards, then any built-in award the Studio doesn't list yet (matched by title)
     awards: list(
       raw.awards?.filter((a) => a.title && a.image).map((a, i) => ({ id: a._key ?? `award-${i}`, title: a.title!, body: a.body ?? '', year: a.year ?? '', image: a.image!, alt: a.alt ?? a.title! })),
       d.awards,
-    ),
+    ).concat(raw.awards?.some((a) => a.title && a.image) ? d.awards.filter((x) => !raw.awards!.some((a) => a.title?.trim().toLowerCase() === x.title.toLowerCase())) : []),
     faqs: list(
       raw.faqs?.filter((f) => f.q && f.a).map((f): Faq => ({ q: f.q, a: onlyMindray(f.a), ...(f.linkHref && f.linkLabel ? { link: { href: f.linkHref, label: f.linkLabel } } : {}) })),
       d.faqs,
