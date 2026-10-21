@@ -1,29 +1,7 @@
 /**
- * Corporate social responsibility (the CEO's review, point 4). Activities come from the CEO's own profile text and
- * from Flokefama's published news, and the featured projects from Flokefama's CSR presentation (Support centre, Oct 2026).
+ * Corporate social responsibility (the CEO's review, point 4): the commitment, recognition and projects from
+ * Flokefama's CSR presentation (support centre, Oct 2026).
  */
-export type CsrActivity = {
-  title: string;
-  text: string;
-  date?: string;
-  image?: string;
-  alt?: string;
-  href?: string;
-};
-
-export const csrGroups: { title: string; intro: string; items: CsrActivity[] }[] = [
-  {
-    title: 'Professional development',
-    intro: 'Building the skills behind modern healthcare.',
-    items: [
-      {
-        title: 'Laboratory Boot Camp',
-        text: 'Hands-on programmes that help the next generation of laboratory scientists master advanced diagnostic technology.',
-      },
-    ],
-  },
-];
-
 /** Our CSR commitment, in three parts (from Flokefama's CSR presentation). */
 export const csrCommitments = [
   { label: 'Partnering facilities', icon: 'fi-rr-hospital', title: 'Giving back value', text: 'As part of our corporate social responsibility, Flokefama gives back its value share to partnering facilities, supporting operational excellence and healthcare infrastructure.' },
