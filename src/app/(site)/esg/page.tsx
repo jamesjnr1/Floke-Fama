@@ -79,24 +79,19 @@ export default async function EsgPage() {
 
       {/* Recognition by Forbes Africa */}
       <section aria-labelledby="forbes" className="bg-midnight text-white section-y">
-        <div className="mx-auto grid max-w-[1280px] items-center gap-10 px-5 md:px-10 lg:grid-cols-12 lg:gap-16">
-          <Reveal className="lg:col-span-5">
-            <div className="relative aspect-[4/5] overflow-hidden">
-              <Image src={forbes.photo.src} alt={forbes.photo.alt} fill sizes="(min-width: 1024px) 480px, 100vw" className="object-cover" />
-            </div>
-          </Reveal>
-          <Reveal delay={0.06} className="lg:col-span-7">
+        <div className="mx-auto max-w-[1280px] px-5 md:px-10">
+          <Reveal className="max-w-4xl">
             <p className="text-[0.9375rem] font-semibold uppercase tracking-[0.08em] text-brand-300">{forbes.label}</p>
             <h2 id="forbes" className="mt-3 text-[clamp(1.875rem,1.2rem+2vw,2.75rem)] font-bold leading-[1.12] tracking-[-0.03em] text-white">{forbes.title}</h2>
-            <ul className="mt-8 space-y-6">
-              {forbes.points.map((p) => (
-                <li key={p.title} className="border-l-2 border-brand-400 pl-5">
-                  <h3 className="text-xl font-semibold text-white">{p.title}</h3>
-                  <p className="no-justify mt-1.5 text-lg leading-relaxed text-white/75">{p.text}</p>
-                </li>
-              ))}
-            </ul>
           </Reveal>
+          <ul className="mt-10 grid gap-4 md:grid-cols-3">
+            {forbes.points.map((p) => (
+              <li key={p.title} className="bg-white/[0.06] p-7">
+                <h3 className="text-xl font-semibold text-white">{p.title}</h3>
+                <p className="no-justify mt-2 text-lg leading-relaxed text-white/75">{p.text}</p>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 
