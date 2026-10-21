@@ -77,9 +77,9 @@ export const csrProjects: { id: string; label: string; title: string; text?: str
     title: 'Women in engineering and the next generation',
     href: '/news/flokefama-partners-with-university-of-ghana-to-shape-the-next-generation-of-biomedical-engineers',
     groups: [
-      { caption: 'Educational outreach', text: 'Our ongoing sponsorship, industrial tours and academic awards for biomedical and engineering students, featured in the University of Ghana engineering newsletter.', photos: [{ src: '/images/csr/engineering-newsletter.webp', alt: 'University of Ghana engineering newsletter featuring the Flokefama industry tour' }] },
       { caption: 'Female in Engineering initiative', text: 'Partnering with academic institutions to empower women and promote excellence in engineering.', photos: [{ src: '/images/csr/female-engineering-partnership.webp', alt: 'Flokefama and academic partners outside the Flokefama office' }] },
       { caption: 'Industry collaboration', text: 'Our leadership and engineering teams working with partners and healthcare facilities across the country.', photos: [{ src: '/images/csr/engineering-team.webp', alt: 'Flokefama team members at the Flokefama sign' }, { src: '/images/csr/engineering-industry-tour.webp', alt: 'Biomedical engineering students on an industry tour at Floke Pharmaceuticals' }] },
+      { caption: 'Educational outreach', text: 'Our ongoing sponsorship, industrial tours and academic awards for biomedical and engineering students, featured in the University of Ghana engineering newsletter.', photos: [{ src: '/images/csr/engineering-newsletter.webp', alt: 'University of Ghana engineering newsletter featuring the Flokefama industry tour' }] },
     ],
   },
 ];
