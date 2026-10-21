@@ -4,12 +4,11 @@ import Link from 'next/link';
 import { SitePageHero } from '@/components/layout/site-page-hero';
 import { Reveal } from '@/components/motion/reveal';
 import { Icon } from '@/components/ui/icon';
-import { csrCommitments, csrGroups, csrProjects, forbes, kpone, type CsrGroup, type CsrPhoto } from '@/data/csr';
-import { getSite } from '@/lib/site';
+import { csrCommitments, csrProjects, forbes, kpone, type CsrGroup, type CsrPhoto } from '@/data/csr';
 
 export const metadata: Metadata = {
   title: 'Corporate Social Responsibility',
-  description: 'How Flokefama gives back: support for healthcare institutions, professional development and communities across Ghana, alongside our ESG commitments.',
+  description: 'How Flokefama gives back: support for healthcare institutions, professional development and communities across Ghana.',
   alternates: { canonical: '/esg' },
 };
 
@@ -54,16 +53,6 @@ function Group({ g, wide }: { g: CsrGroup; wide: boolean }) {
 }
 
 export default async function EsgPage() {
-  const { purpose, esgPillars } = await getSite();
-  const aim = purpose.find((p) => p.label === 'Aim') ?? purpose[purpose.length - 1];
-  // ESG commitments beyond CSR: patient safety and governance (editable in the Studio), and local industry (our Aim)
-  const esg = [
-    ...esgPillars.filter((p) => /patient safety|governance/i.test(p.label)).map((p) => ({ label: p.label, title: p.title, text: p.body })),
-    { label: 'Economic · Local industry', title: 'Making it in Ghana.', text: aim.text },
-  ];
-
-  const others = csrGroups.flatMap((g) => g.items.map((a) => ({ ...a, group: g.title })));
-
   return (
     <>
       <SitePageHero page="esg" kicker="Corporate Social Responsibility" />
@@ -169,37 +158,6 @@ export default async function EsgPage() {
         </section>
       ))}
 
-      {/* Other activities, as text */}
-      <section className="border-t border-line bg-canvas py-14 md:py-20">
-        <div className="mx-auto max-w-[1280px] px-5 md:px-10">
-          <h2 className="text-2xl font-bold tracking-[-0.02em] text-ink md:text-3xl">More of our work</h2>
-          <ul className="mt-6 grid gap-6 md:grid-cols-2">
-            {others.map((a) => (
-              <li key={a.title} className="border-l-2 border-brand-600 pl-5">
-                <p className="text-[0.9375rem] font-semibold text-brand-700">{a.group}</p>
-                <h3 className="mt-1 text-xl font-bold tracking-[-0.01em] text-ink">{a.title}</h3>
-                <p className="no-justify mt-1.5 text-lg leading-relaxed text-ink-3">{a.text}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      {/* ESG commitments */}
-      <section className="pattern-dots pattern-bl border-t border-line bg-paper section-y">
-        <div className="mx-auto max-w-[1280px] px-5 md:px-10">
-          <h2 className="text-2xl font-bold tracking-[-0.02em] text-ink md:text-3xl">Our ESG commitments</h2>
-          <ul className="mt-8 grid gap-4 md:grid-cols-3">
-            {esg.map((e) => (
-              <li key={e.label} className="rounded-lg border border-line bg-canvas p-7">
-                <p className="text-[0.9375rem] font-semibold text-brand-700">{e.label}</p>
-                <h3 className="mt-2 text-xl font-semibold tracking-[-0.01em] text-ink">{e.title}</h3>
-                <p className="no-justify mt-2 text-lg leading-relaxed text-ink-3">{e.text}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
     </>
   );
 }
