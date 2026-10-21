@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { SitePageHero } from '@/components/layout/site-page-hero';
 import { Reveal } from '@/components/motion/reveal';
 import { Icon } from '@/components/ui/icon';
-import { csrCommitments, csrGroups, csrProjects, kpone, type CsrActivity, type CsrPhoto } from '@/data/csr';
+import { csrCommitments, csrGroups, csrProjects, kpone, type CsrGroup, type CsrPhoto } from '@/data/csr';
 import { getSite } from '@/lib/site';
 
 export const metadata: Metadata = {
@@ -12,26 +12,6 @@ export const metadata: Metadata = {
   description: 'How Flokefama gives back: support for healthcare institutions, professional development and communities across Ghana, alongside our ESG commitments.',
   alternates: { canonical: '/esg' },
 };
-
-type Item = CsrActivity & { group: string };
-
-/** The activity's photo, or a placeholder until the photograph arrives (requested from the CEO). */
-function Photo({ a, sizes }: { a: Item; sizes: string }) {
-  return (
-    <div className="relative aspect-[16/10] overflow-hidden rounded-[4px] bg-mist">
-      {a.image ? (
-        <Image src={a.image} alt={a.alt ?? ''} fill sizes={sizes} className="object-cover transition-transform duration-500 group-hover:scale-[1.03]" />
-      ) : (
-        <div className="absolute inset-0 grid place-items-center bg-[repeating-linear-gradient(135deg,transparent_0,transparent_14px,rgb(22_35_42/0.035)_14px,rgb(22_35_42/0.035)_15px)] text-ink-3">
-          <span className="flex flex-col items-center gap-2 text-[0.9375rem]">
-            <Icon name="fi-rr-camera" className="text-2xl" />
-            Photo coming soon
-          </span>
-        </div>
-      )}
-    </div>
-  );
-}
 
 /** A project photo, kept whole in its frame. */
 function Shot({ p, sizes, className }: { p: CsrPhoto; sizes: string; className?: string }) {
@@ -42,32 +22,34 @@ function Shot({ p, sizes, className }: { p: CsrPhoto; sizes: string; className?:
   );
 }
 
-/** Date or area above the title. */
-const Meta = ({ a }: { a: Item }) => <p className="text-[0.9375rem] font-semibold text-brand-700">{a.group}{a.date && ` · ${a.date}`}</p>;
+/** Photo columns for a part of a project: one wide photo, or two or three side by side. */
+const cols = { 1: 'grid-cols-1', 2: 'grid-cols-2', 3: 'grid-cols-3' } as const;
+const shape = { 1: 'aspect-[16/10]', 2: 'aspect-[16/10]', 3: 'aspect-[5/6]' } as const;
 
-/** The activities with a published story, as large stories. */
-function Story({ a }: { a: Item }) {
-  const body = (
-    <>
-      <Photo a={a} sizes="(min-width: 768px) 620px, 100vw" />
-      <div className="mt-5"><Meta a={a} /></div>
-      <h3 className="mt-1.5 text-2xl font-bold leading-snug tracking-[-0.02em] text-ink group-hover:text-brand-700">{a.title}</h3>
-      <p className="no-justify mt-2 text-lg leading-relaxed text-ink-3">{a.text}</p>
-      {a.href && <span className="mt-3 inline-flex items-center gap-1 font-semibold text-brand-700">Read the story <Icon name="fi-rr-arrow-small-right" /></span>}
-    </>
-  );
-  return a.href ? <Link href={a.href} className="group block">{body}</Link> : <div>{body}</div>;
-}
-
-/** The other activities, smaller, with their photo or a placeholder. */
-function Card({ a }: { a: Item }) {
+function Group({ g, wide }: { g: CsrGroup; wide: boolean }) {
+  const n = Math.min(g.photos.length, 3) as 1 | 2 | 3;
   return (
-    <li className="flex flex-col">
-      <Photo a={a} sizes="(min-width: 768px) 400px, 100vw" />
-      <div className="mt-5"><Meta a={a} /></div>
-      <h3 className="mt-1.5 text-xl font-bold leading-snug tracking-[-0.01em] text-ink">{a.title}</h3>
-      <p className="no-justify mt-2 text-lg leading-relaxed text-ink-3">{a.text}</p>
-    </li>
+    <figure>
+      {/* In a narrow column two photos stack, together as tall as a single photo */}
+      <div className={`grid gap-3 ${!wide && n === 2 ? 'grid-cols-1' : cols[n]}`}>
+        {g.photos.map((p) => <Shot key={p.src} p={p} sizes={wide ? '(min-width: 768px) 620px, 100vw' : '(min-width: 1024px) 400px, 100vw'} className={!wide && n === 2 ? 'aspect-[16/4.85]' : shape[n]} />)}
+      </div>
+      <figcaption className="mt-5">
+        <p className="text-[0.9375rem] font-semibold uppercase tracking-[0.06em] text-brand-700">{g.caption}</p>
+        {g.title && <h3 className="mt-1.5 text-xl font-bold tracking-[-0.01em] text-ink">{g.title}</h3>}
+        {g.text && <p className="no-justify mt-1.5 text-lg leading-relaxed text-ink-3">{g.text}</p>}
+        {g.points && (
+          <ul className="mt-3 space-y-2">
+            {g.points.map((t) => (
+              <li key={t} className="flex gap-3 text-lg leading-relaxed text-ink-3">
+                <span aria-hidden className="mt-[0.7em] size-1.5 shrink-0 bg-brand-600" />
+                {t}
+              </li>
+            ))}
+          </ul>
+        )}
+      </figcaption>
+    </figure>
   );
 }
 
@@ -80,9 +62,7 @@ export default async function EsgPage() {
     { label: 'Economic · Local industry', title: 'Making it in Ghana.', text: aim.text },
   ];
 
-  const all: Item[] = csrGroups.flatMap((g) => g.items.map((a) => ({ ...a, group: g.title })));
-  const stories = all.filter((a) => a.href);
-  const others = all.filter((a) => !a.href);
+  const others = csrGroups.flatMap((g) => g.items.map((a) => ({ ...a, group: g.title })));
 
   return (
     <>
@@ -137,40 +117,47 @@ export default async function EsgPage() {
         </div>
       </section>
 
-      {/* Korle Bu blood bank and the UGMC donation */}
+      {/* The other projects: Pentecost CSSD, Korle Bu, UGMC, The Trust Hospital, ZoDF, women in engineering */}
       {csrProjects.map((proj, i) => (
         <section key={proj.title} aria-label={proj.title} className={`border-t border-line section-y ${i % 2 ? 'bg-paper' : 'bg-canvas'}`}>
           <div className="mx-auto max-w-[1280px] px-5 md:px-10">
-            <Reveal>
-              <p className="text-[0.9375rem] font-semibold uppercase tracking-[0.08em] text-brand-700">{proj.label}</p>
-              <h2 className="display mt-2 text-[clamp(2rem,1.2rem+2.4vw,3rem)]">{proj.title}</h2>
+            <Reveal className="grid gap-5 lg:grid-cols-12 lg:items-end lg:gap-10">
+              <div className="lg:col-span-7">
+                <p className="text-[0.9375rem] font-semibold uppercase tracking-[0.08em] text-brand-700">{proj.label}</p>
+                <h2 className="display mt-2 text-[clamp(2rem,1.2rem+2.4vw,3rem)]">{proj.title}</h2>
+              </div>
+              {proj.text && <p className="no-justify text-lg leading-relaxed text-ink-3 lg:col-span-5">{proj.text}</p>}
             </Reveal>
-            <div className="mt-10 grid gap-10 md:grid-cols-2 md:gap-8">
-              {proj.photos.map((p) => (
-                <figure key={p.src}>
-                  <Shot p={p} sizes="(min-width: 768px) 620px, 100vw" />
-                  <figcaption className="mt-5">
-                    <p className="text-[0.9375rem] font-semibold text-brand-700">{p.caption}</p>
-                    <p className="no-justify mt-1.5 text-lg leading-relaxed text-ink-3">{p.text}</p>
-                  </figcaption>
-                </figure>
-              ))}
+            <div className={`mt-10 grid gap-10 md:gap-8 ${proj.groups.length === 3 ? 'md:grid-cols-3' : proj.groups.length === 2 ? 'md:grid-cols-2' : proj.stat ? 'md:grid-cols-[1.4fr_1fr] md:items-start' : ''}`}>
+              {proj.groups.map((g) => <Group key={g.caption} g={g} wide={proj.groups.length < 3} />)}
+              {proj.stat && (
+                <div className="border border-line bg-paper p-7 lg:p-9">
+                  <p className="text-[clamp(2.25rem,1.6rem+2vw,3.25rem)] font-extrabold tracking-[-0.03em] text-brand-700">{proj.stat.value}</p>
+                  <p className="mt-2 text-lg text-ink-3">{proj.stat.label}</p>
+                </div>
+              )}
             </div>
+            {proj.href && (
+              <Link href={proj.href} className="mt-8 inline-flex items-center gap-1.5 text-lg font-semibold text-brand-700 hover:text-brand-800">
+                Read the story <Icon name="fi-rr-arrow-small-right" />
+              </Link>
+            )}
           </div>
         </section>
       ))}
 
-      {/* More of our work: published stories first, then the other activities */}
-      <section className="pattern-cross pattern-tr border-t border-line bg-canvas section-y">
+      {/* Other activities, as text */}
+      <section className="border-t border-line bg-canvas py-14 md:py-20">
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
           <h2 className="text-2xl font-bold tracking-[-0.02em] text-ink md:text-3xl">More of our work</h2>
-
-          <div className="mt-10 grid gap-10 md:grid-cols-2 md:gap-6">
-            {stories.map((a) => <Story key={a.title} a={a} />)}
-          </div>
-
-          <ul className="mt-14 grid gap-10 border-t border-line pt-12 sm:grid-cols-2 md:gap-6 lg:grid-cols-3">
-            {others.map((a) => <Card key={a.title} a={a} />)}
+          <ul className="mt-6 grid gap-6 md:grid-cols-2">
+            {others.map((a) => (
+              <li key={a.title} className="border-l-2 border-brand-600 pl-5">
+                <p className="text-[0.9375rem] font-semibold text-brand-700">{a.group}</p>
+                <h3 className="mt-1 text-xl font-bold tracking-[-0.01em] text-ink">{a.title}</h3>
+                <p className="no-justify mt-1.5 text-lg leading-relaxed text-ink-3">{a.text}</p>
+              </li>
+            ))}
           </ul>
         </div>
       </section>
