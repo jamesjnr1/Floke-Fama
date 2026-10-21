@@ -90,16 +90,6 @@ export const csrProjects: { label: string; title: string; text?: string; stat?: 
     ],
   },
   {
-    label: 'Zongo Development Fund',
-    title: 'Supporting the Zongo Development Fund',
-    text: 'Targeted assistance for infrastructure, education and community welfare, strengthening our ties with national development funds and community leaders.',
-    stat: { value: 'GH₵ 200,000', label: 'Financial support to the Zongo Development Fund' },
-    href: '/news/flokefama-supports-zodf-ramadan-distribution-programme',
-    groups: [
-      { caption: 'Donation ceremony', text: 'Official presentation of our financial contribution to the Zongo Development Fund.', photos: [{ src: '/images/csr/zodf-cheque-presentation.webp', alt: 'Flokefama presenting a GH₵200,000 cheque to the Zongo Development Fund' }] },
-    ],
-  },
-  {
     label: 'Promoting females in engineering',
     title: 'Women in engineering and the next generation',
     href: '/news/flokefama-partners-with-university-of-ghana-to-shape-the-next-generation-of-biomedical-engineers',
@@ -110,3 +100,15 @@ export const csrProjects: { label: string; title: string; text?: string; stat?: 
     ],
   },
 ];
+
+/** Recognition by Forbes Africa for our CSR. */
+export const forbes = {
+  label: 'Forbes Africa feature & CSR impact',
+  title: 'Honoured for excellence in healthcare accessibility & community development',
+  photo: { src: '/images/csr/forbes-africa-feature.webp', alt: 'The Flokefama CEO with the Forbes Africa Ghana edition featuring Flokefama' },
+  points: [
+    { title: 'Forbes Africa recognition', text: 'Highlighted for an outstanding commitment to corporate governance, healthcare infrastructure expansion and sustainable social interventions.' },
+    { title: 'Strengthening healthcare infrastructure', text: 'Deploying modern radiology and surgical equipment to hospitals across Ghana, enabling life-saving diagnostic and clinical capabilities.' },
+    { title: 'Sustainable community impact', text: 'Building long-term partnerships with healthcare providers to raise patient care standards and drive local empowerment.' },
+  ],
+};

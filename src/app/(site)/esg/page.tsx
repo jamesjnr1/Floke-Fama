@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { SitePageHero } from '@/components/layout/site-page-hero';
 import { Reveal } from '@/components/motion/reveal';
 import { Icon } from '@/components/ui/icon';
-import { csrCommitments, csrGroups, csrProjects, kpone, type CsrGroup, type CsrPhoto } from '@/data/csr';
+import { csrCommitments, csrGroups, csrProjects, forbes, kpone, type CsrGroup, type CsrPhoto } from '@/data/csr';
 import { getSite } from '@/lib/site';
 
 export const metadata: Metadata = {
@@ -85,6 +85,29 @@ export default async function EsgPage() {
               </li>
             ))}
           </ul>
+        </div>
+      </section>
+
+      {/* Recognition by Forbes Africa */}
+      <section aria-labelledby="forbes" className="bg-midnight text-white section-y">
+        <div className="mx-auto grid max-w-[1280px] items-center gap-10 px-5 md:px-10 lg:grid-cols-12 lg:gap-16">
+          <Reveal className="lg:col-span-5">
+            <div className="relative aspect-[4/5] overflow-hidden">
+              <Image src={forbes.photo.src} alt={forbes.photo.alt} fill sizes="(min-width: 1024px) 480px, 100vw" className="object-cover" />
+            </div>
+          </Reveal>
+          <Reveal delay={0.06} className="lg:col-span-7">
+            <p className="text-[0.9375rem] font-semibold uppercase tracking-[0.08em] text-brand-300">{forbes.label}</p>
+            <h2 id="forbes" className="mt-3 text-[clamp(1.875rem,1.2rem+2vw,2.75rem)] font-bold leading-[1.12] tracking-[-0.03em] text-white">{forbes.title}</h2>
+            <ul className="mt-8 space-y-6">
+              {forbes.points.map((p) => (
+                <li key={p.title} className="border-l-2 border-brand-400 pl-5">
+                  <h3 className="text-xl font-semibold text-white">{p.title}</h3>
+                  <p className="no-justify mt-1.5 text-lg leading-relaxed text-white/75">{p.text}</p>
+                </li>
+              ))}
+            </ul>
+          </Reveal>
         </div>
       </section>
 
