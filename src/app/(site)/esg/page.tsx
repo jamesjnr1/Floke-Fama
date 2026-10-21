@@ -96,7 +96,7 @@ export default async function EsgPage() {
       </section>
 
       {/* Kpone Hospital: before and after */}
-      <section aria-labelledby="kpone" className="border-t border-line bg-paper section-y">
+      <section aria-labelledby="kpone" className="pattern-dots pattern-bl border-t border-line bg-paper section-y">
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
           <Reveal className="grid gap-5 lg:grid-cols-12 lg:items-end lg:gap-10">
             <div className="lg:col-span-7">
@@ -126,7 +126,7 @@ export default async function EsgPage() {
 
       {/* The other projects: Pentecost CSSD, Korle Bu, UGMC, The Trust Hospital, ZoDF, women in engineering */}
       {csrProjects.map((proj, i) => (
-        <section key={proj.title} aria-label={proj.title} className={`border-t border-line section-y ${i % 2 ? 'bg-paper' : 'bg-canvas'}`}>
+        <section key={proj.title} aria-label={proj.title} className={`border-t border-line section-y ${i % 2 ? 'pattern-dots pattern-br bg-paper' : `${i % 4 ? 'pattern-cross' : 'pattern-grid'} pattern-tr bg-canvas`}`}>
           <div className="mx-auto max-w-[1280px] px-5 md:px-10">
             <Reveal className="grid gap-5 lg:grid-cols-12 lg:items-end lg:gap-10">
               <div className="lg:col-span-7">
