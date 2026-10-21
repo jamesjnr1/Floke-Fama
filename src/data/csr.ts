@@ -83,7 +83,6 @@ export const csrProjects: { label: string; title: string; text?: string; stat?: 
 export const forbes = {
   label: 'Forbes Africa feature & CSR impact',
   title: 'Honoured for excellence in healthcare accessibility & community development',
-  photo: { src: '/images/csr/forbes-africa-feature.webp', alt: 'The Flokefama CEO with the Forbes Africa Ghana edition featuring Flokefama' },
   points: [
     { title: 'Forbes Africa recognition', text: 'Highlighted for an outstanding commitment to corporate governance, healthcare infrastructure expansion and sustainable social interventions.' },
     { title: 'Strengthening healthcare infrastructure', text: 'Deploying modern radiology and surgical equipment to hospitals across Ghana, enabling life-saving diagnostic and clinical capabilities.' },
