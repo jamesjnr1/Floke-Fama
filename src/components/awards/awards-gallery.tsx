@@ -3,13 +3,15 @@ import { Reveal } from '@/components/motion/reveal';
 import { getSite } from '@/lib/site';
 import { cn } from '@/lib/utils';
 
-/** Bento spans for five awards on a 6-column grid: feature + two stacked, then a 2 + 4 row. */
+/** Bento spans on a 6-column grid: feature + two stacked, a 2 + 4 row, then rows of two halves. */
 const layout = [
   { span: 'md:col-span-4 md:row-span-2', height: 'min-h-[340px] md:min-h-[520px]', sizes: '(min-width: 768px) 66vw, 100vw', feature: true },
   { span: 'md:col-span-2', height: 'min-h-[340px] md:min-h-[300px]', sizes: '(min-width: 768px) 33vw, 100vw' },
   { span: 'md:col-span-2', height: 'min-h-[340px] md:min-h-[300px]', sizes: '(min-width: 768px) 33vw, 100vw' },
   { span: 'md:col-span-2', height: 'min-h-[340px] md:min-h-[380px]', sizes: '(min-width: 768px) 33vw, 100vw' },
   { span: 'md:col-span-4', height: 'min-h-[340px] md:min-h-[380px]', sizes: '(min-width: 768px) 66vw, 100vw' },
+  // More awards: two rows of two halves
+  ...Array.from({ length: 4 }, () => ({ span: 'md:col-span-3', height: 'min-h-[340px] md:min-h-[420px]', sizes: '(min-width: 768px) 50vw, 100vw' })),
 ];
 
 /** The actual awards, photographed: the No.1 healthcare ranking leads. */
