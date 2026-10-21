@@ -17,7 +17,7 @@ export function DepartmentSolutions() {
     })),
   }));
   return (
-    <section id="departments" aria-labelledby="departments-title" className="scroll-mt-24 border-t border-line bg-paper section-y">
+    <section id="departments" aria-labelledby="departments-title" className="pattern-dots pattern-tr scroll-mt-24 border-t border-line bg-paper section-y">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal className="grid gap-5 lg:grid-cols-12 lg:items-end lg:gap-10">
           <h2 id="departments-title" className="display text-[clamp(2rem,1.2rem+2.8vw,3.25rem)] lg:col-span-7">Solutions by department</h2>
