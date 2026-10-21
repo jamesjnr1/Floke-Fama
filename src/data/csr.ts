@@ -23,8 +23,9 @@ export const kpone = {
 export type CsrGroup = { caption: string; title?: string; text?: string; points?: string[]; photos: CsrPhoto[] };
 
 /** Projects from Flokefama's CSR presentation, each in a few parts. */
-export const csrProjects: { label: string; title: string; text?: string; stat?: { value: string; label: string }; href?: string; groups: CsrGroup[] }[] = [
+export const csrProjects: { id: string; label: string; title: string; text?: string; stat?: { value: string; label: string }; href?: string; groups: CsrGroup[] }[] = [
   {
+    id: 'pentecost',
     label: 'Pentecost Hospital, Accra Madina',
     title: 'A new Central Sterile Services Department',
     text: 'Flokefama supported Pentecost Hospital, a CHAG facility in Accra Madina, to build a brand-new Central Sterile Services Department (CSSD).',
@@ -44,6 +45,7 @@ export const csrProjects: { label: string; title: string; text?: string; stat?: 
     ],
   },
   {
+    id: 'korle-bu',
     label: 'Korle Bu Teaching Hospital',
     title: 'Korle Bu Blood Bank renovation',
     groups: [
@@ -52,6 +54,7 @@ export const csrProjects: { label: string; title: string; text?: string; stat?: 
     ],
   },
   {
+    id: 'ugmc',
     label: 'University of Ghana Medical Centre',
     title: 'Neonatal incubators for UGMC',
     groups: [
@@ -60,6 +63,7 @@ export const csrProjects: { label: string; title: string; text?: string; stat?: 
     ],
   },
   {
+    id: 'trust-hospital',
     label: 'The Trust Hospital',
     title: 'Equipment for The Trust Hospital',
     groups: [
@@ -68,13 +72,14 @@ export const csrProjects: { label: string; title: string; text?: string; stat?: 
     ],
   },
   {
+    id: 'engineering',
     label: 'Promoting females in engineering',
     title: 'Women in engineering and the next generation',
     href: '/news/flokefama-partners-with-university-of-ghana-to-shape-the-next-generation-of-biomedical-engineers',
     groups: [
-      { caption: 'Educational outreach', text: 'Our ongoing sponsorship, industrial tours and academic awards for biomedical and engineering students, featured in the University of Ghana engineering newsletter.', photos: [{ src: '/images/csr/engineering-newsletter.webp', alt: 'University of Ghana engineering newsletter featuring the Flokefama industry tour' }] },
       { caption: 'Female in Engineering initiative', text: 'Partnering with academic institutions to empower women and promote excellence in engineering.', photos: [{ src: '/images/csr/female-engineering-partnership.webp', alt: 'Flokefama and academic partners outside the Flokefama office' }] },
       { caption: 'Industry collaboration', text: 'Our leadership and engineering teams working with partners and healthcare facilities across the country.', photos: [{ src: '/images/csr/engineering-team.webp', alt: 'Flokefama team members at the Flokefama sign' }, { src: '/images/csr/engineering-industry-tour.webp', alt: 'Biomedical engineering students on an industry tour at Floke Pharmaceuticals' }] },
+      { caption: 'Educational outreach', text: 'Our ongoing sponsorship, industrial tours and academic awards for biomedical and engineering students, featured in the University of Ghana engineering newsletter.', photos: [{ src: '/images/csr/engineering-newsletter.webp', alt: 'University of Ghana engineering newsletter featuring the Flokefama industry tour' }] },
     ],
   },
 ];
