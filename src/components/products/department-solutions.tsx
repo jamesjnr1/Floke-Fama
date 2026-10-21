@@ -1,5 +1,5 @@
 import { Reveal } from '@/components/motion/reveal';
-import { DepartmentTabs, type ResolvedDepartment } from '@/components/products/department-tabs';
+import { DepartmentTabs, type ResolvedDepartment, type ResolvedItem } from '@/components/products/department-tabs';
 import { catalogue } from '@/data/catalogue';
 import { departments, labDisciplines, labPackages } from '@/data/solutions';
 
@@ -9,8 +9,8 @@ export function DepartmentSolutions() {
     ...d,
     groups: d.groups.map((g) => ({
       ...g,
-      items: g.items.flatMap((it) => {
-        if (!it.slug) return it.image ? [{ name: it.name, label: it.label, text: it.text, image: it.image }] : [];
+      items: g.items.flatMap((it): ResolvedItem[] => {
+        if (!it.slug) return it.image ? [{ name: it.name, label: it.label, text: it.text, image: it.image, photo: it.photo, credit: it.credit }] : [];
         const p = catalogue.find((c) => c.slug === it.slug);
         return p?.image ? [{ name: it.name, label: it.label, text: it.text, image: p.image, href: `/products/${p.slug}` }] : [];
       }),
