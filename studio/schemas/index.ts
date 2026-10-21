@@ -272,7 +272,7 @@ export const siteContent = defineType({
       name: 'branches',
       type: 'array',
       group: 'contact',
-      of: [defineArrayMember({ type: 'object', name: 'branch', fields: [defineField({ name: 'name', type: 'string' }), defineField({ name: 'detail', title: 'Where', type: 'string' })], preview: { select: { title: 'name', subtitle: 'detail' } } })],
+      of: [defineArrayMember({ type: 'object', name: 'branch', fields: [defineField({ name: 'name', type: 'string' }), defineField({ name: 'detail', title: 'Where', type: 'string' }), defineField({ name: 'phone', title: 'Phone', type: 'string', description: 'e.g. 020 025 0127' })], preview: { select: { title: 'name', subtitle: 'detail' } } })],
     }),
     defineField({ name: 'technologyPartners', title: 'Technology partners (brands we distribute)', type: 'array', group: 'logos', of: [logo('partner')] }),
     defineField({ name: 'clients', title: 'Clients (logo strip)', type: 'array', group: 'logos', of: [logo('client')] }),
