@@ -23,7 +23,7 @@ const services = [
 export default async function SupportPage() {
   const { contact, branches } = await getSite();
   const channels = [
-    { icon: 'fi-rr-phone-call', label: 'Call', value: contact.phone, href: contact.phoneHref },
+    { icon: 'fi-rr-phone-call', label: 'Call (24/7)', value: contact.phone, href: contact.phoneHref },
     { icon: 'fi-brands-whatsapp', label: 'WhatsApp', value: contact.phone, href: contact.whatsapp, external: true },
     { icon: 'fi-rr-envelope', label: 'Email', value: contact.support, href: `mailto:${contact.support}` },
   ];
@@ -38,6 +38,40 @@ export default async function SupportPage() {
         position="50% 30%"
         veil="strong"
       />
+
+      {/* 24/7 call centre (from Flokefama's client service presentation, Oct 2026) */}
+      <section aria-labelledby="call-centre" className="border-b border-line bg-paper py-12 md:py-16">
+        <div className="mx-auto grid max-w-[1280px] gap-10 px-5 md:px-10 lg:grid-cols-12 lg:items-center lg:gap-14">
+          <div className="lg:col-span-7">
+            <p className="text-[0.9375rem] font-semibold uppercase tracking-[0.08em] text-brand-700">Client service · 24/7 call centre</p>
+            <h2 id="call-centre" className="display mt-2 text-[clamp(1.875rem,1.2rem+2.2vw,2.75rem)]">We answer around the clock</h2>
+            <div className="mt-7 grid gap-6 sm:grid-cols-2">
+              <div className="bg-canvas p-6">
+                <h3 className="text-xl font-semibold text-ink">24/7 dedicated call centre</h3>
+                <p className="no-justify mt-1.5 text-lg leading-relaxed text-ink-3">Our helpline runs continuously, day and night, for immediate client support and rapid service response.</p>
+              </div>
+              <div className="bg-canvas p-6">
+                <h3 className="text-xl font-semibold text-ink">Seamless operational assistance</h3>
+                <p className="no-justify mt-1.5 text-lg leading-relaxed text-ink-3">Full business coverage from experienced call centre agents committed to excellence.</p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-midnight p-8 text-white lg:col-span-5 md:p-10">
+            <p className="text-[0.9375rem] font-semibold uppercase tracking-[0.08em] text-brand-300">Client helpline · open 24/7</p>
+            <a href={contact.phoneHref} className="mt-3 block text-[clamp(2rem,1.4rem+2vw,2.75rem)] font-bold tracking-[-0.02em] text-white hover:text-brand-300">
+              {contact.phone}
+            </a>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <a href={contact.phoneHref} className="inline-flex h-12 items-center gap-2 bg-brand-600 px-5 font-semibold text-white transition-colors hover:bg-brand-700">
+                <Icon name="fi-rr-phone-call" /> Call now
+              </a>
+              <a href={contact.whatsapp} target="_blank" rel="noopener noreferrer" className="inline-flex h-12 items-center gap-2 border border-white/30 px-5 font-semibold text-white transition-colors hover:bg-white/10">
+                <Icon name="fi-brands-whatsapp" /> WhatsApp
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* What we do: installation highlighted, the other four services as cards */}
       <section className="pattern-cross pattern-tr bg-canvas section-y">
