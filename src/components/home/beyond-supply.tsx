@@ -12,15 +12,15 @@ const stages = [
 ];
 
 /**
- * How the section is laid out. 'steps' (default): the text, then the four stages as numbered columns. 'banner': a
- * full-width photo of an engineer at work with the text and the stages over it. 'green': the text on a green panel
- * beside the equipment photo, edge to edge. 'split': the earlier layout, text beside a framed photo.
+ * How the section is laid out. 'green' (default): the text on a green panel beside the equipment photo, edge to
+ * edge. 'steps': the text, then the four stages as numbered columns. 'banner': a full-width photo of an engineer at
+ * work with the text and the stages over it. 'split': the earlier layout, text beside a framed photo.
  * Switch with NEXT_PUBLIC_BEYOND_LAYOUT in Vercel (then redeploy).
  */
 const layouts = ['steps', 'banner', 'green', 'split'] as const;
 export type BeyondLayout = (typeof layouts)[number];
 const env = process.env.NEXT_PUBLIC_BEYOND_LAYOUT as BeyondLayout | undefined;
-const chosen: BeyondLayout = env && layouts.includes(env) ? env : 'steps';
+const chosen: BeyondLayout = env && layouts.includes(env) ? env : 'green';
 
 const Title = ({ className = 'text-ink' }: { className?: string }) => (
   <h2 id="beyond-supply-title" className={`display text-[clamp(2rem,1.3rem+2vw,2.875rem)] leading-[1.1] ${className}`}>
