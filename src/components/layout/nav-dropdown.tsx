@@ -11,9 +11,10 @@ export type MenuChild = { href: string; label: string; hint: string; image: stri
  * How the Company drop-down looks. 'cards' (default): a light panel with a photo card per page. 'mega': a full-width
  * panel under the bar with an introduction, the pages and the CEO's message. 'green': the pages numbered on the
  * company green. 'light': a plain white list. 'classic': the earlier dark list.
+ * Simplest, names only: 'white', 'dark' and 'greenlite' (small panels), 'strip' (a slim band under the bar).
  * Switch with NEXT_PUBLIC_MENU_STYLE in Vercel (then redeploy).
  */
-const styles = ['cards', 'mega', 'green', 'light', 'classic'] as const;
+const styles = ['cards', 'mega', 'green', 'light', 'classic', 'white', 'dark', 'greenlite', 'strip'] as const;
 export type MenuStyle = (typeof styles)[number];
 const env = process.env.NEXT_PUBLIC_MENU_STYLE as MenuStyle | undefined;
 export const menuStyle: MenuStyle = env && styles.includes(env) ? env : 'cards';
@@ -128,6 +129,50 @@ export function NavDropdown({ id, items, isOn, variant = menuStyle }: { id: stri
                   <span className="mt-0.5 block text-sm text-ink-3">{c.hint}</span>
                 </span>
                 <i className="fi fi-rr-arrow-small-right text-lg text-ink-3 opacity-0 transition-all group-hover:translate-x-0.5 group-hover:text-brand-700 group-hover:opacity-100" aria-hidden />
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </motion.div>
+    );
+  }
+
+  if (variant === 'strip') {
+    return (
+      <motion.div id={id} {...motionProps} className="fixed inset-x-0 top-[72px]">
+        <ul className={cn('flex justify-center gap-2 bg-white py-3', shadow)}>
+          {items.map((c) => (
+            <li key={c.href}>
+              <Link
+                href={c.href}
+                aria-current={isOn(c.href) ? 'page' : undefined}
+                className={cn('block px-5 py-2 text-[0.9375rem] font-semibold transition-colors hover:bg-canvas hover:text-brand-700', isOn(c.href) ? 'text-brand-700' : 'text-ink')}
+              >
+                {c.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </motion.div>
+    );
+  }
+
+  if (variant === 'white' || variant === 'dark' || variant === 'greenlite') {
+    const panel = { white: 'bg-white', dark: 'bg-midnight', greenlite: 'bg-brand-700' }[variant];
+    const link = {
+      white: 'text-ink hover:bg-canvas hover:text-brand-700',
+      dark: 'text-white/85 hover:bg-white/[0.07] hover:text-white',
+      greenlite: 'text-white/90 hover:bg-white/10 hover:text-white',
+    }[variant];
+    const on = { white: 'text-brand-700', dark: 'text-white', greenlite: 'text-white' }[variant];
+    return (
+      <motion.div id={id} {...motionProps} className="absolute left-1/2 top-full w-48 -translate-x-1/2 pt-3">
+        <ul className={cn('p-1.5', panel, shadow)}>
+          {items.map((c) => (
+            <li key={c.href}>
+              <Link href={c.href} aria-current={isOn(c.href) ? 'page' : undefined} className={cn('flex items-center justify-between px-4 py-2.5 text-[0.9375rem] font-medium transition-colors', link, isOn(c.href) && on)}>
+                {c.label}
+                {isOn(c.href) && <span aria-hidden className={cn('size-1.5 rounded-full', variant === 'white' ? 'bg-brand-600' : 'bg-brand-300')} />}
               </Link>
             </li>
           ))}
