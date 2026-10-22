@@ -30,7 +30,7 @@ const saveData = () => {
  * browser's controls turn the sound on. Visitors who asked for less motion, or are on Data Saver, see the
  * cover frame and press play themselves.
  */
-export function SolutionsInAction({ layout = 'wide' }: { layout?: 'wide' | 'feature' }) {
+export function SolutionsInAction({ layout = 'wide', plain = false }: { layout?: 'wide' | 'feature'; /** No background pattern (the structured home page) */ plain?: boolean }) {
   const video = useRef<HTMLVideoElement>(null);
   const [current, setCurrent] = useState(0);
   const [load, setLoad] = useState(false);
@@ -111,7 +111,7 @@ export function SolutionsInAction({ layout = 'wide' }: { layout?: 'wide' | 'feat
   }
 
   return (
-    <section aria-labelledby="in-action-title" className="pattern-grid bg-paper pt-16 md:pt-32">
+    <section aria-labelledby="in-action-title" className={`${plain ? '' : 'pattern-grid '}bg-paper pt-16 md:pt-32`}>
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal className="grid gap-5 lg:grid-cols-[1fr_1fr] lg:items-end lg:gap-16">
           <div>
