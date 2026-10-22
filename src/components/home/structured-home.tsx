@@ -7,12 +7,12 @@ import { Reveal } from '@/components/motion/reveal';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import { metrics } from '@/data/seed';
-import { getSite } from '@/lib/site';
 
 /**
  * The 'structured' home page: after the hero, a calm run of sections in one rhythm, each a contained block with
  * generous space around it. Stats band, what we do, the film (full width), the four pillars in a soft panel,
- * mission / vision / aim in their colours, testimonials, questions, and a closing call to action.
+ * mission / vision / aim in their colours, testimonials and a closing call to action. The light sections share
+ * one white background and their patterns fade out before the edges, so the page reads as one continuous surface.
  */
 
 const green = 'bg-[linear-gradient(135deg,#0a5a33_0%,#06482a_60%,#043822_100%)]';
@@ -63,7 +63,7 @@ export function StatsBand() {
 /** What we do: the photo on a soft green panel, the text on the right. */
 export function WhatWeDo() {
   return (
-    <section aria-labelledby="what-we-do" className="bg-paper section-y">
+    <section aria-labelledby="what-we-do" className="pattern-dots pattern-soft pattern-r bg-paper pt-16 md:pt-32">
       <div className="mx-auto grid max-w-[1280px] items-center gap-12 px-5 md:px-10 lg:grid-cols-2 lg:gap-20">
         <Reveal className="relative bg-brand-50 p-8 md:p-12">
           <div className="relative aspect-[4/3] overflow-hidden bg-white">
@@ -93,7 +93,7 @@ export function WhatWeDo() {
 /** The four pillars: the heading beside its introduction, then all four side by side, each with its photo, points and link. */
 export function PillarsPanel() {
   return (
-    <section aria-labelledby="pillars-title" className="pattern-cross pattern-tr bg-canvas section-y">
+    <section aria-labelledby="pillars-title" className="pattern-cross pattern-soft pattern-l bg-paper section-y">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal className="grid gap-6 lg:grid-cols-2 lg:items-end lg:gap-16">
           <div>
@@ -113,7 +113,7 @@ export function PillarsPanel() {
           {pillars.map((p, i) => (
             <li key={p.title}>
               <Reveal delay={i * 0.05} className="h-full">
-                <Link href={p.href} className="group flex h-full flex-col bg-white">
+                <Link href={p.href} className="group flex h-full flex-col bg-canvas">
                   <span className="relative block aspect-[4/3] overflow-hidden bg-white">
                     <Image
                       src={p.image}
@@ -153,7 +153,7 @@ export function PillarsPanel() {
 /** Mission, vision and aim under one heading, in their own colours (green, red, teal), as before. */
 export function PurposeCards() {
   return (
-    <section aria-labelledby="purpose-title" className="bg-paper pb-16 md:pb-28">
+    <section aria-labelledby="purpose-title" className="bg-paper">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal className="mx-auto max-w-2xl text-center">
           <Chip>Our purpose</Chip>
@@ -163,66 +163,6 @@ export function PurposeCards() {
           <p className="mt-4 text-lg text-ink-3">Saving lives since 2008, and building healthcare capacity in Ghana for the decades ahead.</p>
         </Reveal>
         <PurposeBlocks className="mt-12" />
-      </div>
-    </section>
-  );
-}
-
-/** Questions: the heading and a way to reach sales on the left, the questions (all of them, numbered) on the right. */
-export async function HomeFaq() {
-  const { faqs, contact } = await getSite();
-  if (!faqs.length) return null;
-  return (
-    <section aria-labelledby="home-faq" className="bg-paper section-y">
-      <div className="mx-auto grid max-w-[1280px] gap-10 px-5 md:px-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
-        <Reveal className="lg:sticky lg:top-28 lg:self-start">
-          <Chip>FAQ</Chip>
-          <h2 id="home-faq" className="display mt-4 text-[clamp(2rem,1.2rem+2.2vw,2.75rem)] text-ink">
-            Questions before you order
-          </h2>
-          <p className="no-justify mt-4 text-lg leading-relaxed text-ink-3">Still unsure? Our sales team will help you choose the right equipment for your facility.</p>
-          <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-            <a href={contact.phoneHref} className="group flex items-center gap-3 bg-canvas px-5 py-4 transition-colors hover:bg-brand-50">
-              <Icon name="fi-rr-phone-call" className="text-xl text-brand-700" />
-              <span>
-                <span className="block text-sm text-ink-3">Call sales</span>
-                <span className="block font-semibold text-ink">{contact.phone}</span>
-              </span>
-            </a>
-            <a href={`${contact.whatsapp}?text=${encodeURIComponent('Hello Flokefama, I have a question before ordering.')}`} target="_blank" rel="noopener noreferrer" className="group flex items-center gap-3 bg-canvas px-5 py-4 transition-colors hover:bg-brand-50">
-              <Icon name="fi-brands-whatsapp" className="text-xl text-[#1da851]" />
-              <span>
-                <span className="block text-sm text-ink-3">Chat with us</span>
-                <span className="block font-semibold text-ink">WhatsApp</span>
-              </span>
-            </a>
-          </div>
-        </Reveal>
-        <ol className="space-y-3">
-          {faqs.map((f, i) => (
-            <li key={f.q}>
-              <Reveal delay={Math.min(i, 4) * 0.04}>
-                <details className="group bg-canvas transition-colors open:bg-brand-50" open={i === 0}>
-                  <summary className="flex cursor-pointer list-none items-center gap-5 px-6 py-5 [&::-webkit-details-marker]:hidden">
-                    <span className="text-sm font-semibold tabular-nums text-brand-700">{String(i + 1).padStart(2, '0')}</span>
-                    <span className="flex-1 text-lg font-semibold text-ink">{f.q}</span>
-                    <span className="grid size-9 shrink-0 place-items-center bg-white text-ink transition-colors group-open:bg-brand-700 group-open:text-white">
-                      <Icon name="fi-rr-plus-small" className="text-xl transition-transform group-open:rotate-45" />
-                    </span>
-                  </summary>
-                  <p className="no-justify px-6 pb-6 pl-[3.85rem] leading-relaxed text-ink-3">
-                    {f.a}{' '}
-                    {f.link && (
-                      <Link href={f.link.href} className="font-medium text-brand-700 underline underline-offset-4">
-                        {f.link.label}
-                      </Link>
-                    )}
-                  </p>
-                </details>
-              </Reveal>
-            </li>
-          ))}
-        </ol>
       </div>
     </section>
   );

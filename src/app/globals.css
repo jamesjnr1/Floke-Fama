@@ -300,6 +300,17 @@ select:not([multiple]):not([size]) {
 .pattern-bl { --pattern-at: 0% 100%; }
 .pattern-br { --pattern-at: 100% 100%; }
 .pattern-top { --pattern-at: 50% 0%; }
+/* Soft: the pattern sits at the middle of one side and fades out well before the section's top and bottom, so
+   sections flow into each other with no visible edge. */
+.pattern-l { --pattern-at: 6% 50%; }
+.pattern-r { --pattern-at: 94% 50%; }
+.pattern-soft::before {
+  -webkit-mask-image: radial-gradient(45% 38% at var(--pattern-at), #000 0%, transparent 100%);
+  mask-image: radial-gradient(45% 38% at var(--pattern-at), #000 0%, transparent 100%);
+}
+.pattern-soft::after {
+  background-image: radial-gradient(35% 36% at var(--pattern-at), rgb(0 122 77 / 0.07), transparent 100%);
+}
 [data-patterns='off'] :is(.pattern-grid, .pattern-dots, .pattern-cross)::before,
 [data-patterns='off'] :is(.pattern-grid, .pattern-dots, .pattern-cross)::after {
   display: none;
