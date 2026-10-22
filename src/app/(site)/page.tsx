@@ -6,13 +6,36 @@ import { PurposeBlocks } from '@/components/about/purpose-blocks';
 import { BeyondSupply } from '@/components/home/beyond-supply';
 import { Testimonials } from '@/components/home/testimonials';
 import { SolutionsInAction } from '@/components/home/solutions-in-action';
+import { ClosingCta, HomeFaq, PillarsPanel, PurposeCards, StatsBand, WhatWeDo } from '@/components/home/structured-home';
 
 export const revalidate = 600;
 
 export const metadata: Metadata = { alternates: { canonical: '/' } };
 
+/**
+ * Home layout after the hero. 'structured' (default): figures band, what we do, the full-width film, the four pillars,
+ * mission / vision / aim, testimonials, questions and a closing call to action, each a contained block.
+ * 'classic': the earlier run of full-width sections. Switch with NEXT_PUBLIC_HOME_LAYOUT=classic in Vercel (then redeploy).
+ */
+const layout = process.env.NEXT_PUBLIC_HOME_LAYOUT === 'classic' ? 'classic' : 'structured';
+
 /** Home: each section appears only here; services, contact and company detail live on their own pages. */
 export default function HomePage() {
+  if (layout === 'structured') {
+    return (
+      <>
+        <Hero />
+        <StatsBand />
+        <WhatWeDo />
+        <SolutionsInAction />
+        <PillarsPanel />
+        <PurposeCards />
+        <Testimonials />
+        <HomeFaq />
+        <ClosingCta />
+      </>
+    );
+  }
   return (
     <>
       <Hero />

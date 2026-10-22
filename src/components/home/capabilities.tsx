@@ -12,7 +12,7 @@ const accents = {
   amber: { num: 'bg-[#a87a00]', tick: 'text-[#a87a00]', bar: 'bg-[#e8ab00]' },
 } as const;
 
-const pillars = [
+export const pillars = [
   {
     title: 'In-Vitro Diagnostics',
     body: 'Analysers with matched reagents and controls, from the official distributor of Mindray.',
