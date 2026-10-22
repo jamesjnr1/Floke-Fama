@@ -2,7 +2,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { PurposeBlocks } from '@/components/about/purpose-blocks';
 import { pillars } from '@/components/home/capabilities';
-import { PillarsTabs } from '@/components/home/pillars-tabs';
 import { CountUp } from '@/components/motion/count-up';
 import { Reveal } from '@/components/motion/reveal';
 import { Button } from '@/components/ui/button';
@@ -17,7 +16,6 @@ import { getSite } from '@/lib/site';
  */
 
 const green = 'bg-[linear-gradient(135deg,#0a5a33_0%,#06482a_60%,#043822_100%)]';
-const lift = 'shadow-[0_24px_48px_-24px_rgb(11_21_16/0.35)]';
 
 /** Faint concentric circles in a corner, as on the figures band and the closing panel. */
 const Rings = ({ className = 'border-white/10' }: { className?: string }) => (
@@ -62,7 +60,7 @@ export function StatsBand() {
   );
 }
 
-/** What we do: the photo on a soft green panel with two small cards on it, the text on the right. */
+/** What we do: the photo on a soft green panel, the text on the right. */
 export function WhatWeDo() {
   return (
     <section aria-labelledby="what-we-do" className="bg-paper section-y">
@@ -70,18 +68,6 @@ export function WhatWeDo() {
         <Reveal className="relative bg-brand-50 p-8 md:p-12">
           <div className="relative aspect-[4/3] overflow-hidden bg-white">
             <Image src="/images/home-equipment.webp" alt="Hospital equipment: an oxygen concentrator, a hospital bed, a patient monitor and a wheelchair" fill sizes="(min-width: 1024px) 520px, 100vw" className="object-cover" />
-          </div>
-          <div className={`absolute -right-3 top-6 flex items-center gap-3 bg-white px-4 py-3 md:-right-6 ${lift}`}>
-            <span className="grid size-8 place-items-center bg-brand-50 text-brand-700">
-              <Icon name="fi-rr-check" />
-            </span>
-            <span className="text-sm font-semibold text-ink">Installed &amp; calibrated</span>
-          </div>
-          <div className={`absolute -left-3 bottom-8 flex items-center gap-3 bg-white px-4 py-3 md:-left-6 ${lift}`}>
-            <span className="grid size-8 place-items-center bg-brand-50 text-brand-700">
-              <Icon name="fi-rr-check" />
-            </span>
-            <span className="text-sm font-semibold text-ink">Maintained for life</span>
           </div>
         </Reveal>
         <Reveal delay={0.08}>
@@ -104,7 +90,7 @@ export function WhatWeDo() {
   );
 }
 
-/** The four pillars: the heading beside its introduction, then a list to pick a pillar and the chosen one shown large. */
+/** The four pillars: the heading beside its introduction, then all four side by side, each with its photo, points and link. */
 export function PillarsPanel() {
   return (
     <section aria-labelledby="pillars-title" className="pattern-cross pattern-tr bg-canvas section-y">
@@ -123,9 +109,42 @@ export function PillarsPanel() {
             </Button>
           </div>
         </Reveal>
-        <Reveal delay={0.08} className="mt-12 md:mt-14">
-          <PillarsTabs pillars={pillars} />
-        </Reveal>
+        <ul className="mt-12 grid gap-5 sm:grid-cols-2 md:mt-14 lg:grid-cols-4">
+          {pillars.map((p, i) => (
+            <li key={p.title}>
+              <Reveal delay={i * 0.05} className="h-full">
+                <Link href={p.href} className="group flex h-full flex-col bg-white">
+                  <span className="relative block aspect-[4/3] overflow-hidden bg-white">
+                    <Image
+                      src={p.image}
+                      alt={p.alt}
+                      fill
+                      sizes="(min-width: 1024px) 300px, (min-width: 640px) 50vw, 100vw"
+                      className={p.product ? 'object-contain p-6 transition-transform duration-700 group-hover:scale-[1.04]' : 'object-cover transition-transform duration-700 group-hover:scale-[1.04]'}
+                    />
+                  </span>
+                  <span className="flex flex-1 flex-col p-6">
+                    <span className="text-sm font-semibold tabular-nums text-brand-700">{String(i + 1).padStart(2, '0')}</span>
+                    <span className="mt-2 text-xl font-bold tracking-[-0.02em] text-ink group-hover:text-brand-700">{p.title}</span>
+                    <span className="no-justify mt-2 leading-relaxed text-ink-3">{p.body}</span>
+                    <span className="mt-4 block space-y-2">
+                      {p.points.map((pt) => (
+                        <span key={pt} className="flex items-start gap-2 text-[0.9375rem] text-ink-2">
+                          <Icon name="fi-rr-check" className="mt-1 text-brand-700" />
+                          {pt}
+                        </span>
+                      ))}
+                    </span>
+                    <span className="mt-auto inline-flex items-center gap-1.5 pt-6 font-semibold text-brand-700">
+                      Explore
+                      <Icon name="fi-rr-arrow-small-right" className="transition-transform group-hover:translate-x-0.5" />
+                    </span>
+                  </span>
+                </Link>
+              </Reveal>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   );
