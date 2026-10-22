@@ -88,7 +88,7 @@ export function SolutionsInAction() {
         </Reveal>
       </div>
 
-      {/* The film runs the full width of the page and the full height of the screen (below the menu bar), filling it */}
+      {/* The film runs the full width of the page and as tall as the screen allows while the Flokefama logo in its top-right corner stays in view (the crop leans right) */}
       <Reveal delay={0.08} className="mt-10 md:mt-14">
         <video
           ref={video}
@@ -100,7 +100,7 @@ export function SolutionsInAction() {
           preload="none"
           onEnded={() => setCurrent((i) => (i + 1) % films.length)}
           aria-label={`${film.title}. Flokefama films: the full story, then the highlights.`}
-          className="block aspect-[4/3] w-full bg-black object-cover md:aspect-auto md:h-[calc(100svh-72px)] md:min-h-[560px]"
+          className="block aspect-video w-full bg-black object-cover object-[85%_50%] md:aspect-auto md:h-[min(calc(100svh-72px),52.6vw)] md:object-[75%_50%]"
         />
       </Reveal>
     </section>
