@@ -88,7 +88,7 @@ export function SolutionsInAction() {
         </Reveal>
       </div>
 
-      {/* The film runs the full width of the page, edge to edge, and closes the section */}
+      {/* The film runs the full width of the page and the full height of the screen (below the menu bar), filling it */}
       <Reveal delay={0.08} className="mt-10 md:mt-14">
         <video
           ref={video}
@@ -100,7 +100,7 @@ export function SolutionsInAction() {
           preload="none"
           onEnded={() => setCurrent((i) => (i + 1) % films.length)}
           aria-label={`${film.title}. Flokefama films: the full story, then the highlights.`}
-          className="block aspect-[1024/436] w-full bg-black"
+          className="block aspect-[4/3] w-full bg-black object-cover md:aspect-auto md:h-[calc(100svh-72px)] md:min-h-[560px]"
         />
       </Reveal>
     </section>
