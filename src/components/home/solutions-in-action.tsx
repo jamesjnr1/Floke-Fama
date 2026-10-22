@@ -69,7 +69,7 @@ export function SolutionsInAction() {
 
   const film = films[current];
   return (
-    <section aria-labelledby="in-action-title" className="pattern-grid bg-paper pt-16 md:pt-32">
+    <section aria-labelledby="in-action-title" className="pattern-grid bg-paper section-y">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal className="grid gap-5 lg:grid-cols-[1fr_1fr] lg:items-end lg:gap-16">
           <div>
@@ -86,23 +86,22 @@ export function SolutionsInAction() {
             From our laboratories and warehouse in Accra to hospitals across Ghana and West Africa: see how Flokefama supplies, installs and maintains the equipment that keeps care running.
           </p>
         </Reveal>
-      </div>
 
-      {/* The film runs the full width of the page and as tall as the screen allows while the Flokefama logo in its top-right corner stays in view (the crop leans right) */}
-      <Reveal delay={0.08} className="mt-10 md:mt-14">
-        <video
-          ref={video}
-          src={load ? (hd ? film.hd : film.src) : undefined}
-          poster={poster}
-          muted
-          controls
-          playsInline
-          preload="none"
-          onEnded={() => setCurrent((i) => (i + 1) % films.length)}
-          aria-label={`${film.title}. Flokefama films: the full story, then the highlights.`}
-          className="block aspect-video w-full bg-black object-cover object-[85%_50%] md:aspect-auto md:h-[min(calc(100svh-72px),52.6vw)] md:object-[75%_50%]"
-        />
-      </Reveal>
+        <Reveal delay={0.08} className="mt-10 md:mt-14">
+          <video
+            ref={video}
+            src={load ? (hd ? film.hd : film.src) : undefined}
+            poster={poster}
+            muted
+            controls
+            playsInline
+            preload="none"
+            onEnded={() => setCurrent((i) => (i + 1) % films.length)}
+            aria-label={`${film.title}. Flokefama films: the full story, then the highlights.`}
+            className="aspect-[1024/436] w-full rounded-lg bg-black"
+          />
+        </Reveal>
+      </div>
     </section>
   );
 }
