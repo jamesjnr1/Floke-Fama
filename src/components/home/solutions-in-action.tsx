@@ -30,7 +30,7 @@ const saveData = () => {
  * browser's controls turn the sound on. Visitors who asked for less motion, or are on Data Saver, see the
  * cover frame and press play themselves.
  */
-export function SolutionsInAction() {
+export function SolutionsInAction({ layout = 'wide' }: { layout?: 'wide' | 'feature' }) {
   const video = useRef<HTMLVideoElement>(null);
   const [current, setCurrent] = useState(0);
   const [load, setLoad] = useState(false);
@@ -68,6 +68,48 @@ export function SolutionsInAction() {
   }, []);
 
   const film = films[current];
+  const player = (className: string) => (
+    <video
+      ref={video}
+      src={load ? (hd ? film.hd : film.src) : undefined}
+      poster={poster}
+      muted
+      controls
+      playsInline
+      preload="none"
+      onEnded={() => setCurrent((i) => (i + 1) % films.length)}
+      aria-label={`${film.title}. Flokefama films: the full story, then the highlights.`}
+      className={className}
+    />
+  );
+
+  // 'feature': the text on the left, the film on the right over an offset green block (the structured home page)
+  if (layout === 'feature') {
+    return (
+      <section aria-labelledby="in-action-title" className="bg-paper section-y">
+        <div className="mx-auto grid max-w-[1280px] items-center gap-12 px-5 md:px-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20">
+          <Reveal>
+            <p className="label">See us at work</p>
+            <h2 id="in-action-title" className="display mt-3 text-[clamp(2rem,1.2rem+2.4vw,3rem)] text-ink">
+              Healthcare Solutions in Action
+            </h2>
+            <p className="no-justify mt-5 text-lg leading-relaxed text-ink-3">
+              From our laboratories and warehouse in Accra to hospitals across Ghana and West Africa: see how Flokefama supplies, installs and maintains the equipment that keeps care running.
+            </p>
+            <Link href="/about#ceo" className="group mt-7 inline-flex items-center gap-2 bg-brand-700 px-5 py-3 font-semibold text-white transition-colors hover:bg-brand-800">
+              A message from our CEO
+              <Icon name="fi-rr-arrow-small-right" className="transition-transform group-hover:translate-x-0.5" />
+            </Link>
+          </Reveal>
+          <Reveal delay={0.08} className="relative pb-8 pr-8 md:pb-10 md:pr-10">
+            <div aria-hidden className="absolute bottom-0 right-0 top-10 left-10 bg-[linear-gradient(135deg,#0a5a33_0%,#06482a_60%,#043822_100%)] md:left-14 md:top-14" />
+            {player('relative block aspect-[1024/436] w-full bg-black shadow-[0_30px_60px_-30px_rgb(0_0_0/0.5)]')}
+          </Reveal>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section aria-labelledby="in-action-title" className="pattern-grid bg-paper pt-16 md:pt-32">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
@@ -90,18 +132,7 @@ export function SolutionsInAction() {
 
       {/* The film runs the full width of the page and as tall as the screen allows while the Flokefama logo in its top-right corner stays in view (the crop leans right) */}
       <Reveal delay={0.08} className="mt-10 md:mt-14">
-        <video
-          ref={video}
-          src={load ? (hd ? film.hd : film.src) : undefined}
-          poster={poster}
-          muted
-          controls
-          playsInline
-          preload="none"
-          onEnded={() => setCurrent((i) => (i + 1) % films.length)}
-          aria-label={`${film.title}. Flokefama films: the full story, then the highlights.`}
-          className="block aspect-video w-full bg-black object-cover object-[85%_50%] md:aspect-auto md:h-[min(calc(100svh-72px),52.6vw)] md:object-[75%_50%]"
-        />
+        {player('block aspect-video w-full bg-black object-cover object-[85%_50%] md:aspect-auto md:h-[min(calc(100svh-72px),52.6vw)] md:object-[75%_50%]')}
       </Reveal>
     </section>
   );
