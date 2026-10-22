@@ -8,16 +8,16 @@ import { cn } from '@/lib/utils';
 export type MenuChild = { href: string; label: string; hint: string; image: string };
 
 /**
- * How the Company drop-down looks. 'cards' (default): a light panel with a photo card per page. 'mega': a full-width
+ * How the Company drop-down looks. 'classic' (default): the dark list. 'cards': a light panel with a photo card per page. 'mega': a full-width
  * panel under the bar with an introduction, the pages and the CEO's message. 'green': the pages numbered on the
- * company green. 'light': a plain white list. 'classic': the earlier dark list.
+ * company green. 'light': a plain white list.
  * Simplest, names only: 'white', 'dark' and 'greenlite' (small panels), 'strip' (a slim band under the bar).
  * Switch with NEXT_PUBLIC_MENU_STYLE in Vercel (then redeploy).
  */
 const styles = ['cards', 'mega', 'green', 'light', 'classic', 'white', 'dark', 'greenlite', 'strip'] as const;
 export type MenuStyle = (typeof styles)[number];
 const env = process.env.NEXT_PUBLIC_MENU_STYLE as MenuStyle | undefined;
-export const menuStyle: MenuStyle = env && styles.includes(env) ? env : 'cards';
+export const menuStyle: MenuStyle = env && styles.includes(env) ? env : 'classic';
 
 const motionProps = {
   initial: { opacity: 0, y: 8 },
