@@ -38,7 +38,7 @@ const columns = [
 export async function SiteFooter() {
   const { contact, maps } = await getSite();
   return (
-    <footer className="border-t border-white/10 bg-[#10191e] text-white/70">
+    <footer className="bg-[#022416] text-white/70">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <div className="grid grid-cols-2 gap-x-6 gap-y-8 py-8 md:grid-cols-3 lg:grid-cols-12 lg:gap-8 lg:py-10">
           <div className="col-span-2 flex flex-col gap-4 md:col-span-3 lg:col-span-3">
