@@ -13,7 +13,7 @@ export const revalidate = 600;
 export const metadata: Metadata = { alternates: { canonical: '/' } };
 
 /**
- * Home layout after the hero. 'structured' (default): figures band, what we do, the film, the four pillars,
+ * Home layout after the hero. 'structured' (default): figures band, what we do, the full-width film, the four pillars,
  * mission / vision / aim, testimonials, questions and a closing call to action, each a contained block.
  * 'classic': the earlier run of full-width sections. Switch with NEXT_PUBLIC_HOME_LAYOUT=classic in Vercel (then redeploy).
  */
@@ -27,7 +27,7 @@ export default function HomePage() {
         <Hero />
         <StatsBand />
         <WhatWeDo />
-        <SolutionsInAction layout="feature" />
+        <SolutionsInAction />
         <PillarsPanel />
         <PurposeCards />
         <Testimonials />
