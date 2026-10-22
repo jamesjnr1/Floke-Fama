@@ -15,9 +15,12 @@ const stages = [
  * How the section is laid out. 'green' (default): the text on a green panel beside the equipment photo, edge to
  * edge. 'steps': the text, then the four stages as numbered columns. 'banner': a full-width photo of an engineer at
  * work with the text and the stages over it. 'split': the earlier layout, text beside a framed photo.
+ * Matching the rest of the home page: 'card' (a green block like the figures band, text and photo inside it),
+ * 'mirror' (photo left, text right), 'intro' (heading and text side by side like the film section, then the four
+ * stages in a green band like the figures) and 'overlap' (the photo with a green text card overlapping it).
  * Switch with NEXT_PUBLIC_BEYOND_LAYOUT in Vercel (then redeploy).
  */
-const layouts = ['steps', 'banner', 'green', 'split'] as const;
+const layouts = ['steps', 'banner', 'green', 'split', 'card', 'mirror', 'intro', 'overlap'] as const;
 export type BeyondLayout = (typeof layouts)[number];
 const env = process.env.NEXT_PUBLIC_BEYOND_LAYOUT as BeyondLayout | undefined;
 const chosen: BeyondLayout = env && layouts.includes(env) ? env : 'green';
@@ -64,6 +67,96 @@ export function BeyondSupply({ layout = chosen }: { layout?: BeyondLayout }) {
               </li>
             ))}
           </ol>
+        </div>
+      </section>
+    );
+  }
+
+  if (layout === 'card') {
+    return (
+      <section aria-labelledby="beyond-supply-title" className="pattern-dots pattern-tr bg-paper section-y">
+        <div className="mx-auto max-w-[1280px] px-5 md:px-10">
+          <Reveal className="grid overflow-hidden bg-[linear-gradient(135deg,#0a5a33_0%,#06482a_60%,#043822_100%)] text-white lg:grid-cols-[1.1fr_1fr]">
+            <div className="p-8 md:p-14">
+              <Title className="text-white" />
+              <Text strong="text-white" className="text-white/80" />
+              <Button asChild arrow="right" className="mt-9 bg-white text-brand-800 hover:bg-white/90">
+                <Link href="/about">About us</Link>
+              </Button>
+            </div>
+            <div className="relative min-h-[320px]">
+              <Image src="/images/home-equipment.webp" alt="Hospital equipment: an oxygen concentrator, a hospital bed, a patient monitor and a wheelchair" fill sizes="(min-width: 1024px) 560px, 100vw" className="object-cover" />
+            </div>
+          </Reveal>
+        </div>
+      </section>
+    );
+  }
+
+  if (layout === 'mirror') {
+    return (
+      <section aria-labelledby="beyond-supply-title" className="pattern-dots pattern-tr bg-paper section-y">
+        <div className="mx-auto grid max-w-[1280px] items-center gap-10 px-5 md:px-16 lg:grid-cols-[1fr_1.15fr] lg:gap-16">
+          <Reveal className="relative aspect-[4/3] overflow-hidden lg:aspect-square">
+            <Image src="/images/home-equipment.webp" alt="Hospital equipment: an oxygen concentrator, a hospital bed, a patient monitor and a wheelchair" fill sizes="(min-width: 1024px) 560px, 100vw" className="object-cover" />
+          </Reveal>
+          <Reveal delay={0.1}>
+            <Title />
+            <Text />
+            <Button asChild arrow="right" className="mt-9">
+              <Link href="/about">About us</Link>
+            </Button>
+          </Reveal>
+        </div>
+      </section>
+    );
+  }
+
+  if (layout === 'intro') {
+    return (
+      <section aria-labelledby="beyond-supply-title" className="pattern-dots pattern-tr bg-paper section-y">
+        <div className="mx-auto max-w-[1280px] px-5 md:px-10">
+          <Reveal className="grid gap-6 lg:grid-cols-2 lg:items-start lg:gap-16">
+            <Title />
+            <div>
+              <Text className="!mt-0 text-ink-3" />
+              <Button asChild arrow="right" className="mt-8">
+                <Link href="/about">About us</Link>
+              </Button>
+            </div>
+          </Reveal>
+          <Reveal delay={0.08} className="mt-12 md:mt-16">
+            <ol className="grid divide-y divide-white/20 bg-[linear-gradient(135deg,#0a5a33_0%,#06482a_60%,#043822_100%)] text-white sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-4 lg:divide-x">
+              {stages.map((s, i) => (
+                <li key={s.title} className="p-7 md:p-8">
+                  <p className="text-sm font-semibold tabular-nums text-brand-300">{String(i + 1).padStart(2, '0')}</p>
+                  <h3 className="mt-3 text-2xl font-bold tracking-[-0.02em] text-white">{s.title}</h3>
+                  <p className="no-justify mt-2 text-[0.9375rem] leading-relaxed text-white/75">{s.body}</p>
+                </li>
+              ))}
+            </ol>
+          </Reveal>
+        </div>
+      </section>
+    );
+  }
+
+  if (layout === 'overlap') {
+    return (
+      <section aria-labelledby="beyond-supply-title" className="pattern-dots pattern-tr bg-paper section-y">
+        <div className="mx-auto max-w-[1280px] px-5 md:px-10">
+          <div className="relative lg:min-h-[600px]">
+            <Reveal className="relative aspect-[4/3] overflow-hidden lg:absolute lg:inset-y-0 lg:left-0 lg:aspect-auto lg:w-[58%]">
+              <Image src="/images/home-equipment.webp" alt="Hospital equipment: an oxygen concentrator, a hospital bed, a patient monitor and a wheelchair" fill sizes="(min-width: 1024px) 720px, 100vw" className="object-cover" />
+            </Reveal>
+            <Reveal delay={0.1} className="relative bg-[linear-gradient(135deg,#0a5a33_0%,#06482a_60%,#043822_100%)] p-8 text-white shadow-[0_30px_60px_-30px_rgb(0_0_0/0.5)] md:p-12 lg:absolute lg:right-0 lg:top-1/2 lg:w-[52%] lg:-translate-y-1/2">
+              <Title className="text-white" />
+              <Text strong="text-white" className="text-white/80" />
+              <Button asChild arrow="right" className="mt-9 bg-white text-brand-800 hover:bg-white/90">
+                <Link href="/about">About us</Link>
+              </Button>
+            </Reveal>
+          </div>
         </div>
       </section>
     );
