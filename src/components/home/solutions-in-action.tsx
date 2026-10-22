@@ -69,7 +69,7 @@ export function SolutionsInAction() {
 
   const film = films[current];
   return (
-    <section aria-labelledby="in-action-title" className="pattern-grid bg-paper section-y">
+    <section aria-labelledby="in-action-title" className="pattern-grid bg-paper pt-16 md:pt-32">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal className="grid gap-5 lg:grid-cols-[1fr_1fr] lg:items-end lg:gap-16">
           <div>
@@ -86,22 +86,23 @@ export function SolutionsInAction() {
             From our laboratories and warehouse in Accra to hospitals across Ghana and West Africa: see how Flokefama supplies, installs and maintains the equipment that keeps care running.
           </p>
         </Reveal>
-
-        <Reveal delay={0.08} className="mt-10 md:mt-14">
-          <video
-            ref={video}
-            src={load ? (hd ? film.hd : film.src) : undefined}
-            poster={poster}
-            muted
-            controls
-            playsInline
-            preload="none"
-            onEnded={() => setCurrent((i) => (i + 1) % films.length)}
-            aria-label={`${film.title}. Flokefama films: the full story, then the highlights.`}
-            className="aspect-[1024/436] w-full rounded-lg bg-black"
-          />
-        </Reveal>
       </div>
+
+      {/* The film runs the full width of the page and the full height of the screen (below the menu bar), filling it */}
+      <Reveal delay={0.08} className="mt-10 md:mt-14">
+        <video
+          ref={video}
+          src={load ? (hd ? film.hd : film.src) : undefined}
+          poster={poster}
+          muted
+          controls
+          playsInline
+          preload="none"
+          onEnded={() => setCurrent((i) => (i + 1) % films.length)}
+          aria-label={`${film.title}. Flokefama films: the full story, then the highlights.`}
+          className="block aspect-[4/3] w-full bg-black object-cover md:aspect-auto md:h-[calc(100svh-72px)] md:min-h-[560px]"
+        />
+      </Reveal>
     </section>
   );
 }
