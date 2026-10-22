@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { PurposeBlocks } from '@/components/about/purpose-blocks';
 import { pillars } from '@/components/home/capabilities';
 import { CountUp } from '@/components/motion/count-up';
 import { Reveal } from '@/components/motion/reveal';
@@ -10,8 +11,8 @@ import { getSite } from '@/lib/site';
 
 /**
  * The 'structured' home page: after the hero, a calm run of sections in one rhythm, each a contained block with
- * generous space around it. Stats band, two alternating features (what we do, the film), the four pillars in a
- * soft panel, mission / vision / aim as two cards, testimonials, questions, and a closing call to action.
+ * generous space around it. Stats band, what we do, the film (full width), the four pillars in a soft panel,
+ * mission / vision / aim in their colours, testimonials, questions, and a closing call to action.
  */
 
 const green = 'bg-[linear-gradient(135deg,#0a5a33_0%,#06482a_60%,#043822_100%)]';
@@ -102,30 +103,41 @@ export function WhatWeDo() {
   );
 }
 
-/** The four pillars in one soft panel: the introduction on the left, the pillars two by two on the right. */
+/** The four pillars in one soft panel: the introduction on the left, the pillars two by two on the right, each with its photo. */
 export function PillarsPanel() {
   return (
-    <section aria-labelledby="pillars-title" className="bg-paper pb-16 md:pb-28">
+    <section aria-labelledby="pillars-title" className="bg-paper section-y">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal className="relative isolate grid gap-10 overflow-hidden bg-canvas p-8 md:p-14 lg:grid-cols-[0.9fr_1.4fr] lg:gap-16">
           <Rings className="border-brand-700/10" />
-          <div className="flex flex-col">
+          <div className="flex flex-col lg:sticky lg:top-28 lg:self-start">
             <Chip>Our solutions</Chip>
             <h2 id="pillars-title" className="display mt-4 text-[clamp(2rem,1.2rem+2.2vw,2.75rem)] text-ink">
               Four pillars of medical infrastructure
             </h2>
             <p className="no-justify mt-4 text-lg leading-relaxed text-ink-3">From diagnostics to delivery: one partner for the equipment, the engineers and the supplies that keep it running.</p>
-            <Button asChild arrow="right" className="mt-8 w-fit lg:mt-auto">
+            <Button asChild arrow="right" className="mt-8 w-fit">
               <Link href="/services">Explore solutions</Link>
             </Button>
           </div>
-          <ul className="grid gap-x-10 gap-y-9 sm:grid-cols-2">
+          <ul className="grid gap-5 sm:grid-cols-2">
             {pillars.map((p, i) => (
               <li key={p.title}>
-                <Link href={p.href} className="group block">
-                  <span className="text-sm font-semibold tabular-nums text-brand-700">{String(i + 1).padStart(2, '0')}</span>
-                  <h3 className="mt-2 text-xl font-bold tracking-[-0.02em] text-ink group-hover:text-brand-700">{p.title}</h3>
-                  <p className="no-justify mt-2 leading-relaxed text-ink-3">{p.body}</p>
+                <Link href={p.href} className="group flex h-full flex-col bg-white">
+                  <span className="relative block aspect-[4/3] overflow-hidden bg-white">
+                    <Image
+                      src={p.image}
+                      alt={p.alt}
+                      fill
+                      sizes="(min-width: 1024px) 340px, (min-width: 640px) 50vw, 100vw"
+                      className={p.product ? 'object-contain p-6 transition-transform duration-700 group-hover:scale-[1.04]' : 'object-cover transition-transform duration-700 group-hover:scale-[1.04]'}
+                    />
+                  </span>
+                  <span className="block flex-1 p-6">
+                    <span className="text-sm font-semibold tabular-nums text-brand-700">{String(i + 1).padStart(2, '0')}</span>
+                    <h3 className="mt-2 text-xl font-bold tracking-[-0.02em] text-ink group-hover:text-brand-700">{p.title}</h3>
+                    <p className="no-justify mt-2 leading-relaxed text-ink-3">{p.body}</p>
+                  </span>
                 </Link>
               </li>
             ))}
@@ -136,11 +148,8 @@ export function PillarsPanel() {
   );
 }
 
-/** Mission on a white card; vision and aim side by side on a wider green card. */
-export async function PurposeCards() {
-  const { purpose } = await getSite();
-  const mission = purpose.find((p) => p.label === 'Mission') ?? purpose[0];
-  const others = purpose.filter((p) => p !== mission);
+/** Mission, vision and aim under one heading, in their own colours (green, red, teal), as before. */
+export function PurposeCards() {
   return (
     <section aria-labelledby="purpose-title" className="bg-paper pb-16 md:pb-28">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
@@ -151,25 +160,7 @@ export async function PurposeCards() {
           </h2>
           <p className="mt-4 text-lg text-ink-3">Saving lives since 2008, and building healthcare capacity in Ghana for the decades ahead.</p>
         </Reveal>
-        <div className="mx-auto mt-12 grid max-w-[1080px] gap-5 lg:grid-cols-[1fr_1.7fr]">
-          {mission && (
-            <Reveal className={`flex flex-col border border-line bg-white p-8 md:p-10 ${lift}`}>
-              <Icon name={mission.icon} className="text-3xl text-brand-700" />
-              <h3 className="mt-5 text-2xl font-bold tracking-[-0.02em] text-ink">Our {mission.label}</h3>
-              <p className="no-justify mt-3 text-[1.0625rem] leading-relaxed text-ink-3">{mission.text}</p>
-            </Reveal>
-          )}
-          <Reveal delay={0.08} className={`relative isolate grid overflow-hidden ${green} text-white sm:grid-cols-2`}>
-            <Rings />
-            {others.map((p, i) => (
-              <div key={p.label} className={`p-8 md:p-10 ${i ? 'border-t border-white/15 sm:border-l sm:border-t-0' : ''}`}>
-                <Icon name={p.icon} className="text-3xl text-brand-300" />
-                <h3 className="mt-5 text-2xl font-bold tracking-[-0.02em] text-white">Our {p.label}</h3>
-                <p className="no-justify mt-3 text-[1.0625rem] leading-relaxed text-white/80">{p.text}</p>
-              </div>
-            ))}
-          </Reveal>
-        </div>
+        <PurposeBlocks className="mt-12" />
       </div>
     </section>
   );
