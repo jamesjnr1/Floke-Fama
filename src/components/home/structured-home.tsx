@@ -90,23 +90,37 @@ export function WhatWeDo() {
   );
 }
 
-/** The four pillars on the deep navy-teal band (as on the earlier home page): the heading beside its introduction,
- * then all four side by side as white cards, each with its photo, points and link. */
-export function PillarsPanel() {
+/**
+ * The four pillars' background. 'green' (default): the company green, flat. 'midnight': a flat deep navy.
+ * 'teal': a flat deep sea teal. 'mint': a light mint with dark text. Switch with NEXT_PUBLIC_PILLARS_BG in Vercel (then redeploy).
+ */
+const pillarBgs = {
+  green: { section: 'bg-[#06482a]', dark: true },
+  midnight: { section: 'bg-[#16232a]', dark: true },
+  teal: { section: 'bg-[#075056]', dark: true },
+  mint: { section: 'bg-[#e8f5ee]', dark: false },
+} as const;
+export type PillarsBg = keyof typeof pillarBgs;
+const envBg = process.env.NEXT_PUBLIC_PILLARS_BG as PillarsBg | undefined;
+const pillarsBg: PillarsBg = envBg && envBg in pillarBgs ? envBg : 'green';
+
+/** The four pillars on a flat coloured band (see pillarBgs): the heading beside its introduction, then all four
+ * side by side as white cards, each with its photo, points and link. */
+export function PillarsPanel({ bg = pillarsBg }: { bg?: PillarsBg }) {
+  const { section, dark } = pillarBgs[bg];
   return (
-    <section aria-labelledby="pillars-title" className="relative isolate overflow-hidden bg-[linear-gradient(160deg,#10191e_0%,#16232a_55%,#0b3b40_100%)] section-y text-white">
-      <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(50%_60%_at_85%_10%,rgb(0_122_77/0.22),transparent_70%)]" />
+    <section aria-labelledby="pillars-title" className={`${section} section-y ${dark ? 'text-white' : 'text-ink'}`}>
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal className="grid gap-6 lg:grid-cols-2 lg:items-end lg:gap-16">
           <div>
-            <p className="inline-block w-fit bg-white/10 px-2.5 py-1 text-[0.75rem] font-semibold uppercase tracking-[0.08em] text-brand-300">Our solutions</p>
-            <h2 id="pillars-title" className="display mt-4 text-[clamp(2rem,1.2rem+2.4vw,3rem)] !text-white">
+            <p className={`inline-block w-fit px-2.5 py-1 text-[0.75rem] font-semibold uppercase tracking-[0.08em] ${dark ? 'bg-white/10 text-brand-300' : 'bg-white text-brand-700'}`}>Our solutions</p>
+            <h2 id="pillars-title" className={`display mt-4 text-[clamp(2rem,1.2rem+2.4vw,3rem)] ${dark ? '!text-white' : 'text-ink'}`}>
               Four pillars of medical infrastructure
             </h2>
           </div>
           <div>
-            <p className="no-justify text-lg leading-relaxed text-white/75">From diagnostics to delivery: one partner for the equipment, the engineers and the supplies that keep it running.</p>
-            <Button asChild arrow="right" className="mt-6 bg-white text-brand-800 hover:bg-white/90">
+            <p className={`no-justify text-lg leading-relaxed ${dark ? 'text-white/75' : 'text-ink-3'}`}>From diagnostics to delivery: one partner for the equipment, the engineers and the supplies that keep it running.</p>
+            <Button asChild arrow="right" className={dark ? 'mt-6 bg-white text-brand-800 hover:bg-white/90' : 'mt-6'}>
               <Link href="/services">Explore solutions</Link>
             </Button>
           </div>
