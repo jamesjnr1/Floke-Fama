@@ -182,7 +182,7 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
           <span className="ml-auto text-[0.8125rem] font-semibold uppercase tracking-[0.18em] text-white/80">Service</span>
         </Link>
         <div className="flex items-center gap-3 px-6 py-6">
-          <UserAvatar className="size-10 rounded-md bg-white text-lg text-[#006b42]" />
+          <UserAvatar className="size-10 bg-white text-lg text-[#006b42]" />
           <span className="min-w-0">
             <span className="block truncate text-sm font-semibold">{me}</span>
             <span className="block truncate text-xs text-white/75">Biomedical engineer</span>
@@ -245,7 +245,7 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
           {themeButton}
           <Notifications tone="light" items={mine} onRead={(id) => rawDispatch({ type: 'read', id })} onReadAll={() => rawDispatch({ type: 'readAll', audience: 'engineer' })} onOpen={onNotification} />
           <span className="hidden items-center gap-3 border-l border-line pl-4 md:flex">
-            <UserAvatar className="size-9 rounded-md bg-brand-600 text-base text-white" />
+            <UserAvatar className="size-9 bg-brand-600 text-base text-white" />
             <span className="leading-tight">
               <span className="block text-sm font-medium text-ink">{me}</span>
               <span className="block text-xs text-ink-3">{user.email}</span>

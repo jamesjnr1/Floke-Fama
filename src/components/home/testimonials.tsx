@@ -4,9 +4,9 @@ import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { useEffect, useState } from 'react';
 import { Reveal } from '@/components/motion/reveal';
 import { useSite } from '@/components/site-provider';
+import { UserAvatar } from '@/components/ui/user-avatar';
 import { cn } from '@/lib/utils';
 
-const initials = (name: string) => name.replace(/^Dr\.\s*/, '').split(' ').map((p) => p[0]).slice(0, 2).join('');
 
 /** Testimonials from the current site: one quote in the spotlight, the speakers as a selector. */
 export function Testimonials() {
@@ -52,7 +52,7 @@ export function Testimonials() {
                 >
                   <blockquote className="text-xl font-medium leading-relaxed tracking-[-0.01em] text-ink md:text-2xl">“{t.quote}”</blockquote>
                   <figcaption className="mt-10 flex items-center gap-4">
-                    <span className="grid size-12 place-items-center rounded-full bg-brand-600 text-sm font-semibold text-white">{initials(t.name)}</span>
+                    <UserAvatar className="size-12 rounded-full bg-brand-600 text-xl text-white" />
                     <span>
                       <span className="block font-semibold text-ink">{t.name}</span>
                       <span className="text-sm text-ink-3">{t.role}</span>
@@ -71,7 +71,7 @@ export function Testimonials() {
                     aria-pressed={i === active}
                     className={cn('relative flex h-full w-full items-center gap-3 overflow-hidden rounded-3xl p-4 text-left transition', i === active ? 'bg-paper shadow-sm' : 'hover:bg-paper/60')}
                   >
-                    <span className={cn('grid size-10 shrink-0 place-items-center rounded-full text-xs font-semibold transition', i === active ? 'bg-brand-600 text-white' : 'bg-mist text-ink-3')}>{initials(x.name)}</span>
+                    <UserAvatar className={cn('size-10 rounded-full text-lg transition', i === active ? 'bg-brand-600 text-white' : 'bg-mist text-ink-3')} />
                     <span className="min-w-0">
                       <span className="block truncate text-sm font-semibold text-ink">{x.name}</span>
                       <span className="block truncate text-xs text-ink-3">{x.role}</span>

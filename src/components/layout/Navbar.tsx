@@ -207,7 +207,7 @@ export function Navbar() {
                 aria-haspopup="menu"
                 className="group flex items-center gap-3 rounded-lg py-1.5 pl-1.5 pr-2.5 text-left text-white transition hover:bg-white/[0.06]"
               >
-                <HospitalMark facility={user.role === 'client' ? user.facility : undefined} name={user.name} person className="size-9 rounded-md" fallbackClassName="bg-white text-base text-[#006b42]" />
+                <HospitalMark facility={user.role === 'client' ? user.facility : undefined} name={user.name} className="size-9 rounded-full" fallbackClassName="bg-white text-base text-[#006b42]" />
                 <span className="hidden leading-tight 2xl:block">
                   <span className="block max-w-[10rem] truncate text-sm font-medium">{user.name}</span>
                   <span className="block max-w-[10rem] truncate text-xs text-white/55">{user.facility ?? user.email}</span>
@@ -225,7 +225,7 @@ export function Navbar() {
                     className="absolute right-0 top-[calc(100%+12px)] w-72 overflow-hidden rounded-[4px] border border-white/10 bg-[#0f1d22] shadow-[0_30px_60px_-20px_rgb(0_0_0/0.65)]"
                   >
                     <div className="flex items-center gap-3 border-b border-white/[0.08] p-4">
-                      <HospitalMark facility={user.role === 'client' ? user.facility : undefined} name={user.name} person className="size-10 rounded-md" fallbackClassName="bg-white text-lg text-[#006b42]" />
+                      <HospitalMark facility={user.role === 'client' ? user.facility : undefined} name={user.name} className="size-10 rounded-full" fallbackClassName="bg-white text-lg text-[#006b42]" />
                       <span className="min-w-0">
                         <span className="block truncate text-sm font-semibold text-white">{user.name}</span>
                         <span className="block truncate text-xs text-white/55">{user.email}</span>
