@@ -29,8 +29,8 @@ export default function HomePage() {
         <StatsBand />
         <WhatWeDo />
         <SolutionsInAction plain />
-        {/* The original four pillars design, on the flat company green */}
-        <Capabilities background="bg-[#06482a]" />
+        {/* The original four pillars design, on a company green gradient (as the hero's) */}
+        <Capabilities background="bg-[linear-gradient(160deg,#0a5a33_0%,#06482a_55%,#043822_100%)]" />
         <PurposeCards />
         <Testimonials />
         <FeaturedNews />
