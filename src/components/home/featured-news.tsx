@@ -14,7 +14,7 @@ const featured = [
 ];
 
 /**
- * How the section is laid out. 'feature' (default): one large story with two beside it. 'row': three equal stories side by side. 'list': the heading on the left,
+ * How the section is laid out. 'row' (default): three equal stories side by side. 'feature': one large story with two beside it. 'list': the heading on the left,
  * the three stories as rows (photo beside headline) on the right. 'spotlight': the Forbes feature as one wide card
  * (photo beside the story), the other two underneath as text.
  * Switch with NEXT_PUBLIC_NEWS_LAYOUT in Vercel (then redeploy).
@@ -22,7 +22,7 @@ const featured = [
 const layouts = ['row', 'list', 'spotlight', 'feature'] as const;
 export type NewsLayout = (typeof layouts)[number];
 const env = process.env.NEXT_PUBLIC_NEWS_LAYOUT as NewsLayout | undefined;
-const chosen: NewsLayout = env && layouts.includes(env) ? env : 'feature';
+const chosen: NewsLayout = env && layouts.includes(env) ? env : 'row';
 
 const Chip = () => <p className="inline-block w-fit bg-brand-50 px-2.5 py-1 text-[0.75rem] font-semibold uppercase tracking-[0.08em] text-brand-700">In the news</p>;
 const AllNews = ({ className = '' }: { className?: string }) => (
