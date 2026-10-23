@@ -83,6 +83,11 @@
       transform: translateX(-50%);
     }
   }
+  /* The modern hero's ECG line: a slow breath in brightness and height */
+  @keyframes ecg-pulse {
+    0%, 100% { opacity: 0.15; transform: scaleY(1); }
+    50% { opacity: 0.5; transform: scaleY(1.1); }
+  }
   --animate-status-pulse: status-pulse 2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
   @keyframes status-pulse {
     0% { box-shadow: 0 0 0 0 rgb(76 201 110 / 0.55); }
