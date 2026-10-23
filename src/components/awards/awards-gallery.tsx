@@ -50,10 +50,10 @@ export async function AwardsGallery() {
           })}
         </ul>
         <Reveal>
-          <p className="mx-auto mt-16 max-w-3xl text-center text-xl leading-relaxed text-ink-3 md:text-2xl">
+         <p className="mx-auto mt-16 max-w-3xl text-center !text-center [text-align-last:center] text-xl leading-relaxed text-ink-3 md:text-2xl">
             These accolades serve as a testament to the <span className="font-medium text-ink">hard work of our team</span>, the{' '}
             <span className="font-medium text-ink">quality of our solutions</span>, and the <span className="font-medium text-brand-700">positive impact we’ve made in transforming healthcare delivery across Ghana and the West African region</span>.
-          </p>
+        </p>
         </Reveal>
       </div>
     </section>
