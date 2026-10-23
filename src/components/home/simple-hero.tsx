@@ -73,6 +73,13 @@ export async function SimpleHero({ design = heroDesign }: { design?: HeroDesign 
     <section className="relative isolate flex flex-col overflow-hidden bg-[linear-gradient(180deg,#0a5a33_0%,#06482a_60%,#043822_100%)] pt-[72px] text-white lg:min-h-0 lg:flex-1">
       <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(55%_50%_at_50%_20%,rgb(127_209_165/0.14),transparent_70%)]" />
       <HeroDesignLayer design={design} />
+      {/* A faint ECG line pulsing across, as on the modern hero, running between the actions and the product row */}
+      {/* The pulse animation sets the line's own opacity, so the wrapper keeps it faint */}
+      <div aria-hidden className="absolute inset-x-0 top-[51%] -z-10 h-40 opacity-60">
+        <svg className="h-full w-full animate-[ecg-pulse_4s_ease-in-out_infinite] text-emerald-400 opacity-20 motion-reduce:animate-none" viewBox="0 0 1200 150" preserveAspectRatio="none" fill="none">
+          <path d="M0 75H350L365 40L380 110L400 20L420 130L435 60L450 75H1200" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+        </svg>
+      </div>
 
       <div className="flex w-full flex-1 flex-col items-center gap-10 px-5 py-12 md:px-10 lg:min-h-0 lg:gap-8 lg:px-8 lg:pb-6 lg:pt-14 [@media(min-height:1000px)]:lg:gap-12 [@media(min-height:1000px)]:lg:pt-24">
         <Reveal className="flex flex-col items-center text-center">
