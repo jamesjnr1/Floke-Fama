@@ -7,7 +7,7 @@ import { BeyondSupply } from '@/components/home/beyond-supply';
 import { Testimonials } from '@/components/home/testimonials';
 import { SolutionsInAction } from '@/components/home/solutions-in-action';
 import { FeaturedNews } from '@/components/home/featured-news';
-import { ClosingCta, PillarsPanel, PurposeCards, StatsBand, WhatWeDo } from '@/components/home/structured-home';
+import { ClosingCta, PurposeCards, StatsBand, WhatWeDo } from '@/components/home/structured-home';
 
 export const revalidate = 600;
 
@@ -29,7 +29,8 @@ export default function HomePage() {
         <StatsBand />
         <WhatWeDo />
         <SolutionsInAction plain />
-        <PillarsPanel />
+        {/* The original four pillars design, on the flat company green */}
+        <Capabilities background="bg-[#06482a]" />
         <PurposeCards />
         <Testimonials />
         <FeaturedNews />

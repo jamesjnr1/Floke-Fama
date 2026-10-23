@@ -1,16 +1,14 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { PurposeBlocks } from '@/components/about/purpose-blocks';
-import { accents, pillars } from '@/components/home/capabilities';
 import { CountUp } from '@/components/motion/count-up';
 import { Reveal } from '@/components/motion/reveal';
 import { Button } from '@/components/ui/button';
-import { Icon } from '@/components/ui/icon';
 import { metrics } from '@/data/seed';
 
 /**
  * The 'structured' home page: after the hero, a calm run of sections in one rhythm, each a contained block with
- * generous space around it. Stats band, what we do, the film (full width), the four pillars in a soft panel,
+ * generous space around it. Stats band, what we do, the film (full width), the four pillars (the original cards, on green),
  * mission / vision / aim in their colours, testimonials and a closing call to action. The light sections share
  * one white background and their patterns fade out before the edges, so the page reads as one continuous surface.
  */
@@ -85,86 +83,6 @@ export function WhatWeDo() {
             <Link href="/about">About us</Link>
           </Button>
         </Reveal>
-      </div>
-    </section>
-  );
-}
-
-/**
- * The four pillars' background. 'green' (default): the company green, flat. 'midnight': a flat deep navy.
- * 'teal': a flat deep sea teal. 'mint': a light mint with dark text. Switch with NEXT_PUBLIC_PILLARS_BG in Vercel (then redeploy).
- */
-const pillarBgs = {
-  green: { section: 'bg-[#06482a]', dark: true },
-  midnight: { section: 'bg-[#16232a]', dark: true },
-  teal: { section: 'bg-[#075056]', dark: true },
-  mint: { section: 'bg-[#e8f5ee]', dark: false },
-} as const;
-export type PillarsBg = keyof typeof pillarBgs;
-const envBg = process.env.NEXT_PUBLIC_PILLARS_BG as PillarsBg | undefined;
-const pillarsBg: PillarsBg = envBg && envBg in pillarBgs ? envBg : 'green';
-
-/** The four pillars on a flat coloured band (see pillarBgs): the heading beside its introduction, then all four
- * side by side as white cards, each with its photo, points and link. */
-export function PillarsPanel({ bg = pillarsBg }: { bg?: PillarsBg }) {
-  const { section, dark } = pillarBgs[bg];
-  return (
-    <section aria-labelledby="pillars-title" className={`${section} section-y ${dark ? 'text-white' : 'text-ink'}`}>
-      <div className="mx-auto max-w-[1280px] px-5 md:px-10">
-        <Reveal className="grid gap-6 lg:grid-cols-2 lg:items-end lg:gap-16">
-          <div>
-            <p className={`inline-block w-fit px-2.5 py-1 text-[0.75rem] font-semibold uppercase tracking-[0.08em] ${dark ? 'bg-white/10 text-brand-300' : 'bg-white text-brand-700'}`}>Our solutions</p>
-            <h2 id="pillars-title" className={`display mt-4 text-[clamp(2rem,1.2rem+2.4vw,3rem)] ${dark ? '!text-white' : 'text-ink'}`}>
-              Four pillars of medical infrastructure
-            </h2>
-          </div>
-          <div>
-            <p className={`no-justify text-lg leading-relaxed ${dark ? 'text-white/75' : 'text-ink-3'}`}>From diagnostics to delivery: one partner for the equipment, the engineers and the supplies that keep it running.</p>
-            <Button asChild arrow="right" className={dark ? 'mt-6 bg-white text-brand-800 hover:bg-white/90' : 'mt-6'}>
-              <Link href="/services">Explore solutions</Link>
-            </Button>
-          </div>
-        </Reveal>
-        <ul className="mt-12 grid gap-5 sm:grid-cols-2 md:mt-14 lg:grid-cols-4">
-          {pillars.map((p, i) => {
-            // Each pillar keeps its own colour, as on the earlier home page: green, teal, red, amber
-            const a = accents[p.accent];
-            return (
-            <li key={p.title}>
-              <Reveal delay={i * 0.05} className="h-full">
-                <Link href={p.href} className="group flex h-full flex-col bg-white">
-                  <span className="relative block aspect-[4/3] overflow-hidden bg-white">
-                    <Image
-                      src={p.image}
-                      alt={p.alt}
-                      fill
-                      sizes="(min-width: 1024px) 300px, (min-width: 640px) 50vw, 100vw"
-                      className={p.product ? 'object-contain p-6 transition-transform duration-700 group-hover:scale-[1.04]' : 'object-cover transition-transform duration-700 group-hover:scale-[1.04]'}
-                    />
-                  </span>
-                  <span className="flex flex-1 flex-col p-6">
-                    <span className={`grid size-9 place-items-center text-sm font-bold tabular-nums text-white ${a.num}`}>{String(i + 1).padStart(2, '0')}</span>
-                    <span className="mt-4 text-xl font-bold tracking-[-0.02em] text-ink">{p.title}</span>
-                    <span className="no-justify mt-2 leading-relaxed text-ink-3">{p.body}</span>
-                    <span className="mt-4 block space-y-2">
-                      {p.points.map((pt) => (
-                        <span key={pt} className="flex items-start gap-2 text-[0.9375rem] text-ink-2">
-                          <Icon name="fi-rr-check" className={`mt-1 ${a.tick}`} />
-                          {pt}
-                        </span>
-                      ))}
-                    </span>
-                    <span className={`mt-auto inline-flex items-center gap-1.5 pt-6 font-semibold ${a.tick}`}>
-                      Explore
-                      <Icon name="fi-rr-arrow-small-right" className="transition-transform group-hover:translate-x-0.5" />
-                    </span>
-                  </span>
-                </Link>
-              </Reveal>
-            </li>
-            );
-          })}
-        </ul>
       </div>
     </section>
   );
