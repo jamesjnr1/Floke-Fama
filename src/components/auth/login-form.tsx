@@ -6,7 +6,8 @@ import { useSite } from '@/components/site-provider';
 import { login, type LoginState } from '@/lib/auth/actions';
 import { cn } from '@/lib/utils';
 
-export function LoginForm({ next, notice }: { next?: string; notice?: string }) {
+/** `admin`: the admin console's sign-in, which only lets admins in. */
+export function LoginForm({ next, notice, admin = false }: { next?: string; notice?: string; admin?: boolean }) {
   const { contact } = useSite();
   const [state, action, pending] = useActionState<LoginState, FormData>(login, {});
   const [show, setShow] = useState(false);
@@ -19,9 +20,10 @@ export function LoginForm({ next, notice }: { next?: string; notice?: string }) 
 
       <form action={action} className="space-y-4" noValidate>
         {next && <input type="hidden" name="next" value={next} />}
+        {admin && <input type="hidden" name="area" value="admin" />}
         <label className="grid gap-1.5">
           <span className="text-sm font-medium text-ink-2">Email</span>
-          <input name="email" type="email" autoComplete="username" required defaultValue={state.email} placeholder="you@hospital.org" className={field} />
+          <input name="email" type="email" autoComplete="username" required defaultValue={state.email} placeholder={admin ? 'you@flokefama.com' : 'you@hospital.org'} className={field} />
         </label>
         <label className="grid gap-1.5">
           <span className="text-sm font-medium text-ink-2">Password</span>
@@ -44,7 +46,7 @@ export function LoginForm({ next, notice }: { next?: string; notice?: string }) 
           </label>
           <p className="text-right">
           <a
-            href={`mailto:${contact.support}?subject=${encodeURIComponent('Client portal: password reset')}&body=${encodeURIComponent('Please reset the password for my client portal account.\n\nEmail on the account: ')}`}
+            href={`mailto:${contact.support}?subject=${encodeURIComponent(admin ? 'Admin console: password reset' : 'Client portal: password reset')}&body=${encodeURIComponent(`Please reset the password for my ${admin ? 'admin console' : 'client portal'} account.\n\nEmail on the account: `)}`}
             className="whitespace-nowrap text-sm font-medium text-brand-700 underline-offset-4 hover:underline"
           >
             Forgot password?
