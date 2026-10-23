@@ -17,15 +17,61 @@ const heroItems = [
 ].map((p) => ({ key: p.slug, title: p.title, image: `/images/products/${p.slug}.webp`, href: `/products/${p.slug}`, cutout: true }));
 
 /**
- * The 'simple' hero: everything centred on the green gradient (headline, lead and the two actions), with the
+ * The faint drawing on the hero's green. 'contours' (default): gentle flowing lines, like a topographic map.
+ * 'arcs': wide concentric arcs rising from below the headline. 'light': soft diagonal bands of light, no lines.
+ * Switch with NEXT_PUBLIC_HERO_DESIGN in Vercel (then redeploy).
+ */
+const designs = ['contours', 'arcs', 'light'] as const;
+export type HeroDesign = (typeof designs)[number];
+const envDesign = process.env.NEXT_PUBLIC_HERO_DESIGN as HeroDesign | undefined;
+const heroDesign: HeroDesign = envDesign && designs.includes(envDesign) ? envDesign : 'contours';
+
+function HeroDesignLayer({ design }: { design: HeroDesign }) {
+  if (design === 'arcs') {
+    return (
+      <svg aria-hidden className="absolute left-1/2 top-[18%] -z-10 h-[1400px] w-[1400px] -translate-x-1/2" viewBox="0 0 1400 1400" fill="none">
+        {[180, 280, 380, 480, 580, 680].map((r, i) => (
+          <circle key={r} cx="700" cy="700" r={r} stroke="white" strokeOpacity={0.13 - i * 0.016} strokeWidth="1.2" />
+        ))}
+      </svg>
+    );
+  }
+  if (design === 'light') {
+    return (
+      <div aria-hidden className="absolute inset-0 -z-10 bg-[linear-gradient(115deg,transparent_0%,transparent_30%,rgb(255_255_255/0.08)_38%,transparent_46%,transparent_58%,rgb(255_255_255/0.06)_66%,transparent_74%)]" />
+    );
+  }
+  // contours: smooth lines drifting across, brighter at the edges and fading towards the centre so the text stays clear
+  const lines = Array.from({ length: 9 }, (_, i) => {
+    const y = 120 + i * 70;
+    return `M-50,${y} C250,${y - 90} 450,${y + 110} 720,${y + 10} S1150,${y - 120} 1490,${y + 30}`;
+  });
+  return (
+    <svg
+      aria-hidden
+      className="absolute inset-0 -z-10 h-full w-full [mask-image:radial-gradient(70%_60%_at_50%_35%,transparent_25%,#000_80%)]"
+      viewBox="0 0 1440 800"
+      preserveAspectRatio="xMidYMid slice"
+      fill="none"
+    >
+      {lines.map((d, i) => (
+        <path key={i} d={d} stroke="white" strokeOpacity="0.13" strokeWidth="1.2" />
+      ))}
+    </svg>
+  );
+}
+
+/**
+ * The 'simple' hero: everything centred on the calm green gradient (headline, lead and the two actions), with the
  * equipment row underneath (see heroItems) moving slowly across.
  */
-export async function SimpleHero() {
+export async function SimpleHero({ design = heroDesign }: { design?: HeroDesign }) {
   const { hero } = await getSite();
   return (
-    <section className="relative isolate flex flex-col overflow-hidden bg-[linear-gradient(135deg,#0b5e3a_0%,#08584a_38%,#07505a_68%,#0a3a52_100%)] pt-[72px] text-white lg:min-h-0 lg:flex-1">
-      {/* A cool gradient: company green flowing into teal and a deep sea blue, lit by a soft mint glow at the top left and a cool blue one at the bottom right */}
-      <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(50%_55%_at_18%_12%,rgb(127_209_165/0.2),transparent_70%),radial-gradient(45%_50%_at_88%_90%,rgb(56_170_220/0.16),transparent_70%)]" />
+    <section className="relative isolate flex flex-col overflow-hidden bg-[linear-gradient(160deg,#0e6b44_0%,#0b5c3a_45%,#084a2f_100%)] pt-[72px] text-white lg:min-h-0 lg:flex-1">
+      {/* A calm green gradient, lifted by a soft light behind the headline */}
+      <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(60%_55%_at_50%_28%,rgb(150_225_185/0.16),transparent_70%)]" />
+      <HeroDesignLayer design={design} />
 
       <div className="flex w-full flex-1 flex-col items-center gap-10 px-5 py-12 md:px-10 lg:min-h-0 lg:gap-8 lg:px-8 lg:pb-6 lg:pt-14 [@media(min-height:1000px)]:lg:gap-12 [@media(min-height:1000px)]:lg:pt-24">
         <Reveal className="flex flex-col items-center text-center">
