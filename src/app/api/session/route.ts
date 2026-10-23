@@ -8,6 +8,11 @@ export const dynamic = 'force-dynamic';
 export async function GET() {
   const jar = await cookies();
   const session = await verifySession(jar.get(SESSION_COOKIE)?.value);
+  // Admins sign in on the admin console only; an older admin session on the site counts as signed out
+  if (session?.role === 'admin') {
+    jar.delete(SESSION_COOKIE);
+    return NextResponse.json({ user: null }, { headers: { 'Cache-Control': 'no-store' } });
+  }
   if (!session) return NextResponse.json({ user: null }, { headers: { 'Cache-Control': 'no-store' } });
   const { exp: _exp, ...user } = session;
   void _exp;
