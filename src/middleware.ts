@@ -12,12 +12,17 @@ export async function middleware(request: NextRequest) {
     return session ? NextResponse.redirect(new URL(roleHome[session.role], request.url)) : NextResponse.next();
   }
 
+  // The admin console has its own sign-in page; a signed-in admin goes straight to the console.
+  if (pathname === '/admin/login') {
+    return session?.role === 'admin' ? NextResponse.redirect(new URL('/admin', request.url)) : NextResponse.next();
+  }
+
   const area = roleAreas.find((a) => within(pathname, a.prefix));
   const needsSignIn = area || signedInAreas.some((p) => within(pathname, p));
   if (!needsSignIn) return NextResponse.next();
 
   if (!session) {
-    const login = new URL('/login', request.url);
+    const login = new URL(area?.role === 'admin' ? '/admin/login' : '/login', request.url);
     login.searchParams.set('next', pathname + search);
     const res = NextResponse.redirect(login);
     res.cookies.delete(SESSION_COOKIE); // clear expired or tampered cookies
