@@ -65,10 +65,13 @@ export function Capabilities({ background = 'bg-[linear-gradient(160deg,#10191e_
     <section aria-labelledby="capabilities-title" className={cn('relative isolate overflow-hidden section-y', background)}>
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal className="flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
-          <h2 id="capabilities-title" className="display text-[clamp(2rem,1.3rem+2.6vw,3.5rem)] text-white">
-            Four pillars of <br className="hidden sm:block" />
-            <span className="text-brand-300">medical infrastructure.</span>
-          </h2>
+          <div>
+            <p className="inline-block w-fit bg-white/10 px-2.5 py-1 text-[0.75rem] font-semibold uppercase tracking-[0.08em] text-brand-300">Our solutions</p>
+            <h2 id="capabilities-title" className="display mt-4 text-[clamp(2rem,1.3rem+2.6vw,3.5rem)] text-white">
+              Four pillars of <br className="hidden sm:block" />
+              <span className="text-brand-300">medical infrastructure.</span>
+            </h2>
+          </div>
           <p className="max-w-md text-lg leading-relaxed text-white/80">
             From diagnostics to delivery: one partner for the equipment, the engineers and the supplies that keep it running.
           </p>
