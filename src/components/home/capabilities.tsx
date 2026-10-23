@@ -56,12 +56,13 @@ export const pillars = [
 ] as const;
 
 /**
- * Home: "Four pillars of medical infrastructure". Four equal cards on the deep navy band: a photo, the pillar's
- * number, what it covers in one line and three points; the whole card opens that part of the site.
+ * Home: "Four pillars of medical infrastructure". Four equal cards on a coloured band (the deep navy gradient by
+ * default; `background` sets another): a photo, the pillar's number, what it covers in one line and three points;
+ * the whole card opens that part of the site.
  */
-export function Capabilities() {
+export function Capabilities({ background = 'bg-[linear-gradient(160deg,#10191e_0%,#16232a_55%,#0b3b40_100%)]' }: { background?: string }) {
   return (
-    <section aria-labelledby="capabilities-title" className="relative isolate overflow-hidden bg-[linear-gradient(160deg,#10191e_0%,#16232a_55%,#0b3b40_100%)] section-y">
+    <section aria-labelledby="capabilities-title" className={cn('relative isolate overflow-hidden section-y', background)}>
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal className="flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
           <h2 id="capabilities-title" className="display text-[clamp(2rem,1.3rem+2.6vw,3.5rem)] text-white">
