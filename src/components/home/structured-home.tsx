@@ -90,21 +90,23 @@ export function WhatWeDo() {
   );
 }
 
-/** The four pillars: the heading beside its introduction, then all four side by side, each with its photo, points and link. */
+/** The four pillars on the deep navy-teal band (as on the earlier home page): the heading beside its introduction,
+ * then all four side by side as white cards, each with its photo, points and link. */
 export function PillarsPanel() {
   return (
-    <section aria-labelledby="pillars-title" className="pattern-cross pattern-soft pattern-l bg-paper section-y">
+    <section aria-labelledby="pillars-title" className="relative isolate overflow-hidden bg-[linear-gradient(160deg,#10191e_0%,#16232a_55%,#0b3b40_100%)] section-y text-white">
+      <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(50%_60%_at_85%_10%,rgb(0_122_77/0.22),transparent_70%)]" />
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal className="grid gap-6 lg:grid-cols-2 lg:items-end lg:gap-16">
           <div>
-            <Chip>Our solutions</Chip>
-            <h2 id="pillars-title" className="display mt-4 text-[clamp(2rem,1.2rem+2.4vw,3rem)] text-ink">
+            <p className="inline-block w-fit bg-white/10 px-2.5 py-1 text-[0.75rem] font-semibold uppercase tracking-[0.08em] text-brand-300">Our solutions</p>
+            <h2 id="pillars-title" className="display mt-4 text-[clamp(2rem,1.2rem+2.4vw,3rem)] !text-white">
               Four pillars of medical infrastructure
             </h2>
           </div>
           <div>
-            <p className="no-justify text-lg leading-relaxed text-ink-3">From diagnostics to delivery: one partner for the equipment, the engineers and the supplies that keep it running.</p>
-            <Button asChild arrow="right" className="mt-6">
+            <p className="no-justify text-lg leading-relaxed text-white/75">From diagnostics to delivery: one partner for the equipment, the engineers and the supplies that keep it running.</p>
+            <Button asChild arrow="right" className="mt-6 bg-white text-brand-800 hover:bg-white/90">
               <Link href="/services">Explore solutions</Link>
             </Button>
           </div>
@@ -113,7 +115,7 @@ export function PillarsPanel() {
           {pillars.map((p, i) => (
             <li key={p.title}>
               <Reveal delay={i * 0.05} className="h-full">
-                <Link href={p.href} className="group flex h-full flex-col bg-canvas">
+                <Link href={p.href} className="group flex h-full flex-col bg-white">
                   <span className="relative block aspect-[4/3] overflow-hidden bg-white">
                     <Image
                       src={p.image}
@@ -153,7 +155,7 @@ export function PillarsPanel() {
 /** Mission, vision and aim under one heading, in their own colours (green, red, teal), as before. */
 export function PurposeCards() {
   return (
-    <section aria-labelledby="purpose-title" className="bg-paper">
+    <section aria-labelledby="purpose-title" className="bg-paper pt-16 md:pt-28">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal className="mx-auto max-w-2xl text-center">
           <Chip>Our purpose</Chip>

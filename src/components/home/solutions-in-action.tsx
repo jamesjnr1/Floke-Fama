@@ -111,7 +111,7 @@ export function SolutionsInAction({ layout = 'wide', plain = false }: { layout?:
   }
 
   return (
-    <section aria-labelledby="in-action-title" className={`${plain ? '' : 'pattern-grid '}bg-paper pt-16 md:pt-32`}>
+    <section aria-labelledby="in-action-title" className={`${plain ? 'pb-16 md:pb-28 ' : 'pattern-grid '}bg-paper pt-16 md:pt-32`}>
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal className="grid gap-5 lg:grid-cols-[1fr_1fr] lg:items-end lg:gap-16">
           <div>
