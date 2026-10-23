@@ -10,6 +10,6 @@ export async function getSession() {
 /** Defence in depth: pages re-check the session even though middleware already guards the route. */
 export async function requireSession(role: Role, path: string) {
   const session = await getSession();
-  if (!session || session.role !== role) redirect(`/login?next=${encodeURIComponent(path)}`);
+  if (!session || session.role !== role) redirect(`${role === 'admin' ? '/admin/login' : '/login'}?next=${encodeURIComponent(path)}`);
   return session;
 }
