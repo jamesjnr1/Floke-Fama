@@ -62,15 +62,14 @@ function HeroDesignLayer({ design }: { design: HeroDesign }) {
 }
 
 /**
- * The 'simple' hero: everything centred on the calm green gradient (headline, lead and the two actions), with the
+ * The 'simple' hero: everything centred on the green gradient (headline, lead and the two actions), with the
  * equipment row underneath (see heroItems) moving slowly across.
  */
 export async function SimpleHero({ design = heroDesign }: { design?: HeroDesign }) {
   const { hero } = await getSite();
   return (
-    <section className="relative isolate flex flex-col overflow-hidden bg-[linear-gradient(160deg,#0e6b44_0%,#0b5c3a_45%,#084a2f_100%)] pt-[72px] text-white lg:min-h-0 lg:flex-1">
-      {/* A calm green gradient, lifted by a soft light behind the headline */}
-      <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(60%_55%_at_50%_28%,rgb(150_225_185/0.16),transparent_70%)]" />
+    <section className="relative isolate flex flex-col overflow-hidden bg-[linear-gradient(180deg,#0a5a33_0%,#06482a_60%,#043822_100%)] pt-[72px] text-white lg:min-h-0 lg:flex-1">
+      <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(55%_50%_at_50%_20%,rgb(127_209_165/0.14),transparent_70%)]" />
       <HeroDesignLayer design={design} />
 
       <div className="flex w-full flex-1 flex-col items-center gap-10 px-5 py-12 md:px-10 lg:min-h-0 lg:gap-8 lg:px-8 lg:pb-6 lg:pt-14 [@media(min-height:1000px)]:lg:gap-12 [@media(min-height:1000px)]:lg:pt-24">
