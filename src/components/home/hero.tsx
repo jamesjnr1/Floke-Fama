@@ -4,6 +4,7 @@ import { CatalogueBook } from '@/components/home/catalogue-book';
 import { CollageHero } from '@/components/home/collage-hero';
 import { SpotlightHero } from '@/components/home/spotlight-hero';
 import { SimpleHero } from '@/components/home/simple-hero';
+import { ModernHero } from '@/components/home/modern-hero';
 import { MovingHero } from '@/components/home/moving-hero';
 import { CataloguePages } from '@/components/home/catalogue-pages';
 import { EquipmentStrips } from '@/components/home/equipment-strips';
@@ -23,6 +24,15 @@ import { cn } from '@/lib/utils';
  * text is on the left and a slideshow of equipment on the right (see heroStyle).
  */
 export async function Hero({ bg = heroBackground }: { bg?: HeroBackground } = {}) {
+  if (heroStyle === 'modern') {
+    // Taller than one screen with its showcase, so it isn't squeezed to share the first screen with the logos
+    return (
+      <>
+        <ModernHero />
+        <HeroLogos />
+      </>
+    );
+  }
   if (heroStyle === 'collage' || heroStyle === 'feature' || heroStyle === 'spotlight' || heroStyle === 'simple' || heroStyle === 'moving') {
     return (
       // Hero and the Clients & Partners band share the first screen, so the logos show without scrolling
