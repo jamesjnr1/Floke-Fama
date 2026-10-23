@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Bars, Columns } from '@/components/admin/charts';
 import { LogoMark, LogoWordmark } from '@/components/layout/logo';
 import { Icon } from '@/components/ui/icon';
+import { UserAvatar } from '@/components/ui/user-avatar';
 import { setOrderStatus } from '@/lib/admin/actions';
 import { configChecks, loadAdminData, type AdminData } from '@/lib/admin/data';
 import { adminLogout } from '@/lib/auth/actions';
@@ -65,7 +66,6 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
   const data = await loadAdminData();
   const now = data.source === 'sample' ? Date.UTC(2026, 9, 19, 12) : Date.now();
 
-  const initials = session.name.split(/\s+/).map((w) => w[0]).slice(0, 2).join('').toUpperCase();
   const menu = tabs.filter((t) => t.id !== 'system');
   const href = (id: Tab) => (id === 'overview' ? '/admin' : `/admin?tab=${id}`);
   const item = (active: boolean) =>
@@ -76,7 +76,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
       <div className="mx-auto flex max-w-[1600px] gap-4">
         {/* Sidebar */}
         <aside className="sticky top-4 hidden h-[calc(100svh-2rem)] w-64 shrink-0 flex-col rounded-[1.75rem] bg-white p-5 shadow-[0_1px_2px_rgb(16_25_30/0.04)] lg:flex">
-          <Link href="/" className="flex items-center gap-2 px-2 pt-1">
+          <Link href="/admin" className="flex items-center gap-2 px-2 pt-1">
             <LogoMark className="size-9" />
             <LogoWordmark className="h-[19px] text-brand-800" />
           </Link>
@@ -92,9 +92,6 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
           <div className="mt-2 space-y-1">
             <Link href={href('system')} aria-current={tab === 'system' ? 'page' : undefined} className={item(tab === 'system')}>
               <Icon name="fi-rr-database" className={tab === 'system' ? 'text-brand-600' : ''} /> Database &amp; settings
-            </Link>
-            <Link href="/" className={item(false)}>
-              <Icon name="fi-rr-globe" /> View website
             </Link>
             <form action={adminLogout}>
               <button className={cn(item(false), 'w-full')}>
@@ -118,10 +115,10 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
         <div className="min-w-0 flex-1 space-y-4">
           {/* Profile bar */}
           <header className="flex items-center gap-4 rounded-[1.75rem] bg-white px-5 py-4 shadow-[0_1px_2px_rgb(16_25_30/0.04)]">
-            <Link href="/" className="flex items-center gap-2 lg:hidden">
+            <Link href="/admin" className="flex items-center gap-2 lg:hidden">
               <LogoMark className="size-8" />
             </Link>
-            <span className="grid size-11 shrink-0 place-items-center rounded-full bg-[linear-gradient(135deg,#0d7a4b,#04331f)] text-[0.9375rem] font-semibold text-white">{initials}</span>
+            <UserAvatar className="size-11 rounded-full bg-[linear-gradient(135deg,#0d7a4b,#04331f)] text-lg text-white" />
             <div className="min-w-0">
               <p className="truncate font-semibold">{session.name}</p>
               <p className="truncate text-[0.875rem] text-ink-3">{session.email}</p>
@@ -290,7 +287,6 @@ function Overview({ data, now }: { data: AdminData; now: number }) {
   const rated = data.desk.tickets.filter((t) => t.rating);
   const dueSoon = data.desk.assets.filter((a) => a.nextCalibration && a.nextCalibration < since(-30));
   const orgOf = (email: string) => data.accounts.find((a) => a.email === email)?.organisation ?? email;
-  const initialsOf = (s: string) => s.split(/\s+/).filter((w) => /^[A-Za-z]/.test(w)).map((w) => w[0]).slice(0, 2).join('').toUpperCase();
 
   return (
     <>
@@ -317,7 +313,7 @@ function Overview({ data, now }: { data: AdminData; now: number }) {
             <ul className="space-y-4">
               {data.orders.slice(0, 5).map((o) => (
                 <li key={o.reference} className="flex items-center gap-3">
-                  <span className="grid size-11 shrink-0 place-items-center rounded-full bg-[#eaf5ef] text-[0.875rem] font-semibold text-brand-800 ring-2 ring-white">{initialsOf(orgOf(o.account)) || 'FF'}</span>
+                  <UserAvatar className="size-11 rounded-full bg-[#eaf5ef] text-base text-brand-800 ring-2 ring-white" />
                   <span className="min-w-0 flex-1">
                     <span className="block truncate font-medium">{orgOf(o.account)}</span>
                     <span className="block truncate text-[0.8125rem] text-ink-3">{o.reference} · {units(o)} item{units(o) === 1 ? '' : 's'} · {timeFmt.format(new Date(o.placedAt))}</span>
@@ -501,7 +497,7 @@ function Products({ data }: { data: AdminData }) {
         {list.map(([slug, r]) => (
           <tr key={slug}>
             <td className="font-medium">
-              <Link href={`/products/${slug}`} className="hover:text-brand-700 hover:underline">{r.name}</Link>
+              {r.name}
             </td>
             <td>{categoryName(categoryOf.get(slug) ?? '—')}</td>
             <td className="tabular-nums">{r.units}</td>

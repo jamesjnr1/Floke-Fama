@@ -19,6 +19,7 @@ import { useSite } from '@/components/site-provider';
 import { logout } from '@/lib/auth/actions';
 import { daysUntil, isOpen, nextTicketId, useEngineerStore, type Action, type Asset, type Notification, type Ticket } from '@/lib/service/store';
 import { cn } from '@/lib/utils';
+import { UserAvatar } from '@/components/ui/user-avatar';
 
 type View = 'overview' | 'tickets' | 'systems' | 'calibration' | 'docs';
 const nav: { id: View; label: string; icon: string }[] = [
@@ -71,7 +72,6 @@ function useTheme() {
 export function PortalShell({ user, products }: { user: { name: string; email: string }; products: CatalogueOption[] }) {
   const { contact } = useSite();
   const me = user.name;
-  const initials = me.split(/\s+/).map((w) => w[0]).slice(0, 2).join('').toUpperCase();
   const { theme, toggle } = useTheme();
   const { state, dispatch: rawDispatch, ready } = useEngineerStore(me);
   const [view, setView] = useState<View>('overview');
@@ -182,7 +182,7 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
           <span className="ml-auto text-[0.8125rem] font-semibold uppercase tracking-[0.18em] text-white/80">Service</span>
         </Link>
         <div className="flex items-center gap-3 px-6 py-6">
-          <span className="grid size-10 shrink-0 place-items-center rounded-md bg-white text-sm font-semibold text-[#006b42]">{initials}</span>
+          <UserAvatar className="size-10 rounded-md bg-white text-lg text-[#006b42]" />
           <span className="min-w-0">
             <span className="block truncate text-sm font-semibold">{me}</span>
             <span className="block truncate text-xs text-white/75">Biomedical engineer</span>
@@ -245,7 +245,7 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
           {themeButton}
           <Notifications tone="light" items={mine} onRead={(id) => rawDispatch({ type: 'read', id })} onReadAll={() => rawDispatch({ type: 'readAll', audience: 'engineer' })} onOpen={onNotification} />
           <span className="hidden items-center gap-3 border-l border-line pl-4 md:flex">
-            <span className="grid size-9 place-items-center rounded-md bg-brand-600 text-xs font-semibold text-white">{initials}</span>
+            <UserAvatar className="size-9 rounded-md bg-brand-600 text-base text-white" />
             <span className="leading-tight">
               <span className="block text-sm font-medium text-ink">{me}</span>
               <span className="block text-xs text-ink-3">{user.email}</span>

@@ -2,14 +2,14 @@
 
 import { revalidatePath } from 'next/cache';
 import { appwrite, DATABASE_ID, TABLES } from '@/lib/appwrite';
-import { getSession } from '@/lib/auth/server';
+import { getAdminSession } from '@/lib/auth/server';
 import type { OrderStatus, SavedOrder } from '@/lib/orders';
 
 const statuses: OrderStatus[] = ['awaiting-payment', 'paid', 'processing', 'delivered'];
 
 /** Moves an order along (awaiting payment → paid → being prepared → delivered). Admins only. */
 export async function setOrderStatus(form: FormData) {
-  const s = await getSession();
+  const s = await getAdminSession();
   if (s?.role !== 'admin' || !appwrite) return;
   const reference = String(form.get('reference') ?? '');
   const status = String(form.get('status') ?? '') as OrderStatus;

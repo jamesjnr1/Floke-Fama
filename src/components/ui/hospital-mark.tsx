@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useSite } from '@/components/site-provider';
 import { transparentLogo, useHospitalLogo } from '@/lib/hospital-logo';
 import type { Logo } from '@/lib/site-content';
+import { UserAvatar } from '@/components/ui/user-avatar';
 import { cn } from '@/lib/utils';
 
 const words = (s: string) => s.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(Boolean);
@@ -29,7 +30,7 @@ export function findHospitalLogo(facility: string | undefined, clients: Logo[]):
  * Flokefama's listed clients, else the initials of its name. Logos show on their own, with no tile behind. `className` sets the size and corner;
  * `fallbackClassName` styles the initials tile.
  */
-export function HospitalMark({ facility, name, className, fallbackClassName }: { facility?: string; name?: string; className?: string; fallbackClassName?: string }) {
+export function HospitalMark({ facility, name, className, fallbackClassName, person = false }: { facility?: string; name?: string; className?: string; fallbackClassName?: string; /** No logo: show a person icon, not initials (a signed-in account) */ person?: boolean }) {
   const { clients } = useSite();
   const { logo: uploaded } = useHospitalLogo(facility);
   const listed = findHospitalLogo(facility, clients)?.logo ?? undefined;
@@ -52,6 +53,7 @@ export function HospitalMark({ facility, name, className, fallbackClassName }: {
         {src && <img src={src} alt={`${facility} logo`} className="size-full object-contain" />}
       </span>
     );
+  if (person) return <UserAvatar className={cn(className, fallbackClassName)} />;
   const text = (facility ?? name ?? '').split(/\s+/).filter((w) => /^[A-Za-z0-9]/.test(w) && !/^(of|the|and)$/i.test(w)).map((w) => w[0]).slice(0, 2).join('').toUpperCase();
   return <span className={cn('grid shrink-0 place-items-center font-semibold', className, fallbackClassName)} aria-hidden>{text}</span>;
 }
