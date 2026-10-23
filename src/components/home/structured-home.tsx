@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { PurposeBlocks } from '@/components/about/purpose-blocks';
-import { pillars } from '@/components/home/capabilities';
+import { accents, pillars } from '@/components/home/capabilities';
 import { CountUp } from '@/components/motion/count-up';
 import { Reveal } from '@/components/motion/reveal';
 import { Button } from '@/components/ui/button';
@@ -112,7 +112,10 @@ export function PillarsPanel() {
           </div>
         </Reveal>
         <ul className="mt-12 grid gap-5 sm:grid-cols-2 md:mt-14 lg:grid-cols-4">
-          {pillars.map((p, i) => (
+          {pillars.map((p, i) => {
+            // Each pillar keeps its own colour, as on the earlier home page: green, teal, red, amber
+            const a = accents[p.accent];
+            return (
             <li key={p.title}>
               <Reveal delay={i * 0.05} className="h-full">
                 <Link href={p.href} className="group flex h-full flex-col bg-white">
@@ -126,18 +129,18 @@ export function PillarsPanel() {
                     />
                   </span>
                   <span className="flex flex-1 flex-col p-6">
-                    <span className="text-sm font-semibold tabular-nums text-brand-700">{String(i + 1).padStart(2, '0')}</span>
-                    <span className="mt-2 text-xl font-bold tracking-[-0.02em] text-ink group-hover:text-brand-700">{p.title}</span>
+                    <span className={`grid size-9 place-items-center text-sm font-bold tabular-nums text-white ${a.num}`}>{String(i + 1).padStart(2, '0')}</span>
+                    <span className="mt-4 text-xl font-bold tracking-[-0.02em] text-ink">{p.title}</span>
                     <span className="no-justify mt-2 leading-relaxed text-ink-3">{p.body}</span>
                     <span className="mt-4 block space-y-2">
                       {p.points.map((pt) => (
                         <span key={pt} className="flex items-start gap-2 text-[0.9375rem] text-ink-2">
-                          <Icon name="fi-rr-check" className="mt-1 text-brand-700" />
+                          <Icon name="fi-rr-check" className={`mt-1 ${a.tick}`} />
                           {pt}
                         </span>
                       ))}
                     </span>
-                    <span className="mt-auto inline-flex items-center gap-1.5 pt-6 font-semibold text-brand-700">
+                    <span className={`mt-auto inline-flex items-center gap-1.5 pt-6 font-semibold ${a.tick}`}>
                       Explore
                       <Icon name="fi-rr-arrow-small-right" className="transition-transform group-hover:translate-x-0.5" />
                     </span>
@@ -145,7 +148,8 @@ export function PillarsPanel() {
                 </Link>
               </Reveal>
             </li>
-          ))}
+            );
+          })}
         </ul>
       </div>
     </section>

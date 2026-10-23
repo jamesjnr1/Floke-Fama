@@ -5,7 +5,7 @@ import { Reveal } from '@/components/motion/reveal';
 import { cn } from '@/lib/utils';
 
 /** Each pillar has its own accent (number, ticks and link), so the four read as a set but stay distinct. */
-const accents = {
+export const accents = {
   green: { num: 'bg-brand-600', tick: 'text-brand-600', bar: 'bg-brand-600' },
   teal: { num: 'bg-[#087d88]', tick: 'text-[#087d88]', bar: 'bg-[#087d88]' },
   red: { num: 'bg-signal', tick: 'text-signal-700', bar: 'bg-signal' },
