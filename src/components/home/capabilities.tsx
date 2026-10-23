@@ -72,7 +72,7 @@ export function Capabilities({ background = 'bg-[linear-gradient(160deg,#10191e_
               <span className="text-brand-300">medical infrastructure.</span>
             </h2>
           </div>
-          <p className="max-w-md text-lg leading-relaxed text-white/80">
+          <p className="no-justify max-w-md text-lg leading-relaxed text-white/80">
             From diagnostics to delivery: one partner for the equipment, the engineers and the supplies that keep it running.
           </p>
         </Reveal>
