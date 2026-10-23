@@ -128,12 +128,12 @@ export function SolutionsInAction({ layout = 'wide', plain = false }: { layout?:
             From our laboratories and warehouse in Accra to hospitals across Ghana and West Africa: see how Flokefama supplies, installs and maintains the equipment that keeps care running.
           </p>
         </Reveal>
-      </div>
 
-      {/* The film runs the full width of the page and as tall as the screen allows while the Flokefama logo in its top-right corner stays in view (the crop leans right) */}
-      <Reveal delay={0.08} className="mt-10 md:mt-14">
-        {player('block aspect-video w-full bg-black object-cover object-[85%_50%] md:aspect-auto md:h-[min(calc(100svh-72px),52.6vw)] md:object-[75%_50%]')}
-      </Reveal>
+        {/* The film spans the text column exactly (from where the heading starts to where the intro ends), square-cornered, shown whole */}
+        <Reveal delay={0.08} className="mt-10 md:mt-14">
+          {player('block aspect-[1024/436] w-full bg-black')}
+        </Reveal>
+      </div>
     </section>
   );
 }
