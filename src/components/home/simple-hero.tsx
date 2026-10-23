@@ -17,16 +17,18 @@ const heroItems = [
 ].map((p) => ({ key: p.slug, title: p.title, image: `/images/products/${p.slug}.webp`, href: `/products/${p.slug}`, cutout: true }));
 
 /**
- * The faint drawing on the hero's green. 'contours' (default): gentle flowing lines, like a topographic map.
- * 'arcs': wide concentric arcs rising from below the headline. 'light': soft diagonal bands of light, no lines.
+ * An optional faint drawing on the hero's green. 'none' (default): the plain gradient. 'contours': gentle flowing
+ * lines, like a topographic map. 'arcs': wide concentric arcs rising from below the headline. 'light': soft
+ * diagonal bands of light, no lines.
  * Switch with NEXT_PUBLIC_HERO_DESIGN in Vercel (then redeploy).
  */
-const designs = ['contours', 'arcs', 'light'] as const;
+const designs = ['none', 'contours', 'arcs', 'light'] as const;
 export type HeroDesign = (typeof designs)[number];
 const envDesign = process.env.NEXT_PUBLIC_HERO_DESIGN as HeroDesign | undefined;
-const heroDesign: HeroDesign = envDesign && designs.includes(envDesign) ? envDesign : 'contours';
+const heroDesign: HeroDesign = envDesign && designs.includes(envDesign) ? envDesign : 'none';
 
 function HeroDesignLayer({ design }: { design: HeroDesign }) {
+  if (design === 'none') return null;
   if (design === 'arcs') {
     return (
       <svg aria-hidden className="absolute left-1/2 top-[18%] -z-10 h-[1400px] w-[1400px] -translate-x-1/2" viewBox="0 0 1400 1400" fill="none">
