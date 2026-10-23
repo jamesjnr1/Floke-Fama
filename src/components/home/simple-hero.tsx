@@ -23,8 +23,9 @@ const heroItems = [
 export async function SimpleHero() {
   const { hero } = await getSite();
   return (
-    <section className="relative isolate flex flex-col overflow-hidden bg-[linear-gradient(180deg,#0a5a33_0%,#06482a_60%,#043822_100%)] pt-[72px] text-white lg:min-h-0 lg:flex-1">
-      <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(55%_50%_at_50%_20%,rgb(127_209_165/0.14),transparent_70%)]" />
+    <section className="relative isolate flex flex-col overflow-hidden bg-[linear-gradient(135deg,#0b5e3a_0%,#08584a_38%,#07505a_68%,#0a3a52_100%)] pt-[72px] text-white lg:min-h-0 lg:flex-1">
+      {/* A cool gradient: company green flowing into teal and a deep sea blue, lit by a soft mint glow at the top left and a cool blue one at the bottom right */}
+      <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(50%_55%_at_18%_12%,rgb(127_209_165/0.2),transparent_70%),radial-gradient(45%_50%_at_88%_90%,rgb(56_170_220/0.16),transparent_70%)]" />
 
       <div className="flex w-full flex-1 flex-col items-center gap-10 px-5 py-12 md:px-10 lg:min-h-0 lg:gap-8 lg:px-8 lg:pb-6 lg:pt-14 [@media(min-height:1000px)]:lg:gap-12 [@media(min-height:1000px)]:lg:pt-24">
         <Reveal className="flex flex-col items-center text-center">
