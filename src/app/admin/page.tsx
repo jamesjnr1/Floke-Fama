@@ -4,7 +4,7 @@ import { LogoMark, LogoWordmark } from '@/components/layout/logo';
 import { Icon } from '@/components/ui/icon';
 import { setOrderStatus } from '@/lib/admin/actions';
 import { configChecks, loadAdminData, type AdminData } from '@/lib/admin/data';
-import { logout } from '@/lib/auth/actions';
+import { adminLogout } from '@/lib/auth/actions';
 import { requireSession } from '@/lib/auth/server';
 import { catalogue } from '@/data/catalogue';
 import type { OrderStatus } from '@/lib/orders';
@@ -96,7 +96,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             <Link href="/" className={item(false)}>
               <Icon name="fi-rr-globe" /> View website
             </Link>
-            <form action={logout}>
+            <form action={adminLogout}>
               <button className={cn(item(false), 'w-full')}>
                 <Icon name="fi-rr-sign-out-alt" /> Sign out
               </button>
@@ -129,7 +129,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             <p className="ml-auto hidden items-center gap-2 rounded-xl bg-[#f1f4f2] px-4 py-2.5 text-[0.9375rem] text-ink-2 md:flex">
               <Icon name="fi-rr-calendar" className="text-brand-600" /> {dateFmt.format(new Date(now))}
             </p>
-            <form action={logout} className="ml-auto md:ml-0 lg:hidden">
+            <form action={adminLogout} className="ml-auto md:ml-0 lg:hidden">
               <button className="h-10 whitespace-nowrap rounded-xl border border-line px-4 text-[0.9375rem] font-medium">Sign out</button>
             </form>
           </header>

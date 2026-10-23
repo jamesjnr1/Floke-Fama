@@ -99,6 +99,8 @@ export async function login(_prev: LoginState, form: FormData): Promise<LoginSta
     return { error: 'That email and password don’t match an account.', email: parsed.data.email };
   }
   attempts.delete(key);
+  // The admin sign-in page (/admin/login) only lets admins in
+  if (form.get('area') === 'admin' && roleFor(saved.email) !== 'admin') return { error: 'This account doesn’t have access to the admin console.', email: parsed.data.email };
 
   await startSession({ sub: saved.id, name: saved.name, email: saved.email, role: roleFor(saved.email), facility: saved.organisation, phone: saved.phone, keep: parsed.data.keep === 'on' }, parsed.data.next);
   return {};
@@ -130,4 +132,10 @@ export async function register(_prev: SignupState, form: FormData): Promise<Sign
 export async function logout() {
   (await cookies()).delete(SESSION_COOKIE);
   redirect('/login?signedout=1');
+}
+
+/** Signing out of the admin console returns to its own sign-in page. */
+export async function adminLogout() {
+  (await cookies()).delete(SESSION_COOKIE);
+  redirect('/admin/login?signedout=1');
 }
