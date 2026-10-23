@@ -199,7 +199,7 @@
    (main carries lang="en" so browsers have a dictionary); very short words never stretch a line on their own.
    Short text inside cards and list items keeps natural spacing: a 2-3 line card justifies into wide gaps. */
 @media (min-width: 768px) {
-  main p.leading-relaxed:not(.no-justify):not(:is(li, article, dd, figcaption, button, a) p) {
+  main p.leading-relaxed:not(.no-justify):not(.text-center):not(:is(li, article, dd, figcaption, button, a) p) {
     text-align: justify;
     text-justify: inter-word;
     hyphens: auto;
