@@ -4,7 +4,7 @@ import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { AccountsUnavailable, accountExists, findSavedAccount, hashPassword, saveAccount, type StoredAccount } from '@/lib/auth/accounts';
-import { nextFor, safeNext, SESSION_COOKIE, sessionCookie, signSession, type SessionUser } from '@/lib/auth/session';
+import { ADMIN_COOKIE, nextFor, safeNext, SESSION_COOKIE, sessionCookie, signSession, type SessionUser } from '@/lib/auth/session';
 import { roleFor } from '@/lib/auth/users';
 
 export interface LoginState {
@@ -80,7 +80,8 @@ function failed(key: string) {
 }
 
 async function startSession(user: Omit<SessionUser, 'exp'>, next: string | undefined) {
-  (await cookies()).set(SESSION_COOKIE, await signSession(user), sessionCookie(user));
+  // Admins get the admin console's own session, so they never show as signed in on the site
+  (await cookies()).set(user.role === 'admin' ? ADMIN_COOKIE : SESSION_COOKIE, await signSession(user), sessionCookie(user));
   redirect(nextFor(user.role, safeNext(next)));
 }
 
@@ -136,6 +137,6 @@ export async function logout() {
 
 /** Signing out of the admin console returns to its own sign-in page. */
 export async function adminLogout() {
-  (await cookies()).delete(SESSION_COOKIE);
+  (await cookies()).delete(ADMIN_COOKIE);
   redirect('/admin/login?signedout=1');
 }

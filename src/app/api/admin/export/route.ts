@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { loadAdminData } from '@/lib/admin/data';
-import { getSession } from '@/lib/auth/server';
+import { getAdminSession } from '@/lib/auth/server';
 
 /** CSV downloads for the admin console (orders, accounts, service requests, equipment). Admins only. */
 export const dynamic = 'force-dynamic';
@@ -14,7 +14,7 @@ const cell = (v: unknown) => {
 const csv = (head: string[], rows: unknown[][]) => [head, ...rows].map((r) => r.map(cell).join(',')).join('\r\n');
 
 export async function GET(req: NextRequest) {
-  const s = await getSession();
+  const s = await getAdminSession();
   if (s?.role !== 'admin') return NextResponse.json({ error: 'Not allowed.' }, { status: 403 });
   const d = await loadAdminData();
   const table = req.nextUrl.searchParams.get('table');

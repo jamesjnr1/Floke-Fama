@@ -1,11 +1,15 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { roleAreas, roleHome, SESSION_COOKIE, sessionCookie, signedInAreas, signSession, verifySession } from '@/lib/auth/session';
+import { ADMIN_COOKIE, roleAreas, roleHome, SESSION_COOKIE, sessionCookie, signedInAreas, signSession, verifySession } from '@/lib/auth/session';
 
 const within = (pathname: string, prefix: string) => pathname === prefix || pathname.startsWith(`${prefix}/`);
 
 export async function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
-  const session = await verifySession(request.cookies.get(SESSION_COOKIE)?.value);
+  // The admin console reads only its own cookie; the rest of the site only the site's (an admin is never signed in there)
+  const adminArea = within(pathname, '/admin');
+  const cookie = adminArea ? ADMIN_COOKIE : SESSION_COOKIE;
+  const found = await verifySession(request.cookies.get(cookie)?.value);
+  const session = adminArea ? (found?.role === 'admin' ? found : null) : found?.role === 'admin' ? null : found;
 
   // Signed-in users skip the login page.
   if (pathname === '/login') {
@@ -25,7 +29,7 @@ export async function middleware(request: NextRequest) {
     const login = new URL(area?.role === 'admin' ? '/admin/login' : '/login', request.url);
     login.searchParams.set('next', pathname + search);
     const res = NextResponse.redirect(login);
-    res.cookies.delete(SESSION_COOKIE); // clear expired or tampered cookies
+    res.cookies.delete(cookie); // clear expired or tampered cookies
     return res;
   }
   // Each role's own area (client portal, engineer portal) is closed to other roles.
@@ -35,7 +39,7 @@ export async function middleware(request: NextRequest) {
   const res = NextResponse.next();
   const { exp: _exp, ...user } = session;
   void _exp;
-  res.cookies.set(SESSION_COOKIE, await signSession(user), sessionCookie(user));
+  res.cookies.set(cookie, await signSession(user), sessionCookie(user));
   res.headers.set('Cache-Control', 'private, no-store');
   return res;
 }

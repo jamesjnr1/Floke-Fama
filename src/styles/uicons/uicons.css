@@ -46,6 +46,7 @@
 .fi-rr-info::before{content:"\f80b"}
 .fi-rr-lightbulb-on::before{content:"\f8ac"}
 .fi-rr-link-alt::before{content:"\f8b5"}
+.fi-rr-lock::before{content:"\f8d5"}
 .fi-rr-marker::before{content:"\f8fd"}
 .fi-rr-microscope::before{content:"\f945"}
 .fi-rr-moon::before{content:"\f972"}
@@ -53,7 +54,6 @@
 .fi-rr-paper-plane::before{content:"\f9f7"}
 .fi-rr-phone-call::before{content:"\fa61"}
 .fi-rr-plus::before{content:"\faac"}
-.fi-rr-plus-small::before{content:"\faab"}
 .fi-rr-search::before{content:"\fbba"}
 .fi-rr-search-alt::before{content:"\fbb6"}
 .fi-rr-settings::before{content:"\fbd2"}
