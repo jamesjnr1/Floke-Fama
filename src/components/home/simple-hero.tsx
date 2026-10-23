@@ -73,11 +73,12 @@ export async function SimpleHero({ design = heroDesign }: { design?: HeroDesign 
     <section className="relative isolate flex flex-col overflow-hidden bg-[linear-gradient(180deg,#0a5a33_0%,#06482a_60%,#043822_100%)] pt-[72px] text-white lg:min-h-0 lg:flex-1">
       <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(55%_50%_at_50%_20%,rgb(127_209_165/0.14),transparent_70%)]" />
       <HeroDesignLayer design={design} />
-      {/* A faint ECG line pulsing across, as on the modern hero, running between the actions and the product row */}
+      {/* A faint ECG line pulsing across, as on the modern hero, between the actions and the product row; its beat sits
+          in the open space on the left so the buttons don't cover it */}
       {/* The pulse animation sets the line's own opacity, so the wrapper keeps it faint */}
-      <div aria-hidden className="absolute inset-x-0 top-[51%] -z-10 h-40 opacity-60">
+      <div aria-hidden className="absolute inset-x-0 top-[50%] -z-10 h-28 opacity-60">
         <svg className="h-full w-full animate-[ecg-pulse_4s_ease-in-out_infinite] text-emerald-400 opacity-20 motion-reduce:animate-none" viewBox="0 0 1200 150" preserveAspectRatio="none" fill="none">
-          <path d="M0 75H350L365 40L380 110L400 20L420 130L435 60L450 75H1200" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+          <path d="M0 75H120L135 40L150 110L170 20L190 130L205 60L220 75H1200" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
         </svg>
       </div>
 
