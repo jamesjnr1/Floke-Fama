@@ -1,7 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Reveal } from '@/components/motion/reveal';
-import { LogoWordmark } from '@/components/layout/logo';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 
@@ -26,11 +25,11 @@ const products = [
 function Title({ center = false }: { center?: boolean }) {
   return (
     <h1 className={`flex flex-col !text-white ${center ? 'items-center' : ''}`}>
-      <span className="flex text-[clamp(2.75rem,1.6rem+3.6vw,4.75rem)]">
-        <LogoWordmark className="h-[0.75em] text-white" />
-        <span className="sr-only">Flokefama,</span>
+      {/* The company name in heavy, tightly set capitals */}
+      <span className={`font-wordmark ${center ? 'text-[clamp(3.6rem,9vw,7.6rem)]' : 'text-[clamp(3.25rem,5.6vw,5.5rem)]'} font-black uppercase leading-[0.82] tracking-[-0.08em]`}>
+        Floke Fama<span className="sr-only">,</span>
       </span>
-      <span className="mt-4 text-[clamp(1.6rem,1.1rem+1.6vw,2.5rem)] font-extrabold leading-[1.1] tracking-[-0.035em]">
+      <span className="mt-5 text-[clamp(1.6rem,1.1rem+1.6vw,2.5rem)] font-extrabold leading-[1.1] tracking-[-0.035em]">
         Ghana’s No.1 Healthcare Company<span className="text-signal">.</span>
       </span>
     </h1>
