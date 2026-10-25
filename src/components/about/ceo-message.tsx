@@ -68,11 +68,11 @@ export function CeoMessage({ ceo }: { ceo: Ceo }) {
           </Reveal>
         </div>
 
-        {/* The rest runs on underneath: the Honours box floats on the right, Education and then Philanthropy &
+        {/* Each heading sits in its own square box. The rest runs on underneath: the Honours box floats on the right, Education and then Philanthropy &
             Purpose run down the left beside it, and whatever runs past the box continues across the full width */}
         <div className="mx-auto mt-14 flow-root max-w-[1280px] px-5 md:mt-20 md:px-10">
           <Reveal delay={0.06} className="mb-10 bg-[linear-gradient(135deg,#0a5a33_0%,#06482a_60%,#043822_100%)] p-7 text-white md:float-right md:mb-6 md:ml-12 md:w-[calc(50%-1.5rem)] md:p-9 lg:ml-16 lg:w-[calc(50%-2rem)]">
-            <h3 className="text-[1.5rem] font-bold tracking-[-0.01em] !text-white">Honours</h3>
+            <h3 className="inline-block bg-white px-4 py-2 text-[1.375rem] font-bold tracking-[-0.01em] !text-brand-700">Honours</h3>
             <ul className="mt-5 space-y-5">
               {ceo.honours.map((x) => (
                 <li key={x.title}>
@@ -83,11 +83,11 @@ export function CeoMessage({ ceo }: { ceo: Ceo }) {
             </ul>
           </Reveal>
           <Reveal>
-            <h3 className="text-[1.5rem] font-bold tracking-[-0.01em] text-ink">Education</h3>
+            <h3 className="inline-block bg-brand-600 px-4 py-2 text-[1.375rem] font-bold tracking-[-0.01em] !text-white">Education</h3>
             <div className="mt-5">{list(ceo.education)}</div>
           </Reveal>
           <Reveal className="mt-10">
-            <h3 className="text-[1.5rem] font-bold tracking-[-0.01em] text-ink">Philanthropy &amp; Purpose</h3>
+            <h3 className="inline-block bg-brand-600 px-4 py-2 text-[1.375rem] font-bold tracking-[-0.01em] !text-white">Philanthropy &amp; Purpose</h3>
             {/* His creed opens it */}
             <blockquote className="mt-5 text-[1.3125rem] font-semibold leading-[1.7] text-ink">“{ceo.creed}”</blockquote>
             <p className="no-justify mt-3 text-[1.25rem] leading-[1.8] text-ink">{ceo.purpose}</p>
