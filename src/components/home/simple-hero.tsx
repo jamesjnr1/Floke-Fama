@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { HeroSlides } from '@/components/home/hero-slides';
+import { LogoMark } from '@/components/layout/logo';
 import { Button } from '@/components/ui/button';
 import { getSite } from '@/lib/site';
 
@@ -75,14 +76,18 @@ export async function SimpleHero({ design = heroDesign }: { design?: HeroDesign 
             {/* The company name first, as its own logotype, then the claim */}
             <h1 className="flex max-w-[1100px] flex-col items-center text-white">
               {/* The company name in heavy, tightly set capitals (Inter Black) */}
-              <span className="font-wordmark text-[clamp(3.4rem,8vw,7.6rem)] font-black uppercase leading-[0.82] tracking-[-0.08em]">
-                Floke Fama<span className="sr-only">,</span>
+              {/* The leaf mark beside the name, as tall as the letters */}
+              <span className="flex items-center gap-[0.14em] whitespace-nowrap font-wordmark text-[clamp(2.75rem,8vw,7.6rem)] font-black uppercase leading-[0.82] tracking-[-0.08em]">
+                <LogoMark className="size-[0.86em]" />
+                <span>
+                  Floke Fama<span className="sr-only">,</span>
+                </span>
               </span>
               <span className="mt-6 text-[clamp(1.75rem,1.1rem+1.9vw,3rem)] font-extrabold leading-[1.08] tracking-[-0.035em]">
                 {hero.title} {hero.highlight.replace(/\.$/, '')}<span className="text-signal">.</span>
               </span>
             </h1>
-            <p className="no-justify mt-5 max-w-[760px] text-[1.0625rem] leading-relaxed text-white/85 lg:max-w-[880px]">
+            <p className="no-justify mt-6 max-w-[820px] text-[clamp(1.125rem,0.95rem+0.6vw,1.4375rem)] leading-relaxed text-white/90 lg:max-w-[960px]">
               Sterilisation, laboratory, respiratory, imaging, monitoring and emergency equipment: supplied, installed and supported for hospitals and laboratories across Ghana and West Africa since 2008.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
