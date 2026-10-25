@@ -22,7 +22,7 @@ function withBoldName(text: string) {
  * "Meet our CEO", the 'message' style (default, see ceoStyle), laid out like a leadership page: a short photo banner
  * with "Leadership" in the middle; then, on a light background, "Message from our CEO" in bold, his name and title,
  * and his profile in plain paragraphs beside the portrait. Underneath, at full width: Education and Honours in two
- * columns (Honours in a green box), then Philanthropy & Purpose across the full width, closed by his creed.
+ * columns (Honours in a green box), then Philanthropy & Purpose across the full width, opened by his creed.
  */
 export function CeoMessage({ ceo }: { ceo: Ceo }) {
   const list = (items: Ceo['education']) => (
@@ -88,9 +88,9 @@ export function CeoMessage({ ceo }: { ceo: Ceo }) {
         </div>
         <Reveal className="mx-auto mt-14 max-w-[1280px] px-5 md:mt-20 md:px-10">
           <h3 className="text-[1.5rem] font-bold tracking-[-0.01em] text-ink">Philanthropy &amp; Purpose</h3>
-          {/* Full width, to the right edge of the portrait above; his creed runs on inside it */}
-          <p className="no-justify mt-5 text-[1.125rem] leading-[1.8] text-ink">{ceo.purpose}</p>
-          <blockquote className="mt-5 text-[1.125rem] font-semibold italic leading-[1.8] text-ink">“{ceo.creed}”</blockquote>
+          {/* Full width, to the right edge of the portrait above; his creed opens it */}
+          <blockquote className="mt-5 text-[1.125rem] font-semibold leading-[1.8] text-ink">“{ceo.creed}”</blockquote>
+          <p className="no-justify mt-3 text-[1.125rem] leading-[1.8] text-ink">{ceo.purpose}</p>
         </Reveal>
       </div>
     </section>
