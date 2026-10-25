@@ -1,8 +1,9 @@
 import { HeadOfficeHero, MarkHero, WordmarkHero } from '@/components/home/brand-heroes';
+import { CataloguePanelHero, CatalogueRowHero, CatalogueSideHero } from '@/components/home/catalogue-heroes';
 import { HeroLogos } from '@/components/home/hero-logos';
 import { AsymmetricHero, CenteredHero, GridHero, OverlayHero, SplitHero, StaggeredHero } from '@/components/home/hero-structures';
 
-const heroes = { split: SplitHero, centered: CenteredHero, overlay: OverlayHero, grid: GridHero, asymmetric: AsymmetricHero, staggered: StaggeredHero, wordmark: WordmarkHero, mark: MarkHero, headoffice: HeadOfficeHero };
+const heroes = { split: SplitHero, centered: CenteredHero, overlay: OverlayHero, grid: GridHero, asymmetric: AsymmetricHero, staggered: StaggeredHero, wordmark: WordmarkHero, mark: MarkHero, headoffice: HeadOfficeHero, side: CatalogueSideHero, row: CatalogueRowHero, panel: CataloguePanelHero };
 
 export default async function HeroPreview({ searchParams }: { searchParams: Promise<{ v?: keyof typeof heroes }> }) {
   const { v } = await searchParams;
