@@ -7,7 +7,7 @@ import { equipment } from '@/data/equipment';
 import { cn } from '@/lib/utils';
 
 /** How long each slide shows before the next, in seconds. */
-const SECONDS = 7;
+const SECONDS = 5;
 
 /** Products from the shop, two to a slide, with the shop's own photos (on white). */
 type Product = { slug: string; title: string; tag: string };
@@ -32,21 +32,20 @@ const pairs: [Product, Product][] = [
 
 type Slide = { key: string; label: string } & ({ kind: 'intro' } | { kind: 'equipment'; e: (typeof equipment)[number] } | { kind: 'products'; pair: [Product, Product] });
 
-/** The company first; then the large equipment two at a time, each pair followed by two products from the shop. */
-const slides: Slide[] = [{ key: 'intro', label: 'Flokefama', kind: 'intro' }];
-equipment.forEach((e, i) => {
-  slides.push({ key: e.slug, label: e.title, kind: 'equipment', e });
-  const pair = pairs[(i - 1) / 2];
-  if (i % 2 === 1 && pair) slides.push({ key: `products-${pair[0].slug}`, label: `${pair[0].title} and ${pair[1].title}`, kind: 'products', pair });
-});
+/** The company first, then all the large equipment, then the products from the shop two to a slide. */
+const slides: Slide[] = [
+  { key: 'intro', label: 'Flokefama', kind: 'intro' },
+  ...equipment.map((e): Slide => ({ key: e.slug, label: e.title, kind: 'equipment', e })),
+  ...pairs.map((pair): Slide => ({ key: `products-${pair[0].slug}`, label: `${pair[0].title} and ${pair[1].title}`, kind: 'products', pair })),
+];
 
 /**
  * The hero as slides: the first is the company (passed in as `intro`), then one slide for each piece of large
  * equipment the CEO's review asks to feature (MRI, CT, mammography, X-ray, dialysis, incubators, ventilators,
- * ultrasound), each as its photo filling the hero with its name in a small caption; after every two of them, two
- * products from the shop, shown large side by side on white. The slides move on by
+ * ultrasound), each as its photo filling the hero with its name in a small caption; then products from the shop,
+ * two to a slide, shown large side by side on white. The slides move on by
  * themselves; hovering or focusing the hero holds the slide, and with reduced motion nothing moves on by itself.
- * Swipe on touch screens, or use the chevrons at the sides (shown from the second slide on).
+ * Swipe on touch screens, or use the chevrons at the sides (the first slide has only next).
  */
 export function HeroSlides({ intro }: { intro: React.ReactNode }) {
   const [index, setIndex] = useState(0);
@@ -56,7 +55,8 @@ export function HeroSlides({ intro }: { intro: React.ReactNode }) {
 
   // Dark on the white product slides, white over the photos
   const arrow = cn(
-    'absolute top-1/2 z-10 grid size-12 -translate-y-1/2 place-items-center transition-opacity hover:opacity-75',
+    // On phones they sit in the bottom corners, clear of the text
+    'absolute bottom-2 z-10 grid size-12 place-items-center transition-opacity hover:opacity-75 md:bottom-auto md:top-1/2 md:-translate-y-1/2',
     slides[index].kind === 'products' ? 'text-ink' : 'text-white drop-shadow-[0_1px_6px_rgb(0_0_0/0.5)]',
   );
 
@@ -108,17 +108,15 @@ export function HeroSlides({ intro }: { intro: React.ReactNode }) {
         })}
       </div>
 
-      {/* Previous and next: bold chevrons at the left and right edges, on every slide but the first */}
+      {/* Previous and next: bold chevrons at the left and right edges; the first slide has only the one to the right */}
       {index > 0 && (
-        <>
-          <button type="button" onClick={() => go(index - 1)} aria-label="Previous slide" className={cn(arrow, 'left-1 md:left-4')}>
-            <Chevron className="rotate-90" />
-          </button>
-          <button type="button" onClick={() => go(index + 1)} aria-label="Next slide" className={cn(arrow, 'right-1 md:right-4')}>
-            <Chevron className="-rotate-90" />
-          </button>
-        </>
+        <button type="button" onClick={() => go(index - 1)} aria-label="Previous slide" className={cn(arrow, 'left-1 md:left-4')}>
+          <Chevron className="rotate-90" />
+        </button>
       )}
+      <button type="button" onClick={() => go(index + 1)} aria-label="Next slide" className={cn(arrow, 'right-1 md:right-4')}>
+        <Chevron className="-rotate-90" />
+      </button>
     </div>
   );
 }
