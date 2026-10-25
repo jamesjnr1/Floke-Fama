@@ -1,17 +1,24 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { pillars } from '@/components/home/capabilities';
 import { Reveal } from '@/components/motion/reveal';
 import { LogoWordmark } from '@/components/layout/logo';
 import { Button } from '@/components/ui/button';
 import { metrics } from '@/data/seed';
 
 /**
- * Five more hero structures, each followed by the Clients & Partners band as now: 'split' (the text on the left, a
+ * Six more hero structures, each followed by the Clients & Partners band as now: 'split' (the text on the left, a
  * photo on the right, the figures underneath), 'centered' (the claim alone in the middle of the green), 'overlay'
- * (the text over a full-width photo), 'grid' (the headline with the four pillars as tiles) and 'asymmetric' (a large
+ * (the text over a full-width photo), 'grid' (the headline with four products as tiles), 'staggered' (centred, with four products as staggered cards) and 'asymmetric' (a large
  * headline on the left, mission, vision and aim on the right).
  */
+
+/** Products from the shop, shown whole on white. */
+const products = [
+  { slug: 'autoclave-machine-35l', title: 'Autoclave Machine 35L', tag: 'Sterilisation' },
+  { slug: 'biological-microscope', title: 'Biological Microscope', tag: 'Laboratory' },
+  { slug: 'cpap-machine', title: 'CPAP Machine', tag: 'Respiratory' },
+  { slug: 'dp-10-ultrasound', title: 'DP-10 Ultrasound', tag: 'Imaging' },
+];
 
 const green = 'bg-[linear-gradient(180deg,#0a5a33_0%,#06482a_60%,#043822_100%)]';
 const lead = 'Sterilisation, laboratory, respiratory, imaging, monitoring and emergency equipment: supplied, installed and supported for hospitals and laboratories across Ghana and West Africa since 2008.';
@@ -117,7 +124,7 @@ export function OverlayHero() {
   );
 }
 
-/** Grid: the headline and text side by side, the four pillars as tiles underneath. */
+/** Grid: the headline and text side by side, four products as tiles underneath. */
 export function GridHero() {
   const spans = ['md:col-span-2 md:row-span-2', '', '', 'md:col-span-2'];
   return (
@@ -133,18 +140,59 @@ export function GridHero() {
           </div>
         </Reveal>
         <div className="mt-12 grid auto-rows-[190px] gap-4 md:grid-cols-4">
-          {pillars.map((p, i) => (
-            <Reveal key={p.title} delay={i * 0.05} className={spans[i]}>
-              <Link href="/products" className="group relative block h-full overflow-hidden bg-white">
-                <Image src={p.image} alt="" fill sizes="(min-width: 768px) 600px, 100vw" className={`${p.image.includes('/pillars/') ? 'object-cover' : 'object-contain p-6 pb-20'} transition-transform duration-500 group-hover:scale-[1.04]`} />
-                <span className="absolute inset-x-0 bottom-0 bg-[linear-gradient(0deg,rgb(4_42_25/0.92),rgb(4_42_25/0.75))] p-4">
-                  <span className="block font-semibold text-white">{p.title}</span>
-                  <span className="mt-0.5 block truncate text-sm text-white/70">{p.body}</span>
+          {products.map((p, i) => (
+            <Reveal key={p.slug} delay={i * 0.05} className={spans[i]}>
+              <Link href={`/products/${p.slug}`} className="group flex h-full flex-col bg-white">
+                <span className="relative block min-h-0 flex-1">
+                  <Image src={`/images/products/${p.slug}.webp`} alt={p.title} fill sizes="(min-width: 768px) 600px, 100vw" className="object-contain p-5 transition-transform duration-500 group-hover:scale-[1.04]" />
+                </span>
+                <span className="flex items-baseline justify-between gap-3 px-4 pb-4">
+                  <span className="font-semibold text-ink group-hover:text-brand-700">{p.title}</span>
+                  <span className="shrink-0 text-sm text-brand-700">{p.tag}</span>
                 </span>
               </Link>
             </Reveal>
           ))}
         </div>
+      </div>
+    </section>
+  );
+}
+
+/** Staggered: everything centred on the green, then four products as cards, every second one set lower. */
+export function StaggeredHero() {
+  return (
+    <section className={`relative isolate overflow-hidden ${green} pt-[72px] text-white`}>
+      <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(55%_50%_at_50%_20%,rgb(127_209_165/0.14),transparent_70%)]" />
+      <div className="mx-auto max-w-[1280px] px-5 pb-16 pt-14 md:px-10 md:pb-20">
+        <Reveal className="flex flex-col items-center text-center">
+          <h1 className="flex flex-col items-center !text-white">
+            <span className="flex items-center text-[clamp(3rem,1.6rem+4.4vw,5.5rem)]">
+              <LogoWordmark className="h-[0.75em] text-white" />
+              <span className="sr-only">Flokefama,</span>
+            </span>
+            <span className="mt-4 text-[clamp(1.75rem,1.1rem+1.9vw,3rem)] font-extrabold leading-[1.08] tracking-[-0.035em]">
+              <Claim />
+            </span>
+          </h1>
+          <p className="no-justify mt-4 max-w-[880px] text-[1.0625rem] leading-relaxed text-white/85">{lead}</p>
+          <Actions className="mt-7 justify-center" />
+        </Reveal>
+        <ul className="mt-12 grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-4">
+          {products.map((p, i) => (
+            <li key={p.slug} className={i % 2 === 1 ? 'sm:mt-12' : ''}>
+              <Reveal delay={i * 0.05}>
+                <Link href={`/products/${p.slug}`} className="group block">
+                  <span className="relative block aspect-[0.9] overflow-hidden bg-white">
+                    <Image src={`/images/products/${p.slug}.webp`} alt={p.title} fill sizes="(min-width: 1024px) 300px, 50vw" className="object-contain p-6 transition-transform duration-700 group-hover:scale-105" />
+                  </span>
+                  <span className="mt-3 block text-sm text-brand-300">{p.tag}</span>
+                  <span className="mt-1 block font-semibold text-white sm:text-lg">{p.title}</span>
+                </Link>
+              </Reveal>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   );
