@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Instrument_Serif, Mona_Sans, Plus_Jakarta_Sans, Space_Grotesk } from 'next/font/google';
+import { Instrument_Serif, Inter, Mona_Sans, Plus_Jakarta_Sans, Space_Grotesk } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
 import { Toaster } from 'sonner';
 import { MotionProvider } from '@/components/layout/motion-provider';
@@ -18,6 +18,8 @@ const grotesk = Space_Grotesk({ subsets: ['latin'], weight: ['400', '500', '600'
 // Italic serif for the accent words in page headers
 // Mona Sans: the menu bar only
 const mona = Mona_Sans({ subsets: ['latin'], weight: ['400', '500', '600', '700'], variable: '--font-mona', display: 'swap' });
+// Inter Black: the FLOKE FAMA lettering on the hero, as in the hero designs
+const inter = Inter({ subsets: ['latin'], weight: '900', variable: '--font-inter', display: 'swap' });
 const serif = Instrument_Serif({ subsets: ['latin'], weight: '400', style: 'italic', variable: '--font-instrument', display: 'swap' });
 
 export const metadata: Metadata = {
@@ -48,7 +50,7 @@ const organizationLd = (contact: Contact) => ({
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const site = await getSite();
   return (
-    <html lang="en-GH" data-patterns={process.env.NEXT_PUBLIC_PATTERNS === 'off' ? 'off' : undefined} className={`${jakarta.variable} ${grotesk.variable} ${serif.variable} ${mona.variable}`} suppressHydrationWarning>
+    <html lang="en-GH" data-patterns={process.env.NEXT_PUBLIC_PATTERNS === 'off' ? 'off' : undefined} className={`${jakarta.variable} ${grotesk.variable} ${serif.variable} ${mona.variable} ${inter.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: bootScript }} />
       </head>

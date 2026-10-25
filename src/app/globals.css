@@ -15,6 +15,8 @@
   --font-serif: var(--font-instrument), ui-serif, Georgia, serif;
   /* Mona Sans: the menu bar only (the typeface of the menu in the Dribbble reference) */
   --font-nav: var(--font-mona), var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  /* Inter Black: the FLOKE FAMA lettering on the hero */
+  --font-wordmark: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 
   /* Text sizes one step up from Tailwind's defaults, so everything stays readable */
   --text-xs: 0.875rem;
