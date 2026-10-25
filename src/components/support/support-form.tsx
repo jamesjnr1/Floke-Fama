@@ -12,29 +12,53 @@ type Errors = Partial<Record<keyof SupportInput, string>>;
 type Result = { delivered: boolean; data: SupportInput } | null;
 
 const field =
-  'h-12 w-full rounded-lg border border-line bg-paper px-4 text-base text-ink outline-none transition placeholder:text-ink-3/60 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15 aria-[invalid=true]:border-signal';
+  'h-12 w-full border border-line bg-paper px-4 text-base text-ink outline-none transition placeholder:text-ink-3/60 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15 aria-[invalid=true]:border-signal';
 const button = 'inline-flex h-12 items-center justify-center gap-2 bg-cta px-6 text-base font-semibold text-white transition hover:bg-cta-700 disabled:opacity-60';
+const back = 'inline-flex h-12 items-center gap-2 border border-line px-5 text-base font-semibold text-ink transition hover:border-ink/30';
+
+/** The form in three stages, each checked before the next opens. */
+const steps = [
+  { title: 'What do you need?', fields: ['type'] },
+  { title: 'Tell us about the equipment', fields: ['equipment', 'message'] },
+  { title: 'Your details', fields: ['name', 'facility', 'phone'] },
+] as const satisfies { title: string; fields: (keyof SupportInput)[] }[];
+
+const empty: SupportInput = { type: 'fault', name: '', facility: '', phone: '', equipment: '', message: '', website: '' };
 
 /**
- * Request technical assistance or report a fault. Delivered to the CRM when it is connected; otherwise the visitor
- * sends the same request, pre-filled, to the support inbox by email or on WhatsApp.
+ * Request technical assistance or report a fault, in three stages: the kind of request, the equipment and what is
+ * wrong, then the contact details. Delivered to the CRM when it is connected; otherwise the visitor sends the same
+ * request, pre-filled, to the support inbox by email or on WhatsApp.
  */
 export function SupportForm() {
   const { contact } = useSite();
+  const [step, setStep] = useState(0);
+  const [values, setValues] = useState<SupportInput>(empty);
   const [errors, setErrors] = useState<Errors>({});
   const [pending, setPending] = useState(false);
   const [result, setResult] = useState<Result>(null);
+  const set = (k: keyof SupportInput) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setValues((v) => ({ ...v, [k]: e.target.value }));
+
+  /** Checks the fields of the current stage only; true when they are all right. */
+  function check() {
+    const parsed = supportSchema.safeParse(values);
+    const next: Errors = {};
+    if (!parsed.success) {
+      for (const issue of parsed.error.issues) {
+        const k = issue.path[0] as keyof SupportInput;
+        if ((steps[step].fields as readonly string[]).includes(k)) next[k] ??= issue.message;
+      }
+    }
+    setErrors(next);
+    return Object.keys(next).length === 0;
+  }
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const parsed = supportSchema.safeParse(Object.fromEntries(new FormData(e.currentTarget)));
-    if (!parsed.success) {
-      const next: Errors = {};
-      for (const issue of parsed.error.issues) next[issue.path[0] as keyof SupportInput] ??= issue.message;
-      setErrors(next);
-      return;
-    }
-    setErrors({});
+    if (!check()) return;
+    if (step < steps.length - 1) return setStep(step + 1);
+    const parsed = supportSchema.safeParse(values);
+    if (!parsed.success) return;
     setPending(true);
     try {
       const res = await fetch('/api/support', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(parsed.data) });
@@ -49,38 +73,91 @@ export function SupportForm() {
     }
   }
 
-  if (result) return <Sent {...result} onReset={() => setResult(null)} />;
+  if (result)
+    return (
+      <Sent
+        {...result}
+        onReset={() => {
+          setResult(null);
+          setValues(empty);
+          setStep(0);
+        }}
+      />
+    );
 
+  const last = step === steps.length - 1;
   return (
-    <form onSubmit={onSubmit} noValidate className="space-y-4">
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Request" error={errors.type}>
-          <select name="type" defaultValue="fault" className={field}>
-            {requestTypes.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}
-          </select>
-        </Field>
-        <Field label="Equipment" error={errors.equipment}>
-          <input name="equipment" placeholder="e.g. Mindray BC-5150" aria-invalid={!!errors.equipment} className={field} />
-        </Field>
+    <form onSubmit={onSubmit} noValidate>
+      {/* Where the visitor is: three bars, the done and current ones filled */}
+      <div className="flex items-center justify-between gap-4">
+        <p className="text-sm font-medium text-ink-3">
+          Step {step + 1} of {steps.length}
+        </p>
+        <ol className="grid w-40 grid-cols-3 gap-1.5" aria-hidden>
+          {steps.map((s, i) => (
+            <li key={s.title} className={cn('h-1.5 transition-colors', i <= step ? 'bg-brand-600' : 'bg-line')} />
+          ))}
+        </ol>
       </div>
-      <Field label="What do you need?" error={errors.message}>
-        <textarea name="message" rows={3} placeholder="Describe the fault or what you need." aria-invalid={!!errors.message} className={cn(field, 'h-auto resize-none py-3')} />
-      </Field>
-      <div className="grid gap-4 sm:grid-cols-3">
-        <Field label="Your name" error={errors.name}>
-          <input name="name" autoComplete="name" aria-invalid={!!errors.name} className={field} />
-        </Field>
-        <Field label="Hospital or lab" error={errors.facility}>
-          <input name="facility" autoComplete="organization" aria-invalid={!!errors.facility} className={field} />
-        </Field>
-        <Field label="Phone" error={errors.phone}>
-          <input name="phone" type="tel" autoComplete="tel" placeholder="+233" aria-invalid={!!errors.phone} className={field} />
-        </Field>
+      <p className="mt-3 text-xl font-bold tracking-[-0.01em] text-ink">{steps[step].title}</p>
+
+      <div className="mt-5 space-y-4">
+        {step === 0 && (
+          <fieldset className="grid gap-3 sm:grid-cols-2">
+            <legend className="sr-only">Request</legend>
+            {requestTypes.map((t) => (
+              <label
+                key={t.id}
+                className={cn(
+                  'flex h-14 cursor-pointer items-center gap-3 border px-4 text-base font-semibold transition',
+                  values.type === t.id ? 'border-brand-600 bg-brand-50 text-brand-700' : 'border-line bg-paper text-ink hover:border-ink/30',
+                )}
+              >
+                <input type="radio" name="type" value={t.id} checked={values.type === t.id} onChange={set('type')} className="size-4 accent-[#007a4d]" />
+                {t.label}
+              </label>
+            ))}
+          </fieldset>
+        )}
+
+        {step === 1 && (
+          <>
+            <Field label="Equipment" error={errors.equipment}>
+              <input name="equipment" value={values.equipment} onChange={set('equipment')} placeholder="e.g. Mindray BC-5150" aria-invalid={!!errors.equipment} className={field} autoFocus />
+            </Field>
+            <Field label={values.type === 'fault' ? 'What is wrong?' : 'What do you need?'} error={errors.message}>
+              <textarea name="message" value={values.message} onChange={set('message')} rows={4} placeholder="Describe the fault or what you need." aria-invalid={!!errors.message} className={cn(field, 'h-auto resize-none py-3')} />
+            </Field>
+          </>
+        )}
+
+        {step === 2 && (
+          <div className="grid gap-4 sm:grid-cols-3">
+            <Field label="Your name" error={errors.name}>
+              <input name="name" value={values.name} onChange={set('name')} autoComplete="name" aria-invalid={!!errors.name} className={field} autoFocus />
+            </Field>
+            <Field label="Hospital or lab" error={errors.facility}>
+              <input name="facility" value={values.facility} onChange={set('facility')} autoComplete="organization" aria-invalid={!!errors.facility} className={field} />
+            </Field>
+            <Field label="Phone" error={errors.phone}>
+              <input name="phone" type="tel" value={values.phone} onChange={set('phone')} autoComplete="tel" placeholder="+233" aria-invalid={!!errors.phone} className={field} />
+            </Field>
+          </div>
+        )}
       </div>
-      <input name="website" tabIndex={-1} autoComplete="off" aria-hidden className="hidden" />
-      <button type="submit" disabled={pending} className={cn(button, 'w-full sm:w-auto')}>
-        {pending ? 'Sending…' : 'Send request'}
-      </button>
+
+      <input name="website" value={values.website} onChange={set('website')} tabIndex={-1} autoComplete="off" aria-hidden className="hidden" />
+      <div className="mt-6 flex flex-wrap gap-3">
+        {step > 0 && (
+          <button type="button" onClick={() => (setErrors({}), setStep(step - 1))} className={back}>
+            <Icon name="fi-rr-arrow-small-left" /> Back
+          </button>
+        )}
+        <button type="submit" disabled={pending} className={button}>
+          {last ? (pending ? 'Sending…' : 'Send request') : 'Continue'}
+          {!last && <Icon name="fi-rr-arrow-small-right" />}
+        </button>
+      </div>
     </form>
   );
 }
