@@ -25,9 +25,10 @@ const saveData = () => {
 };
 
 /**
- * Home, directly below the hero: a wide film of Flokefama at work. It loads and starts (muted) once it is
- * scrolled into view, pauses when it leaves, and runs from the full story straight into the highlights; the
- * browser's controls turn the sound on. Visitors who asked for less motion, or are on Data Saver, see the
+ * Home, directly below the hero: a film of Flokefama at work, edge to edge, with a small title and a Watch video
+ * button on it. It loads and starts (muted, no controls) once it is scrolled into view, pauses when it leaves,
+ * and runs from the full story straight into the highlights; Watch video starts it again from the beginning with
+ * sound and the browser's controls. Visitors who asked for less motion, or are on Data Saver, see the
  * cover frame and press play themselves.
  */
 export function SolutionsInAction({ layout = 'wide', plain = false }: { layout?: 'wide' | 'feature'; /** No background pattern (the structured home page) */ plain?: boolean }) {
@@ -35,6 +36,8 @@ export function SolutionsInAction({ layout = 'wide', plain = false }: { layout?:
   const [current, setCurrent] = useState(0);
   const [load, setLoad] = useState(false);
   const [hd, setHd] = useState(false);
+  // The wide layout plays as a silent backdrop until the visitor presses Watch video
+  const [watching, setWatching] = useState(layout !== 'wide');
 
   // Large screens on a normal connection get the sharper HD version
   useEffect(() => setHd(window.matchMedia('(min-width: 1024px)').matches && !saveData()), []);
@@ -73,8 +76,8 @@ export function SolutionsInAction({ layout = 'wide', plain = false }: { layout?:
       ref={video}
       src={load ? (hd ? film.hd : film.src) : undefined}
       poster={poster}
-      muted
-      controls
+      muted={!watching}
+      controls={watching}
       playsInline
       preload="none"
       onEnded={() => setCurrent((i) => (i + 1) % films.length)}
@@ -110,29 +113,30 @@ export function SolutionsInAction({ layout = 'wide', plain = false }: { layout?:
     );
   }
 
+  // 'wide': the film edge to edge, playing silently, with a small title and Watch video on it
+  const watch = () => {
+    const v = video.current;
+    if (!v) return;
+    setLoad(true);
+    setWatching(true);
+    v.muted = false;
+    v.currentTime = 0;
+    v.play().catch(() => {});
+  };
   return (
     <section aria-labelledby="in-action-title" className={`${plain ? 'pb-16 md:pb-28 ' : 'pattern-grid '}bg-paper pt-16 md:pt-32`}>
-      <div className="mx-auto max-w-[1280px] px-5 md:px-10">
-        <Reveal className="grid gap-5 lg:grid-cols-[1fr_1fr] lg:items-end lg:gap-16">
-          <div>
-            <h2 id="in-action-title" className="display text-[clamp(2rem,1.2rem+2.8vw,3.5rem)] text-ink">
+      <div className="relative isolate overflow-hidden bg-black">
+        {player('block h-[min(70svh,460px)] w-full object-cover sm:h-auto sm:aspect-[1024/436]')}
+        {!watching && (
+          <div className="absolute inset-0 flex flex-col items-center justify-end bg-[linear-gradient(180deg,transparent_40%,rgb(0_0_0/0.65)_100%)] px-5 pb-10 text-center md:pb-16">
+            <h2 id="in-action-title" className="text-[clamp(1.75rem,1.1rem+2vw,3rem)] font-bold leading-tight tracking-[-0.02em] !text-white [text-shadow:0_2px_16px_rgb(0_0_0/0.4)]">
               Healthcare Solutions in Action
             </h2>
-            {/* A small text link to the CEO's profile and message on the About page */}
-            <Link href="/about#ceo" className="group mt-4 inline-flex items-center gap-1.5 text-[1.0625rem] font-semibold text-brand-700 transition-colors hover:text-brand-800">
-              <span className="underline decoration-brand-700/30 underline-offset-4 group-hover:decoration-brand-800">A message from our CEO</span>
-              <Icon name="fi-rr-arrow-small-right" className="transition-transform group-hover:translate-x-0.5" />
-            </Link>
+            <button type="button" onClick={watch} className="mt-4 inline-flex items-center gap-2 text-lg font-medium text-white transition-opacity hover:opacity-80">
+              Watch video <Icon name="fi-rr-play-circle" className="text-xl" />
+            </button>
           </div>
-          <p className="no-justify max-w-xl text-lg leading-relaxed text-ink-3">
-            From our laboratories and warehouse in Accra to hospitals across Ghana and West Africa: see how Flokefama supplies, installs and maintains the equipment that keeps care running.
-          </p>
-        </Reveal>
-
-        {/* The film spans the text column exactly (from where the heading starts to where the intro ends), square-cornered, shown whole */}
-        <Reveal delay={0.08} className="mt-10 md:mt-14">
-          {player('block aspect-[1024/436] w-full bg-black')}
-        </Reveal>
+        )}
       </div>
     </section>
   );
