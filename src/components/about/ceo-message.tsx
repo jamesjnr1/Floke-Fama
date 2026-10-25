@@ -22,7 +22,7 @@ function withBoldName(text: string) {
  * "Meet our CEO", the 'message' style (default, see ceoStyle), laid out like a leadership page: a short photo banner
  * with "Leadership" in the middle; then, on a light background, "Message from our CEO" in bold, his name and title,
  * and his profile in plain paragraphs beside the portrait. Underneath, at full width: Education and Honours in two
- * columns, then Philanthropy & Purpose, closed by his creed as a large quote under quote marks.
+ * columns (Honours in a green box), then Philanthropy & Purpose across the full width, closed by his creed.
  */
 export function CeoMessage({ ceo }: { ceo: Ceo }) {
   const list = (items: Ceo['education']) => (
@@ -73,22 +73,24 @@ export function CeoMessage({ ceo }: { ceo: Ceo }) {
             <h3 className="text-[1.5rem] font-bold tracking-[-0.01em] text-ink">Education</h3>
             <div className="mt-5">{list(ceo.education)}</div>
           </Reveal>
-          <Reveal delay={0.06}>
-            <h3 className="text-[1.5rem] font-bold tracking-[-0.01em] text-ink">Honours</h3>
-            <div className="mt-5">{list(ceo.honours)}</div>
+          {/* Honours in a green box */}
+          <Reveal delay={0.06} className="bg-[linear-gradient(135deg,#0a5a33_0%,#06482a_60%,#043822_100%)] p-7 text-white md:p-9">
+            <h3 className="text-[1.5rem] font-bold tracking-[-0.01em] !text-white">Honours</h3>
+            <ul className="mt-5 space-y-5">
+              {ceo.honours.map((x) => (
+                <li key={x.title}>
+                  <p className="text-lg font-semibold text-white">{x.title}</p>
+                  <p className="mt-1 leading-relaxed text-white/75">{x.detail}</p>
+                </li>
+              ))}
+            </ul>
           </Reveal>
         </div>
         <Reveal className="mx-auto mt-14 max-w-[1280px] px-5 md:mt-20 md:px-10">
           <h3 className="text-[1.5rem] font-bold tracking-[-0.01em] text-ink">Philanthropy &amp; Purpose</h3>
-          <p className="no-justify mt-5 max-w-4xl text-[1.125rem] leading-[1.8] text-ink">{ceo.purpose}</p>
-          <figure className="mt-10">
-            {/* Quote marks, drawn in outline */}
-            <svg aria-hidden viewBox="0 0 56 46" className="h-12 w-14 text-ink" fill="none" stroke="currentColor" strokeWidth="1.6">
-              <path d="M14 2c-7 0-12 5-12 11.5S7 25 13 25c1.6 0 3-.3 4.2-.9C16.2 32 11.4 39 4 43l1.4 1.6C17.6 39 26 28 26 15 26 7.5 21 2 14 2Z" />
-              <path d="M42 2c-7 0-12 5-12 11.5S35 25 41 25c1.6 0 3-.3 4.2-.9C44.2 32 39.4 39 32 43l1.4 1.6C45.6 39 54 28 54 15 54 7.5 49 2 42 2Z" />
-            </svg>
-            <blockquote className="mt-5 max-w-4xl text-[clamp(1.75rem,1.3rem+1.4vw,2.625rem)] font-bold leading-[1.2] tracking-[-0.02em] text-ink">{ceo.creed}</blockquote>
-          </figure>
+          {/* Full width, to the right edge of the portrait above; his creed runs on inside it */}
+          <p className="no-justify mt-5 text-[1.125rem] leading-[1.8] text-ink">{ceo.purpose}</p>
+          <blockquote className="mt-5 text-[1.125rem] font-semibold italic leading-[1.8] text-ink">“{ceo.creed}”</blockquote>
         </Reveal>
       </div>
     </section>
