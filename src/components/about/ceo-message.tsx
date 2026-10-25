@@ -50,8 +50,8 @@ export function CeoMessage({ ceo }: { ceo: Ceo }) {
       <div className="bg-canvas py-12 md:py-16">
         <div className="mx-auto grid max-w-[1280px] items-start gap-10 px-5 md:px-10 lg:grid-cols-[1fr_0.92fr] lg:gap-16">
           <Reveal>
-            <p className="text-[1.25rem] font-bold text-ink">Message from our CEO</p>
-            <p className="mt-4 text-[clamp(1.75rem,1.4rem+1vw,2.375rem)] font-bold leading-tight tracking-[-0.02em] text-ink">{ceo.name}</p>
+            <p className="inline-block bg-brand-600 px-4 py-2 text-[1.25rem] font-bold text-white">Message from our CEO</p>
+            <p className="mt-5 text-[clamp(1.75rem,1.4rem+1vw,2.375rem)] font-bold leading-tight tracking-[-0.02em] text-ink">{ceo.name}</p>
             <p className="mt-2 text-ink-2">{ceo.role}</p>
 
             <div className="no-justify mt-8 space-y-8 text-[1.125rem] leading-[1.8] text-ink">
