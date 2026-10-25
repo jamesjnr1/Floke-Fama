@@ -90,11 +90,6 @@
     0%, 100% { opacity: 0.15; transform: scaleY(1); }
     50% { opacity: 0.5; transform: scaleY(1.1); }
   }
-  /* The hero slides: the active tab fills over the slide's time, then the next slide shows */
-  @keyframes slide-progress {
-    from { transform: scaleX(0); }
-    to { transform: scaleX(1); }
-  }
   --animate-status-pulse: status-pulse 2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
   @keyframes status-pulse {
     0% { box-shadow: 0 0 0 0 rgb(76 201 110 / 0.55); }
