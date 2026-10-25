@@ -4,62 +4,68 @@ import type { SiteContent } from '@/lib/site-content';
 
 type Ceo = SiteContent['ceo'];
 
+/** Puts the company's name in bold where it appears in the CEO's text. */
+function withBoldName(text: string) {
+  const name = 'FLOKEFAMA Company Limited';
+  const at = text.indexOf(name);
+  if (at < 0) return text;
+  return (
+    <>
+      {text.slice(0, at)}
+      <strong className="font-bold text-ink">{name}</strong>
+      {text.slice(at + name.length)}
+    </>
+  );
+}
+
 /**
- * "Meet our CEO", the 'message' style (default, see ceoStyle): a short label with a rule before it, his profile in
- * plain paragraphs, then his creed as a quote with his name and title under it, set off by a green rule on the
- * left. The portrait stands tall on the right. Education, honours and his philanthropy (which follows from the creed) sit underneath in three columns.
+ * "Meet our CEO", the 'message' style (default, see ceoStyle), laid out like a leadership page: a short photo banner
+ * with "Leadership" in the middle; then, on a light background, a short rule and "Message from our CEO", his profile
+ * in plain paragraphs, and his creed as a quote (a grey rule on its left, quote marks above) with his name and title
+ * under it. The portrait stands on the right, from the top of the text to the foot of the quote.
  */
 export function CeoMessage({ ceo }: { ceo: Ceo }) {
-  const list = (title: string, items: Ceo['education']) => (
-    <div>
-      <h3 className="text-lg font-bold text-ink">{title}</h3>
-      <ul className="mt-4 space-y-4">
-        {items.map((x) => (
-          <li key={x.title}>
-            <p className="font-semibold text-ink">{x.title}</p>
-            <p className="mt-0.5 leading-relaxed text-ink-3">{x.detail}</p>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
   return (
-    <section id="ceo" aria-labelledby="ceo-title" className="scroll-mt-28 bg-canvas section-y">
-      <div className="mx-auto grid max-w-[1280px] gap-12 px-5 md:px-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
-        <Reveal>
-          <p className="flex items-center gap-4 text-lg text-ink-2">
-            <span aria-hidden className="h-0.5 w-12 bg-brand-600" />
-            <span id="ceo-title">Meet our CEO</span>
-          </p>
-          <div className="no-justify mt-6 space-y-6 text-[1.125rem] leading-[1.75] text-ink-2">
-            {ceo.bio.map((t) => (
-              <p key={t.slice(0, 40)}>{t}</p>
-            ))}
-          </div>
-          <figure className="mt-10 border-l-[3px] border-brand-600 pl-6 md:pl-8">
-            <svg aria-hidden viewBox="0 0 48 36" className="h-9 w-12 text-brand-600" fill="currentColor">
-              <path d="M0 36V21.6C0 9.6 6.2 2.4 18.6 0l2 4.8C13.4 7 10 11 9.6 16.8H19V36H0Zm27 0V21.6C27 9.6 33.2 2.4 45.6 0l2 4.8C40.4 7 37 11 36.6 16.8H46V36H27Z" />
-            </svg>
-            <blockquote className="mt-4 text-[clamp(1.25rem,1.05rem+0.6vw,1.625rem)] font-medium leading-snug text-ink">“{ceo.creed}”</blockquote>
-            <figcaption className="mt-6">
-              <span className="block text-[clamp(1.375rem,1.2rem+0.6vw,1.75rem)] font-bold tracking-[-0.02em] text-ink">{ceo.name}</span>
-              <span className="mt-1 block text-ink-3">{ceo.role}</span>
-            </figcaption>
-          </figure>
-        </Reveal>
-        <Reveal delay={0.08}>
-          <div className="relative aspect-[4/5] overflow-hidden bg-[#e9e6e3]">
-            <Image src="/images/ceo-emmanuel-kenney.jpg" alt={`${ceo.name}, Founder and Chief Executive Officer of Flokefama`} fill sizes="(min-width: 1024px) 40vw, 100vw" className="object-cover object-top" />
-          </div>
-        </Reveal>
+    <section id="ceo" aria-labelledby="ceo-title" className="scroll-mt-28">
+      <div className="relative isolate grid h-[160px] place-items-center overflow-hidden md:h-[220px]">
+        <Image src="/images/office-team.webp" alt="" fill sizes="100vw" className="-z-10 object-cover object-[center_35%]" />
+        <div aria-hidden className="absolute inset-0 -z-10 bg-black/35" />
+        <h2 id="ceo-title" className="text-[clamp(2.25rem,1.6rem+2vw,3.5rem)] font-bold tracking-[-0.02em] !text-white [text-shadow:0_2px_16px_rgb(0_0_0/0.35)]">
+          Leadership
+        </h2>
       </div>
-      <div className="mx-auto mt-16 grid max-w-[1280px] gap-12 px-5 md:mt-20 md:grid-cols-2 md:px-10 lg:grid-cols-3 lg:gap-16">
-        <Reveal>{list('Education', ceo.education)}</Reveal>
-        <Reveal delay={0.06}>{list('Honours', ceo.honours)}</Reveal>
-        <Reveal delay={0.12}>
-          <h3 className="text-lg font-bold text-ink">Philanthropy &amp; Purpose</h3>
-          <p className="no-justify mt-4 leading-relaxed text-ink-3">{ceo.purpose}</p>
-        </Reveal>
+
+      <div className="bg-canvas py-12 md:py-16">
+        <div className="mx-auto grid max-w-[1280px] items-start gap-10 px-5 md:px-10 lg:grid-cols-[1fr_0.92fr] lg:gap-16">
+          <Reveal>
+            <p className="flex items-center gap-8 text-[1.25rem] text-ink">
+              <span aria-hidden className="h-0.5 w-16 bg-brand-600" />
+              Message from our CEO
+            </p>
+            <div className="no-justify mt-5 space-y-8 text-[1.125rem] leading-[1.8] text-ink">
+              {ceo.bio.map((t) => (
+                <p key={t.slice(0, 40)}>{withBoldName(t)}</p>
+              ))}
+            </div>
+            <figure className="mt-6 border-l-2 border-line pl-6">
+              {/* Quote marks, drawn in outline */}
+              <svg aria-hidden viewBox="0 0 56 46" className="h-12 w-14 text-ink" fill="none" stroke="currentColor" strokeWidth="1.6">
+                <path d="M14 2c-7 0-12 5-12 11.5S7 25 13 25c1.6 0 3-.3 4.2-.9C16.2 32 11.4 39 4 43l1.4 1.6C17.6 39 26 28 26 15 26 7.5 21 2 14 2Z" />
+                <path d="M42 2c-7 0-12 5-12 11.5S35 25 41 25c1.6 0 3-.3 4.2-.9C44.2 32 39.4 39 32 43l1.4 1.6C45.6 39 54 28 54 15 54 7.5 49 2 42 2Z" />
+              </svg>
+              <blockquote className="mt-5 text-[1.125rem] leading-[1.7] text-ink">{ceo.creed}</blockquote>
+              <figcaption className="mt-6">
+                <span className="block text-[clamp(1.5rem,1.3rem+0.6vw,1.875rem)] font-bold tracking-[-0.01em] text-ink">{ceo.name}</span>
+                <span className="mt-2 block text-ink-2">{ceo.role}</span>
+              </figcaption>
+            </figure>
+          </Reveal>
+          <Reveal delay={0.08} className="lg:self-stretch">
+            <div className="relative aspect-[4/5] overflow-hidden lg:aspect-auto lg:h-full bg-[#e9e6e3] shadow-[0_10px_30px_-18px_rgb(11_21_16/0.35)]">
+              <Image src="/images/ceo-emmanuel-kenney.jpg" alt={`${ceo.name}, Founder and Chief Executive Officer of Flokefama`} fill sizes="(min-width: 1024px) 45vw, 100vw" className="object-cover object-top" />
+            </div>
+          </Reveal>
+        </div>
       </div>
     </section>
   );
