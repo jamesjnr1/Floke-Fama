@@ -1,7 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Reveal } from '@/components/motion/reveal';
-import { LogoWordmark } from '@/components/layout/logo';
 import { Button } from '@/components/ui/button';
 import { getSite } from '@/lib/site';
 
@@ -86,12 +85,11 @@ export async function SimpleHero({ design = heroDesign }: { design?: HeroDesign 
         <Reveal className="flex flex-col items-center text-center">
           {/* The company name first, as its own logotype, then the claim */}
           <h1 className="flex max-w-[1100px] flex-col items-center text-white">
-            {/* The wordmark alone: the menu bar already shows the symbol */}
-            <span className="flex items-center text-[clamp(3rem,1.6rem+4.4vw,5.5rem)]">
-              <LogoWordmark className="h-[0.75em] text-white" />
-              <span className="sr-only">Flokefama,</span>
+            {/* The company name in heavy, tightly set capitals (Inter Black) */}
+            <span className="font-wordmark text-[clamp(3.4rem,6.6vw,6.25rem)] font-black uppercase leading-[0.82] tracking-[-0.08em]">
+              Floke Fama<span className="sr-only">,</span>
             </span>
-            <span className="mt-4 text-[clamp(1.75rem,1.1rem+1.9vw,3rem)] font-extrabold leading-[1.08] tracking-[-0.035em]">
+            <span className="mt-5 text-[clamp(1.75rem,1.1rem+1.9vw,3rem)] font-extrabold leading-[1.08] tracking-[-0.035em]">
               {hero.title} {hero.highlight.replace(/\.$/, '')}<span className="text-signal">.</span>
             </span>
           </h1>
