@@ -21,8 +21,9 @@ function withBoldName(text: string) {
 /**
  * "Meet our CEO", the 'message' style (default, see ceoStyle), laid out like a leadership page: a short photo banner
  * with "Leadership" in the middle; then, on a light background, "Message from our CEO" in bold, his name and title,
- * and his profile in plain paragraphs beside the portrait. Underneath, at full width: Education and Honours in two
- * columns (Honours in a green box), then Philanthropy & Purpose across the full width, opened by his creed.
+ * and his profile in plain paragraphs beside the portrait. Underneath:
+ * Honours in a green box on the right, with Education and then Philanthropy & Purpose (opened by his creed) running
+ * down beside it and on across the full width below it.
  */
 export function CeoMessage({ ceo }: { ceo: Ceo }) {
   const list = (items: Ceo['education']) => (
@@ -67,14 +68,10 @@ export function CeoMessage({ ceo }: { ceo: Ceo }) {
           </Reveal>
         </div>
 
-        {/* The rest runs on underneath at full width, so the message and the portrait stay side by side */}
-        <div className="mx-auto mt-14 grid max-w-[1280px] gap-12 px-5 md:mt-20 md:grid-cols-2 md:px-10 lg:gap-16">
-          <Reveal>
-            <h3 className="text-[1.5rem] font-bold tracking-[-0.01em] text-ink">Education</h3>
-            <div className="mt-5">{list(ceo.education)}</div>
-          </Reveal>
-          {/* Honours in a green box */}
-          <Reveal delay={0.06} className="bg-[linear-gradient(135deg,#0a5a33_0%,#06482a_60%,#043822_100%)] p-7 text-white md:p-9">
+        {/* The rest runs on underneath: the Honours box floats on the right, Education and then Philanthropy &
+            Purpose run down the left beside it, and whatever runs past the box continues across the full width */}
+        <div className="mx-auto mt-14 flow-root max-w-[1280px] px-5 md:mt-20 md:px-10">
+          <Reveal delay={0.06} className="mb-10 bg-[linear-gradient(135deg,#0a5a33_0%,#06482a_60%,#043822_100%)] p-7 text-white md:float-right md:mb-6 md:ml-12 md:w-[calc(50%-1.5rem)] md:p-9 lg:ml-16 lg:w-[calc(50%-2rem)]">
             <h3 className="text-[1.5rem] font-bold tracking-[-0.01em] !text-white">Honours</h3>
             <ul className="mt-5 space-y-5">
               {ceo.honours.map((x) => (
@@ -85,13 +82,17 @@ export function CeoMessage({ ceo }: { ceo: Ceo }) {
               ))}
             </ul>
           </Reveal>
+          <Reveal>
+            <h3 className="text-[1.5rem] font-bold tracking-[-0.01em] text-ink">Education</h3>
+            <div className="mt-5">{list(ceo.education)}</div>
+          </Reveal>
+          <Reveal className="mt-10">
+            <h3 className="text-[1.5rem] font-bold tracking-[-0.01em] text-ink">Philanthropy &amp; Purpose</h3>
+            {/* His creed opens it */}
+            <blockquote className="mt-5 text-[1.3125rem] font-semibold leading-[1.7] text-ink">“{ceo.creed}”</blockquote>
+            <p className="no-justify mt-3 text-[1.25rem] leading-[1.8] text-ink">{ceo.purpose}</p>
+          </Reveal>
         </div>
-        <Reveal className="mx-auto mt-10 max-w-[1280px] px-5 md:mt-12 md:px-10">
-          <h3 className="text-[1.5rem] font-bold tracking-[-0.01em] text-ink">Philanthropy &amp; Purpose</h3>
-          {/* Full width, to the right edge of the portrait above; his creed opens it */}
-          <blockquote className="mt-5 text-[1.3125rem] font-semibold leading-[1.7] text-ink">“{ceo.creed}”</blockquote>
-          <p className="no-justify mt-3 text-[1.25rem] leading-[1.8] text-ink">{ceo.purpose}</p>
-        </Reveal>
       </div>
     </section>
   );
