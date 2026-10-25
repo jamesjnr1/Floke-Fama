@@ -86,11 +86,11 @@ export function CeoMessage({ ceo }: { ceo: Ceo }) {
             </ul>
           </Reveal>
         </div>
-        <Reveal className="mx-auto mt-14 max-w-[1280px] px-5 md:mt-20 md:px-10">
+        <Reveal className="mx-auto mt-10 max-w-[1280px] px-5 md:mt-12 md:px-10">
           <h3 className="text-[1.5rem] font-bold tracking-[-0.01em] text-ink">Philanthropy &amp; Purpose</h3>
           {/* Full width, to the right edge of the portrait above; his creed opens it */}
-          <blockquote className="mt-5 text-[1.125rem] font-semibold leading-[1.8] text-ink">“{ceo.creed}”</blockquote>
-          <p className="no-justify mt-3 text-[1.125rem] leading-[1.8] text-ink">{ceo.purpose}</p>
+          <blockquote className="mt-5 text-[1.3125rem] font-semibold leading-[1.7] text-ink">“{ceo.creed}”</blockquote>
+          <p className="no-justify mt-3 text-[1.25rem] leading-[1.8] text-ink">{ceo.purpose}</p>
         </Reveal>
       </div>
     </section>
