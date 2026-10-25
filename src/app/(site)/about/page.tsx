@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { PurposeBlocks } from '@/components/about/purpose-blocks';
 import { CeoProfile } from '@/components/about/ceo-profile';
 import { CeoFeature } from '@/components/about/ceo-feature';
+import { CeoMessage } from '@/components/about/ceo-message';
 import { ceoStyle } from '@/lib/ceo-style';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -80,7 +81,9 @@ export default async function AboutPage() {
       </section>
 
       {/* Leadership. Portrait from the current site's media library; the profile is the CEO's own text (Oct 2026). */}
-      {ceoStyle === 'feature' ? (
+      {ceoStyle === 'message' ? (
+        <CeoMessage ceo={ceo} />
+      ) : ceoStyle === 'feature' ? (
         <CeoFeature ceo={ceo} />
       ) : (
       <section id="ceo" className="scroll-mt-28 border-y border-line bg-canvas section-y">
