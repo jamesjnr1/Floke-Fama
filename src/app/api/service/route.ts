@@ -1,8 +1,9 @@
-import { NextResponse, type NextRequest } from 'next/server';
+import { after, NextResponse, type NextRequest } from 'next/server';
 import { appwrite } from '@/lib/appwrite';
 import { getSession } from '@/lib/auth/server';
 import type { Action } from '@/lib/service/desk';
 import { applyAction, DeskError, loadDesk, visibleTo } from '@/lib/service/server';
+import { escalateStale } from '@/lib/sms';
 
 /**
  * The shared service desk (Appwrite). GET returns what the signed-in account may see; POST applies one action
@@ -26,7 +27,10 @@ export async function GET() {
   const s = await getSession();
   if (!s) return NextResponse.json({ error: 'Please sign in again.' }, { status: 401 });
   try {
-    return NextResponse.json({ enabled: true, state: visibleTo(s, await loadDesk()) }, { headers: noStore });
+    const desk = await loadDesk();
+    // While anyone has a portal open, urgent requests nobody has taken are escalated by text (after the answer is sent)
+    after(() => escalateStale(desk));
+    return NextResponse.json({ enabled: true, state: visibleTo(s, desk) }, { headers: noStore });
   } catch (e) {
     console.error('service desk: load failed', e);
     return NextResponse.json({ error: 'The service desk could not be loaded.' }, { status: 502 });

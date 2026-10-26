@@ -90,6 +90,13 @@ const tables = [
     columns: [text('account', 254), text('role', 16), text('facility', 160, false), json('data')],
     indexes: [{ key: 'role_facility', type: 'key', columns: ['role', 'facility'] }],
   },
+  // Text messages (SMS) to engineers and admins: one row per text, listed in the admin console
+  {
+    id: 'sms_log',
+    name: 'Text messages',
+    columns: [text('kind', 32), text('ref', 64, false), text('to', 400), text('text', 320), text('status', 16), text('detail', 200, false)],
+    indexes: [],
+  },
 ];
 
 try {
