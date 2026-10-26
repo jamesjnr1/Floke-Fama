@@ -52,7 +52,7 @@ export function CeoMessage({ ceo }: { ceo: Ceo }) {
           <Reveal>
             <p className="inline-block bg-brand-600 px-4 py-2 text-[1.25rem] font-bold text-white">Message from our CEO</p>
             <p className="mt-5 text-[clamp(1.75rem,1.4rem+1vw,2.375rem)] font-bold leading-tight tracking-[-0.02em] text-ink">{ceo.name}</p>
-            <p className="mt-2 text-ink-2">{ceo.role}</p>
+            <p className="mt-2 font-mono text-ink-2">{ceo.role}</p>
 
             <div className="no-justify mt-8 space-y-8 text-[1.125rem] leading-[1.8] text-ink">
               {ceo.bio.map((t) => (
