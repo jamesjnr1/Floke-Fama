@@ -52,7 +52,7 @@ export function SupportForm() {
   if (result) return <Sent {...result} onReset={() => setResult(null)} />;
 
   return (
-    <form onSubmit={onSubmit} noValidate>
+    <form onSubmit={onSubmit} noValidate className="flex h-full flex-col">
       {/* What it's about: the request types as tabs across the top of the card */}
       <div role="radiogroup" aria-label="What do you need?" className="grid grid-cols-2 gap-px border-b border-line bg-line md:grid-cols-4">
         {requestTypes.map((t) => (
@@ -65,18 +65,19 @@ export function SupportForm() {
       </div>
       {errors.type && <span role="alert" className="block px-6 pt-3 text-xs text-signal-700 md:px-9">{errors.type}</span>}
 
-      <div className="grid gap-5 p-6 md:grid-cols-2 md:p-9">
+      <div className="grid flex-1 gap-5 p-6 md:grid-cols-2 md:grid-rows-[auto_1fr_auto] md:p-9">
         <Field label="Equipment" error={errors.equipment}>
           <input name="equipment" placeholder="e.g. Mindray BC-5150" aria-invalid={!!errors.equipment} className={field} />
         </Field>
         <Field label="Hospital or lab" error={errors.facility}>
           <input name="facility" autoComplete="organization" aria-invalid={!!errors.facility} className={field} />
         </Field>
-        <div className="md:col-span-2">
-          <Field label="What is happening?" error={errors.message}>
-            <textarea name="message" rows={4} placeholder="Describe the fault or what you need: error codes, when it started, what you have tried." aria-invalid={!!errors.message} className={cn(field, 'h-auto resize-none py-3')} />
-          </Field>
-        </div>
+        {/* Grows to fill the card when the panel beside it is taller */}
+        <label className="grid gap-1.5 md:col-span-2 md:grid-rows-[auto_1fr_auto]">
+          <span className="text-sm font-medium text-ink-2">What is happening?</span>
+          <textarea name="message" rows={4} placeholder="Describe the fault or what you need: error codes, when it started, what you have tried." aria-invalid={!!errors.message} className={cn(field, 'h-full min-h-[7.5rem] resize-none py-3')} />
+          {errors.message && <span role="alert" className="text-xs text-signal-700">{errors.message}</span>}
+        </label>
         <Field label="Your name" error={errors.name}>
           <input name="name" autoComplete="name" aria-invalid={!!errors.name} className={field} />
         </Field>
