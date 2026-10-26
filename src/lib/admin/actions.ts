@@ -8,7 +8,7 @@ import { accountExists, hashPassword, saveAccount } from '@/lib/auth/accounts';
 import { getAdminSession } from '@/lib/auth/server';
 import { ENGINEER_ID_PREFIX } from '@/lib/auth/users';
 import type { OrderStatus, SavedOrder } from '@/lib/orders';
-import { setSupportStatus, supportStatuses, type SupportStatus } from '@/lib/support-requests';
+import { isReference, setSupportStatus, supportStatuses, type SupportStatus } from '@/lib/support-requests';
 
 const statuses: OrderStatus[] = ['awaiting-payment', 'paid', 'processing', 'delivered'];
 
@@ -31,8 +31,8 @@ export async function setSupportRequestStatus(form: FormData) {
   if (s?.role !== 'admin' || !appwrite) return;
   const id = String(form.get('id') ?? '');
   const status = String(form.get('status') ?? '') as SupportStatus;
-  if (!/^SR-[A-Z0-9]{6,16}$/.test(id) || !supportStatuses.includes(status)) return;
-  await setSupportStatus(id, status);
+  if (!isReference(id) || !supportStatuses.includes(status)) return;
+  await setSupportStatus(id, status, s.name);
   revalidatePath('/admin');
 }
 

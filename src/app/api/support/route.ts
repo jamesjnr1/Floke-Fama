@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { submitToCrm } from '@/lib/crm';
+import { pushToEngineers } from '@/lib/push';
 import { smsWebsiteFault } from '@/lib/sms';
 import { emailSupport } from '@/lib/support-email';
 import { saveSupportRequest } from '@/lib/support-requests';
@@ -45,7 +46,11 @@ export async function POST(request: Request) {
       { firstname, lastname: rest.join(' '), phone: data.phone, message: `[Technical support${ref}] ${supportSummary(data)}` },
       { path: '/support', name: 'Technical support request' },
     ),
+    // Engineers hear about it on their phones: a text for a fault, a portal alert for every request
     saved ? smsWebsiteFault({ reference: saved, ...data }).then(() => false) : Promise.resolve(false),
+    saved
+      ? pushToEngineers({ body: `${kind} from ${data.facility}: ${data.equipment}. Call ${data.name} back.`, url: `/engineer?website=${saved}`, tag: saved }).then(() => false)
+      : Promise.resolve(false),
   ]);
   for (const r of results) if (r.status === 'rejected') console.error('[support] delivery failed', r.reason);
   // Not delivered (nothing configured, or every channel failed): the visitor sends it themselves by email or
