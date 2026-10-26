@@ -11,9 +11,7 @@ import { CoreValues } from '@/components/about/core-values';
 import { SitePageHero } from '@/components/layout/site-page-hero';
 import { Reveal } from '@/components/motion/reveal';
 import { Button } from '@/components/ui/button';
-import { Cog, Gauge, GraduationCap, Settings, ShieldCheck, ShoppingCart } from 'lucide-react';
 import { Icon } from '@/components/ui/icon';
-import { ToneIcon } from '@/components/ui/tone-icon';
 import { brochureUrl } from '@/data/seed';
 import { getSite } from '@/lib/site';
 
@@ -25,17 +23,8 @@ export const metadata: Metadata = {
   alternates: { canonical: '/about' },
 };
 
-const briefIcons = [
-  { icon: ShoppingCart, tone: 'green' },
-  { icon: Settings, tone: 'teal' },
-  { icon: ShieldCheck, tone: 'blue' },
-  { icon: Cog, tone: 'amber' },
-  { icon: Gauge, tone: 'red' },
-  { icon: GraduationCap, tone: 'teal' },
-] as const;
-
 export default async function AboutPage() {
-  const { servicesInBrief, ceo } = await getSite();
+  const { ceo } = await getSite();
   return (
     <>
       <SitePageHero page="about" />
@@ -102,38 +91,6 @@ export default async function AboutPage() {
       <section id="mission" className="scroll-mt-28 bg-paper pt-16 md:pt-24">
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
           <PurposeBlocks />
-        </div>
-      </section>
-
-      {/* Our services (content from the current About page) */}
-      <section id="experience" className="pattern-dots pattern-tr scroll-mt-28 bg-paper section-y">
-        <div className="mx-auto max-w-[1280px] px-5 md:px-10">
-          {/* Our services: heading and intro stacked, then the cards */}
-          <Reveal>
-            <h2 className="display text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">Our Services</h2>
-            <p className="no-justify mt-4 max-w-3xl text-lg leading-relaxed text-ink-3">
-              FLOKEFAMA LTD offers an extensive range of high-quality medical equipment, services, and supplies. Our dedicated team works closely with customers to develop tailored solutions that reduce costs and enhance healthcare delivery.
-            </p>
-          </Reveal>
-          <ul className="mt-10 grid gap-px border border-line bg-line md:grid-cols-2 lg:grid-cols-3">
-            {servicesInBrief.map((x, i) => (
-              <li key={x.title} className="bg-paper">
-                <Reveal delay={(i % 3) * 0.05} className="flex h-full flex-col p-7 lg:p-9">
-                  <div className="flex items-start justify-between">
-                    <ToneIcon icon={briefIcons[i].icon} tone={briefIcons[i].tone} />
-                    <span className="font-mono text-sm text-ink-3">{String(i + 1).padStart(2, '0')}</span>
-                  </div>
-                  <h4 className="mt-6 text-xl font-bold tracking-[-0.01em] text-ink">{x.title}</h4>
-                  <p className="mt-2 text-[1.125rem] leading-relaxed text-ink-3">{x.text}</p>
-                </Reveal>
-              </li>
-            ))}
-          </ul>
-          <Reveal className="mt-8">
-            <Link href="/services" className="inline-flex items-center gap-1 text-sm font-medium text-brand-700">
-              See Our Products &amp; Services
-            </Link>
-          </Reveal>
         </div>
       </section>
 

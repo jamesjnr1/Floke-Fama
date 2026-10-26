@@ -30,11 +30,10 @@ export function Services() {
         <Reveal className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
           <div>
             <h2 className="display text-[clamp(2rem,1.3rem+2.6vw,3.5rem)]">
-              End-to-end healthcare <br className="hidden sm:block" />
-              <span className="text-brand-600">solutions, not just supply.</span>
+Our Services
             </h2>
           </div>
-          <p className="max-w-md leading-relaxed text-ink-3">
+          <p className="no-justify max-w-md leading-relaxed text-ink-3">
             We go beyond supplying medical equipment: from procurement and installation to training and maintenance, so our clients get the most out of their investment.
           </p>
         </Reveal>
