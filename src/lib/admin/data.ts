@@ -6,6 +6,7 @@ import type { SavedOrder } from '@/lib/orders';
 import { loadDesk } from '@/lib/service/server';
 import type { ServiceState } from '@/lib/service/desk';
 import { sampleData } from '@/lib/admin/sample';
+import { escalateMinutes, recentSms, smsEnabled, smsProvider, type SmsLogEntry } from '@/lib/sms';
 
 /**
  * Everything the admin console shows, read on the server from Appwrite. Passwords (salt, hash) are never read.
@@ -22,6 +23,8 @@ export interface AdminData {
   orders: AdminOrder[];
   desk: Pick<ServiceState, 'assets' | 'tickets' | 'notifications'>;
   pushSubscriptions: number;
+  /** The latest text messages (SMS) sent to engineers and admins. */
+  sms: SmsLogEntry[];
   tables: TableStatus[];
 }
 
@@ -44,7 +47,7 @@ const errorText = (e: unknown) => (e as Error)?.message?.slice(0, 200) || 'Unkno
 export async function loadAdminData(): Promise<AdminData> {
   if (!appwrite) {
     const sample = process.env.ADMIN_SAMPLE_DATA === 'true' && process.env.VERCEL_ENV !== 'production';
-    return sample ? sampleData() : { source: 'off', accounts: [], orders: [], desk: { assets: [], tickets: [], notifications: [] }, pushSubscriptions: 0, tables: [] };
+    return sample ? sampleData() : { source: 'off', accounts: [], orders: [], desk: { assets: [], tickets: [], notifications: [] }, pushSubscriptions: 0, sms: [], tables: [] };
   }
 
   const tables: TableStatus[] = [];
@@ -59,7 +62,7 @@ export async function loadAdminData(): Promise<AdminData> {
     }
   };
 
-  const [accounts, orders, push, desk] = await Promise.all([
+  const [accounts, orders, push, desk, sms] = await Promise.all([
     track(TABLES.accounts, 'Accounts', async () =>
       (await listAll(TABLES.accounts, [Query.select(['$id', '$createdAt', 'name', 'email', 'organisation', 'phone'])])).map((r) => ({
         id: r.$id,
@@ -91,6 +94,7 @@ export async function loadAdminData(): Promise<AdminData> {
         return { assets: [], tickets: [], notifications: [] };
       },
     ),
+    smsEnabled ? recentSms() : Promise.resolve([]),
   ]);
 
   return {
@@ -99,6 +103,7 @@ export async function loadAdminData(): Promise<AdminData> {
     orders: orders.sort((a, b) => b.placedAt.localeCompare(a.placedAt)),
     desk: { assets: desk.assets, tickets: desk.tickets, notifications: desk.notifications },
     pushSubscriptions: push.length,
+    sms,
     tables,
   };
 }
@@ -117,6 +122,15 @@ export function configChecks() {
     { label: 'Quotes & messages (HubSpot)', ok: set(process.env.HUBSPOT_PORTAL_ID) && set(process.env.HUBSPOT_FORM_GUID), detail: 'Quote, demo and support requests are delivered to HubSpot; view them there.' },
     { label: 'Online payments', ok: set(process.env.NEXT_PUBLIC_PAYMENTS_PROVIDER), detail: set(process.env.NEXT_PUBLIC_PAYMENTS_PROVIDER) ? `Provider: ${process.env.NEXT_PUBLIC_PAYMENTS_PROVIDER}` : 'No payment provider: orders are placed as "awaiting payment".' },
     { label: 'Push notifications', ok: set(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY) && set(process.env.VAPID_PRIVATE_KEY), detail: 'Alerts to engineers and hospitals on their phones.' },
+    {
+      label: 'Text messages (SMS)',
+      ok: smsEnabled,
+      detail: !smsProvider
+        ? 'SMS_PROVIDER not set: engineers get no texts. Use "log" to try it without sending, or arkesel, mnotify or hubtel with the gateway’s keys.'
+        : smsProvider === 'log'
+          ? 'SMS_PROVIDER=log: texts are recorded on the Service tab but not sent.'
+          : `Sent through ${smsProvider}. Unanswered urgent requests ${escalateMinutes ? `are escalated after ${escalateMinutes} minutes` : 'are not escalated (SMS_ESCALATE_MINUTES=0)'}${set(process.env.CRON_SECRET) ? '' : '; set CRON_SECRET and schedule /api/cron/sms so escalations go out when no portal is open'}.`,
+    },
     { label: 'Search engines', ok: process.env.NEXT_PUBLIC_ALLOW_INDEXING === 'true', detail: process.env.NEXT_PUBLIC_ALLOW_INDEXING === 'true' ? 'The site can be indexed by Google.' : 'NEXT_PUBLIC_ALLOW_INDEXING is not "true": every page is noindex (pre-launch).' },
   ];
 }
