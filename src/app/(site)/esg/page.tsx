@@ -176,26 +176,30 @@ export default async function EsgPage() {
 
       {/* Recognition by Forbes Africa */}
       <section aria-labelledby="forbes" className="bg-midnight text-white section-y">
-        {/* The Forbes Africa Ghana 2026 cover on the left; the recognition beside it */}
-        <div className="mx-auto grid max-w-[1280px] items-center gap-10 px-5 md:px-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
-          <Reveal>
-            <div className="relative mx-auto aspect-[978/1276] w-full max-w-md shadow-[0_40px_80px_-30px_rgb(0_0_0/0.7)] lg:max-w-none">
-              <Image src="/images/forbes-africa-2026.webp" alt="Forbes Africa, Ghana 2026: Africa Undiscovered edition cover" fill sizes="(min-width: 1024px) 460px, 90vw" className="object-cover" />
-            </div>
+        {/* The heading across the top; under it the Forbes Africa Ghana 2026 cover on the left and the three points on the
+            right, running from the top of the cover to its foot */}
+        <div className="mx-auto max-w-[1280px] px-5 md:px-10">
+          <Reveal className="max-w-4xl">
+            <p className="text-[0.9375rem] font-semibold uppercase tracking-[0.08em] text-brand-300">{forbes.label}</p>
+            <h2 id="forbes" className="mt-3 text-[clamp(1.875rem,1.2rem+2vw,2.75rem)] font-bold leading-[1.12] tracking-[-0.03em] text-white">{forbes.title}</h2>
           </Reveal>
-          <div>
+          <div className="mt-10 grid gap-6 lg:grid-cols-[0.8fr_1.2fr] lg:gap-10">
             <Reveal>
-              <p className="text-[0.9375rem] font-semibold uppercase tracking-[0.08em] text-brand-300">{forbes.label}</p>
-              <h2 id="forbes" className="mt-3 text-[clamp(1.875rem,1.2rem+2vw,2.75rem)] font-bold leading-[1.12] tracking-[-0.03em] text-white">{forbes.title}</h2>
+              <div className="relative mx-auto aspect-[978/1276] w-full max-w-md shadow-[0_40px_80px_-30px_rgb(0_0_0/0.7)] lg:max-w-none">
+                <Image src="/images/forbes-africa-2026.webp" alt="Forbes Africa, Ghana 2026: Africa Undiscovered edition cover" fill sizes="(min-width: 1024px) 460px, 90vw" className="object-cover" />
+              </div>
             </Reveal>
-            <ul className="mt-8 grid gap-4">
+            {/* On large screens the cover sets the row's height and the three points share it exactly */}
+            <div className="relative">
+            <ul className="grid gap-4 lg:absolute lg:inset-0 lg:grid-rows-3">
               {forbes.points.map((p) => (
-                <li key={p.title} className="bg-white/[0.06] p-6 md:p-7">
-                  <h3 className="text-xl font-semibold text-white">{p.title}</h3>
+                <li key={p.title} className="flex flex-col justify-center bg-white/[0.06] p-6 md:px-8">
+                  <h3 className="text-xl font-semibold text-white md:text-2xl">{p.title}</h3>
                   <p className="no-justify mt-2 text-lg leading-relaxed text-white/75">{p.text}</p>
                 </li>
               ))}
             </ul>
+            </div>
           </div>
         </div>
       </section>
