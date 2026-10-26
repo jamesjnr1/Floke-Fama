@@ -116,7 +116,7 @@ Create each one under a company email (e.g. it@ or admin@), not a personal one.
 | 1 | **Vercel** | Create a team; import this GitHub repo | Nothing: add the keys below in Vercel → Settings → Environment Variables |
 | 2 | **Supabase** | New project, region **London (eu-west-2)**, closest to Ghana. Or say the word and I'll create it through the Supabase account connected to this session | Project URL, anon key, service-role key (into Vercel, **never in chat or email**) |
 | 3 | **Sanity** | Create a project at sanity.io | Project ID, a read token |
-| 4 | **HubSpot** | Free CRM; a private app with read + write on contacts, companies and deals | Access token (`pat-…`) |
+| 4 | **HubSpot** | Free CRM; a service key with read + write on contacts, companies and deals | Service key |
 | 5 | **Resend** (email) | Create an account | API key |
 | 6 | SMS (optional) | A Ghanaian SMS provider, e.g. Hubtel | API credentials |
 
