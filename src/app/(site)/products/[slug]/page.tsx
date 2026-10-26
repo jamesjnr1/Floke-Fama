@@ -49,7 +49,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         <Link href="/products" className="inline-flex items-center gap-2 text-sm text-ink-3 hover:text-ink">
           <Icon name="fi-rr-arrow-small-left" /> Back to catalogue
         </Link>
-        <div className="mt-8 grid gap-10 lg:grid-cols-2 lg:gap-16">
+        <div className="mt-8 grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-16">
           {/* Photo and a compact action card stay in view while the spec sheet scrolls */}
           <div className="lg:sticky lg:top-28 lg:self-start">
             <ProductGallery product={product} category={category} sizes="(min-width: 1024px) 50vw, 100vw" priority shared={false} visualClassName="aspect-square rounded-lg" />
