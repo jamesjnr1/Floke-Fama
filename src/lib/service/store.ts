@@ -34,6 +34,8 @@ export function useServiceStore(actor: Actor) {
   const [state, dispatchLocal] = useReducer(reducer(actor), undefined, () => createSeed());
   const [ready, setReady] = useState(false);
   const [remote, setRemote] = useState(false);
+  /** When the desk was last read from the server (shown as "Live · updated …"). */
+  const [syncedAt, setSyncedAt] = useState<Date | null>(null);
   const pending = useRef(0);
 
   // First load: ask the server; fall back to this browser when Appwrite isn't set up.
@@ -51,6 +53,7 @@ export function useServiceStore(actor: Actor) {
       if (!live) return;
       if (r.enabled) {
         setRemote(true);
+        setSyncedAt(new Date());
         dispatchLocal({ type: 'load', state: r.state });
       } else readLocal();
       setReady(true);
@@ -77,7 +80,9 @@ export function useServiceStore(actor: Actor) {
   // Server mode: pick up other people's changes (not while one of ours is on its way).
   const refresh = useCallback(async () => {
     const r = await fetchDesk();
-    if (r.enabled && pending.current === 0) dispatchLocal({ type: 'load', state: r.state });
+    if (!r.enabled) return;
+    setSyncedAt(new Date());
+    if (pending.current === 0) dispatchLocal({ type: 'load', state: r.state });
   }, []);
   useEffect(() => {
     if (!remote) return;
@@ -115,7 +120,7 @@ export function useServiceStore(actor: Actor) {
   );
 
   const reset = useCallback(() => dispatchLocal({ type: 'load', state: createSeed() }), []);
-  return { state, dispatch, ready, remote, reset };
+  return { state, dispatch, ready, remote, reset, syncedAt };
 }
 
 /** Engineer portal entry point. */
