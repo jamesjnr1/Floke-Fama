@@ -62,10 +62,6 @@ export async function SiteFooter() {
                 </a>
               </li>
             </ul>
-            <div className="mt-1">
-              <p className="text-sm font-semibold text-white">Follow us</p>
-              <SocialLinks className="mt-2.5" buttonClassName="border-white/20 text-white/80 hover:border-white hover:bg-white hover:text-[#10191e]" />
-            </div>
           </div>
 
           {columns.map((col) => (
@@ -90,6 +86,7 @@ export async function SiteFooter() {
               Request a quote
               <ArrowUpRight className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden />
             </Link>
+            <SocialLinks className="mt-2" buttonClassName="text-white/75 hover:text-white" />
           </div>
         </div>
 
