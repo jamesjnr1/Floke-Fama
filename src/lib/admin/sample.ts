@@ -78,6 +78,12 @@ export function sampleData(): AdminData {
     orders,
     desk: { assets, tickets, notifications: [] },
     pushSubscriptions: 19,
+    sms: [
+      { id: 's5', at: new Date(now - 6 * 60_000).toISOString(), kind: 'urgent', ref: 'TK-1061', to: '233533392860,233533392861,233533392862,233533392863', text: 'FLOKEFAMA: CRITICAL fault at Ridge Hospital - BC-5150 Haematology Analyzer. Job TK-1061 needs an engineer. Open: https://flokefama.com/engineer?ticket=TK-1061', status: 'sent', detail: 'Arkesel' },
+      { id: 's4', at: new Date(now - 41 * 60_000).toISOString(), kind: 'escalation', ref: 'TK-1058', to: '233244000111', text: 'FLOKEFAMA: No engineer has taken HIGH job TK-1058 at Lister Hospital - Patient Monitor after 30 min. Open: https://flokefama.com/admin?tab=service', status: 'sent', detail: 'Arkesel' },
+      { id: 's3', at: new Date(now - 95 * 60_000).toISOString(), kind: 'message', ref: 'TK-1052', to: '233533392861', text: 'FLOKEFAMA: New message from Korle-Bu Teaching Hospital on job TK-1052 (CT Scanner). Open: https://flokefama.com/engineer?ticket=TK-1052', status: 'sent', detail: 'Arkesel' },
+      { id: 's2', at: new Date(now - 3 * 3600_000).toISOString(), kind: 'assigned', ref: 'TK-1049', to: '233533392862', text: 'FLOKEFAMA: Job TK-1049 at Nyaho Medical Centre - Ultrasound System is now yours (routine). Open: https://flokefama.com/engineer?ticket=TK-1049', status: 'failed', detail: 'Arkesel: insufficient balance' },
+    ],
     tables: [
       { table: 'accounts', label: 'Accounts', ok: true, rows: accounts.length },
       { table: 'orders', label: 'Orders', ok: true, rows: orders.length },
