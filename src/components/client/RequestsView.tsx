@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from 'motion/react';
 import { useRef, useState } from 'react';
+import { EngineerFace } from '@/components/service/engineer-photos';
 import { Card, inputClass, statusBar, statusStyle, tag, urgency } from '@/components/client/ui';
 import { Icon } from '@/components/ui/icon';
 import { useSite } from '@/components/site-provider';
@@ -117,7 +118,11 @@ function Detail({ ticket: t, asset, dispatch }: { ticket: Ticket; asset?: Asset;
       {/* Engineer */}
       {t.status !== 'resolved' && (
         <div className="mt-6 flex flex-wrap items-center gap-4 rounded-lg bg-canvas p-4">
-          <span className="grid size-11 place-items-center rounded-md bg-brand-600 text-white"><Icon name={t.engineer ? 'fi-rr-user' : 'fi-rr-time-fast'} /></span>
+          {t.engineer ? (
+            <EngineerFace name={t.engineer} className="size-14 bg-brand-600 text-xl text-white" />
+          ) : (
+            <span className="grid size-11 place-items-center rounded-md bg-brand-600 text-white"><Icon name="fi-rr-time-fast" /></span>
+          )}
           <span className="min-w-0 flex-1">
             <span className="block font-medium text-ink">{t.engineer ?? 'Assigning an engineer'}</span>
             <span className="block text-sm text-ink-3">

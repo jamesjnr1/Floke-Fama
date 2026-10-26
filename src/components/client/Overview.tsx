@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { EngineerFace } from '@/components/service/engineer-photos';
 import { Card, CardTitle, statusBar, statusStyle, tag } from '@/components/client/ui';
 import { Icon } from '@/components/ui/icon';
 import { useSite } from '@/components/site-provider';
@@ -182,8 +183,11 @@ export function Overview({ name, facility, assets, tickets, orders, onOpenTicket
                           <span className="grid grid-cols-5 gap-1" aria-hidden>
                             {statusSteps.map((s, i) => <span key={s.status} className={cn('h-1 rounded-[1px]', i <= idx ? statusBar[t.status] : 'bg-[#e7ebe9]')} />)}
                           </span>
-                          <span className="mt-2 block truncate text-sm text-ink-2">
-                            {t.engineer ? <>{t.engineer}{t.eta ? <span className="text-ink-3"> · ETA {t.eta}</span> : t.status === 'onsite' ? <span className="text-ink-3"> · on site</span> : null}</> : <span className="text-ink-3">Assigning an engineer…</span>}
+                          <span className="mt-2 flex items-center gap-2 text-sm text-ink-2">
+                            {t.engineer && <EngineerFace name={t.engineer} className="size-8 bg-brand-50 text-xs text-brand-700" />}
+                            <span className="min-w-0 leading-tight">
+                              {t.engineer ? <>{t.engineer}{t.eta ? <span className="block text-xs text-ink-3">ETA {t.eta}</span> : t.status === 'onsite' ? <span className="block text-xs text-ink-3">on site</span> : null}</> : <span className="text-ink-3">Assigning an engineer…</span>}
+                            </span>
                           </span>
                         </span>
                         <span className={cn(tag, statusStyle[t.status], 'justify-self-start md:justify-self-end')}>{clientSteps[t.status]}</span>

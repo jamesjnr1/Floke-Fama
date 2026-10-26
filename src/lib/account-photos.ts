@@ -1,6 +1,7 @@
 import 'server-only';
 import { Query, type Models } from 'node-appwrite';
 import { appwrite, BUCKETS, DATABASE_ID, fileUrl, TABLES } from '@/lib/appwrite';
+import { roleFor } from '@/lib/auth/users';
 
 /**
  * Each account's picture: an engineer's photo or a hospital's logo. Both are kept the same way (a file in the
@@ -29,5 +30,17 @@ export async function accountPictures(): Promise<Record<string, string>> {
     if (rows.length < 500) break;
     cursor = rows[rows.length - 1].$id;
   }
+  return out;
+}
+
+/** Engineers' photos by name (the service desk records the engineer on a job by name), for the portals. */
+export async function engineerPhotos(): Promise<Record<string, string>> {
+  if (!appwrite) return {};
+  const [pictures, { rows }] = await Promise.all([
+    accountPictures(),
+    appwrite.tables.listRows<Models.Row & { name: string; email: string }>({ databaseId: DATABASE_ID, tableId: TABLES.accounts, queries: [Query.select(['$id', 'name', 'email']), Query.limit(1000)] }),
+  ]);
+  const out: Record<string, string> = {};
+  for (const r of rows) if (pictures[r.$id] && roleFor(r.email ?? '', r.$id) === 'engineer') out[r.name] = pictures[r.$id];
   return out;
 }
