@@ -8,7 +8,6 @@ import { accountExists, hashPassword, saveAccount } from '@/lib/auth/accounts';
 import { getAdminSession } from '@/lib/auth/server';
 import { ENGINEER_ID_PREFIX } from '@/lib/auth/users';
 import type { OrderStatus, SavedOrder } from '@/lib/orders';
-import { isReference, setSupportStatus, supportStatuses, type SupportStatus } from '@/lib/support-requests';
 
 const statuses: OrderStatus[] = ['awaiting-payment', 'paid', 'processing', 'delivered'];
 
@@ -22,17 +21,6 @@ export async function setOrderStatus(form: FormData) {
   const row = await appwrite.tables.getRow({ databaseId: DATABASE_ID, tableId: TABLES.orders, rowId: reference });
   const order = JSON.parse(String((row as unknown as { data: string }).data)) as SavedOrder;
   await appwrite.tables.updateRow({ databaseId: DATABASE_ID, tableId: TABLES.orders, rowId: reference, data: { data: JSON.stringify({ ...order, status }) } });
-  revalidatePath('/admin');
-}
-
-/** Marks a request from the Support page as called back or closed (or new again). Admins only. */
-export async function setSupportRequestStatus(form: FormData) {
-  const s = await getAdminSession();
-  if (s?.role !== 'admin' || !appwrite) return;
-  const id = String(form.get('id') ?? '');
-  const status = String(form.get('status') ?? '') as SupportStatus;
-  if (!isReference(id) || !supportStatuses.includes(status)) return;
-  await setSupportStatus(id, status, s.name);
   revalidatePath('/admin');
 }
 
