@@ -6,6 +6,8 @@ import type { SavedOrder } from '@/lib/orders';
 import { loadDesk } from '@/lib/service/server';
 import type { ServiceState } from '@/lib/service/desk';
 import { sampleData } from '@/lib/admin/sample';
+import { isTableMissing } from '@/lib/appwrite-tables';
+import { listSupportRequests, type SupportRequest } from '@/lib/support-requests';
 import { escalateMinutes, recentSms, smsEnabled, smsProvider, type SmsLogEntry } from '@/lib/sms';
 
 /**
@@ -25,6 +27,8 @@ export interface AdminData {
   pushSubscriptions: number;
   /** The latest text messages (SMS) sent to engineers and admins. */
   sms: SmsLogEntry[];
+  /** Requests from the Support page's form, newest first. */
+  supportRequests: SupportRequest[];
   tables: TableStatus[];
 }
 
@@ -47,7 +51,7 @@ const errorText = (e: unknown) => (e as Error)?.message?.slice(0, 200) || 'Unkno
 export async function loadAdminData(): Promise<AdminData> {
   if (!appwrite) {
     const sample = process.env.ADMIN_SAMPLE_DATA === 'true' && process.env.VERCEL_ENV !== 'production';
-    return sample ? sampleData() : { source: 'off', accounts: [], orders: [], desk: { assets: [], tickets: [], notifications: [] }, pushSubscriptions: 0, sms: [], tables: [] };
+    return sample ? sampleData() : { source: 'off', accounts: [], orders: [], desk: { assets: [], tickets: [], notifications: [] }, pushSubscriptions: 0, sms: [], supportRequests: [], tables: [] };
   }
 
   const tables: TableStatus[] = [];
@@ -62,7 +66,7 @@ export async function loadAdminData(): Promise<AdminData> {
     }
   };
 
-  const [accounts, orders, push, desk, sms] = await Promise.all([
+  const [accounts, orders, push, desk, sms, supportRequests] = await Promise.all([
     track(TABLES.accounts, 'Accounts', async () =>
       (await listAll(TABLES.accounts, [Query.select(['$id', '$createdAt', 'name', 'email', 'organisation', 'phone'])])).map((r) => ({
         id: r.$id,
@@ -95,6 +99,8 @@ export async function loadAdminData(): Promise<AdminData> {
       },
     ),
     smsEnabled ? recentSms() : Promise.resolve([]),
+    // Created by the site on the first request, so until then there is simply nothing to list
+    track(TABLES.supportRequests, 'Support requests (website form)', () => listSupportRequests().catch((e) => (isTableMissing(e) ? [] : Promise.reject(e)))),
   ]);
 
   return {
@@ -104,6 +110,7 @@ export async function loadAdminData(): Promise<AdminData> {
     desk: { assets: desk.assets, tickets: desk.tickets, notifications: desk.notifications },
     pushSubscriptions: push.length,
     sms,
+    supportRequests,
     tables,
   };
 }

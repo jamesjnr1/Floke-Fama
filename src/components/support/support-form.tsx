@@ -9,7 +9,7 @@ import { requestTypes, supportSchema, supportSummary, type SupportInput } from '
 import { cn } from '@/lib/utils';
 
 type Errors = Partial<Record<keyof SupportInput, string>>;
-type Result = { delivered: boolean; data: SupportInput } | null;
+type Result = { delivered: boolean; data: SupportInput; reference?: string } | null;
 
 const field =
   'h-12 w-full rounded-lg border border-line bg-paper px-4 text-base text-ink outline-none transition placeholder:text-ink-3/60 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15 aria-[invalid=true]:border-signal';
@@ -38,9 +38,9 @@ export function SupportForm() {
     setPending(true);
     try {
       const res = await fetch('/api/support', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(parsed.data) });
-      const json = (await res.json().catch(() => ({}))) as { delivered?: boolean; error?: string };
+      const json = (await res.json().catch(() => ({}))) as { delivered?: boolean; reference?: string; error?: string };
       if (!res.ok) throw new Error(json.error);
-      setResult({ delivered: json.delivered === true, data: parsed.data });
+      setResult({ delivered: json.delivered === true, data: parsed.data, reference: json.reference });
       if (json.delivered) toast.success('Request sent', { description: 'Our support team will contact you shortly.' });
     } catch (error) {
       toast.error('We couldn’t send your request', { description: (error as Error).message || `Please call ${contact.phone}.` });
@@ -117,7 +117,7 @@ function Field({ label, error, children }: { label: string; error?: string; chil
   );
 }
 
-function Sent({ delivered, data, onReset }: NonNullable<Result> & { onReset: () => void }) {
+function Sent({ delivered, data, reference, onReset }: NonNullable<Result> & { onReset: () => void }) {
   const { contact } = useSite();
   const send = composeLinks({
     whatsapp: contact.whatsapp,
@@ -134,6 +134,7 @@ function Sent({ delivered, data, onReset }: NonNullable<Result> & { onReset: () 
         <>
           <p className="mt-5 text-2xl font-bold tracking-[-0.02em] text-ink">Request sent.</p>
           <p className="mt-2 text-ink-3">Thank you, {data.name.split(' ')[0]}. Our support team will contact you on {data.phone}.</p>
+          {reference && <p className="mt-3 text-ink-2">Your reference: <span className="font-mono font-semibold text-ink">{reference}</span></p>}
         </>
       ) : (
         <>
