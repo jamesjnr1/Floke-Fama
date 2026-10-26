@@ -13,7 +13,10 @@ const tones = ['green', 'teal', 'blue', 'slate', 'red', 'amber'] as const;
  * award and one line on it. The No.1 healthcare ranking leads.
  */
 export async function AwardsGallery() {
-  const { awards } = await getSite();
+  const site = await getSite();
+  // Newest first (2026, 2025, 2024…); awards without a year (an honorary membership) last, the rest in their own order
+  const yearOf = (y: string) => Number(/\d{4}/.exec(y)?.[0] ?? 0);
+  const awards = [...site.awards].sort((a, b) => yearOf(b.year) - yearOf(a.year));
   return (
     <section aria-labelledby="awards-title" className="relative isolate overflow-hidden bg-paper section-y">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
