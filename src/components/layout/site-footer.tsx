@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { SocialLinks } from '@/components/ui/social-links';
 import { ArrowUpRight, Mail, MapPin, Phone } from 'lucide-react';
 import { Logo } from '@/components/layout/logo';
 import { getSite } from '@/lib/site';
@@ -61,6 +62,10 @@ export async function SiteFooter() {
                 </a>
               </li>
             </ul>
+            <div className="mt-1">
+              <p className="text-sm font-semibold text-white">Follow us</p>
+              <SocialLinks className="mt-2.5" buttonClassName="border-white/20 text-white/80 hover:border-white hover:bg-white hover:text-[#10191e]" />
+            </div>
           </div>
 
           {columns.map((col) => (
