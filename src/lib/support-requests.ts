@@ -6,8 +6,8 @@ import type { SupportInput } from '@/lib/support-schema';
 
 /**
  * Requests sent with the Support page's form (Report a fault, maintenance, installation, other), kept in Appwrite
- * (table `support_requests`). Engineers see them in their portal (From the website), call back, and turn a
- * registered hospital's fault into a job on the service desk; the admin console lists them all.
+ * (table `support_requests`). Engineers see them in their portal (From the website), call back, and when a visit
+ * is needed press Send an engineer, which opens a service request; the admin console lists them all.
  */
 export type SupportStatus = 'new' | 'called' | 'closed';
 export const supportStatuses: SupportStatus[] = ['new', 'called', 'closed'];
@@ -18,7 +18,7 @@ export interface SupportRequest extends Omit<SupportInput, 'website'> {
   /** Who last moved it on (engineer or admin), and when. */
   handledBy?: string;
   handledAt?: string;
-  /** The service desk job it became. */
+  /** The service request it became (Send an engineer). */
   ticketId?: string;
 }
 
@@ -51,7 +51,7 @@ export async function listSupportRequests(limit = 200): Promise<SupportRequest[]
   });
 }
 
-/** Moves a request on, recording who did it (and the job it became). */
+/** Moves a request on, recording who did it (and the service request it became). */
 export async function setSupportStatus(id: string, status: SupportStatus, by: string, ticketId?: string) {
   const row = await appwrite!.tables.getRow<Row>({ databaseId: DATABASE_ID, tableId: TABLES.supportRequests, rowId: id });
   const data = { ...(JSON.parse(row.data) as object), handledBy: by, handledAt: new Date().toISOString(), ...(ticketId ? { ticketId } : {}) };
