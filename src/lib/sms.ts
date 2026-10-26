@@ -159,11 +159,12 @@ export async function smsNew(before: ServiceState, after: ServiceState, actor: A
  * A fault reported with the Support page's form (by anyone, not only portal clients): every engineer is texted
  * with who to call back. Other request types (maintenance, installation, other) wait for the support team.
  */
-export async function smsWebsiteFault(r: { reference: string; type: string; name: string; facility: string; phone: string; equipment: string }) {
+export async function smsWebsiteFault(r: { reference: string; type: string; name: string; facility: string; phone: string; equipment: string; working?: string }) {
   if (!smsEnabled || r.type !== 'fault') return;
   try {
     const people = (await staff()).filter((p) => p.role === 'engineer');
-    const text = `FLOKEFAMA: Fault reported on the website by ${plain(r.facility, 40)} - ${plain(r.equipment, 40)}. Call ${plain(r.name, 30)} on ${plain(r.phone, 20)}. Ref ${r.reference}.`;
+    const down = r.working === 'down' ? ' NOT WORKING AT ALL.' : '';
+    const text = `FLOKEFAMA: Fault reported on the website by ${plain(r.facility, 40)} - ${plain(r.equipment, 40)}.${down} Call ${plain(r.name, 30)} on ${plain(r.phone, 20)}. Ref ${r.reference}.`;
     await Promise.race([send('website', r.reference, people.map((p) => p.phone), text), new Promise((ok) => setTimeout(ok, 6000))]);
   } catch (e) {
     console.error('sms: website fault not texted', e);

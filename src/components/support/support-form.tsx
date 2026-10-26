@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { Icon } from '@/components/ui/icon';
 import { useSite } from '@/components/site-provider';
 import { composeLinks } from '@/lib/compose';
-import { requestTypes, supportSchema, supportSummary, type SupportInput } from '@/lib/support-schema';
+import { assistanceTopics, requestTypes, supportSchema, supportSummary, workingStates, type SupportInput } from '@/lib/support-schema';
 import { cn } from '@/lib/utils';
 
 type Errors = Partial<Record<keyof SupportInput, string>>;
@@ -16,14 +16,16 @@ const field =
 const button = 'inline-flex h-12 items-center justify-center gap-2 bg-cta px-6 text-base font-semibold text-white transition hover:bg-cta-700 disabled:opacity-60';
 
 /**
- * Request technical assistance or report a fault. Delivered to the CRM when it is connected; otherwise the visitor
- * sends the same request, pre-filled, to the support inbox by email or on WhatsApp.
+ * Request technical assistance or report a fault. Each tab asks for what that request needs (see supportSchema);
+ * the hospital, name and phone are asked every time. Saved for the engineers, emailed to the support inbox, and if
+ * neither works the visitor sends the same request, pre-filled, by email or on WhatsApp.
  */
 export function SupportForm() {
   const { contact } = useSite();
   const [errors, setErrors] = useState<Errors>({});
   const [pending, setPending] = useState(false);
   const [result, setResult] = useState<Result>(null);
+  const [type, setType] = useState<SupportInput['type']>('fault');
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -51,39 +53,120 @@ export function SupportForm() {
 
   if (result) return <Sent {...result} onReset={() => setResult(null)} />;
 
+  const today = new Date().toISOString().slice(0, 10);
+  const notes = (label: string, placeholder: string, required: boolean) => (
+    <label className="flex flex-1 flex-col gap-1.5">
+      <span className="text-sm font-medium text-ink-2">{label}{!required && <span className="font-normal text-ink-3"> (optional)</span>}</span>
+      <textarea name="message" rows={4} placeholder={placeholder} aria-invalid={!!errors.message} className={cn(field, 'h-auto min-h-[7.5rem] flex-1 resize-none py-3')} />
+      {errors.message && <span role="alert" className="text-xs text-signal-700">{errors.message}</span>}
+    </label>
+  );
+  const equipment = (placeholder: string, optional = false) => (
+    <Field label="Equipment" optional={optional} error={errors.equipment}>
+      <input name="equipment" placeholder={placeholder} aria-invalid={!!errors.equipment} className={field} />
+    </Field>
+  );
+  const preferred = (
+    <Field label="Preferred date" optional error={errors.preferredDate}>
+      <input name="preferredDate" type="date" min={today} aria-invalid={!!errors.preferredDate} className={field} />
+    </Field>
+  );
+
   return (
-    <form onSubmit={onSubmit} noValidate className="flex h-full flex-col">
+    <form
+      onSubmit={onSubmit}
+      // A message goes as soon as its field is changed
+      onChange={(e) => {
+        const name = (e.target as unknown as HTMLInputElement).name as keyof SupportInput;
+        if (errors[name]) setErrors((all) => ({ ...all, [name]: undefined }));
+      }}
+      noValidate
+      className="flex h-full flex-col"
+    >
       {/* What it's about: the request types as tabs across the top of the card */}
       <div role="radiogroup" aria-label="What do you need?" className="grid grid-cols-2 gap-px border-b border-line bg-line md:grid-cols-4">
         {requestTypes.map((t) => (
           <label key={t.id} className="group flex cursor-pointer flex-col items-center justify-center gap-2 bg-canvas px-3 py-5 text-center text-[0.9375rem] font-medium text-ink-3 transition hover:bg-paper hover:text-ink has-[:checked]:bg-paper has-[:checked]:text-brand-700 has-[:checked]:shadow-[inset_0_-3px_0_var(--color-brand-600)] has-[:focus-visible]:ring-4 has-[:focus-visible]:ring-inset has-[:focus-visible]:ring-brand-500/25">
-            <input type="radio" name="type" value={t.id} defaultChecked={t.id === 'fault'} className="sr-only" />
+            <input
+              type="radio"
+              name="type"
+              value={t.id}
+              checked={type === t.id}
+              onChange={() => {
+                setType(t.id);
+                setErrors({});
+              }}
+              className="sr-only"
+            />
             <Icon name={typeIcons[t.id]} className="text-2xl group-has-[:checked]:text-brand-600" />
             <span className="leading-tight">{t.label}</span>
           </label>
         ))}
       </div>
-      {errors.type && <span role="alert" className="block px-6 pt-3 text-xs text-signal-700 md:px-9">{errors.type}</span>}
 
-      <div className="grid flex-1 gap-5 p-6 md:grid-cols-2 md:grid-rows-[auto_1fr_auto] md:p-9">
-        <Field label="Equipment" error={errors.equipment}>
-          <input name="equipment" placeholder="e.g. Mindray BC-5150" aria-invalid={!!errors.equipment} className={field} />
-        </Field>
-        <Field label="Hospital or lab" error={errors.facility}>
-          <input name="facility" autoComplete="organization" aria-invalid={!!errors.facility} className={field} />
-        </Field>
-        {/* Grows to fill the card when the panel beside it is taller */}
-        <label className="grid gap-1.5 md:col-span-2 md:grid-rows-[auto_1fr_auto]">
-          <span className="text-sm font-medium text-ink-2">What is happening?</span>
-          <textarea name="message" rows={4} placeholder="Describe the fault or what you need: error codes, when it started, what you have tried." aria-invalid={!!errors.message} className={cn(field, 'h-full min-h-[7.5rem] resize-none py-3')} />
-          {errors.message && <span role="alert" className="text-xs text-signal-700">{errors.message}</span>}
-        </label>
-        <Field label="Your name" error={errors.name}>
-          <input name="name" autoComplete="name" aria-invalid={!!errors.name} className={field} />
-        </Field>
-        <Field label="Phone (we’ll call you back)" error={errors.phone}>
-          <input name="phone" type="tel" autoComplete="tel" placeholder="+233" aria-invalid={!!errors.phone} className={field} />
-        </Field>
+      {/* The questions for this tab, then who to call back. key: a fresh set of fields for each tab */}
+      <div key={type} className="flex flex-1 flex-col gap-5 p-6 md:p-9">
+        {type === 'fault' && (
+          <>
+            <div className="grid gap-5 md:grid-cols-2">
+              {equipment('e.g. Mindray BC-5150 analyser')}
+              <Field label="Serial number" optional error={errors.serial}>
+                <input name="serial" placeholder="On the label at the back" className={field} />
+              </Field>
+            </div>
+            <Choices name="working" label="Is it still working?" options={workingStates} error={errors.working} />
+            {notes('What is happening?', 'Error codes, when it started, what you have tried.', true)}
+          </>
+        )}
+        {type === 'maintenance' && (
+          <>
+            <div className="grid gap-5 md:grid-cols-2">
+              {equipment('e.g. Patient monitors in the ICU')}
+              <Field label="How many units" optional error={errors.units}>
+                <input name="units" inputMode="numeric" placeholder="e.g. 6" aria-invalid={!!errors.units} className={field} />
+              </Field>
+              <Field label="Last serviced" optional error={errors.lastService}>
+                <input name="lastService" type="date" max={today} aria-invalid={!!errors.lastService} className={field} />
+              </Field>
+              {preferred}
+            </div>
+            {notes('Anything we should know?', 'e.g. Calibration certificates are due for renewal.', false)}
+          </>
+        )}
+        {type === 'installation' && (
+          <>
+            <div className="grid gap-5 md:grid-cols-2">
+              {equipment('e.g. Autoclave 35L')}
+              <Field label="Order or invoice number" optional error={errors.order}>
+                <input name="order" placeholder="e.g. FF-5A3F1" className={field} />
+              </Field>
+              <Field label="Where will it be installed?" error={errors.location}>
+                <input name="location" placeholder="e.g. Main theatre, 2nd floor" aria-invalid={!!errors.location} className={field} />
+              </Field>
+              {preferred}
+            </div>
+            {notes('Anything we should know?', 'e.g. Delivered last week; power and water points are ready.', false)}
+          </>
+        )}
+        {type === 'assistance' && (
+          <>
+            <Choices name="topic" label="What do you need help with?" options={assistanceTopics} error={errors.topic} />
+            {equipment('If it is about a particular machine', true)}
+            {notes('Tell us more', 'What do you need, and for whom?', true)}
+          </>
+        )}
+
+        <div className="grid gap-5 border-t border-line pt-5 md:grid-cols-3">
+          <Field label="Hospital or lab" error={errors.facility}>
+            <input name="facility" autoComplete="organization" aria-invalid={!!errors.facility} className={field} />
+          </Field>
+          <Field label="Your name" error={errors.name}>
+            <input name="name" autoComplete="name" aria-invalid={!!errors.name} className={field} />
+          </Field>
+          <Field label="Phone (we’ll call you back)" error={errors.phone}>
+            <input name="phone" type="tel" autoComplete="tel" placeholder="+233" aria-invalid={!!errors.phone} className={field} />
+          </Field>
+        </div>
       </div>
 
       <input name="website" tabIndex={-1} autoComplete="off" aria-hidden className="hidden" />
@@ -100,6 +183,24 @@ export function SupportForm() {
   );
 }
 
+/** A question answered by picking one of a few square choices. */
+function Choices({ name, label, options, error }: { name: string; label: string; options: readonly { id: string; label: string }[]; error?: string }) {
+  return (
+    <fieldset>
+      <legend className="text-sm font-medium text-ink-2">{label}</legend>
+      <div className={cn('mt-1.5 grid gap-2.5', options.length > 2 ? 'grid-cols-2 lg:grid-cols-4' : 'sm:grid-cols-2')}>
+        {options.map((o) => (
+          <label key={o.id} className="flex min-h-12 cursor-pointer items-center gap-3 rounded-lg border border-line bg-paper px-4 py-2.5 text-[0.9375rem] text-ink-2 transition hover:border-brand-500 has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50 has-[:checked]:font-medium has-[:checked]:text-brand-700 has-[:focus-visible]:ring-4 has-[:focus-visible]:ring-brand-500/20">
+            <input type="radio" name={name} value={o.id} className="size-4 shrink-0 accent-[#007a4d]" />
+            {o.label}
+          </label>
+        ))}
+      </div>
+      {error && <span role="alert" className="mt-1.5 block text-xs text-signal-700">{error}</span>}
+    </fieldset>
+  );
+}
+
 const typeIcons: Record<SupportInput['type'], string> = {
   fault: 'fi-rr-exclamation',
   maintenance: 'fi-rr-calendar',
@@ -107,10 +208,10 @@ const typeIcons: Record<SupportInput['type'], string> = {
   assistance: 'fi-rr-headset',
 };
 
-function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
+function Field({ label, error, optional, children }: { label: string; error?: string; optional?: boolean; children: React.ReactNode }) {
   return (
     <label className="grid gap-1.5">
-      <span className="text-sm font-medium text-ink-2">{label}</span>
+      <span className="text-sm font-medium text-ink-2">{label}{optional && <span className="font-normal text-ink-3"> (optional)</span>}</span>
       {children}
       {error && <span role="alert" className="text-xs text-signal-700">{error}</span>}
     </label>

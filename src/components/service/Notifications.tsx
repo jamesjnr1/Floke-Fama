@@ -38,7 +38,7 @@ export function Notifications({ items, onRead, onReadAll, onOpen, tone = 'dark' 
         aria-expanded={open}
         aria-controls="notif-panel"
         aria-label={unread ? `Notifications (${unread} unread)` : 'Notifications'}
-        className={cn('relative grid size-11 place-items-center rounded-xl border', tone === 'dark' ? 'border-white/10 bg-white/[0.04] text-white hover:bg-white/10' : 'border-line bg-paper text-ink hover:border-ink/25')}
+        className={cn('relative grid size-11 place-items-center rounded-xl text-xl transition', tone === 'dark' ? 'text-white hover:bg-white/10' : 'text-ink hover:bg-mist')}
       >
         <Icon name="fi-rr-bell" />
         {unread > 0 && <span className="absolute -right-1 -top-1 grid min-w-5 place-items-center rounded-md bg-signal px-1 text-[0.875rem] font-semibold text-white">{unread}</span>}
