@@ -140,13 +140,13 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
   };
 
   /**
-   * A request from the website becomes a job on the service desk: the fault dialog opens on the hospital's equipment
+   * A request from the website becomes a service request (Send an engineer): the fault dialog opens on the hospital's equipment
    * (when it is registered) with the caller's details filled in.
    */
   const makeJob = useCallback(
     (r: WebsiteRequest) => {
       if (!state.assets.length) {
-        toast('No equipment registered yet', { description: `Register ${r.facility}’s equipment first, then make it a job.`, action: { label: 'Add equipment', onClick: addEquipment } });
+        toast('No equipment registered yet', { description: `Register ${r.facility}’s equipment first, then send an engineer.`, action: { label: 'Add equipment', onClick: addEquipment } });
         return;
       }
       const key = (s: string) => s.trim().toLowerCase();
@@ -360,11 +360,11 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
         assets={state.assets}
         defaultAssetId={fault.assetId}
         defaultDescription={fault.from ? `${fault.from.message}\n\nFrom the website (${fault.from.id}): ${fault.from.name}, ${fault.from.phone}.` : undefined}
-        title={fault.from ? `Make ${fault.from.id} a job` : undefined}
+        title={fault.from ? `Send an engineer (${fault.from.id})` : undefined}
         onSubmit={(v) => {
           const id = nextTicketId(state);
           rawDispatch({ type: 'create', ticket: { assetId: v.assetId, description: v.description, priority: v.priority }, assignToMe: v.assignToMe });
-          // A request from the website is closed with the job it became
+          // A request from the website is closed with the service request it became
           if (fault.from) website.update(fault.from.id, 'closed', me, id);
           toast.success(`${id} logged`, { description: v.assignToMe ? 'Assigned to you and added to your queue.' : 'Added to the unassigned queue.' });
           setTicketId(id);
