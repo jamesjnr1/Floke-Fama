@@ -40,13 +40,6 @@ export default async function AboutPage() {
     <>
       <SitePageHero page="about" />
 
-      {/* Mission, vision and aim: three bold blocks right under the header, as on the current site */}
-      <section id="mission" className="scroll-mt-28 bg-paper pt-12 md:pt-20">
-        <div className="mx-auto max-w-[1280px] px-5 md:px-10">
-          <PurposeBlocks />
-        </div>
-      </section>
-
       {/* Who we are */}
       <section id="who-we-are" className="pattern-grid scroll-mt-28 bg-paper pb-16 pt-12 md:pb-32 md:pt-16">
         {/* The heading across the top; under it the text and actions on the left, the head-office photo larger on the right, both starting on the same line */}
@@ -104,6 +97,13 @@ export default async function AboutPage() {
         </div>
       </section>
       )}
+
+      {/* Mission, vision and aim: three bold blocks after the leadership section */}
+      <section id="mission" className="scroll-mt-28 bg-paper pt-16 md:pt-24">
+        <div className="mx-auto max-w-[1280px] px-5 md:px-10">
+          <PurposeBlocks />
+        </div>
+      </section>
 
       {/* Our services (content from the current About page) */}
       <section id="experience" className="pattern-dots pattern-tr scroll-mt-28 bg-paper section-y">
