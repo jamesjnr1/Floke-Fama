@@ -107,17 +107,20 @@ export default async function SupportPage() {
             <p className="no-justify mt-4 text-lg leading-relaxed text-white/80">Tell us what you need and our support team will call you back.</p>
 
             <h3 className="mt-9 text-[0.9375rem] font-semibold uppercase tracking-[0.08em] !text-white/70">What happens next</h3>
-            <ol className="mt-4 space-y-5">
+            {/* The stages as a timeline: dots joined by a line */}
+            <ol className="mt-6">
               {[
                 ['We receive it straight away', 'Your request goes directly to our support team.'],
                 ['We call you back', 'An engineer talks it through with you and solves what can be solved by phone.'],
                 ['We come to you', 'If it needs a visit, an engineer is sent to your hospital or lab.'],
-              ].map(([title, text], i) => (
-                <li key={title} className="flex gap-4">
-                  <span className="grid size-8 shrink-0 place-items-center bg-white text-[0.9375rem] font-bold text-brand-700">{i + 1}</span>
+              ].map(([title, text], i, all) => (
+                <li key={title} className="relative flex gap-5 pb-8 last:pb-0">
+                  {i < all.length - 1 && <span aria-hidden className="absolute -bottom-1 left-[8px] top-[22px] w-0.5 bg-white/25" />}
+                  <span aria-hidden className="relative mt-1 size-[18px] shrink-0 rounded-full border-[3px] border-white bg-brand-300 shadow-[0_0_0_5px_rgb(255_255_255/0.12)]" />
                   <span>
-                    <span className="block font-semibold text-white">{title}</span>
-                    <span className="mt-0.5 block leading-relaxed text-white/75">{text}</span>
+                    <span className="block text-[0.8125rem] font-semibold uppercase tracking-[0.08em] text-brand-300">Step {i + 1}</span>
+                    <span className="mt-0.5 block text-lg font-semibold text-white">{title}</span>
+                    <span className="mt-1 block leading-relaxed text-white/75">{text}</span>
                   </span>
                 </li>
               ))}
