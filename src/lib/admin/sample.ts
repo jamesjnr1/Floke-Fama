@@ -24,7 +24,10 @@ export function sampleData(): AdminData {
     const organisation = facilities[i % facilities.length];
     return { id: `hos-${(1000 + i).toString(16)}`, name, email: `${name.split(' ')[0].toLowerCase()}${i}@${organisation.split(' ')[0].toLowerCase()}.org`, organisation, phone: `+233 24 ${String(1000000 + i * 7919).slice(-7)}`, role: 'client', createdAt: daysAgo(Math.floor(rnd() * 170)) };
   });
-  accounts.push({ id: 'hos-staff1', name: 'Biomedical Desk', email: 'engineers@flokefama.com', organisation: 'Flokefama', phone: '+233 53 339 2863', role: 'engineer', createdAt: daysAgo(160) });
+  const engineers = ['Samuel Tetteh', 'Joseph Nkrumah', 'Daniel Owusu', 'Grace Mensah'];
+  engineers.forEach((name, i) =>
+    accounts.push({ id: `eng-${i + 1}`, name, email: `${name.split(' ')[0].toLowerCase()}@flokefama.com`, organisation: 'Flokefama', phone: `+233 53 339 ${2860 + i}`, role: 'engineer', createdAt: daysAgo(160 + i * 20) }),
+  );
 
   const popular = catalogue.slice(0, 30);
   const statuses: OrderStatus[] = ['awaiting-payment', 'paid', 'processing', 'delivered', 'delivered', 'delivered'];
@@ -43,12 +46,31 @@ export function sampleData(): AdminData {
     const p = pick(popular);
     return { id: `AS-${2001 + i}`, name: p.name, brand: p.brand ?? 'Mindray', productSlug: p.slug, serial: `SN${(83421 + i * 37).toString()}`, facility: facilities[i % facilities.length], location: pick(['Laboratory', 'ICU', 'Theatre 2', 'Radiology', 'Maternity']), readings: [], installed: daysAgo(400), warrantyUntil: daysAgo(-300), lastCalibration: daysAgo(120), nextCalibration: daysAgo(-60 + Math.floor(rnd() * 90)), intervalMonths: 6, certificates: [] };
   });
-  const tStatus: TicketStatus[] = ['new', 'assigned', 'travelling', 'onsite', 'resolved', 'resolved', 'resolved'];
+  const tStatus: TicketStatus[] = ['new', 'resolved', 'resolved', 'resolved', 'resolved'];
+  const at = (minutesAgo: number) => new Date(now - minutesAgo * 6e4).toISOString();
   const tickets: Ticket[] = Array.from({ length: 27 }, (_, i) => {
     const a = pick(assets);
     const status = pick(tStatus);
-    return { id: `TK-${1043 + i}`, assetId: a.id, title: pick(['Error code on start-up', 'Calibration due', 'Screen not responding', 'Installation and commissioning', 'Printer jam', 'Abnormal readings']), description: '', priority: pick(['routine', 'routine', 'high', 'critical'] as Priority[]), status, openedAt: daysAgo(Math.floor(rnd() * 40)), engineer: status === 'new' ? undefined : pick(['Samuel Tetteh', 'Joseph Nkrumah', 'Daniel Owusu']), log: [], parts: [], requestedBy: pick(people), rating: status === 'resolved' && rnd() > 0.4 ? 4 + Math.round(rnd()) : undefined };
-  }).sort((a, b) => b.openedAt.localeCompare(a.openedAt));
+    return { id: `TK-${1043 + i}`, assetId: a.id, title: pick(['Error code on start-up', 'Calibration due', 'Screen not responding', 'Installation and commissioning', 'Printer jam', 'Abnormal readings']), description: '', priority: pick(['routine', 'routine', 'high', 'critical'] as Priority[]), status, openedAt: daysAgo(3 + Math.floor(rnd() * 40)), engineer: status === 'new' ? undefined : pick(engineers.slice(0, 3)), log: [], parts: [], requestedBy: pick(people), rating: status === 'resolved' && rnd() > 0.4 ? 4 + Math.round(rnd()) : undefined };
+  });
+  // Today's jobs, so the live view has engineers on site, en route and assigned
+  const today: [string, TicketStatus, number, string][] = [
+    ['Samuel Tetteh', 'onsite', 42, 'Error code on start-up'],
+    ['Joseph Nkrumah', 'travelling', 18, 'Abnormal readings'],
+    ['Daniel Owusu', 'assigned', 65, 'Calibration due'],
+    ['Samuel Tetteh', 'assigned', 30, 'Printer jam'],
+  ];
+  today.forEach(([engineer, status, minutes, title], i) => {
+    const a = assets[i * 3];
+    const log = [
+      { at: at(minutes + 120), by: 'System', text: `Assigned to ${engineer}`, kind: 'system' as const },
+      ...(status !== 'assigned' ? [{ at: at(status === 'onsite' ? minutes + 35 : minutes), by: engineer, text: 'En route', kind: 'status' as const }] : []),
+      ...(status === 'onsite' ? [{ at: at(minutes), by: engineer, text: 'Arrived on site', kind: 'status' as const }] : []),
+    ];
+    if (status === 'assigned') log[0].at = at(minutes);
+    tickets.push({ id: `TK-${1100 + i}`, assetId: a.id, title, description: '', priority: i === 0 ? 'critical' : 'high', status, openedAt: at(minutes + 180), engineer, eta: status === 'travelling' ? '13:20' : undefined, log, parts: [], requestedBy: pick(people) });
+  });
+  tickets.sort((a, b) => b.openedAt.localeCompare(a.openedAt));
 
   return {
     source: 'sample',
