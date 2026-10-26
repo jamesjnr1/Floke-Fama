@@ -107,7 +107,7 @@ export async function SimpleHero({ design = heroDesign }: { design?: HeroDesign 
                 <span className="underline decoration-white/30 underline-offset-4 group-hover:decoration-white">Watch our highlight video</span>
               </a>
               <span aria-hidden className="hidden h-5 w-px bg-white/25 sm:block" />
-              <SocialLinks buttonClassName="size-9 border-white/25 text-base text-white/85 hover:border-white hover:bg-white hover:text-[#06482a]" />
+              <SocialLinks buttonClassName="text-white/85 hover:text-white" />
             </div>
           </div>
         }
