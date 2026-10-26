@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { HeroSlides } from '@/components/home/hero-slides';
 import { LogoMark } from '@/components/layout/logo';
 import { Button } from '@/components/ui/button';
+import { Icon } from '@/components/ui/icon';
+import { SocialLinks } from '@/components/ui/social-links';
 import { getSite } from '@/lib/site';
 
 /**
@@ -97,6 +99,15 @@ export async function SimpleHero({ design = heroDesign }: { design?: HeroDesign 
               <Button asChild size="lg" variant="red" arrow="right">
                 <Link href="/support">Contact Us</Link>
               </Button>
+            </div>
+            {/* The highlight film further down the page, and Flokefama's social accounts */}
+            <div className="mt-7 flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
+              <a href="#highlight-video" className="group inline-flex items-center gap-2 font-medium text-white/90 transition-colors hover:text-white">
+                <Icon name="fi-rr-play-circle" className="text-xl text-brand-300" />
+                <span className="underline decoration-white/30 underline-offset-4 group-hover:decoration-white">Watch our highlight video</span>
+              </a>
+              <span aria-hidden className="hidden h-5 w-px bg-white/25 sm:block" />
+              <SocialLinks buttonClassName="size-9 border-white/25 text-base text-white/85 hover:border-white hover:bg-white hover:text-[#06482a]" />
             </div>
           </div>
         }
