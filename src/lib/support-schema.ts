@@ -16,9 +16,9 @@ export const workingStates = [
 
 /** Other assistance: what it is about. */
 export const assistanceTopics = [
-  { id: 'training', label: 'Training for our staff' },
-  { id: 'parts', label: 'Spare parts or consumables' },
-  { id: 'documents', label: 'Manuals or certificates' },
+  { id: 'training', label: 'Staff training' },
+  { id: 'parts', label: 'Parts & consumables' },
+  { id: 'documents', label: 'Manuals & certificates' },
   { id: 'other', label: 'Something else' },
 ] as const;
 
