@@ -4,7 +4,9 @@ import { LiveRefresh } from '@/components/admin/live-refresh';
 import { LogoMark, LogoWordmark } from '@/components/layout/logo';
 import { Icon } from '@/components/ui/icon';
 import { UserAvatar } from '@/components/ui/user-avatar';
-import { setOrderStatus } from '@/lib/admin/actions';
+import { removeEngineer, setOrderStatus } from '@/lib/admin/actions';
+import { AddEngineerForm } from '@/components/admin/add-engineer-form';
+import { ConfirmButton } from '@/components/admin/confirm-button';
 import { configChecks, loadAdminData, type AdminData } from '@/lib/admin/data';
 import { adminLogout } from '@/lib/auth/actions';
 import { requireSession } from '@/lib/auth/server';
@@ -158,7 +160,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             {/* The overview and the accounts read again every 30 s, so who is on which job stays current */}
             {(tab === 'overview' || (tab === 'accounts' && params.account)) && <LiveRefresh seconds={30} />}
             {tab === 'orders' && <Orders data={data} status={params.status} q={params.q} />}
-            {tab === 'accounts' && (params.account ? <AccountDetail data={data} id={params.account} now={now} /> : <Accounts data={data} q={params.q} role={roles.some((r) => r.id && r.id === params.role) ? params.role : undefined} />)}
+            {tab === 'accounts' && (params.account ? <AccountDetail data={data} id={params.account} now={now} /> : <Accounts data={data} q={params.q} role={roles.some((r) => r.id && r.id === params.role) ? params.role : undefined} adding={params.add === 'engineer'} />)}
             {tab === 'products' && <Products data={data} />}
             {tab === 'service' && <Service data={data} now={now} />}
             {tab === 'system' && <System data={data} />}
@@ -449,7 +451,7 @@ const roles = [
   { id: 'admin', label: 'Admins' },
 ];
 
-function Accounts({ data, q, role }: { data: AdminData; q?: string; role?: string }) {
+function Accounts({ data, q, role, adding }: { data: AdminData; q?: string; role?: string; adding?: boolean }) {
   const needle = q?.trim().toLowerCase();
   const list = data.accounts.filter((a) => (!role || a.role === role) && (!needle || [a.name, a.email, a.organisation, a.phone].join(' ').toLowerCase().includes(needle)));
   const ordersOf = (email: string) => data.orders.filter((o) => o.account === email);
@@ -459,8 +461,21 @@ function Accounts({ data, q, role }: { data: AdminData; q?: string; role?: strin
       <Heading
         title="Accounts"
         lead={`${data.accounts.length} registered accounts: hospitals, ${engineers.length} engineer${engineers.length === 1 ? '' : 's'} and admins. Click an account for its details. Passwords are never shown or stored in readable form.`}
-        action={<Csv table="accounts" />}
+        action={
+          <div className="flex flex-wrap gap-2">
+            <Link href="/admin?tab=accounts&role=engineer&add=engineer" className="inline-flex h-11 items-center gap-2 rounded-xl bg-brand-700 px-4 text-[0.9375rem] font-semibold text-white hover:bg-brand-800">
+              <Icon name="fi-rr-user-add" /> Add engineer
+            </Link>
+            <Csv table="accounts" />
+          </div>
+        }
       />
+      {adding && (
+        <Panel title="Add an engineer" className="mb-6">
+          <p className="-mt-3 mb-5 text-[0.9375rem] text-ink-3">They sign in to the engineer portal with this email and password, and appear in Engineers now and on the service desk.</p>
+          <AddEngineerForm />
+        </Panel>
+      )}
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap gap-2">
           {roles.map((r) => (
@@ -499,7 +514,7 @@ function Accounts({ data, q, role }: { data: AdminData; q?: string; role?: strin
           );
         })}
       </Table>
-      {role === 'engineer' && <p className="mt-4 text-[0.875rem] text-ink-3">Engineer accounts are the emails listed in ENGINEER_EMAILS (Vercel → Settings → Environment Variables). Add an email there and that person signs in to the engineer portal.</p>}
+      {role === 'engineer' && <p className="mt-4 text-[0.875rem] text-ink-3">Add engineers with the button above. Emails listed in ENGINEER_EMAILS (Vercel) are engineers too.</p>}
     </>
   );
 }
@@ -532,7 +547,20 @@ function AccountDetail({ data, id, now }: { data: AdminData; id: string; now: nu
     return (
       <>
         <BackToAccounts role="engineer" />
-        <Heading title={a.name} lead={`Engineer · ${a.organisation}`} />
+        <Heading
+          title={a.name}
+          lead={`Engineer · ${a.organisation}`}
+          action={
+            a.id.startsWith('eng-') ? (
+              <form action={removeEngineer}>
+                <input type="hidden" name="id" value={a.id} />
+                <ConfirmButton message={`Remove ${a.name}'s engineer account? They will no longer be able to sign in. Their past jobs stay on the service desk.`} className="inline-flex h-11 items-center gap-2 rounded-xl border border-[#f3a7ab] bg-white px-4 text-[0.9375rem] font-medium text-signal-700 hover:bg-[#fff3f3]">
+                  <Icon name="fi-rr-user-minus" /> Remove engineer
+                </ConfirmButton>
+              </form>
+            ) : undefined
+          }
+        />
         <div className="grid gap-4 lg:grid-cols-3">
           <Panel title="Contact">
             <Facts rows={[['Email', <a key="e" href={`mailto:${a.email}`} className="text-brand-700 underline">{a.email}</a>], ['Phone', a.phone ? <a key="p" href={`tel:${a.phone.replace(/\s/g, '')}`} className="text-brand-700 underline">{a.phone}</a> : '—'], ['Registered', fmt(a.createdAt)]]} />

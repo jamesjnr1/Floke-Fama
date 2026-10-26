@@ -101,9 +101,9 @@ export async function login(_prev: LoginState, form: FormData): Promise<LoginSta
   }
   attempts.delete(key);
   // The admin sign-in page (/admin/login) only lets admins in
-  if (form.get('area') === 'admin' && roleFor(saved.email) !== 'admin') return { error: 'This account doesn’t have access to the admin console.', email: parsed.data.email };
+  if (form.get('area') === 'admin' && roleFor(saved.email, saved.id) !== 'admin') return { error: 'This account doesn’t have access to the admin console.', email: parsed.data.email };
 
-  await startSession({ sub: saved.id, name: saved.name, email: saved.email, role: roleFor(saved.email), facility: saved.organisation, phone: saved.phone, keep: parsed.data.keep === 'on' }, parsed.data.next);
+  await startSession({ sub: saved.id, name: saved.name, email: saved.email, role: roleFor(saved.email, saved.id), facility: saved.organisation, phone: saved.phone, keep: parsed.data.keep === 'on' }, parsed.data.next);
   return {};
 }
 
@@ -126,7 +126,7 @@ export async function register(_prev: SignupState, form: FormData): Promise<Sign
   const id = `hos-${crypto.randomUUID().slice(0, 8)}`;
   const saved = await guarded(() => saveAccount({ id, name: d.name, email: d.email, organisation: d.organisation, phone: d.phone, salt, hash }));
   if (!saved.ok) return { errors: { form: UNAVAILABLE }, values };
-  await startSession({ sub: id, name: d.name, email: d.email, role: roleFor(d.email), facility: d.organisation, phone: d.phone, keep: d.keep === 'on' }, d.next);
+  await startSession({ sub: id, name: d.name, email: d.email, role: roleFor(d.email, id), facility: d.organisation, phone: d.phone, keep: d.keep === 'on' }, d.next);
   return {};
 }
 
