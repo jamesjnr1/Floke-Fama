@@ -1,59 +1,66 @@
 import Image from 'next/image';
+import { accents } from '@/components/home/capabilities';
 import { Reveal } from '@/components/motion/reveal';
 import { getSite } from '@/lib/site';
 import { cn } from '@/lib/utils';
 
-/** Bento spans on a 6-column grid: feature + two stacked, a 2 + 4 row, then rows of two halves. */
-const layout = [
-  { span: 'md:col-span-4 md:row-span-2', height: 'min-h-[340px] md:min-h-[520px]', sizes: '(min-width: 768px) 66vw, 100vw', feature: true },
-  { span: 'md:col-span-2', height: 'min-h-[340px] md:min-h-[300px]', sizes: '(min-width: 768px) 33vw, 100vw' },
-  { span: 'md:col-span-2', height: 'min-h-[340px] md:min-h-[300px]', sizes: '(min-width: 768px) 33vw, 100vw' },
-  { span: 'md:col-span-2', height: 'min-h-[340px] md:min-h-[380px]', sizes: '(min-width: 768px) 33vw, 100vw' },
-  { span: 'md:col-span-4', height: 'min-h-[340px] md:min-h-[380px]', sizes: '(min-width: 768px) 66vw, 100vw' },
-  // More awards: two rows of two halves
-  ...Array.from({ length: 4 }, () => ({ span: 'md:col-span-3', height: 'min-h-[340px] md:min-h-[420px]', sizes: '(min-width: 768px) 50vw, 100vw' })),
-];
+/** The pillars' accents, in turn, so the award cards read as a set like the pillars. */
+const tones = ['green', 'teal', 'blue', 'slate', 'red', 'amber'] as const;
 
-/** The actual awards, photographed: the No.1 healthcare ranking leads. */
+/**
+ * The actual awards, photographed, laid out like the six pillars on the home page: a short label and the heading on
+ * the deep green band, then equal white cards three to a row, each with the photo, the year, a coloured rule, the
+ * award and one line on it. The No.1 healthcare ranking leads.
+ */
 export async function AwardsGallery() {
   const { awards } = await getSite();
   return (
-    <section className="pattern-cross pattern-tr bg-canvas section-y">
+    <section aria-labelledby="awards-title" className="relative isolate overflow-hidden bg-[linear-gradient(100deg,#0b3d2a_0%,#0d4a33_45%,#0a3a28_75%,#072e20_100%)] section-y">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
-        <Reveal>
-          <h2 className="display max-w-3xl text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">We are proud to share some of the awards that celebrate our passion and progress.</h2>
+        <Reveal className="flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
+          <div>
+            <p className="inline-block w-fit bg-white/10 px-2.5 py-1 text-[0.75rem] font-semibold uppercase tracking-[0.08em] text-brand-300">Awards &amp; recognition</p>
+            <h2 id="awards-title" className="display mt-4 max-w-2xl text-[clamp(2rem,1.3rem+2.6vw,3.5rem)] text-white">
+              Celebrating our <span className="text-brand-300">passion and progress.</span>
+            </h2>
+          </div>
+          <p className="no-justify max-w-md text-lg leading-relaxed text-white/80">We are proud to share some of the awards that recognise our team and the work we do.</p>
         </Reveal>
-        <ul className="swipe-row mt-10 gap-4 md:mt-12 md:grid-cols-6">
+
+        <ol className="swipe-row mt-10 gap-4 md:mt-14 md:grid-cols-2 lg:grid-cols-3 lg:gap-5">
           {awards.map((a, i) => {
-            const l = layout[i] ?? layout[1];
+            const t = accents[tones[i % tones.length]];
             return (
-            <li key={a.id} className={l.span}>
-              <Reveal delay={Math.min(i, 4) * 0.05} className="h-full">
-                <article className={cn('group relative isolate flex h-full overflow-hidden rounded-lg bg-midnight text-white', l.height)}>
-                  <Image
-                    src={a.image}
-                    alt={a.alt}
-                    fill
-                    sizes={l.sizes}
-                    className="-z-10 object-cover object-[50%_35%] transition-transform duration-[1400ms] ease-out-expo group-hover:scale-[1.04]"
-                  />
-                  <div aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-t from-midnight via-midnight/50 to-transparent" />
-                  <div className="mt-auto p-6 md:p-8">
-                    <p className="label !text-brand-300">{a.year}</p>
-                    <h3 className={cn('mt-2 font-bold tracking-[-0.02em] text-white', l.feature ? 'text-3xl md:text-5xl' : 'text-xl')}>{a.title}</h3>
-                    <p className={cn('mt-2 text-white/80', l.feature ? 'max-w-lg' : 'text-sm')}>{a.body}</p>
-                  </div>
-                </article>
-              </Reveal>
-            </li>
+              <li key={a.id}>
+                <Reveal delay={Math.min(i, 5) * 0.05} className="h-full">
+                  <article className="group flex h-full flex-col overflow-hidden bg-paper shadow-[0_30px_60px_-40px_rgb(0_0_0/0.7)]">
+                    <div className="relative aspect-[16/11] overflow-hidden bg-midnight">
+                      <Image
+                        src={a.image}
+                        alt={a.alt}
+                        fill
+                        sizes="(min-width: 1024px) 420px, (min-width: 768px) 50vw, 84vw"
+                        className="object-cover object-[50%_35%] transition-transform duration-700 ease-out-expo group-hover:scale-105"
+                      />
+                      <span className={cn('absolute left-4 top-4 px-3 py-1.5 text-sm font-bold text-white', t.num)}>{a.year}</span>
+                    </div>
+                    <span aria-hidden className={cn('h-1 w-full', t.bar)} />
+                    <div className="flex flex-1 flex-col p-6">
+                      <h3 className="text-xl font-bold leading-snug tracking-[-0.02em] text-ink">{a.title}</h3>
+                      <p className="no-justify mt-2 text-base leading-relaxed text-ink-3">{a.body}</p>
+                    </div>
+                  </article>
+                </Reveal>
+              </li>
             );
           })}
-        </ul>
+        </ol>
+
         <Reveal>
-         <p className="mx-auto mt-16 max-w-3xl text-center !text-center [text-align-last:center] text-xl leading-relaxed text-ink-3 md:text-2xl">
-            These accolades serve as a testament to the <span className="font-medium text-ink">hard work of our team</span>, the{' '}
-            <span className="font-medium text-ink">quality of our solutions</span>, and the <span className="font-medium text-brand-700">positive impact we’ve made in transforming healthcare delivery across Ghana and the West African region</span>.
-        </p>
+          <p className="mx-auto mt-14 max-w-3xl text-center !text-center text-xl leading-relaxed text-white/75 [text-align-last:center] md:text-2xl">
+            These accolades serve as a testament to the <span className="font-medium text-white">hard work of our team</span>, the{' '}
+            <span className="font-medium text-white">quality of our solutions</span>, and the <span className="font-medium text-brand-300">positive impact we’ve made in transforming healthcare delivery across Ghana and the West African region</span>.
+          </p>
         </Reveal>
       </div>
     </section>
