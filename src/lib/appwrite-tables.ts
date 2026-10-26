@@ -1,4 +1,5 @@
 import 'server-only';
+import { TablesDBIndexType } from 'node-appwrite';
 import { appwrite, DATABASE_ID, TABLES } from '@/lib/appwrite';
 
 /**
@@ -6,7 +7,12 @@ import { appwrite, DATABASE_ID, TABLES } from '@/lib/appwrite';
  * them, so a new feature works without anyone running the setup again. Same columns as scripts/appwrite-setup.mjs.
  */
 type Column = { key: string; size?: number; required: boolean };
-const specs: Record<string, { name: string; columns: Column[] }> = {
+const specs: Record<string, { name: string; columns: Column[]; indexes?: { key: string; columns: string[] }[] }> = {
+  [TABLES.pushSubscriptions]: {
+    name: 'Alert devices',
+    columns: [{ key: 'account', size: 254, required: true }, { key: 'role', size: 16, required: true }, { key: 'facility', size: 160, required: false }, { key: 'data', required: true }],
+    indexes: [{ key: 'role_facility', columns: ['role', 'facility'] }],
+  },
   [TABLES.supportRequests]: {
     name: 'Support requests',
     columns: [{ key: 'status', size: 16, required: true }, { key: 'facility', size: 160, required: false }, { key: 'data', required: true }],
@@ -47,9 +53,10 @@ async function create(tableId: string) {
   // Columns are created in the background: wait until they can be written to
   for (let i = 0; i < 20; i++) {
     const { columns } = await db.listColumns({ databaseId: DATABASE_ID, tableId });
-    if ((columns as { status?: string }[]).every((c) => c.status !== 'processing')) return;
+    if ((columns as { status?: string }[]).every((c) => c.status !== 'processing')) break;
     await sleep(750);
   }
+  for (const ix of spec.indexes ?? []) await db.createIndex({ databaseId: DATABASE_ID, tableId, key: ix.key, type: TablesDBIndexType.Key, columns: ix.columns }).catch(ignoreExists);
 }
 
 const creating = new Map<string, Promise<void>>();
