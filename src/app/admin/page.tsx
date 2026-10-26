@@ -96,6 +96,9 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             <Link href={href('system')} aria-current={tab === 'system' ? 'page' : undefined} className={item(tab === 'system')}>
               <Icon name="fi-rr-database" className={tab === 'system' ? 'text-brand-600' : ''} /> Database &amp; settings
             </Link>
+            <Link href="/admin/password" className={item(false)}>
+              <Icon name="fi-rr-lock" /> Change password
+            </Link>
             <form action={adminLogout}>
               <button className={cn(item(false), 'w-full')}>
                 <Icon name="fi-rr-sign-out-alt" /> Sign out
