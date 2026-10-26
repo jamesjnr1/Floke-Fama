@@ -6,7 +6,7 @@ import { departments, quoteSchema, timelines, type QuoteInput } from '@/lib/quot
 
 /**
  * Receives procurement requests, validates them server-side and forwards them to HubSpot when configured:
- * as a deal with its contact and hospital (private app, HUBSPOT_ACCESS_TOKEN), or through a HubSpot form. Without a CRM it answers `delivered: false`, and the page
+ * as a deal with its contact and hospital (service key, HUBSPOT_ACCESS_TOKEN), or through a HubSpot form. Without a CRM it answers `delivered: false`, and the page
  * hands the request to the visitor's email or WhatsApp, so no request is ever lost.
  */
 export async function POST(request: Request) {
