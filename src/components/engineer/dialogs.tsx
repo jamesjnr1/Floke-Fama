@@ -7,7 +7,7 @@ import type { Asset, Certificate, Priority, Ticket } from '@/lib/service/store';
 import { cn } from '@/lib/utils';
 
 /** Log a new equipment fault against an installed system. */
-export function LogFaultDialog({ open, onOpenChange, assets, defaultAssetId, defaultDescription, title = 'Log equipment fault', onSubmit }: {
+export function LogFaultDialog({ open, onOpenChange, assets, defaultAssetId, defaultDescription, title = 'Log equipment fault', submitLabel = 'Log fault', onSubmit }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
   assets: Asset[];
@@ -15,6 +15,7 @@ export function LogFaultDialog({ open, onOpenChange, assets, defaultAssetId, def
   /** Filled in when the job comes from a request on the website. */
   defaultDescription?: string;
   title?: string;
+  submitLabel?: string;
   onSubmit: (v: { assetId: string; description: string; priority: Priority; assignToMe: boolean }) => void;
 }) {
   const [assetId, setAssetId] = useState(defaultAssetId ?? assets[0]?.id ?? '');
@@ -63,7 +64,7 @@ export function LogFaultDialog({ open, onOpenChange, assets, defaultAssetId, def
         </label>
         <div className="flex justify-end gap-2 pt-2">
           <GhostButton type="button" onClick={() => onOpenChange(false)}>Cancel</GhostButton>
-          <PrimaryButton type="submit" disabled={!description.trim()}>Log fault</PrimaryButton>
+          <PrimaryButton type="submit" disabled={!description.trim()}>{submitLabel}</PrimaryButton>
         </div>
       </form>
     </PortalDialog>

@@ -72,7 +72,7 @@ export default async function AdminLoginPage({ searchParams }: { searchParams: P
           <h2 className="mt-6 text-[1.875rem] font-bold leading-tight tracking-[-0.02em] text-ink">Sign in</h2>
           <p className="mt-2 text-ink-3">Use the email and password of your administrator account.</p>
           <LoginForm
-            admin
+            area="admin"
             next={target?.startsWith('/admin') ? target : '/admin'}
             notice={signedout ? 'You’ve been signed out.' : target ? 'Please sign in to open the admin console.' : undefined}
           />

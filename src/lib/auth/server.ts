@@ -1,7 +1,7 @@
 import 'server-only';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { ADMIN_COOKIE, SESSION_COOKIE, verifySession, type Role } from '@/lib/auth/session';
+import { ADMIN_COOKIE, roleLogin, SESSION_COOKIE, verifySession, type Role } from '@/lib/auth/session';
 
 /** The signed-in user on the site (hospitals and engineers). Admin sessions are separate: see getAdminSession. */
 export async function getSession() {
@@ -18,6 +18,6 @@ export async function getAdminSession() {
 /** Defence in depth: pages re-check the session even though middleware already guards the route. */
 export async function requireSession(role: Role, path: string) {
   const session = role === 'admin' ? await getAdminSession() : await getSession();
-  if (!session || session.role !== role) redirect(`${role === 'admin' ? '/admin/login' : '/login'}?next=${encodeURIComponent(path)}`);
+  if (!session || session.role !== role) redirect(`${roleLogin[role]}?next=${encodeURIComponent(path)}`);
   return session;
 }
