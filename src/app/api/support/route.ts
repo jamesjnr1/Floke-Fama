@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { submitToCrm } from '@/lib/crm';
+import { hubspotConfigured, noteSupportRequest } from '@/lib/hubspot';
 import { pushToEngineers } from '@/lib/push';
 import { smsWebsiteFault } from '@/lib/sms';
 import { emailSupport } from '@/lib/support-email';
@@ -41,10 +42,18 @@ export async function POST(request: Request) {
       'Phone': data.phone,
       ...Object.fromEntries(supportDetails(data)),
     }, data.phone),
-    submitToCrm(
-      { firstname, lastname: rest.join(' '), phone: data.phone, message: `[Technical support${ref}] ${supportSummary(data)}` },
-      { path: '/support', name: 'Technical support request' },
-    ),
+    hubspotConfigured()
+      ? noteSupportRequest({
+          name: data.name,
+          phone: data.phone,
+          facility: data.facility,
+          title: `${kind}${ref} from the Support page`,
+          lines: supportDetails(data),
+        }).then(() => true)
+      : submitToCrm(
+          { firstname, lastname: rest.join(' '), phone: data.phone, message: `[Technical support${ref}] ${supportSummary(data)}` },
+          { path: '/support', name: 'Technical support request' },
+        ),
     // Engineers hear about it on their phones: a text for a fault, a portal alert for every request
     saved ? smsWebsiteFault({ reference: saved, ...data }).then(() => false) : Promise.resolve(false),
     saved
