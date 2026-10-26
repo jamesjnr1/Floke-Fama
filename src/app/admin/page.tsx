@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Bars, Columns } from '@/components/admin/charts';
+import { LiveRefresh } from '@/components/admin/live-refresh';
 import { LogoMark, LogoWordmark } from '@/components/layout/logo';
 import { Icon } from '@/components/ui/icon';
 import { UserAvatar } from '@/components/ui/user-avatar';
@@ -154,8 +155,10 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             )}
 
             {tab === 'overview' && <Overview data={data} now={now} />}
+            {/* The overview and the accounts read again every 30 s, so who is on which job stays current */}
+            {(tab === 'overview' || (tab === 'accounts' && params.account)) && <LiveRefresh seconds={30} />}
             {tab === 'orders' && <Orders data={data} status={params.status} q={params.q} />}
-            {tab === 'accounts' && <Accounts data={data} q={params.q} />}
+            {tab === 'accounts' && (params.account ? <AccountDetail data={data} id={params.account} now={now} /> : <Accounts data={data} q={params.q} role={roles.some((r) => r.id && r.id === params.role) ? params.role : undefined} />)}
             {tab === 'products' && <Products data={data} />}
             {tab === 'service' && <Service data={data} now={now} />}
             {tab === 'system' && <System data={data} />}
@@ -304,6 +307,10 @@ function Overview({ data, now }: { data: AdminData; now: number }) {
         <Mini label="Phones with alerts on" value={data.pushSubscriptions} note="Push subscribers" />
       </div>
 
+      <div className="mt-4">
+        <EngineersNow data={data} now={now} />
+      </div>
+
       <div className="mt-4 grid gap-4 xl:grid-cols-12">
         <Panel title="Orders per week" className="xl:col-span-7" action={<span className="text-[0.875rem] text-ink-3">Last 12 weeks</span>}>
           <Columns label="Orders per week" data={weekly(data.orders.map((o) => o.placedAt), 12, now)} />
@@ -434,36 +441,323 @@ function Orders({ data, status, q }: { data: AdminData; status?: string; q?: str
   );
 }
 
-function Accounts({ data, q }: { data: AdminData; q?: string }) {
+const roleLabel = (r: string) => (r === 'client' ? 'Hospital' : r === 'engineer' ? 'Engineer' : 'Admin');
+const roles = [
+  { id: '', label: 'All' },
+  { id: 'client', label: 'Hospitals' },
+  { id: 'engineer', label: 'Engineers' },
+  { id: 'admin', label: 'Admins' },
+];
+
+function Accounts({ data, q, role }: { data: AdminData; q?: string; role?: string }) {
   const needle = q?.trim().toLowerCase();
-  const list = data.accounts.filter((a) => !needle || [a.name, a.email, a.organisation, a.phone].join(' ').toLowerCase().includes(needle));
+  const list = data.accounts.filter((a) => (!role || a.role === role) && (!needle || [a.name, a.email, a.organisation, a.phone].join(' ').toLowerCase().includes(needle)));
   const ordersOf = (email: string) => data.orders.filter((o) => o.account === email);
+  const engineers = data.accounts.filter((a) => a.role === 'engineer');
   return (
     <>
-      <Heading title="Accounts" lead={`${data.accounts.length} registered accounts: hospitals, engineers and admins. Passwords are never shown or stored in readable form.`} action={<Csv table="accounts" />} />
-      <div className="mb-4 flex justify-end">
-        <SearchBox tab="accounts" q={q} placeholder="Name, hospital, email, phone…" />
+      <Heading
+        title="Accounts"
+        lead={`${data.accounts.length} registered accounts: hospitals, ${engineers.length} engineer${engineers.length === 1 ? '' : 's'} and admins. Click an account for its details. Passwords are never shown or stored in readable form.`}
+        action={<Csv table="accounts" />}
+      />
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap gap-2">
+          {roles.map((r) => (
+            <Link
+              key={r.id}
+              href={`/admin?tab=accounts${r.id ? `&role=${r.id}` : ''}${q ? `&q=${encodeURIComponent(q)}` : ''}`}
+              className={cn('rounded-xl border px-3.5 py-2 text-[0.9375rem] font-medium', (role ?? '') === r.id ? 'border-brand-600 bg-brand-50 text-brand-800' : 'border-line bg-white hover:border-ink/30')}
+            >
+              {r.label} <span className="tabular-nums text-ink-3">{r.id ? data.accounts.filter((a) => a.role === r.id).length : data.accounts.length}</span>
+            </Link>
+          ))}
+        </div>
+        <SearchBox tab="accounts" q={q} placeholder="Name, hospital, email, phone…" extra={{ role }} />
       </div>
-      <Table head={['Hospital / organisation', 'Contact', 'Phone', 'Role', 'Registered', 'Orders', 'Last order']} empty={!list.length}>
+      <Table head={['Hospital / organisation', 'Contact', 'Phone', 'Role', 'Registered', role === 'engineer' ? 'Now' : 'Orders', '']} empty={!list.length}>
         {list.map((a) => {
           const orders = ordersOf(a.email);
+          const job = a.role === 'engineer' ? currentJob(data, a.name) : undefined;
+          const href = `/admin?tab=accounts&account=${encodeURIComponent(a.id)}`;
           return (
-            <tr key={a.id}>
-              <td className="font-medium">{a.organisation}</td>
+            <tr key={a.id} className="relative cursor-pointer">
+              <td className="font-medium">
+                {/* The whole row opens the account */}
+                <Link href={href} className="after:absolute after:inset-0 hover:text-brand-700">{a.organisation}</Link>
+              </td>
               <td>
                 {a.name}
                 <span className="block text-[0.8125rem] text-ink-3">{a.email}</span>
               </td>
               <td className="whitespace-nowrap">{a.phone || '—'}</td>
-              <td><Badge tone={a.role === 'client' ? 'neutral' : 'good'}>{a.role === 'client' ? 'Hospital' : a.role === 'engineer' ? 'Engineer' : 'Admin'}</Badge></td>
+              <td><Badge tone={a.role === 'client' ? 'neutral' : 'good'}>{roleLabel(a.role)}</Badge></td>
               <td className="whitespace-nowrap">{fmt(a.createdAt)}</td>
-              <td className="tabular-nums">{orders.length}</td>
-              <td className="whitespace-nowrap">{fmt(orders[0]?.placedAt)}</td>
+              <td className="tabular-nums">{a.role === 'engineer' ? <JobBadge job={job} /> : orders.length}</td>
+              <td className="text-right text-ink-3"><Icon name="fi-rr-angle-small-right" /></td>
             </tr>
           );
         })}
       </Table>
+      {role === 'engineer' && <p className="mt-4 text-[0.875rem] text-ink-3">Engineer accounts are the emails listed in ENGINEER_EMAILS (Vercel → Settings → Environment Variables). Add an email there and that person signs in to the engineer portal.</p>}
     </>
+  );
+}
+
+/** One account in full: the hospital or company, its people, orders, equipment and service requests; for an engineer, their jobs. */
+function AccountDetail({ data, id, now }: { data: AdminData; id: string; now: number }) {
+  const a = data.accounts.find((x) => x.id === id);
+  if (!a) {
+    return (
+      <>
+        <BackToAccounts />
+        <Heading title="Account not found" lead="It may have been removed." />
+      </>
+    );
+  }
+  const sameOrg = (o: string) => o.trim().toLowerCase() === a.organisation.trim().toLowerCase();
+  const people = data.accounts.filter((x) => sameOrg(x.organisation));
+  const orders = data.orders.filter((o) => people.some((p) => p.email === o.account));
+  const assets = data.desk.assets.filter((x) => sameOrg(x.facility));
+  const tickets = data.desk.tickets.filter((t) => assets.some((x) => x.id === t.assetId));
+  const addresses = [...new Set(orders.map((o) => o.address).filter(Boolean))];
+  const regions = [...new Set(orders.map((o) => o.region).filter(Boolean))];
+  const assetOf = (aid: string) => data.desk.assets.find((x) => x.id === aid);
+
+  if (a.role === 'engineer') {
+    const jobs = data.desk.tickets.filter((t) => t.engineer === a.name);
+    const job = currentJob(data, a.name);
+    const done = jobs.filter((t) => t.status === 'resolved');
+    const rated = done.filter((t) => t.rating);
+    return (
+      <>
+        <BackToAccounts role="engineer" />
+        <Heading title={a.name} lead={`Engineer · ${a.organisation}`} />
+        <div className="grid gap-4 lg:grid-cols-3">
+          <Panel title="Contact">
+            <Facts rows={[['Email', <a key="e" href={`mailto:${a.email}`} className="text-brand-700 underline">{a.email}</a>], ['Phone', a.phone ? <a key="p" href={`tel:${a.phone.replace(/\s/g, '')}`} className="text-brand-700 underline">{a.phone}</a> : '—'], ['Registered', fmt(a.createdAt)]]} />
+          </Panel>
+          <Panel title="Right now" className="lg:col-span-2">
+            {job ? <JobLine job={job} data={data} now={now} /> : <p className="text-ink-3">No open job: available.</p>}
+          </Panel>
+        </div>
+        <div className="mt-4 grid grid-cols-2 gap-4 xl:grid-cols-4">
+          <Mini label="Jobs assigned" value={jobs.length} note="all time" />
+          <Mini label="Open" value={jobs.length - done.length} note="not yet resolved" />
+          <Mini label="Resolved" value={done.length} note="jobs closed" />
+          <Mini label="Rating" value={rated.length ? `${(rated.reduce((n, t) => n + (t.rating ?? 0), 0) / rated.length).toFixed(1)}/5` : '—'} note={`${rated.length} rated`} />
+        </div>
+        <h2 className="mb-3 mt-8 text-lg font-semibold">Jobs</h2>
+        <TicketTable tickets={jobs} assetOf={assetOf} />
+      </>
+    );
+  }
+
+  const items = orders.reduce((n, o) => n + units(o), 0);
+  return (
+    <>
+      <BackToAccounts role={a.role === 'client' ? 'client' : undefined} />
+      <Heading title={a.organisation} lead={`${roleLabel(a.role)} account · registered ${fmt(a.createdAt)}`} />
+      <div className="grid gap-4 lg:grid-cols-3">
+        <Panel title="Hospital / company">
+          <Facts
+            rows={[
+              ['Name', a.organisation],
+              ['Region', regions.join(', ') || '—'],
+              ['Delivery address', addresses.length ? addresses.map((x) => <span key={x} className="block">{x}</span>) : '—'],
+              ['Customer since', fmt(people.reduce((m, p) => (p.createdAt < m ? p.createdAt : m), a.createdAt))],
+            ]}
+          />
+        </Panel>
+        <Panel title={`People (${people.length})`} className="lg:col-span-2">
+          <ul className="divide-y divide-[#edf1ef]">
+            {people.map((p) => (
+              <li key={p.id} className="flex flex-wrap items-center gap-x-6 gap-y-1 py-3 first:pt-0">
+                <UserAvatar className="size-10 rounded-full bg-[#eaf5ef] text-base text-brand-800" />
+                <span className="min-w-40 font-medium">{p.name}</span>
+                <a href={`mailto:${p.email}`} className="text-brand-700 underline">{p.email}</a>
+                <span className="text-ink-2">{p.phone ? <a href={`tel:${p.phone.replace(/\s/g, '')}`}>{p.phone}</a> : '—'}</span>
+                <span className="text-[0.875rem] text-ink-3">since {fmt(p.createdAt)}</span>
+              </li>
+            ))}
+          </ul>
+        </Panel>
+      </div>
+      <div className="mt-4 grid grid-cols-2 gap-4 xl:grid-cols-4">
+        <Mini label="Orders" value={orders.length} note={`last ${fmt(orders[0]?.placedAt)}`} />
+        <Mini label="Items ordered" value={items} note={`${orders.filter((o) => o.status === 'awaiting-payment').length} awaiting payment`} />
+        <Mini label="Equipment under care" value={assets.length} note={`${assets.filter((x) => x.nextCalibration && x.nextCalibration < new Date(now + 30 * DAY).toISOString()).length} due for calibration`} />
+        <Mini label="Service requests" value={tickets.length} note={`${tickets.filter((t) => t.status !== 'resolved').length} open`} />
+      </div>
+
+      <h2 className="mb-3 mt-8 text-lg font-semibold">Orders</h2>
+      <Table head={['Reference', 'Placed', 'Items', 'Payment', 'Region', 'Status']} empty={!orders.length}>
+        {orders.map((o) => (
+          <tr key={o.reference}>
+            <td className="font-mono text-[0.875rem] font-semibold">{o.reference}</td>
+            <td className="whitespace-nowrap">{timeFmt.format(new Date(o.placedAt))}</td>
+            <td>{o.items.map((i) => <span key={i.slug} className="block">{i.qty} × {tidy(i.name)}</span>)}</td>
+            <td>{methodLabel[o.method] ?? o.method}</td>
+            <td>{o.region || '—'}</td>
+            <td><Badge tone={orderTone(o.status)}>{orderStatusLabel[o.status]}</Badge></td>
+          </tr>
+        ))}
+      </Table>
+
+      <h2 className="mb-3 mt-8 text-lg font-semibold">Equipment</h2>
+      <Table head={['Equipment', 'Serial', 'Location', 'Installed', 'Warranty until', 'Next calibration']} empty={!assets.length}>
+        {assets.map((x) => (
+          <tr key={x.id}>
+            <td className="font-medium">{tidy(x.name)}</td>
+            <td className="font-mono text-[0.875rem]">{x.serial}</td>
+            <td>{x.location}</td>
+            <td className="whitespace-nowrap">{fmt(x.installed)}</td>
+            <td className="whitespace-nowrap">{fmt(x.warrantyUntil)}</td>
+            <td className="whitespace-nowrap">{x.nextCalibration ? <Badge tone={x.nextCalibration < new Date(now).toISOString() ? 'bad' : x.nextCalibration < new Date(now + 30 * DAY).toISOString() ? 'warn' : 'neutral'}>{fmt(x.nextCalibration)}</Badge> : '—'}</td>
+          </tr>
+        ))}
+      </Table>
+
+      <h2 className="mb-3 mt-8 text-lg font-semibold">Service requests</h2>
+      <TicketTable tickets={tickets} assetOf={assetOf} />
+    </>
+  );
+}
+
+function BackToAccounts({ role }: { role?: string }) {
+  return (
+    <Link href={`/admin?tab=accounts${role ? `&role=${role}` : ''}`} className="mb-4 inline-flex items-center gap-1.5 text-[0.9375rem] font-medium text-ink-3 hover:text-ink">
+      <Icon name="fi-rr-arrow-small-left" /> All accounts
+    </Link>
+  );
+}
+
+function Facts({ rows }: { rows: [string, React.ReactNode][] }) {
+  return (
+    <dl className="space-y-3">
+      {rows.map(([k, v]) => (
+        <div key={k}>
+          <dt className="text-[0.8125rem] text-ink-3">{k}</dt>
+          <dd className="mt-0.5 font-medium">{v}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
+function TicketTable({ tickets, assetOf }: { tickets: AdminData['desk']['tickets']; assetOf: (id: string) => AdminData['desk']['assets'][number] | undefined }) {
+  return (
+    <Table head={['Request', 'Opened', 'Equipment', 'Hospital', 'Priority', 'Status', 'Engineer', 'Rating']} empty={!tickets.length}>
+      {tickets.map((t) => {
+        const a = assetOf(t.assetId);
+        return (
+          <tr key={t.id}>
+            <td>
+              <span className="font-mono text-[0.875rem] font-semibold">{t.id}</span>
+              <span className="block text-[0.8125rem] text-ink-3">{t.title}</span>
+            </td>
+            <td className="whitespace-nowrap">{fmt(t.openedAt)}</td>
+            <td>{a ? tidy(a.name) : t.assetId}</td>
+            <td>{a?.facility ?? '—'}</td>
+            <td><Badge tone={t.priority === 'critical' ? 'bad' : t.priority === 'high' ? 'warn' : 'neutral'}>{t.priority[0].toUpperCase() + t.priority.slice(1)}</Badge></td>
+            <td><Badge tone={t.status === 'resolved' ? 'good' : 'neutral'}>{ticketLabel[t.status]}</Badge></td>
+            <td>{t.engineer ?? <span className="text-signal-700">Unassigned</span>}</td>
+            <td>{t.rating ? `${t.rating}/5` : '—'}</td>
+          </tr>
+        );
+      })}
+    </Table>
+  );
+}
+
+/* ---------- Engineers, live ---------- */
+
+/** On site first, then en route, then assigned. */
+const busy: Record<string, number> = { onsite: 0, travelling: 1, assigned: 2 };
+
+/** The job an engineer is on now (the furthest along of their open ones), and since when. */
+function currentJob(data: AdminData, name: string) {
+  const open = data.desk.tickets.filter((t) => t.engineer === name && t.status in busy).sort((x, y) => busy[x.status] - busy[y.status]);
+  const t = open[0];
+  if (!t) return undefined;
+  const since = [...t.log].reverse().find((l) => l.kind === 'status' || l.kind === 'system')?.at ?? t.openedAt;
+  return { ticket: t, since, queue: open.length - 1 };
+}
+type Job = NonNullable<ReturnType<typeof currentJob>>;
+
+const ago = (iso: string, now: number) => {
+  const m = Math.max(0, Math.round((now - new Date(iso).getTime()) / 6e4));
+  return m < 60 ? `${m} min` : m < 48 * 60 ? `${Math.floor(m / 60)} h ${m % 60 ? `${m % 60} min` : ''}`.trim() : `${Math.floor(m / 1440)} days`;
+};
+
+function JobBadge({ job }: { job?: Job }) {
+  if (!job) return <Badge tone="good">Available</Badge>;
+  return <Badge tone={job.ticket.status === 'onsite' ? 'warn' : 'neutral'}>{ticketLabel[job.ticket.status]}</Badge>;
+}
+
+function JobLine({ job, data, now }: { job: Job; data: AdminData; now: number }) {
+  const t = job.ticket;
+  const a = data.desk.assets.find((x) => x.id === t.assetId);
+  return (
+    <div className="flex flex-wrap items-start gap-x-6 gap-y-2">
+      <JobBadge job={job} />
+      <span className="min-w-0 flex-1">
+        <span className="block font-medium">
+          <span className="font-mono text-[0.875rem]">{t.id}</span> · {t.title}
+        </span>
+        <span className="block text-[0.875rem] text-ink-3">
+          {a ? `${tidy(a.name)} · ${a.facility}${a.location ? `, ${a.location}` : ''}` : t.assetId}
+        </span>
+      </span>
+      <span className="text-right text-[0.875rem]">
+        <span className="block font-medium">{ticketLabel[t.status]} since {timeFmt.format(new Date(job.since))}</span>
+        <span className="block text-ink-3">
+          {ago(job.since, now)} ago{t.status === 'travelling' && t.eta ? ` · ETA ${t.eta}` : ''}
+          {job.queue ? ` · ${job.queue} more queued` : ''}
+        </span>
+      </span>
+    </div>
+  );
+}
+
+/** Every engineer (accounts and anyone named on a request) with what they are on now. */
+function EngineersNow({ data, now }: { data: AdminData; now: number }) {
+  const names = [...new Set([...data.accounts.filter((a) => a.role === 'engineer').map((a) => a.name), ...data.desk.tickets.flatMap((t) => (t.engineer ? [t.engineer] : []))])];
+  const rows = names
+    .map((name) => ({ name, account: data.accounts.find((a) => a.role === 'engineer' && a.name === name), job: currentJob(data, name) }))
+    .sort((x, y) => (x.job ? busy[x.job.ticket.status] : 9) - (y.job ? busy[y.job.ticket.status] : 9));
+  const unassigned = data.desk.tickets.filter((t) => t.status === 'new');
+  return (
+    <Panel
+      title="Engineers now"
+      action={<span className="flex items-center gap-2 text-[0.875rem] text-ink-3"><span className="size-2 animate-status-pulse rounded-full bg-[#4cc96e]" /> Live · updates every 30 s</span>}
+    >
+      {rows.length ? (
+        <ul className="divide-y divide-[#edf1ef]">
+          {rows.map((r) => (
+            <li key={r.name} className="flex flex-wrap items-center gap-x-5 gap-y-2 py-3.5 first:pt-0 last:pb-0">
+              <UserAvatar className="size-10 rounded-full bg-[#eaf5ef] text-base text-brand-800" />
+              <span className="w-44 shrink-0">
+                {r.account ? (
+                  <Link href={`/admin?tab=accounts&account=${encodeURIComponent(r.account.id)}`} className="font-medium hover:text-brand-700">{r.name}</Link>
+                ) : (
+                  <span className="font-medium">{r.name}</span>
+                )}
+                <span className="block text-[0.8125rem] text-ink-3">{r.account?.phone || 'Engineer'}</span>
+              </span>
+              <span className="min-w-0 flex-1">{r.job ? <JobLine job={r.job} data={data} now={now} /> : <JobBadge />}</span>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-ink-3">No engineers yet. Add their emails to ENGINEER_EMAILS.</p>
+      )}
+      {unassigned.length > 0 && (
+        <p className="mt-4 text-[0.875rem]">
+          <Link href="/admin?tab=service" className="font-semibold text-signal-700 underline">{unassigned.length} request{unassigned.length === 1 ? '' : 's'} waiting for an engineer</Link>
+        </p>
+      )}
+    </Panel>
   );
 }
 
@@ -531,26 +825,7 @@ function Service({ data, now }: { data: AdminData; now: number }) {
       </div>
 
       <h2 className="mb-3 mt-8 text-lg font-semibold">Service requests</h2>
-      <Table head={['Request', 'Opened', 'Equipment', 'Hospital', 'Priority', 'Status', 'Engineer', 'Rating']} empty={!data.desk.tickets.length}>
-        {data.desk.tickets.map((t) => {
-          const a = assetOf(t.assetId);
-          return (
-            <tr key={t.id}>
-              <td>
-                <span className="font-mono text-[0.875rem] font-semibold">{t.id}</span>
-                <span className="block text-[0.8125rem] text-ink-3">{t.title}</span>
-              </td>
-              <td className="whitespace-nowrap">{fmt(t.openedAt)}</td>
-              <td>{a ? tidy(a.name) : t.assetId}</td>
-              <td>{a?.facility ?? '—'}</td>
-              <td><Badge tone={t.priority === 'critical' ? 'bad' : t.priority === 'high' ? 'warn' : 'neutral'}>{t.priority[0].toUpperCase() + t.priority.slice(1)}</Badge></td>
-              <td><Badge tone={t.status === 'resolved' ? 'good' : 'neutral'}>{ticketLabel[t.status]}</Badge></td>
-              <td>{t.engineer ?? <span className="text-signal-700">Unassigned</span>}</td>
-              <td>{t.rating ? `${t.rating}/5` : '—'}</td>
-            </tr>
-          );
-        })}
-      </Table>
+      <TicketTable tickets={data.desk.tickets} assetOf={assetOf} />
 
       <h2 className="mb-3 mt-8 text-lg font-semibold">Calibration due within 30 days ({due.length})</h2>
       <Table head={['Equipment', 'Serial', 'Hospital', 'Location', 'Last calibration', 'Due']} empty={!due.length}>
