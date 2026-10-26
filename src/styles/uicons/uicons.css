@@ -25,6 +25,7 @@
 .fi-rr-clipboard-list::before{content:"\f43b"}
 .fi-rr-clock::before{content:"\f45a"}
 .fi-rr-comment::before{content:"\f4b8"}
+.fi-rr-copy::before{content:"\f4dd"}
 .fi-rr-cross-small::before{content:"\f4f6"}
 .fi-rr-database::before{content:"\f525"}
 .fi-rr-download::before{content:"\f591"}
@@ -55,6 +56,7 @@
 .fi-rr-phone-call::before{content:"\fa61"}
 .fi-rr-play-circle::before{content:"\fa9b"}
 .fi-rr-plus::before{content:"\faac"}
+.fi-rr-refresh::before{content:"\fb34"}
 .fi-rr-search::before{content:"\fbba"}
 .fi-rr-search-alt::before{content:"\fbb6"}
 .fi-rr-settings::before{content:"\fbd2"}
@@ -72,6 +74,7 @@
 .fi-rr-truck-side::before{content:"\fe4d"}
 .fi-rr-user::before{content:"\fea0"}
 .fi-rr-user-add::before{content:"\fe7a"}
+.fi-rr-user-minus::before{content:"\fe8c"}
 .fi-rr-users::before{content:"\fea6"}
 .fi-rr-wrench-simple::before{content:"\ff25"}
 @font-face{font-family:"uicons-brands";src:url("uicons-brands.woff2") format("woff2");font-display:block}
