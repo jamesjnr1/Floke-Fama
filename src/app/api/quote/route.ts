@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth/server';
 import { submitToCrm } from '@/lib/crm';
-import { quoteSchema, type QuoteInput } from '@/lib/quote-schema';
+import { createQuoteDeal, hubspotConfigured } from '@/lib/hubspot';
+import { departments, quoteSchema, timelines, type QuoteInput } from '@/lib/quote-schema';
 
 /**
- * Receives procurement requests, validates them server-side and forwards them to HubSpot
- * (Forms API) when configured. Without a CRM it answers `delivered: false`, and the page
+ * Receives procurement requests, validates them server-side and forwards them to HubSpot when configured:
+ * as a deal with its contact and hospital (private app, HUBSPOT_ACCESS_TOKEN), or through a HubSpot form. Without a CRM it answers `delivered: false`, and the page
  * hands the request to the visitor's email or WhatsApp, so no request is ever lost.
  */
 export async function POST(request: Request) {
@@ -22,11 +23,14 @@ export async function POST(request: Request) {
 
   const reference = `FF-${Date.now().toString(36).toUpperCase().slice(-6)}`;
   try {
-    const delivered = await submitToCrm(crmFields(data, reference), { path: '/quote', name: 'Procurement portal' });
+    const delivered = hubspotConfigured()
+      ? Boolean(await createQuoteDeal(dealFields(data, reference)))
+      : await submitToCrm(crmFields(data, reference), { path: '/quote', name: 'Procurement portal' });
     return NextResponse.json({ reference, delivered });
   } catch (error) {
+    // HubSpot down or misconfigured: the page hands the request to the visitor's email or WhatsApp instead
     console.error('[quote] CRM delivery failed', error);
-    return NextResponse.json({ error: 'Our system is busy. Please call +233 53 339 2863.' }, { status: 502 });
+    return NextResponse.json({ reference, delivered: false });
   }
 }
 
@@ -48,4 +52,22 @@ function crmFields(data: QuoteInput, reference: string) {
       data.notes ? `Notes: ${data.notes}` : '',
     ].filter(Boolean).join('\n'),
   };
+}
+
+function dealFields(data: QuoteInput, reference: string) {
+  return {
+    reference,
+    intent: data.intent,
+    name: data.name,
+    email: data.email,
+    phone: data.phone,
+    role: data.role || undefined,
+    facility: data.facility,
+    department: departments.find((d) => d.id === data.department)?.label ?? data.department,
+    equipment: data.equipment,
+    timeline: timelines.find((t) => t.id === data.timeline)?.label ?? data.timeline,
+    // Urgent buyers first in HubSpot's deal views
+    priority: data.timeline === 'urgent' ? 'HIGH' : data.timeline === 'quarter' ? 'MEDIUM' : 'LOW',
+    notes: data.notes || undefined,
+  } as const;
 }

@@ -145,7 +145,6 @@ export function configChecks() {
     { label: 'Engineers', ok: count(process.env.ENGINEER_EMAILS) > 0, detail: `${count(process.env.ENGINEER_EMAILS)} email(s) in ENGINEER_EMAILS.` },
     { label: 'Content (Sanity)', ok: set(process.env.NEXT_PUBLIC_SANITY_PROJECT_ID), detail: set(process.env.NEXT_PUBLIC_SANITY_PROJECT_ID) ? `Project ${process.env.NEXT_PUBLIC_SANITY_PROJECT_ID}` : 'The site shows its built-in content.' },
     { label: 'Content webhook', ok: set(process.env.SANITY_REVALIDATE_SECRET), detail: set(process.env.SANITY_REVALIDATE_SECRET) ? 'Studio changes go live straight away.' : 'SANITY_REVALIDATE_SECRET not set: Studio changes appear within the cache time.' },
-    { label: 'Quotes & messages (HubSpot)', ok: set(process.env.HUBSPOT_PORTAL_ID) && set(process.env.HUBSPOT_FORM_GUID), detail: 'Quote, demo and support requests are delivered to HubSpot; view them there.' },
     { label: 'Online payments', ok: set(process.env.NEXT_PUBLIC_PAYMENTS_PROVIDER), detail: set(process.env.NEXT_PUBLIC_PAYMENTS_PROVIDER) ? `Provider: ${process.env.NEXT_PUBLIC_PAYMENTS_PROVIDER}` : 'No payment provider: orders are placed as "awaiting payment".' },
     pushCheck(),
     {

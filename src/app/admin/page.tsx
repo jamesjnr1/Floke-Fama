@@ -9,6 +9,8 @@ import { AddEngineerForm } from '@/components/admin/add-engineer-form';
 import { ConfirmButton } from '@/components/admin/confirm-button';
 import { configChecks, loadAdminData, type AdminData } from '@/lib/admin/data';
 import { brevoStatus } from '@/lib/support-email';
+import { formConfigured } from '@/lib/crm';
+import { hubspotConfigured, hubspotStatus } from '@/lib/hubspot';
 import { supportDetails, supportSubject } from '@/lib/support-schema';
 import { adminLogout } from '@/lib/auth/actions';
 import { requireSession } from '@/lib/auth/server';
@@ -380,8 +382,8 @@ function Overview({ data, now }: { data: AdminData; now: number }) {
 
       <p className="mt-6 text-[0.9375rem] text-ink-3">
         Website visits, page views and button clicks (quotes, WhatsApp, calls, brochure downloads) are in{' '}
-        <a href="https://vercel.com/dashboard" target="_blank" rel="noreferrer" className="font-semibold text-brand-700 underline">Vercel Analytics</a>. Quote, demo and support requests arrive in{' '}
-        <a href="https://app.hubspot.com" target="_blank" rel="noreferrer" className="font-semibold text-brand-700 underline">HubSpot</a>.
+        <a href="https://vercel.com/dashboard" target="_blank" rel="noreferrer" className="font-semibold text-brand-700 underline">Vercel Analytics</a>. Quote and demo requests arrive in{' '}
+        <a href="https://app.hubspot.com" target="_blank" rel="noreferrer" className="font-semibold text-brand-700 underline">HubSpot</a> as deals, and support requests as notes on the caller.
       </p>
     </>
   );
@@ -998,8 +1000,14 @@ function WebsiteRequests({ data }: { data: AdminData }) {
 
 async function System({ data }: { data: AdminData }) {
   // Brevo is checked live (no email is sent), so the reason shows here when support emails aren't going out
-  const brevo = await brevoStatus();
-  const checks = [...configChecks(), { label: 'Support requests by email (Brevo)', ...brevo }];
+  const [brevo, hubspot] = await Promise.all([brevoStatus(), hubspotConfigured() || !formConfigured() ? hubspotStatus() : null]);
+  const checks = [
+    ...configChecks(),
+    { label: 'Support requests by email (Brevo)', ...brevo },
+    hubspot
+      ? { label: 'Quotes to sales (HubSpot)', ...hubspot }
+      : { label: 'Quotes to sales (HubSpot)', ok: true, detail: 'Through the HubSpot form: each quote arrives as a form submission. Set HUBSPOT_ACCESS_TOKEN to make each quote a deal instead.' },
+  ];
   return (
     <>
       <Heading title="Database & settings" lead="Whether each table answers and how many rows it holds, and the settings the site depends on (set in Vercel → Settings → Environment Variables)." />
