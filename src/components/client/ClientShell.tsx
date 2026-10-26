@@ -13,6 +13,7 @@ import { RequestsView } from '@/components/client/RequestsView';
 import { LogoMark, LogoWordmark } from '@/components/layout/logo';
 import { AlertsBanner, AlertsSwitch, useNotificationPopups } from '@/components/service/alerts';
 import { Notifications } from '@/components/service/Notifications';
+import { EngineerPhotosProvider } from '@/components/service/engineer-photos';
 import { LiveStatus } from '@/components/service/live-status';
 import { Icon } from '@/components/ui/icon';
 import { LogoChanger } from '@/components/client/logo-changer';
@@ -113,6 +114,7 @@ export function ClientShell({ user, products }: { user: { name: string; email: s
   }, [ready, remote, orders, state.purchases, products, facility, rawDispatch]);
 
   return (
+    <EngineerPhotosProvider>
     <div className="flex min-h-svh bg-[#f5f6f4] text-ink">
       {/* Sidebar */}
       <aside className="sticky top-0 hidden h-svh w-[264px] shrink-0 flex-col bg-[linear-gradient(180deg,#00804f_0%,#006b42_55%,#005a38_100%)] text-white lg:flex">
@@ -246,5 +248,6 @@ export function ClientShell({ user, products }: { user: { name: string; email: s
         }}
       />
     </div>
+    </EngineerPhotosProvider>
   );
 }
