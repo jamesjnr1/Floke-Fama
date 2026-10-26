@@ -184,14 +184,15 @@ export function SupportForm() {
 }
 
 /** A question answered by picking one of a few square choices. */
+/** A question answered by picking one option on a single connected bar (no radio circles); the chosen one is filled in green. */
 function Choices({ name, label, options, error }: { name: string; label: string; options: readonly { id: string; label: string }[]; error?: string }) {
   return (
     <fieldset>
       <legend className="text-sm font-medium text-ink-2">{label}</legend>
-      <div className={cn('mt-1.5 grid gap-2.5', options.length > 2 ? 'grid-cols-2 lg:grid-cols-4' : 'sm:grid-cols-2')}>
+      <div className={cn('mt-1.5 grid gap-px overflow-hidden rounded-lg border border-line bg-line', options.length > 2 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-2', error && 'border-signal')}>
         {options.map((o) => (
-          <label key={o.id} className="flex min-h-12 cursor-pointer items-center gap-3 rounded-lg border border-line bg-paper px-4 py-2.5 text-[0.9375rem] text-ink-2 transition hover:border-brand-500 has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50 has-[:checked]:font-medium has-[:checked]:text-brand-700 has-[:focus-visible]:ring-4 has-[:focus-visible]:ring-brand-500/20">
-            <input type="radio" name={name} value={o.id} className="size-4 shrink-0 accent-[#007a4d]" />
+          <label key={o.id} className="flex min-h-12 cursor-pointer items-center justify-center bg-paper px-3 py-2.5 text-center text-[0.9375rem] font-medium leading-tight text-ink-2 transition hover:bg-mist has-[:checked]:bg-brand-600 has-[:checked]:text-white has-[:focus-visible]:ring-4 has-[:focus-visible]:ring-inset has-[:focus-visible]:ring-brand-500/30">
+            <input type="radio" name={name} value={o.id} className="sr-only" />
             {o.label}
           </label>
         ))}
