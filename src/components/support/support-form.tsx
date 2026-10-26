@@ -52,36 +52,75 @@ export function SupportForm() {
   if (result) return <Sent {...result} onReset={() => setResult(null)} />;
 
   return (
-    <form onSubmit={onSubmit} noValidate className="space-y-4">
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Request" error={errors.type}>
-          <select name="type" defaultValue="fault" className={field}>
-            {requestTypes.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}
-          </select>
-        </Field>
-        <Field label="Equipment" error={errors.equipment}>
-          <input name="equipment" placeholder="e.g. Mindray BC-5150" aria-invalid={!!errors.equipment} className={field} />
-        </Field>
+    <form onSubmit={onSubmit} noValidate className="space-y-7">
+      {/* 1. What it's about: the request type as four square choices, then the equipment and the problem */}
+      <fieldset>
+        <Step n={1} title="What do you need?" />
+        <div role="radiogroup" aria-label="Request" className="clear-both grid grid-cols-2 gap-2.5 pt-4 lg:grid-cols-4">
+          {requestTypes.map((t) => (
+            <label key={t.id} className="group relative flex cursor-pointer items-center gap-3 border border-line bg-paper px-4 py-3.5 text-[0.9375rem] font-medium text-ink-2 transition hover:border-brand-500 has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50 has-[:checked]:text-brand-700 has-[:focus-visible]:ring-4 has-[:focus-visible]:ring-brand-500/20">
+              <input type="radio" name="type" value={t.id} defaultChecked={t.id === 'fault'} className="sr-only" />
+              <Icon name={typeIcons[t.id]} className="text-lg text-ink-3 group-has-[:checked]:text-brand-600" />
+              <span className="leading-tight">{t.label}</span>
+            </label>
+          ))}
+        </div>
+        {errors.type && <span role="alert" className="mt-1.5 block text-xs text-signal-700">{errors.type}</span>}
+        <div className="mt-4 grid gap-4">
+          <Field label="Equipment" error={errors.equipment}>
+            <input name="equipment" placeholder="e.g. Mindray BC-5150" aria-invalid={!!errors.equipment} className={field} />
+          </Field>
+          <Field label="What is happening?" error={errors.message}>
+            <textarea name="message" rows={4} placeholder="Describe the fault or what you need: error codes, when it started, what you have tried." aria-invalid={!!errors.message} className={cn(field, 'h-auto resize-none py-3')} />
+          </Field>
+        </div>
+      </fieldset>
+
+      {/* 2. Who to call back */}
+      <div className="border-t border-line pt-7">
+        <fieldset>
+          <Step n={2} title="Who should we call back?" />
+          <div className="clear-both grid gap-4 pt-4 sm:grid-cols-3">
+            <Field label="Your name" error={errors.name}>
+              <input name="name" autoComplete="name" aria-invalid={!!errors.name} className={field} />
+            </Field>
+            <Field label="Hospital or lab" error={errors.facility}>
+              <input name="facility" autoComplete="organization" aria-invalid={!!errors.facility} className={field} />
+            </Field>
+            <Field label="Phone" error={errors.phone}>
+              <input name="phone" type="tel" autoComplete="tel" placeholder="+233" aria-invalid={!!errors.phone} className={field} />
+            </Field>
+          </div>
+        </fieldset>
       </div>
-      <Field label="What do you need?" error={errors.message}>
-        <textarea name="message" rows={3} placeholder="Describe the fault or what you need." aria-invalid={!!errors.message} className={cn(field, 'h-auto resize-none py-3')} />
-      </Field>
-      <div className="grid gap-4 sm:grid-cols-3">
-        <Field label="Your name" error={errors.name}>
-          <input name="name" autoComplete="name" aria-invalid={!!errors.name} className={field} />
-        </Field>
-        <Field label="Hospital or lab" error={errors.facility}>
-          <input name="facility" autoComplete="organization" aria-invalid={!!errors.facility} className={field} />
-        </Field>
-        <Field label="Phone" error={errors.phone}>
-          <input name="phone" type="tel" autoComplete="tel" placeholder="+233" aria-invalid={!!errors.phone} className={field} />
-        </Field>
-      </div>
+
       <input name="website" tabIndex={-1} autoComplete="off" aria-hidden className="hidden" />
-      <button type="submit" disabled={pending} className={cn(button, 'w-full sm:w-auto')}>
-        {pending ? 'Sending…' : 'Send request'}
-      </button>
+      <div className="flex flex-col gap-3 border-t border-line pt-6 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-sm text-ink-3">
+          Equipment down right now? Call <a href={contact.phoneHref} className="font-semibold text-ink hover:text-brand-700">{contact.phone}</a>, 24/7.
+        </p>
+        <button type="submit" disabled={pending} className={cn(button, 'w-full sm:w-auto')}>
+          {pending ? 'Sending…' : <>Send request <Icon name="fi-rr-arrow-small-right" /></>}
+        </button>
+      </div>
     </form>
+  );
+}
+
+const typeIcons: Record<SupportInput['type'], string> = {
+  fault: 'fi-rr-exclamation',
+  maintenance: 'fi-rr-calendar',
+  installation: 'fi-rr-settings',
+  assistance: 'fi-rr-headset',
+};
+
+/** A numbered step heading (floated, so the legend lays out like any other block). */
+function Step({ n, title }: { n: number; title: string }) {
+  return (
+    <legend className="float-left flex w-full items-center gap-3 text-lg font-semibold text-ink">
+      <span className="grid size-7 place-items-center bg-brand-600 text-sm font-bold text-white">{n}</span>
+      {title}
+    </legend>
   );
 }
 
