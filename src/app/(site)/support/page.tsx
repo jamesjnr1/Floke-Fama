@@ -98,20 +98,46 @@ export default async function SupportPage() {
         </div>
       </section>
 
-      {/* Report a fault or request help */}
-      <section id="request" className="pattern-dots scroll-mt-20 border-t border-line bg-paper py-14 md:py-20">
-        {/* The form across the full width; the ways to reach the support team and the branches underneath */}
-        <div className="mx-auto max-w-[1280px] px-5 md:px-10">
-          <h2 className="text-2xl font-bold tracking-[-0.02em] text-ink md:text-3xl">Report a fault or request help</h2>
-          <p className="mt-2 text-ink-3">Tell us what you need and our support team will call you back.</p>
-          <div className="mt-6 rounded-lg border border-line bg-canvas p-6 md:p-8">
+      {/* Report a fault or request help: on the company green, what happens next beside the form (in a white card) */}
+      <section id="request" aria-labelledby="request-title" className="scroll-mt-20 bg-[linear-gradient(135deg,#0a5a33_0%,#06482a_60%,#043822_100%)] py-14 text-white md:py-20">
+        <div className="mx-auto grid max-w-[1280px] gap-10 px-5 md:px-10 lg:grid-cols-12 lg:gap-14">
+          <div className="lg:col-span-4">
+            <p className="text-[0.9375rem] font-semibold uppercase tracking-[0.08em] text-brand-300">Technical support</p>
+            <h2 id="request-title" className="mt-2 text-[clamp(1.875rem,1.3rem+1.8vw,2.625rem)] font-bold leading-tight tracking-[-0.02em] !text-white">Report a fault or request help</h2>
+            <p className="no-justify mt-4 text-lg leading-relaxed text-white/80">Tell us what you need and our support team will call you back.</p>
+
+            <h3 className="mt-9 text-[0.9375rem] font-semibold uppercase tracking-[0.08em] !text-white/70">What happens next</h3>
+            <ol className="mt-4 space-y-5">
+              {[
+                ['We receive it straight away', 'Your request goes directly to our support team.'],
+                ['We call you back', 'An engineer talks it through with you and solves what can be solved by phone.'],
+                ['We come to you', 'If it needs a visit, an engineer is sent to your hospital or lab.'],
+              ].map(([title, text], i) => (
+                <li key={title} className="flex gap-4">
+                  <span className="grid size-8 shrink-0 place-items-center bg-white text-[0.9375rem] font-bold text-brand-700">{i + 1}</span>
+                  <span>
+                    <span className="block font-semibold text-white">{title}</span>
+                    <span className="mt-0.5 block leading-relaxed text-white/75">{text}</span>
+                  </span>
+                </li>
+              ))}
+            </ol>
+
+            <p className="mt-9 border-t border-white/20 pt-6 leading-relaxed text-white/80">
+              Already a client? <Link href="/portal" className="font-semibold text-white underline underline-offset-4 hover:text-brand-300">Log the fault in your client portal</Link> and follow it until it’s fixed.
+            </p>
+          </div>
+
+          <div className="bg-paper p-6 text-ink shadow-[0_24px_60px_-30px_rgb(0_0_0/0.5)] md:p-9 lg:col-span-8">
             <SupportForm />
           </div>
-          <p className="mt-5 text-ink-3">
-            Already a client? <Link href="/portal" className="font-semibold text-brand-700 hover:underline">Log the fault in your client portal</Link> and follow it until it’s fixed.
-          </p>
+        </div>
+      </section>
 
-          <div className="mt-10 grid gap-5 md:grid-cols-2">
+      {/* The ways to reach the support team and the branches */}
+      <section aria-label="Contact the support team" className="bg-paper py-12 md:py-16">
+        <div className="mx-auto max-w-[1280px] px-5 md:px-10">
+          <div className="grid gap-5 md:grid-cols-2">
             <div className="overflow-hidden rounded-lg border border-line bg-paper">
               <p className="border-b border-line px-6 py-4 font-semibold text-ink">Contact the support team</p>
               <ul className="divide-y divide-line">
