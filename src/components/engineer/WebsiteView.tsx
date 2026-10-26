@@ -5,19 +5,18 @@ import { toast } from 'sonner';
 import { GhostButton, Panel, PrimaryButton, tag } from '@/components/service/ui';
 import { Icon } from '@/components/ui/icon';
 import { fmtTime } from '@/lib/service/store';
+import { supportDetails, supportSubject, type SupportInput } from '@/lib/support-schema';
 import { cn } from '@/lib/utils';
 
-/** A request sent with the Support page's form (see lib/support-requests.ts). */
-export interface WebsiteRequest {
+/** A request sent with the Support page's form (see lib/support-requests.ts): the tab's own answers plus these. */
+export interface WebsiteRequest extends Partial<Omit<SupportInput, 'website'>> {
   id: string;
   at: string;
   status: 'new' | 'called' | 'closed';
-  type: 'fault' | 'maintenance' | 'installation' | 'assistance';
+  type: SupportInput['type'];
   name: string;
   facility: string;
   phone: string;
-  equipment: string;
-  message: string;
   handledBy?: string;
   handledAt?: string;
   ticketId?: string;
@@ -114,8 +113,18 @@ export function WebsiteView({ requests, enabled, me, onCalled, onClose, onMakeJo
                 <span className={cn(tag, r.type === 'fault' ? 'bg-[#fdecea] text-[#b42318]' : 'bg-brand-50 text-brand-700')}>{typeLabel[r.type]}</span>
               </div>
               <p className="mt-3 text-base font-semibold text-ink">{r.facility}</p>
-              <p className="text-sm font-medium text-ink-2">{r.equipment}</p>
-              <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-ink-2">{r.message}</p>
+              <p className="text-sm font-medium text-ink-2">{supportSubject(r)}</p>
+              {r.working === 'down' && <p className="mt-2 text-sm font-semibold text-[#b42318]">Not working at all</p>}
+              <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
+                {supportDetails(r)
+                  .filter(([k]) => k !== 'Equipment' && k !== 'Help with' && !(k === 'Status' && r.working === 'down'))
+                  .map(([k, v]) => (
+                    <div key={k} className="contents">
+                      <dt className="text-ink-3">{k}</dt>
+                      <dd className="whitespace-pre-line leading-relaxed text-ink-2">{v}</dd>
+                    </div>
+                  ))}
+              </dl>
 
               <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-lg bg-canvas px-3 py-2.5 text-sm">
                 <span className="flex items-center gap-2 text-ink-2"><Icon name="fi-rr-user" className="text-ink-3" /> {r.name}</span>

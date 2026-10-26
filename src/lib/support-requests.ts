@@ -11,7 +11,12 @@ import type { SupportInput } from '@/lib/support-schema';
  */
 export type SupportStatus = 'new' | 'called' | 'closed';
 export const supportStatuses: SupportStatus[] = ['new', 'called', 'closed'];
-export interface SupportRequest extends Omit<SupportInput, 'website'> {
+/** A saved request: who sent it and its tab's answers (older requests have only equipment and message). */
+export interface SupportRequest extends Partial<Omit<SupportInput, 'website'>> {
+  type: SupportInput['type'];
+  name: string;
+  facility: string;
+  phone: string;
   id: string;
   at: string;
   status: SupportStatus;
@@ -31,7 +36,8 @@ const newReference = () => `SR-${Date.now().toString(36).toUpperCase()}${Math.fl
 export async function saveSupportRequest(d: SupportInput): Promise<string | null> {
   if (!appwrite) return null;
   const reference = newReference();
-  const fields: Omit<SupportInput, 'website'> = { type: d.type, name: d.name, facility: d.facility, phone: d.phone, equipment: d.equipment, message: d.message };
+  // Everything asked on the tab, without the honeypot and the questions left empty
+  const fields = Object.fromEntries(Object.entries(d).filter(([k, v]) => k !== 'website' && v !== '' && v !== undefined));
   await withTable(TABLES.supportRequests, () =>
     appwrite!.tables.createRow({ databaseId: DATABASE_ID, tableId: TABLES.supportRequests, rowId: reference, data: { status: 'new', facility: d.facility.slice(0, 160), data: JSON.stringify(fields) } }),
   );
@@ -44,7 +50,7 @@ export async function listSupportRequests(limit = 200): Promise<SupportRequest[]
   return rows.flatMap((r) => {
     try {
       const status = supportStatuses.includes(r.status as SupportStatus) ? (r.status as SupportStatus) : 'new';
-      return [{ ...(JSON.parse(r.data) as Omit<SupportInput, 'website'>), id: r.$id, at: r.$createdAt, status }];
+      return [{ ...(JSON.parse(r.data) as Omit<SupportRequest, 'id' | 'at' | 'status'>), id: r.$id, at: r.$createdAt, status }];
     } catch {
       return [];
     }

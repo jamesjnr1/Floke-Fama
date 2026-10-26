@@ -5,7 +5,7 @@ import { smsWebsiteFault } from '@/lib/sms';
 import { emailSupport } from '@/lib/support-email';
 import { saveSupportRequest } from '@/lib/support-requests';
 import { clientIp, limited } from '@/lib/rate-limit';
-import { requestTypes, supportSchema, supportSummary } from '@/lib/support-schema';
+import { requestTypes, supportDetails, supportSchema, supportSubject, supportSummary } from '@/lib/support-schema';
 
 /**
  * Technical support requests from the Support page (Report a fault and the rest). Saved for the admin console
@@ -33,14 +33,13 @@ export async function POST(request: Request) {
   const ref = saved ? ` (${saved})` : '';
   // Each channel on its own: one that fails doesn't stop the others
   const results = await Promise.allSettled([
-    emailSupport(`${kind}: ${data.facility} - ${data.equipment}${ref}`, {
+    emailSupport(`${kind}: ${data.facility} - ${supportSubject(data)}${ref}`, {
       'Request': kind,
       ...(saved ? { 'Reference': saved } : {}),
       'Name': data.name,
       'Hospital or lab': data.facility,
       'Phone': data.phone,
-      'Equipment': data.equipment,
-      'Details': data.message,
+      ...Object.fromEntries(supportDetails(data)),
     }, data.phone),
     submitToCrm(
       { firstname, lastname: rest.join(' '), phone: data.phone, message: `[Technical support${ref}] ${supportSummary(data)}` },
@@ -49,7 +48,7 @@ export async function POST(request: Request) {
     // Engineers hear about it on their phones: a text for a fault, a portal alert for every request
     saved ? smsWebsiteFault({ reference: saved, ...data }).then(() => false) : Promise.resolve(false),
     saved
-      ? pushToEngineers({ body: `${kind} from ${data.facility}: ${data.equipment}. Call ${data.name} back.`, url: `/engineer?website=${saved}`, tag: saved }).then(() => false)
+      ? pushToEngineers({ body: `${kind} from ${data.facility}: ${supportSubject(data)}${data.working === 'down' ? ' (not working at all)' : ''}. Call ${data.name} back.`, url: `/engineer?website=${saved}`, tag: saved }).then(() => false)
       : Promise.resolve(false),
   ]);
   for (const r of results) if (r.status === 'rejected') console.error('[support] delivery failed', r.reason);

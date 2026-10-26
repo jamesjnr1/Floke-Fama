@@ -182,14 +182,14 @@ export function ClientShell({ user, products }: { user: { name: string; email: s
           <LiveStatus at={syncedAt} className="hidden md:inline-flex" />
           <Notifications tone="light" items={notifications} onRead={(id) => rawDispatch({ type: 'read', id })} onReadAll={() => rawDispatch({ type: 'readAll', audience: 'client' })} onOpen={onNotification} />
           <span className="hidden items-center gap-3 border-l border-line pl-4 md:flex">
-            <LogoChanger facility={facility} className="size-9 rounded-full" fallbackClassName="bg-white text-base text-[#006b42] ring-1 ring-inset ring-line" />
+            <LogoChanger facility={facility} className="size-9 rounded-full" fallbackClassName="bg-brand-50 text-base text-[#006b42]" />
             <span className="leading-tight">
               <span className="block text-sm font-medium text-ink">{user.name}</span>
               <span className="block text-xs text-ink-3">{user.email}</span>
             </span>
           </span>
           <form action={logout} className="lg:hidden">
-            <button type="submit" aria-label="Sign out" className="grid size-10 place-items-center rounded-md border border-line bg-paper text-ink"><Icon name="fi-rr-sign-out-alt" /></button>
+            <button type="submit" aria-label="Sign out" className="grid size-10 shrink-0 place-items-center rounded-md text-lg text-ink transition hover:bg-mist"><Icon name="fi-rr-sign-out-alt" /></button>
           </form>
         </header>
 
