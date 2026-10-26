@@ -86,6 +86,28 @@ export function SolutionsInAction({ layout = 'wide', plain = false }: { layout?:
     />
   );
 
+  // 'wide': the film edge to edge, playing silently, with a small title and Watch video on it
+  const watch = () => {
+    const v = video.current;
+    if (!v) return;
+    setLoad(true);
+    setWatching(true);
+    v.muted = false;
+    v.currentTime = 0;
+    v.play().catch(() => {});
+  };
+
+  // "Watch our highlight video" on the hero links here: start the film from the beginning, with sound
+  useEffect(() => {
+    if (layout !== 'wide') return;
+    const go = () => {
+      if (location.hash === '#highlight-video') watch();
+    };
+    window.addEventListener('hashchange', go);
+    go();
+    return () => window.removeEventListener('hashchange', go);
+  }, [layout]);
+
   // 'feature': the text on the left, the film on the right over an offset green block (the structured home page)
   if (layout === 'feature') {
     return (
@@ -113,18 +135,8 @@ export function SolutionsInAction({ layout = 'wide', plain = false }: { layout?:
     );
   }
 
-  // 'wide': the film edge to edge, playing silently, with a small title and Watch video on it
-  const watch = () => {
-    const v = video.current;
-    if (!v) return;
-    setLoad(true);
-    setWatching(true);
-    v.muted = false;
-    v.currentTime = 0;
-    v.play().catch(() => {});
-  };
   return (
-    <section aria-labelledby="in-action-title" className={`${plain ? 'pb-16 md:pb-28 ' : 'pattern-grid '}bg-paper pt-16 md:pt-32`}>
+    <section id="highlight-video" aria-labelledby="in-action-title" className={`${plain ? 'pb-16 md:pb-28 ' : 'pattern-grid '}scroll-mt-16 bg-paper pt-16 md:pt-32`}>
       <div className="relative isolate overflow-hidden bg-black">
         {/* The whole frame on every screen; on phones the title sits under the film instead of on it */}
         {player('block aspect-[1024/436] w-full object-cover')}
