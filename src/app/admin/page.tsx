@@ -9,6 +9,7 @@ import { AddEngineerForm } from '@/components/admin/add-engineer-form';
 import { ConfirmButton } from '@/components/admin/confirm-button';
 import { configChecks, loadAdminData, type AdminData } from '@/lib/admin/data';
 import { brevoStatus } from '@/lib/support-email';
+import { supportDetails, supportSubject } from '@/lib/support-schema';
 import { adminLogout } from '@/lib/auth/actions';
 import { requireSession } from '@/lib/auth/server';
 import { catalogue } from '@/data/catalogue';
@@ -197,12 +198,15 @@ function Notice({ tone, children }: { tone: 'warn' | 'info'; children: React.Rea
   );
 }
 
-function Heading({ title, lead, action }: { title: string; lead?: string; action?: React.ReactNode }) {
+function Heading({ title, lead, action, picture }: { title: string; lead?: React.ReactNode; action?: React.ReactNode; picture?: React.ReactNode }) {
   return (
     <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
-      <div>
-        <h1 className="text-[clamp(2rem,1.6rem+1.2vw,2.625rem)] font-semibold leading-tight tracking-[-0.03em]">{title}</h1>
-        {lead && <p className="mt-1.5 text-ink-3">{lead}</p>}
+      <div className="flex items-center gap-5">
+        {picture}
+        <div>
+          <h1 className="text-[clamp(2rem,1.6rem+1.2vw,2.625rem)] font-semibold leading-tight tracking-[-0.03em]">{title}</h1>
+          {lead && <p className="mt-1.5 text-ink-3">{lead}</p>}
+        </div>
       </div>
       {action}
     </div>
@@ -515,8 +519,13 @@ function Accounts({ data, q, role, adding }: { data: AdminData; q?: string; role
                 <Link href={href} className="after:absolute after:inset-0 hover:text-brand-700">{a.organisation}</Link>
               </td>
               <td>
-                {a.name}
-                <span className="block text-[0.8125rem] text-ink-3">{a.email}</span>
+                <span className="flex items-center gap-3">
+                  {a.role === 'engineer' && <UserAvatar src={data.pictures[a.id]} className="size-9 bg-[#eaf5ef] text-sm text-brand-800" />}
+                  <span>
+                    {a.name}
+                    <span className="block text-[0.8125rem] text-ink-3">{a.email}</span>
+                  </span>
+                </span>
               </td>
               <td className="whitespace-nowrap">{a.phone || '—'}</td>
               <td><Badge tone={a.role === 'client' ? 'neutral' : 'good'}>{roleLabel(a.role)}</Badge></td>
@@ -562,7 +571,13 @@ function AccountDetail({ data, id, now }: { data: AdminData; id: string; now: nu
         <BackToAccounts role="engineer" />
         <Heading
           title={a.name}
-          lead={`Engineer · ${a.organisation}`}
+          picture={<UserAvatar src={data.pictures[a.id]} label={a.name} className="size-24 bg-[#eaf5ef] text-4xl text-brand-800" />}
+          lead={
+            <>
+              Engineer · {a.organisation}
+              {!data.pictures[a.id] && data.source === 'live' && <span className="mt-1 block text-[0.875rem] font-medium text-[#9a6700]">No photo yet: they’ll be asked to add one when they next open the engineer portal.</span>}
+            </>
+          }
           action={
             a.id.startsWith('eng-') ? (
               <form action={removeEngineer}>
@@ -598,7 +613,16 @@ function AccountDetail({ data, id, now }: { data: AdminData; id: string; now: nu
   return (
     <>
       <BackToAccounts role={a.role === 'client' ? 'client' : undefined} />
-      <Heading title={a.organisation} lead={`${roleLabel(a.role)} account · registered ${fmt(a.createdAt)}`} />
+      <Heading
+        title={a.organisation}
+        lead={`${roleLabel(a.role)} account · registered ${fmt(a.createdAt)}`}
+        picture={
+          people.map((p) => data.pictures[p.id]).find(Boolean) ? (
+            // eslint-disable-next-line @next/next/no-img-element -- the hospital's own logo from Appwrite storage
+            <img src={people.map((p) => data.pictures[p.id]).find(Boolean)} alt={`${a.organisation} logo`} className="size-24 shrink-0 rounded-2xl bg-white object-contain p-2 ring-1 ring-line" />
+          ) : undefined
+        }
+      />
       <div className="grid gap-4 lg:grid-cols-3">
         <Panel title="Hospital / company">
           <Facts
@@ -614,7 +638,7 @@ function AccountDetail({ data, id, now }: { data: AdminData; id: string; now: nu
           <ul className="divide-y divide-[#edf1ef]">
             {people.map((p) => (
               <li key={p.id} className="flex flex-wrap items-center gap-x-6 gap-y-1 py-3 first:pt-0">
-                <UserAvatar className="size-10 rounded-full bg-[#eaf5ef] text-base text-brand-800" />
+                <UserAvatar src={p.role === 'engineer' ? data.pictures[p.id] : undefined} className="size-10 rounded-full bg-[#eaf5ef] text-base text-brand-800" />
                 <span className="min-w-40 font-medium">{p.name}</span>
                 <a href={`mailto:${p.email}`} className="text-brand-700 underline">{p.email}</a>
                 <span className="text-ink-2">{p.phone ? <a href={`tel:${p.phone.replace(/\s/g, '')}`}>{p.phone}</a> : '—'}</span>
@@ -777,7 +801,7 @@ function EngineersNow({ data, now }: { data: AdminData; now: number }) {
         <ul className="divide-y divide-[#edf1ef]">
           {rows.map((r) => (
             <li key={r.name} className="flex flex-wrap items-center gap-x-5 gap-y-2 py-3.5 first:pt-0 last:pb-0">
-              <UserAvatar className="size-10 rounded-full bg-[#eaf5ef] text-base text-brand-800" />
+              <UserAvatar src={r.account ? data.pictures[r.account.id] : undefined} label={r.name} className="size-10 rounded-full bg-[#eaf5ef] text-base text-brand-800" />
               <span className="w-44 shrink-0">
                 {r.account ? (
                   <Link href={`/admin?tab=accounts&account=${encodeURIComponent(r.account.id)}`} className="font-medium hover:text-brand-700">{r.name}</Link>
@@ -945,8 +969,14 @@ function WebsiteRequests({ data }: { data: AdminData }) {
               <a href={`tel:${r.phone.replace(/[^\d+]/g, '')}`} className="block font-medium text-brand-700 hover:underline">{r.phone}</a>
             </td>
             <td className="min-w-[16rem]">
-              <span className="font-medium">{r.equipment}</span>
-              <span className="mt-0.5 block text-[0.875rem] text-ink-3">{r.message}</span>
+              <span className="font-medium">{supportSubject(r)}</span>
+              {supportDetails(r)
+                .filter(([k]) => k !== 'Equipment' && k !== 'Help with')
+                .map(([k, v]) => (
+                  <span key={k} className={cn('mt-0.5 block text-[0.875rem]', k === 'Status' && r.working === 'down' ? 'font-semibold text-signal-700' : 'text-ink-3')}>
+                    {k}: {v}
+                  </span>
+                ))}
             </td>
             <td>
               {/* Engineers move requests on in their portal; the console only shows where each one stands */}

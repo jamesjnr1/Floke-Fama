@@ -78,10 +78,11 @@ export function sampleData(): AdminData {
     orders,
     desk: { assets, tickets, notifications: [] },
     pushSubscriptions: 19,
+    pictures: {},
     supportRequests: [
-      { id: 'SR-MH4Q2K1A', at: new Date(now - 25 * 60_000).toISOString(), status: 'new', type: 'fault', name: 'Esi Owusu', facility: 'Tamale Teaching Hospital', phone: '+233 24 555 0192', equipment: 'Mindray BS-240 Chemistry Analyzer', message: 'Error 2-31 on start-up. The analyser will not run samples.' },
-      { id: 'SR-MH4N8Z3C', at: new Date(now - 3 * 3600_000).toISOString(), status: 'called', handledBy: 'Samuel Tetteh', type: 'maintenance', name: 'Kojo Antwi', facility: 'Holy Family Hospital Techiman', phone: '+233 20 441 7781', equipment: 'Patient monitors (6)', message: 'Six-month service is due for the ICU monitors.' },
-      { id: 'SR-MH2B7T9E', at: new Date(now - 2 * 864e5).toISOString(), status: 'closed', handledBy: 'Grace Mensah', ticketId: 'TK-1066', type: 'installation', name: 'Adwoa Sarpong', facility: 'Nyaho Medical Centre', phone: '+233 55 210 3349', equipment: 'Autoclave 35L', message: 'Delivered last week; needs installing in the theatre.' },
+      { id: 'SR-MH4Q2K1A', at: new Date(now - 25 * 60_000).toISOString(), status: 'new', type: 'fault', name: 'Esi Owusu', facility: 'Tamale Teaching Hospital', phone: '+233 24 555 0192', equipment: 'Mindray BS-240 Chemistry Analyzer', serial: 'BS24-08817', working: 'down', message: 'Error 2-31 on start-up. The analyser will not run samples.' },
+      { id: 'SR-MH4N8Z3C', at: new Date(now - 3 * 3600_000).toISOString(), status: 'called', handledBy: 'Samuel Tetteh', type: 'maintenance', name: 'Kojo Antwi', facility: 'Holy Family Hospital Techiman', phone: '+233 20 441 7781', equipment: 'Patient monitors in the ICU', units: '6', lastService: '2026-04-12', preferredDate: '2026-10-28', message: 'Calibration certificates are due for renewal.' },
+      { id: 'SR-MH2B7T9E', at: new Date(now - 2 * 864e5).toISOString(), status: 'closed', handledBy: 'Grace Mensah', ticketId: 'TK-1066', type: 'installation', name: 'Adwoa Sarpong', facility: 'Nyaho Medical Centre', phone: '+233 55 210 3349', equipment: 'Autoclave 35L', order: 'FF-5A3F1', location: 'Main theatre, 2nd floor', preferredDate: '2026-10-22', message: 'Delivered last week; power and water points are ready.' },
     ],
     sms: [
       { id: 's5', at: new Date(now - 6 * 60_000).toISOString(), kind: 'urgent', ref: 'TK-1061', to: '233533392860,233533392861,233533392862,233533392863', text: 'FLOKEFAMA: CRITICAL fault at Ridge Hospital - BC-5150 Haematology Analyzer. Job TK-1061 needs an engineer. Open: https://flokefama.com/engineer?ticket=TK-1061', status: 'sent', detail: 'Arkesel' },

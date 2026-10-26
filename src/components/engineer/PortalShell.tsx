@@ -14,6 +14,8 @@ import { Overview } from '@/components/engineer/Overview';
 import { SystemsView } from '@/components/engineer/SystemsView';
 import { TicketsView } from '@/components/engineer/TicketsView';
 import { useWebsiteRequests, WebsiteView, type WebsiteRequest } from '@/components/engineer/WebsiteView';
+import { PhotoDialog, useEngineerPhoto } from '@/components/engineer/photo';
+import { supportDetails } from '@/lib/support-schema';
 import { LogoMark, LogoWordmark } from '@/components/layout/logo';
 import { LiveStatus } from '@/components/service/live-status';
 import { Icon } from '@/components/ui/icon';
@@ -82,6 +84,9 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
   const [sheetId, setSheetId] = useState<string | null>(null);
   const [fault, setFault] = useState<{ open: boolean; assetId?: string; from?: WebsiteRequest }>({ open: false });
   const website = useWebsiteRequests();
+  // The engineer's photo is required: the portal asks for it until one is saved
+  const photo = useEngineerPhoto();
+  const [changingPhoto, setChangingPhoto] = useState(false);
   const freshWebsite = website.requests?.filter((r) => r.status === 'new') ?? [];
   const [resolving, setResolving] = useState<Ticket | null>(null);
   const [calibrating, setCalibrating] = useState<Asset | null>(null);
@@ -192,7 +197,7 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
       onClick={toggle}
       aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
       title={theme === 'dark' ? 'Light mode' : 'Dark mode'}
-      className="grid size-10 shrink-0 place-items-center rounded-md border border-line bg-paper text-ink transition hover:border-ink/30"
+      className="grid size-10 shrink-0 place-items-center rounded-md text-lg text-ink transition hover:bg-mist"
     >
       <Icon name={theme === 'dark' ? 'fi-rr-sun' : 'fi-rr-moon'} />
     </button>
@@ -208,7 +213,9 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
           <span className="ml-auto text-[0.8125rem] font-semibold uppercase tracking-[0.18em] text-white/80">Service</span>
         </Link>
         <div className="flex items-center gap-3 px-6 py-6">
-          <UserAvatar className="size-10 bg-white text-lg text-[#006b42]" />
+          <button onClick={() => setChangingPhoto(true)} title="Change your photo" aria-label="Change your photo" className="shrink-0 rounded-full">
+            <UserAvatar src={photo.url} className="size-10 bg-white text-lg text-[#006b42]" />
+          </button>
           <span className="min-w-0">
             <span className="block truncate text-sm font-semibold">{me}</span>
             <span className="block truncate text-xs text-white/75">Biomedical engineer</span>
@@ -268,19 +275,19 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
             <span className="flex-1 truncate whitespace-nowrap">Search…</span>
             <kbd className="rounded-[4px] border border-line px-1.5 font-mono text-xs">Ctrl K</kbd>
           </button>
-          <button onClick={() => setPalette(true)} aria-label="Search" className="grid size-10 shrink-0 place-items-center rounded-md border border-line bg-paper text-ink xl:hidden"><Icon name="fi-rr-search" /></button>
+          <button onClick={() => setPalette(true)} aria-label="Search" className="grid size-10 shrink-0 place-items-center rounded-md text-lg text-ink transition hover:bg-mist xl:hidden"><Icon name="fi-rr-search" /></button>
           <LiveStatus at={syncedAt} className="hidden md:inline-flex" />
           {themeButton}
           <Notifications tone="light" items={mine} onRead={(id) => rawDispatch({ type: 'read', id })} onReadAll={() => rawDispatch({ type: 'readAll', audience: 'engineer' })} onOpen={onNotification} />
           <span className="hidden items-center gap-3 border-l border-line pl-4 md:flex">
-            <UserAvatar className="size-9 bg-brand-600 text-base text-white" />
+            <UserAvatar src={photo.url} className="size-9 bg-brand-600 text-base text-white" />
             <span className="leading-tight">
               <span className="block text-sm font-medium text-ink">{me}</span>
               <span className="block text-xs text-ink-3">{user.email}</span>
             </span>
           </span>
           <form action={logout} className="lg:hidden">
-            <button type="submit" aria-label="Sign out" className="grid size-10 place-items-center rounded-md border border-line bg-paper text-ink"><Icon name="fi-rr-sign-out-alt" /></button>
+            <button type="submit" aria-label="Sign out" className="grid size-10 shrink-0 place-items-center rounded-md text-lg text-ink transition hover:bg-mist"><Icon name="fi-rr-sign-out-alt" /></button>
           </form>
         </header>
 
@@ -361,7 +368,11 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
         onOpenChange={(open) => setFault((f) => ({ ...f, open }))}
         assets={state.assets}
         defaultAssetId={fault.assetId}
-        defaultDescription={fault.from ? `${fault.from.message}\n\nFrom the website (${fault.from.id}): ${fault.from.name}, ${fault.from.phone}.` : undefined}
+        defaultDescription={
+          fault.from
+            ? `${supportDetails(fault.from).filter(([k]) => k !== 'Equipment').map(([k, v]) => `${k}: ${v}`).join('\n')}\n\nFrom the website (${fault.from.id}): ${fault.from.name}, ${fault.from.phone}.`
+            : undefined
+        }
         title={fault.from ? `Send an engineer (${fault.from.id})` : undefined}
         submitLabel={fault.from ? 'Send an engineer' : undefined}
         onSubmit={(v) => {
@@ -405,6 +416,7 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
           setView('systems');
         }}
       />
+      <PhotoDialog open={photo.required || changingPhoto} required={photo.required} current={photo.url} onSave={photo.save} onClose={() => setChangingPhoto(false)} />
       <CommandPalette open={palette} onOpenChange={setPalette} state={state} actions={actions} onOpenTicket={openTicket} onOpenAsset={openAsset} />
     </div>
   );
