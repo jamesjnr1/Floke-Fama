@@ -22,6 +22,7 @@ export const TABLES = {
   serviceNotifications: 'service_notifications',
   pushSubscriptions: 'push_subscriptions',
   smsLog: 'sms_log',
+  supportRequests: 'support_requests',
 } as const;
 export const BUCKETS = { hospitalLogos: 'hospital-logos' } as const;
 

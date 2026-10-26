@@ -1,6 +1,7 @@
 import 'server-only';
 import { ID, Query, type Models } from 'node-appwrite';
 import { appwrite, DATABASE_ID, isNotFound, TABLES } from '@/lib/appwrite';
+import { isTableMissing, withTable } from '@/lib/appwrite-tables';
 import { roleFor } from '@/lib/auth/users';
 import type { Actor, Priority, ServiceState, Ticket } from '@/lib/service/desk';
 import { siteUrl } from '@/lib/utils';
@@ -69,9 +70,11 @@ async function deliver(to: string[], text: string): Promise<{ status: SmsLogEntr
 
 type LogRow = Models.Row & Omit<SmsLogEntry, 'id' | 'at'>;
 const save = (rowId: string, data: Omit<SmsLogEntry, 'id' | 'at'>, create = true) =>
-  create
-    ? appwrite!.tables.createRow({ databaseId: DATABASE_ID, tableId: TABLES.smsLog, rowId, data })
-    : appwrite!.tables.updateRow({ databaseId: DATABASE_ID, tableId: TABLES.smsLog, rowId, data });
+  withTable(TABLES.smsLog, () =>
+    create
+      ? appwrite!.tables.createRow({ databaseId: DATABASE_ID, tableId: TABLES.smsLog, rowId, data })
+      : appwrite!.tables.updateRow({ databaseId: DATABASE_ID, tableId: TABLES.smsLog, rowId, data }),
+  );
 
 /**
  * Sends one text to some numbers and records it. With `rowId` given, the record is written first and a second
@@ -152,6 +155,21 @@ export async function smsNew(before: ServiceState, after: ServiceState, actor: A
   }
 }
 
+/**
+ * A fault reported with the Support page's form (by anyone, not only portal clients): every engineer is texted
+ * with who to call back. Other request types (maintenance, installation, other) wait for the support team.
+ */
+export async function smsWebsiteFault(r: { reference: string; type: string; name: string; facility: string; phone: string; equipment: string }) {
+  if (!smsEnabled || r.type !== 'fault') return;
+  try {
+    const people = (await staff()).filter((p) => p.role === 'engineer');
+    const text = `FLOKEFAMA: Fault reported on the website by ${plain(r.facility, 40)} - ${plain(r.equipment, 40)}. Call ${plain(r.name, 30)} on ${plain(r.phone, 20)}. Ref ${r.reference}.`;
+    await Promise.race([send('website', r.reference, people.map((p) => p.phone), text), new Promise((ok) => setTimeout(ok, 6000))]);
+  } catch (e) {
+    console.error('sms: website fault not texted', e);
+  }
+}
+
 let lastCheck = 0;
 /**
  * Urgent requests nobody has taken after SMS_ESCALATE_MINUTES: the admins (with a phone on their account) and
@@ -170,7 +188,9 @@ export async function escalateStale(desk: ServiceState, force = false) {
     });
     if (!due.length) return 0;
     const rowId = (t: Ticket) => `esc-${t.id}`.replace(/[^a-zA-Z0-9._-]/g, '').slice(0, 36);
-    const { rows } = await appwrite!.tables.listRows<LogRow>({ databaseId: DATABASE_ID, tableId: TABLES.smsLog, queries: [Query.equal('$id', due.map(rowId)), Query.select(['$id']), Query.limit(100)] });
+    const { rows } = await appwrite!.tables
+      .listRows<LogRow>({ databaseId: DATABASE_ID, tableId: TABLES.smsLog, queries: [Query.equal('$id', due.map(rowId)), Query.select(['$id']), Query.limit(100)] })
+      .catch((e) => (isTableMissing(e) ? { rows: [] as LogRow[] } : Promise.reject(e)));
     const done = new Set(rows.map((r) => r.$id));
     const todo = due.filter((t) => !done.has(rowId(t)));
     if (!todo.length) return 0;
@@ -198,7 +218,7 @@ export async function recentSms(limit = 25): Promise<SmsLogEntry[]> {
     const { rows } = await appwrite!.tables.listRows<LogRow>({ databaseId: DATABASE_ID, tableId: TABLES.smsLog, queries: [Query.orderDesc('$createdAt'), Query.limit(limit)] });
     return rows.map((r) => ({ id: r.$id, at: r.$createdAt, kind: r.kind, ref: r.ref, to: r.to, text: r.text, status: r.status, detail: r.detail ?? '' }));
   } catch (e) {
-    if (!isNotFound(e)) console.error('sms: log not readable', e);
+    if (!isNotFound(e) && !isTableMissing(e)) console.error('sms: log not readable', e);
     return [];
   }
 }

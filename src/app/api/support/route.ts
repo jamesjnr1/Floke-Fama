@@ -1,12 +1,15 @@
 import { NextResponse } from 'next/server';
 import { submitToCrm } from '@/lib/crm';
+import { pushToEngineers } from '@/lib/push';
+import { smsWebsiteFault } from '@/lib/sms';
 import { emailSupport } from '@/lib/support-email';
+import { saveSupportRequest } from '@/lib/support-requests';
 import { clientIp, limited } from '@/lib/rate-limit';
 import { requestTypes, supportSchema, supportSummary } from '@/lib/support-schema';
 
 /**
- * Technical support requests from the Support page (Report a fault and the rest). Emailed to the support inbox (Brevo) and
- * delivered to the CRM, whichever are configured; with neither (or if both fail), the visitor sends it by email or WhatsApp.
+ * Technical support requests from the Support page (Report a fault and the rest). Saved for the admin console
+ * (Appwrite), emailed to the support inbox (Brevo), a fault texted to the engineers (SMS), and delivered to the CRM, whichever are configured; with neither (or if both fail), the visitor sends it by email or WhatsApp.
  */
 export async function POST(request: Request) {
   // Up to 5 requests per visitor every 10 minutes: plenty for a real fault, too few to flood the support inbox
@@ -22,10 +25,17 @@ export async function POST(request: Request) {
 
   const [firstname, ...rest] = data.name.split(' ');
   const kind = requestTypes.find((t) => t.id === data.type)?.label ?? 'Support request';
-  // Each provider on its own: one that fails doesn't stop the other
+  // Saved first, so the reference goes into the email and the text
+  const saved = await saveSupportRequest(data).catch((e) => {
+    console.error('[support] not saved', e);
+    return null;
+  });
+  const ref = saved ? ` (${saved})` : '';
+  // Each channel on its own: one that fails doesn't stop the others
   const results = await Promise.allSettled([
-    emailSupport(`${kind}: ${data.facility} - ${data.equipment}`, {
+    emailSupport(`${kind}: ${data.facility} - ${data.equipment}${ref}`, {
       'Request': kind,
+      ...(saved ? { 'Reference': saved } : {}),
       'Name': data.name,
       'Hospital or lab': data.facility,
       'Phone': data.phone,
@@ -33,12 +43,18 @@ export async function POST(request: Request) {
       'Details': data.message,
     }, data.phone),
     submitToCrm(
-      { firstname, lastname: rest.join(' '), phone: data.phone, message: `[Technical support] ${supportSummary(data)}` },
+      { firstname, lastname: rest.join(' '), phone: data.phone, message: `[Technical support${ref}] ${supportSummary(data)}` },
       { path: '/support', name: 'Technical support request' },
     ),
+    // Engineers hear about it on their phones: a text for a fault, a portal alert for every request
+    saved ? smsWebsiteFault({ reference: saved, ...data }).then(() => false) : Promise.resolve(false),
+    saved
+      ? pushToEngineers({ body: `${kind} from ${data.facility}: ${data.equipment}. Call ${data.name} back.`, url: `/engineer?website=${saved}`, tag: saved }).then(() => false)
+      : Promise.resolve(false),
   ]);
   for (const r of results) if (r.status === 'rejected') console.error('[support] delivery failed', r.reason);
-  // Not delivered (nothing configured, or the providers failed): the visitor sends it themselves by email or
+  // Not delivered (nothing configured, or every channel failed): the visitor sends it themselves by email or
   // WhatsApp, pre-filled, so the request is never lost
-  return NextResponse.json({ delivered: results.some((r) => r.status === 'fulfilled' && r.value) });
+  const delivered = Boolean(saved) || results.some((r) => r.status === 'fulfilled' && r.value);
+  return NextResponse.json({ delivered, reference: saved ?? undefined });
 }
