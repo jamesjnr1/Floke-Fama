@@ -29,7 +29,7 @@ export default async function AdminLoginPage({ searchParams }: { searchParams: P
   const { next, signedout } = await searchParams;
   const target = safeNext(next);
   return (
-    <main id="main" className="grid min-h-[100svh] bg-[#eef2f0] lg:grid-cols-[1.05fr_1fr]">
+    <main id="main" className="grid min-h-[100svh] grid-cols-1 bg-[#eef2f0] lg:grid-cols-[1.05fr_1fr]">
       <section className="relative isolate flex flex-col overflow-hidden bg-[linear-gradient(160deg,#0a5a33_0%,#06482a_55%,#032a19_100%)] px-6 py-8 text-white md:px-12 md:py-12 lg:min-h-[100svh]">
         <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(60%_50%_at_15%_10%,rgb(127_209_165/0.18),transparent_70%)]" />
         {/* Faint rings in the corner */}
