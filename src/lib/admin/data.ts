@@ -67,7 +67,7 @@ export async function loadAdminData(): Promise<AdminData> {
         email: String(r.email ?? ''),
         organisation: String(r.organisation ?? ''),
         phone: String(r.phone ?? ''),
-        role: roleFor(String(r.email ?? '')),
+        role: roleFor(String(r.email ?? ''), r.$id),
         createdAt: r.$createdAt,
       })),
     ),
