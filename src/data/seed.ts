@@ -283,7 +283,7 @@ export const awards = [
   },
 ];
 
-/** Events & Activities (the current site lists past events only). */
+/** Events & News (the current site lists past events only). */
 export const events: EventItem[] = [
   {
     id: 'floke-praise-2026',

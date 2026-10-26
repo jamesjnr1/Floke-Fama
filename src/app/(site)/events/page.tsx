@@ -13,7 +13,7 @@ import { cn, siteUrl, jsonLdHtml } from '@/lib/utils';
 export const revalidate = 86400;
 
 export const metadata: Metadata = {
-  title: 'Events & Activities',
+  title: 'Events & News',
   description: 'Flokefama events, activities and news from the Media Centre: Floke Praise, awards, press, partnerships and community programmes.',
   alternates: { canonical: '/events' },
 };
