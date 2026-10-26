@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils';
  */
 type State = 'checking' | 'unsupported' | 'install' | 'off' | 'on' | 'blocked' | 'unavailable';
 
-const KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? '';
+const KEY = (process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? '').trim().replace(/^["']|["']$/g, '');
 const fromB64 = (s: string) => Uint8Array.from(atob((s + '='.repeat((4 - (s.length % 4)) % 4)).replace(/-/g, '+').replace(/_/g, '/')), (c) => c.charCodeAt(0));
 const isIos = () => /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 const standalone = () => window.matchMedia('(display-mode: standalone)').matches || (navigator as Navigator & { standalone?: boolean }).standalone === true;
@@ -40,19 +40,64 @@ function useAlerts() {
     };
   }, []);
 
+  /** Each step says what went wrong, so the reason can be fixed (instead of one "could not be turned on"). */
   const turnOn = useCallback(async () => {
     setBusy(true);
+    const fail = (title: string, description: string) => {
+      toast.error(title, { description, duration: 12_000 });
+    };
     try {
-      if ((await Notification.requestPermission()) !== 'granted') return setState('blocked');
-      const reg = (await navigator.serviceWorker.getRegistration()) ?? (await navigator.serviceWorker.register('/sw.js'));
-      await navigator.serviceWorker.ready;
-      const sub = (await reg.pushManager.getSubscription()) ?? (await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: fromB64(KEY) }));
+      let key: Uint8Array;
+      try {
+        key = fromB64(KEY);
+        if (key.length !== 65 || key[0] !== 4) throw new Error();
+      } catch {
+        return fail('Alerts are not set up correctly', 'The site’s alerts key isn’t valid. An administrator can check it under Database & settings in the admin console.');
+      }
+      const permission = Notification.permission === 'granted' ? 'granted' : await Notification.requestPermission();
+      if (permission !== 'granted') {
+        setState('blocked');
+        return fail('Alerts are blocked on this device', 'Allow notifications for this site in your browser’s settings (the lock or settings icon next to the address), then try again.');
+      }
+      let reg: ServiceWorkerRegistration;
+      try {
+        reg = (await navigator.serviceWorker.getRegistration('/')) ?? (await navigator.serviceWorker.register('/sw.js'));
+        await navigator.serviceWorker.ready;
+      } catch {
+        return fail('This browser couldn’t start alerts', 'Try Chrome, Edge or Safari, and not a private or incognito window.');
+      }
+      const subscribe = () => reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: key as BufferSource });
+      let sub = await reg.pushManager.getSubscription();
+      // A registration made with an older alerts key can't be reused: replace it
+      const sameKey = (s: PushSubscription) => {
+        const k = s.options.applicationServerKey ? new Uint8Array(s.options.applicationServerKey) : null;
+        return !k || (k.length === key.length && k.every((v, i) => v === key[i]));
+      };
+      if (sub && !sameKey(sub)) {
+        await sub.unsubscribe();
+        sub = null;
+      }
+      if (!sub) {
+        try {
+          sub = await subscribe();
+        } catch (e) {
+          if ((e as DOMException).name === 'InvalidStateError') {
+            await (await reg.pushManager.getSubscription())?.unsubscribe();
+            sub = await subscribe().catch(() => null);
+          }
+          if (!sub)
+            return fail('Your browser’s alert service didn’t answer', 'Some browsers block alerts (Brave, or Chrome with Google services switched off). Try Chrome, Edge or Safari, check you are online, and try again. On iPhone, add the portal to the home screen first.');
+        }
+      }
       const r = await fetch('/api/push', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(sub) });
-      if (!r.ok) throw new Error();
+      if (!r.ok) {
+        const j = (await r.json().catch(() => ({}))) as { error?: string };
+        return fail('Alerts could not be saved', j.error ?? 'Please try again in a moment.');
+      }
       setState('on');
       toast.success('Alerts are on', { description: 'You’ll be alerted on this device, even when the portal is closed.' });
-    } catch {
-      toast.error('Alerts could not be turned on', { description: 'Please try again.' });
+    } catch (e) {
+      fail('Alerts could not be turned on', (e as Error)?.message || 'Please try again.');
     } finally {
       setBusy(false);
     }
