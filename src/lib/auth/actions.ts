@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { AccountsUnavailable, accountExists, findSavedAccount, hashPassword, saveAccount, type StoredAccount } from '@/lib/auth/accounts';
 import { ADMIN_COOKIE, nextFor, safeNext, SESSION_COOKIE, sessionCookie, signSession, type SessionUser } from '@/lib/auth/session';
+import { getAdminSession, getSession } from '@/lib/auth/server';
 import { roleFor } from '@/lib/auth/users';
 
 export interface LoginState {
@@ -139,4 +140,46 @@ export async function logout() {
 export async function adminLogout() {
   (await cookies()).delete(ADMIN_COOKIE);
   redirect('/admin/login?signedout=1');
+}
+
+export interface PasswordState {
+  errors?: Partial<Record<'current' | 'password' | 'confirm' | 'form', string>>;
+  done?: boolean;
+}
+
+const newPassword = z
+  .object({
+    current: z.string().min(1, 'Enter your current password').max(200),
+    password: z.string().min(8, 'Use at least 8 characters').max(200),
+    confirm: z.string(),
+  })
+  .refine((v) => v.password === v.confirm, { path: ['confirm'], message: 'The passwords don’t match' })
+  .refine((v) => v.password !== v.current, { path: ['password'], message: 'Choose a password different from the current one' });
+
+/**
+ * Change password, for any signed-in account (hospital, engineer or admin): checks the current password, then saves
+ * the new one. Wrong current passwords count towards the same lock-out as sign-in.
+ */
+export async function changePassword(_prev: PasswordState, form: FormData): Promise<PasswordState> {
+  const session = form.get('area') === 'admin' ? await getAdminSession() : await getSession();
+  if (!session) return { errors: { form: 'Your session has ended. Please sign in again.' } };
+  const parsed = newPassword.safeParse({ current: form.get('current'), password: form.get('password'), confirm: form.get('confirm') });
+  if (!parsed.success) {
+    const errors: PasswordState['errors'] = {};
+    for (const issue of parsed.error.issues) errors[issue.path[0] as keyof NonNullable<PasswordState['errors']>] ??= issue.message;
+    return { errors };
+  }
+  const key = await attemptKey(session.email);
+  if (blocked(key)) return { errors: { form: 'Too many attempts. Please wait 15 minutes and try again.' } };
+  const found = await guarded(() => findSavedAccount(session.email, parsed.data.current));
+  if (!found.ok) return { errors: { form: UNAVAILABLE } };
+  if (!found.value) {
+    failed(key);
+    return { errors: { current: 'That isn’t your current password.' } };
+  }
+  attempts.delete(key);
+  const { salt, hash } = await hashPassword(parsed.data.password);
+  const saved = await guarded(() => saveAccount({ ...found.value!, salt, hash }));
+  if (!saved.ok) return { errors: { form: UNAVAILABLE } };
+  return { done: true };
 }

@@ -2,7 +2,7 @@ import Image from 'next/image';
 import { LogoMark, LogoWordmark } from '@/components/layout/logo';
 import { Reveal } from '@/components/motion/reveal';
 import { ScrollCue } from '@/components/layout/scroll-cue';
-import { headerImageSrc } from '@/lib/header-image';
+import { headerImagePhoneSrc, headerImageSrc } from '@/lib/header-image';
 
 /**
  * Page header shared by the inner pages: the page's photo fills the whole header under a light veil, with a large
@@ -36,7 +36,11 @@ export function PageHero({
   return (
     <section className="relative isolate grid min-h-[34rem] place-items-center overflow-hidden bg-[#10191e] text-center text-white md:min-h-[min(47.5rem,92svh)]">
       <div aria-hidden className="absolute inset-0 -z-10">
-        <Image src={headerImageSrc(image)} alt="" fill priority unoptimized className={flip ? '-scale-x-100 object-cover' : 'object-cover'} style={{ objectPosition: position }} />
+        {/* Phones get the smaller copy of the photo */}
+        <picture>
+          <source media="(max-width: 767px)" srcSet={headerImagePhoneSrc(image)} />
+          <Image src={headerImageSrc(image)} alt="" fill priority unoptimized className={flip ? '-scale-x-100 object-cover' : 'object-cover'} style={{ objectPosition: position }} />
+        </picture>
         {/* Light veil, as on youversion.com: the photo stays vivid; a little deeper behind the menu and the title */}
         {veil === 'strong' ? (
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(6_20_14/0.72)_0%,rgb(6_20_14/0.55)_35%,rgb(6_20_14/0.6)_65%,rgb(6_20_14/0.8)_100%)]" />

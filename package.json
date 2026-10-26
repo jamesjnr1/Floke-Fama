@@ -15,7 +15,8 @@
     "qa": "node scripts/qa.mjs",
     "flyers": "node scripts/export-flyers.mjs",
     "images": "node scripts/optimize-images.mjs",
-    "appwrite:setup": "node --env-file-if-exists=.env.local scripts/appwrite-setup.mjs"
+    "appwrite:setup": "node --env-file-if-exists=.env.local scripts/appwrite-setup.mjs",
+    "header-images": "node scripts/header-images.mjs"
   },
   "engines": {
     "node": ">=20.9"
