@@ -98,42 +98,43 @@ export default async function SupportPage() {
         </div>
       </section>
 
-      {/* Report a fault or request help: on the company green, what happens next beside the form (in a white card) */}
-      <section id="request" aria-labelledby="request-title" className="scroll-mt-20 bg-[linear-gradient(135deg,#0a5a33_0%,#06482a_60%,#043822_100%)] py-14 text-white md:py-20">
-        <div className="mx-auto grid max-w-[1280px] gap-10 px-5 md:px-10 lg:grid-cols-12 lg:gap-14">
-          <div className="lg:col-span-4">
+      {/* Report a fault or request help, on the company green: the heading centred, the stages as dots on a line,
+          then the form in one wide white card */}
+      <section id="request" aria-labelledby="request-title" className="scroll-mt-20 bg-[linear-gradient(160deg,#0a5a33_0%,#06482a_55%,#043822_100%)] py-14 text-white md:py-20">
+        <div className="mx-auto max-w-[1080px] px-5 md:px-10">
+          <div className="mx-auto max-w-2xl text-center">
             <p className="text-[0.9375rem] font-semibold uppercase tracking-[0.08em] text-brand-300">Technical support</p>
-            <h2 id="request-title" className="mt-2 text-[clamp(1.875rem,1.3rem+1.8vw,2.625rem)] font-bold leading-tight tracking-[-0.02em] !text-white">Report a fault or request help</h2>
-            <p className="no-justify mt-4 text-lg leading-relaxed text-white/80">Tell us what you need and our support team will call you back.</p>
-
-            <h3 className="mt-9 text-[0.9375rem] font-semibold uppercase tracking-[0.08em] !text-white/70">What happens next</h3>
-            {/* The stages as a timeline: dots joined by a line */}
-            <ol className="mt-6">
-              {[
-                ['We receive it straight away', 'Your request goes directly to our support team.'],
-                ['We call you back', 'An engineer talks it through with you and solves what can be solved by phone.'],
-                ['We come to you', 'If it needs a visit, an engineer is sent to your hospital or lab.'],
-              ].map(([title, text], i, all) => (
-                <li key={title} className="relative flex gap-5 pb-8 last:pb-0">
-                  {i < all.length - 1 && <span aria-hidden className="absolute -bottom-1 left-[8px] top-[22px] w-0.5 bg-white/25" />}
-                  <span aria-hidden className="relative mt-1 size-[18px] shrink-0 rounded-full border-[3px] border-white bg-brand-300 shadow-[0_0_0_5px_rgb(255_255_255/0.12)]" />
-                  <span>
-                    <span className="block text-[0.8125rem] font-semibold uppercase tracking-[0.08em] text-brand-300">Step {i + 1}</span>
-                    <span className="mt-0.5 block text-lg font-semibold text-white">{title}</span>
-                    <span className="mt-1 block leading-relaxed text-white/75">{text}</span>
-                  </span>
-                </li>
-              ))}
-            </ol>
-
-            <p className="mt-9 border-t border-white/20 pt-6 leading-relaxed text-white/80">
-              Already a client? <Link href="/portal" className="font-semibold text-white underline underline-offset-4 hover:text-brand-300">Log the fault in your client portal</Link> and follow it until it’s fixed.
-            </p>
+            <h2 id="request-title" className="mt-2 text-[clamp(1.875rem,1.3rem+1.8vw,2.75rem)] font-bold leading-tight tracking-[-0.02em] !text-white">Report a fault or request help</h2>
+            <p className="no-justify mt-3 text-lg leading-relaxed text-white/80">Tell us what you need and our support team will call you back.</p>
           </div>
 
-          <div className="bg-paper p-6 text-ink shadow-[0_24px_60px_-30px_rgb(0_0_0/0.5)] md:p-9 lg:col-span-8">
+          {/* What happens next: three dots on one line (down the side on phones) */}
+          <ol aria-label="What happens next" className="relative mx-auto mt-10 grid max-w-[920px] gap-7 md:mt-12 md:grid-cols-3 md:gap-8">
+            <span aria-hidden className="absolute left-[16.67%] right-[16.67%] top-[8px] hidden h-0.5 bg-white/25 md:block" />
+            {[
+              ['We receive it straight away', 'Your request goes directly to our support team.'],
+              ['We call you back', 'An engineer talks it through and solves what can be solved by phone.'],
+              ['We come to you', 'If it needs a visit, an engineer is sent to your hospital or lab.'],
+            ].map(([title, text], i, all) => (
+              <li key={title} className="relative flex gap-4 md:flex-col md:items-center md:gap-0 md:text-center">
+                {i < all.length - 1 && <span aria-hidden className="absolute -bottom-7 left-[8px] top-[22px] w-0.5 bg-white/25 md:hidden" />}
+                <span aria-hidden className="relative mt-0 size-[18px] shrink-0 rounded-full border-[3px] border-white bg-brand-300 shadow-[0_0_0_6px_rgb(6_72_42)]" />
+                <span className="md:mt-4">
+                  <span className="block text-[0.8125rem] font-semibold uppercase tracking-[0.08em] text-brand-300">Step {i + 1}</span>
+                  <span className="mt-0.5 block text-lg font-semibold text-white">{title}</span>
+                  <span className="mt-1 block leading-relaxed text-white/75">{text}</span>
+                </span>
+              </li>
+            ))}
+          </ol>
+
+          <div className="mt-12 overflow-hidden bg-paper text-ink shadow-[0_30px_70px_-35px_rgb(0_0_0/0.6)] md:mt-14">
             <SupportForm />
           </div>
+
+          <p className="no-justify mt-6 text-center leading-relaxed text-white/80">
+            Already a client? <Link href="/portal" className="font-semibold text-white underline underline-offset-4 hover:text-brand-300">Log the fault in your client portal</Link> and follow it until it’s fixed.
+          </p>
         </div>
       </section>
 
