@@ -52,7 +52,7 @@ export function useWebsiteRequests() {
     };
   }, [refresh]);
 
-  /** Marks a request called back or closed (or records the job it became); shown straight away, saved on the server. */
+  /** Marks a request called back or closed (or records the service request it became); shown straight away, saved on the server. */
   const update = useCallback(
     async (id: string, status: WebsiteRequest['status'], me: string, ticketId?: string) => {
       setRequests((rs) => rs?.map((r) => (r.id === id ? { ...r, status, handledBy: me, handledAt: new Date().toISOString(), ticketId: ticketId ?? r.ticketId } : r)) ?? rs);
@@ -77,7 +77,7 @@ const filters: { id: Filter; label: string }[] = [
 
 /**
  * From the website: what people sent with the Support page's form, client or not. Call them back, then mark it;
- * for a registered hospital's equipment, "Make it a job" logs it on the service desk like any other request.
+ * when it needs a visit, "Send an engineer" opens a service request for the hospital's registered equipment.
  */
 export function WebsiteView({ requests, enabled, me, onCalled, onClose, onMakeJob, onOpenTicket }: {
   requests: WebsiteRequest[] | null;
@@ -96,7 +96,7 @@ export function WebsiteView({ requests, enabled, me, onCalled, onClose, onMakeJo
 
   return (
     <div>
-      <p className="max-w-3xl text-sm text-ink-3">Sent with the Report a fault form on the Support page, by anyone. Call them back, then mark the request. If it’s a registered hospital’s equipment, make it a job so it’s tracked like any other request.</p>
+      <p className="max-w-3xl text-sm text-ink-3">Sent with the Report a fault form on the Support page, by anyone. Call them back first. If it can be settled by phone, mark it Called back or Close. If it needs a visit, press Send an engineer: it becomes a service request, tracked like any other.</p>
       <div className="mt-4 flex gap-4 overflow-x-auto border-b border-line" role="tablist" aria-label="Request filter">
         {filters.map((f) => (
           <button key={f.id} role="tab" aria-selected={filter === f.id} onClick={() => setFilter(f.id)} className={cn('-mb-px shrink-0 border-b-2 py-2.5 text-sm', filter === f.id ? 'border-ink font-semibold text-ink' : 'border-transparent text-ink-3 hover:text-ink')}>
@@ -124,12 +124,12 @@ export function WebsiteView({ requests, enabled, me, onCalled, onClose, onMakeJo
 
               <div className="mt-auto flex flex-wrap items-center gap-2 pt-4">
                 {r.status !== 'closed' && r.type !== 'assistance' && !r.ticketId && (
-                  <PrimaryButton onClick={() => onMakeJob(r)}><Icon name="fi-rr-plus" /> Make it a job</PrimaryButton>
+                  <PrimaryButton onClick={() => onMakeJob(r)}><Icon name="fi-rr-plus" /> Send an engineer</PrimaryButton>
                 )}
                 {r.status === 'new' && <GhostButton onClick={() => onCalled(r)}><Icon name="fi-rr-check" /> Called back</GhostButton>}
                 {r.status !== 'closed' && <GhostButton onClick={() => onClose(r)}>Close</GhostButton>}
                 {r.ticketId && (
-                  <button onClick={() => onOpenTicket(r.ticketId!)} className="text-sm font-semibold text-brand-700 hover:underline">Open job {r.ticketId}</button>
+                  <button onClick={() => onOpenTicket(r.ticketId!)} className="text-sm font-semibold text-brand-700 hover:underline">View service request {r.ticketId}</button>
                 )}
                 <span className="ml-auto text-xs text-ink-3">
                   {statusLabel[r.status]}
