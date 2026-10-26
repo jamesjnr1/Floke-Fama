@@ -133,8 +133,8 @@ export function WebsiteView({ requests, enabled, me, onCalled, onClose, onMakeJo
                 )}
                 <span className="ml-auto text-xs text-ink-3">
                   {statusLabel[r.status]}
-                  {r.handledBy && ` · ${r.handledBy === me ? 'you' : r.handledBy}`}
-                  {r.handledAt && `, ${fmtTime(r.handledAt)}`}
+                  {r.status !== 'new' && r.handledBy && ` · ${r.handledBy === me ? 'you' : r.handledBy}`}
+                  {r.status !== 'new' && r.handledAt && `, ${fmtTime(r.handledAt)}`}
                 </span>
               </div>
             </Panel>
