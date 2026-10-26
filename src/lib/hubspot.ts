@@ -1,7 +1,7 @@
 import 'server-only';
 
 /**
- * HubSpot through a private app (HubSpot → Settings → Integrations → Private apps), set as HUBSPOT_ACCESS_TOKEN.
+ * HubSpot through a service key (HubSpot → Development → Service keys) or a private app's token, set as HUBSPOT_ACCESS_TOKEN.
  * Each quote becomes a deal on the sales pipeline, linked to the contact and the hospital (a company), with the full
  * request as a note; a support request adds a note to the caller's contact. HUBSPOT_PIPELINE_ID and
  * HUBSPOT_DEAL_STAGE pick where new deals land (default: the first stage of the default pipeline), and
@@ -167,8 +167,8 @@ export async function hubspotStatus(): Promise<{ ok: boolean; detail: string }> 
     return { ok: true, detail: `Connected. Each quote becomes a deal in “${pipeline.label}” at “${stage.label}”, with its contact, hospital and a note; support requests are noted on the caller’s contact.` };
   } catch (e) {
     if (e instanceof HubSpotError) {
-      if (e.status === 401) return { ok: false, detail: 'HubSpot did not accept HUBSPOT_ACCESS_TOKEN. Copy the private app’s access token again (it starts with “pat-”).' };
-      if (e.status === 403) return { ok: false, detail: `The private app is missing a permission. In HubSpot → Private apps → Scopes, tick read and write for contacts, companies and deals. HubSpot said: ${e.body.message ?? 'forbidden'}` };
+      if (e.status === 401) return { ok: false, detail: 'HubSpot did not accept HUBSPOT_ACCESS_TOKEN. Copy the service key again from HubSpot → Development → Service keys (or create a new one).' };
+      if (e.status === 403) return { ok: false, detail: `The service key is missing a permission. In HubSpot → Development → Service keys, edit the key and add read and write for contacts, companies and deals. HubSpot said: ${e.body.message ?? 'forbidden'}` };
       if (e.status === 404) return { ok: false, detail: `HUBSPOT_PIPELINE_ID “${pipelineId()}” is not a deal pipeline in this HubSpot account.` };
       return { ok: false, detail: e.message };
     }
