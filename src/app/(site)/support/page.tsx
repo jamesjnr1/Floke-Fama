@@ -98,43 +98,46 @@ export default async function SupportPage() {
         </div>
       </section>
 
-      {/* Report a fault or request help, on the company green: the heading centred, the stages as dots on a line,
-          then the form in one wide white card */}
-      <section id="request" aria-labelledby="request-title" className="scroll-mt-20 bg-[linear-gradient(160deg,#0a5a33_0%,#06482a_55%,#043822_100%)] py-14 text-white md:py-20">
-        <div className="mx-auto max-w-[1080px] px-5 md:px-10">
-          <div className="mx-auto max-w-2xl text-center">
-            <p className="text-[0.9375rem] font-semibold uppercase tracking-[0.08em] text-brand-300">Technical support</p>
-            <h2 id="request-title" className="mt-2 text-[clamp(1.875rem,1.3rem+1.8vw,2.75rem)] font-bold leading-tight tracking-[-0.02em] !text-white">Report a fault or request help</h2>
-            <p className="no-justify mt-3 text-lg leading-relaxed text-white/80">Tell us what you need and our support team will call you back.</p>
+      {/* Report a fault or request help: one card, the form on white and a green panel down its side with what happens
+          next, the 24/7 number and the client-portal link (under the form on phones) */}
+      <section id="request" aria-labelledby="request-title" className="scroll-mt-20 border-t border-line bg-paper py-14 md:py-20">
+        <div className="mx-auto max-w-[1180px] px-5 md:px-10">
+          <p className="text-[0.9375rem] font-semibold uppercase tracking-[0.08em] text-brand-700">Technical support</p>
+          <h2 id="request-title" className="mt-2 text-[clamp(1.875rem,1.3rem+1.8vw,2.75rem)] font-bold leading-tight tracking-[-0.02em] text-ink">Report a fault or request help</h2>
+
+          <div className="mt-8 grid overflow-hidden border border-line shadow-[0_20px_50px_-30px_rgb(0_0_0/0.3)] lg:grid-cols-[1fr_340px]">
+            <div className="bg-paper">
+              <SupportForm />
+            </div>
+            <aside className="bg-[linear-gradient(160deg,#0a5a33_0%,#06482a_55%,#043822_100%)] p-8 text-white">
+              <h3 className="text-[0.9375rem] font-semibold uppercase tracking-[0.08em] !text-brand-300">What happens next</h3>
+              {/* The stages as a timeline: dots joined by a line */}
+              <ol className="mt-6">
+                {[
+                  ['We receive it straight away', 'Your request goes directly to our support team.'],
+                  ['We call you back', 'An engineer talks it through and solves what can be solved by phone.'],
+                  ['We come to you', 'If it needs a visit, an engineer is sent to your hospital or lab.'],
+                ].map(([title, text], i, all) => (
+                  <li key={title} className="relative flex gap-5 pb-7 last:pb-0">
+                    {i < all.length - 1 && <span aria-hidden className="absolute -bottom-1 left-[8px] top-[22px] w-0.5 bg-white/25" />}
+                    <span aria-hidden className="relative mt-1 size-[18px] shrink-0 rounded-full border-[3px] border-white bg-brand-300" />
+                    <span>
+                      <span className="block text-[0.8125rem] font-semibold uppercase tracking-[0.08em] text-brand-300">Step {i + 1}</span>
+                      <span className="mt-0.5 block text-lg font-semibold text-white">{title}</span>
+                      <span className="mt-1 block leading-relaxed text-white/75">{text}</span>
+                    </span>
+                  </li>
+                ))}
+              </ol>
+              <div className="mt-8 border-t border-white/20 pt-6">
+                <p className="text-white/75">Equipment down right now?</p>
+                <a href={contact.phoneHref} className="mt-1 block text-2xl font-bold tracking-[-0.01em] text-white hover:text-brand-300">{contact.phone}</a>
+                <p className="mt-6 text-white/75">
+                  Already a client? <Link href="/portal" className="font-semibold text-white underline underline-offset-4 hover:text-brand-300">Use your portal</Link>
+                </p>
+              </div>
+            </aside>
           </div>
-
-          {/* What happens next: three dots on one line (down the side on phones) */}
-          <ol aria-label="What happens next" className="relative mx-auto mt-10 grid max-w-[920px] gap-7 md:mt-12 md:grid-cols-3 md:gap-8">
-            <span aria-hidden className="absolute left-[16.67%] right-[16.67%] top-[8px] hidden h-0.5 bg-white/25 md:block" />
-            {[
-              ['We receive it straight away', 'Your request goes directly to our support team.'],
-              ['We call you back', 'An engineer talks it through and solves what can be solved by phone.'],
-              ['We come to you', 'If it needs a visit, an engineer is sent to your hospital or lab.'],
-            ].map(([title, text], i, all) => (
-              <li key={title} className="relative flex gap-4 md:flex-col md:items-center md:gap-0 md:text-center">
-                {i < all.length - 1 && <span aria-hidden className="absolute -bottom-7 left-[8px] top-[22px] w-0.5 bg-white/25 md:hidden" />}
-                <span aria-hidden className="relative mt-0 size-[18px] shrink-0 rounded-full border-[3px] border-white bg-brand-300 shadow-[0_0_0_6px_rgb(6_72_42)]" />
-                <span className="md:mt-4">
-                  <span className="block text-[0.8125rem] font-semibold uppercase tracking-[0.08em] text-brand-300">Step {i + 1}</span>
-                  <span className="mt-0.5 block text-lg font-semibold text-white">{title}</span>
-                  <span className="mt-1 block leading-relaxed text-white/75">{text}</span>
-                </span>
-              </li>
-            ))}
-          </ol>
-
-          <div className="mt-12 overflow-hidden bg-paper text-ink shadow-[0_30px_70px_-35px_rgb(0_0_0/0.6)] md:mt-14">
-            <SupportForm />
-          </div>
-
-          <p className="no-justify mt-6 text-center leading-relaxed text-white/80">
-            Already a client? <Link href="/portal" className="font-semibold text-white underline underline-offset-4 hover:text-brand-300">Log the fault in your client portal</Link> and follow it until it’s fixed.
-          </p>
         </div>
       </section>
 
