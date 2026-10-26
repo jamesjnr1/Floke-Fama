@@ -13,8 +13,12 @@ import { cn } from '@/lib/utils';
 export const fieldClass =
   'w-full rounded-lg border border-line bg-paper px-3 text-sm text-ink outline-none transition placeholder:text-ink-3/70 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15';
 
-/** Small square status tag (no pills). Pair with a colour from status.ts. */
-export const tag = 'inline-flex shrink-0 items-center gap-1.5 rounded-[4px] px-2 py-1 text-[0.8125rem] font-semibold uppercase leading-none tracking-[0.07em]';
+/**
+ * A status label: a small coloured dot and coloured text, no box. Pair with a colour from status.ts; any background
+ * colour given alongside is ignored, so only the text colour (and the dot, which follows it) shows.
+ */
+export const tag =
+  "inline-flex shrink-0 items-center gap-1.5 !bg-transparent text-[0.8125rem] font-semibold uppercase leading-none tracking-[0.07em] before:size-2 before:shrink-0 before:rounded-full before:bg-current before:content-['']";
 
 export function SectionLabel({ children, className }: { children: React.ReactNode; className?: string }) {
   return <h2 className={cn('text-[0.8125rem] font-semibold uppercase tracking-[0.08em] text-ink-3', className)}>{children}</h2>;

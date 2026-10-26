@@ -35,6 +35,7 @@ const tabs: { id: Tab; label: string; icon: string }[] = [
 const DAY = 864e5;
 const dateFmt = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Africa/Accra' });
 const timeFmt = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'Africa/Accra' });
+const clockFmt = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Africa/Accra' });
 const fmt = (iso: string | undefined) => (iso ? dateFmt.format(new Date(iso)) : '—');
 const units = (o: { items: { qty: number }[] }) => o.items.reduce((n, i) => n + i.qty, 0);
 // Kept here: '@/lib/orders' is a browser module, so its constants can't be read on the server
@@ -132,7 +133,14 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
               <p className="truncate font-semibold">{session.name}</p>
               <p className="truncate text-[0.875rem] text-ink-3">{session.email}</p>
             </div>
-            <p className="ml-auto hidden items-center gap-2 rounded-xl bg-[#f1f4f2] px-4 py-2.5 text-[0.9375rem] text-ink-2 md:flex">
+            <p className="ml-auto hidden items-center gap-2 whitespace-nowrap text-[0.875rem] text-ink-3 xl:flex" title="This page updates by itself every 30 seconds">
+              <span aria-hidden className="relative flex size-2">
+                <span className="absolute inline-flex size-full animate-ping rounded-full bg-brand-500 opacity-60 motion-reduce:animate-none" />
+                <span className="relative inline-flex size-2 rounded-full bg-brand-500" />
+              </span>
+              Live · updated {clockFmt.format(new Date(now))}
+            </p>
+            <p className="hidden items-center gap-2 rounded-xl bg-[#f1f4f2] px-4 py-2.5 text-[0.9375rem] text-ink-2 md:ml-auto md:flex xl:ml-0">
               <Icon name="fi-rr-calendar" className="text-brand-600" /> {dateFmt.format(new Date(now))}
             </p>
             <form action={adminLogout} className="ml-auto md:ml-0 lg:hidden">
@@ -164,7 +172,8 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
 
             {tab === 'overview' && <Overview data={data} now={now} />}
             {/* The overview and the accounts read again every 30 s, so who is on which job stays current */}
-            {(tab === 'overview' || tab === 'service' || (tab === 'accounts' && params.account)) && <LiveRefresh seconds={30} />}
+            {/* Every tab reads the latest every 30 seconds (not while an engineer is being added, so the form is left alone) */}
+            {params.add !== 'engineer' && <LiveRefresh seconds={30} />}
             {tab === 'orders' && <Orders data={data} status={params.status} q={params.q} />}
             {tab === 'accounts' && (params.account ? <AccountDetail data={data} id={params.account} now={now} /> : <Accounts data={data} q={params.q} role={roles.some((r) => r.id && r.id === params.role) ? params.role : undefined} adding={params.add === 'engineer'} />)}
             {tab === 'products' && <Products data={data} />}
@@ -262,13 +271,10 @@ function Table({ head, children, empty }: { head: string[]; children: React.Reac
   );
 }
 
+/** A status as a coloured dot and coloured text (no box). */
 const Badge = ({ children, tone = 'neutral' }: { children: React.ReactNode; tone?: 'neutral' | 'good' | 'warn' | 'bad' }) => (
-  <span
-    className={cn(
-      'inline-block whitespace-nowrap rounded-md border px-2 py-0.5 text-[0.8125rem] font-medium',
-      { neutral: 'border-line bg-[#f6f8f7] text-ink-2', good: 'border-[#9fdcbb] bg-[#effaf4] text-brand-700', warn: 'border-[#f2d37a] bg-[#fffaeb] text-[#7a5300]', bad: 'border-[#f3a7ab] bg-[#fff3f3] text-signal-700' }[tone],
-    )}
-  >
+  <span className={cn('inline-flex items-center gap-2 whitespace-nowrap text-[0.875rem] font-semibold', { neutral: 'text-ink-3', good: 'text-brand-700', warn: 'text-[#9a6700]', bad: 'text-signal-700' }[tone])}>
+    <span aria-hidden className="size-2 shrink-0 rounded-full bg-current" />
     {children}
   </span>
 );
@@ -913,7 +919,7 @@ function WebsiteRequestsNotice({ data }: { data: AdminData }) {
       <Icon name="fi-rr-exclamation" className="text-xl text-signal-700" />
       <span className="flex-1">
         <span className="block font-semibold text-ink">{fresh.length} new request{fresh.length === 1 ? '' : 's'} from the Support page{faults ? ` (${faults} fault${faults === 1 ? '' : 's'})` : ''}</span>
-        <span className="block text-[0.9375rem] text-ink-3">Latest: {fresh[0].facility}, {fresh[0].equipment}. Call them back, then mark them on the Service desk tab.</span>
+        <span className="block text-[0.9375rem] text-ink-3">Latest: {fresh[0].facility}, {fresh[0].equipment}. Engineers see it in their portal under From the website and call back.</span>
       </span>
       <span className="font-semibold text-signal-700">View</span>
     </Link>
