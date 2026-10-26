@@ -90,6 +90,13 @@ const tables = [
     columns: [text('account', 254), text('role', 16), text('facility', 160, false), json('data')],
     indexes: [{ key: 'role_facility', type: 'key', columns: ['role', 'facility'] }],
   },
+  // Requests from the Support page's Report a fault form (also created by the site itself on the first request)
+  {
+    id: 'support_requests',
+    name: 'Support requests',
+    columns: [text('status', 16), text('facility', 160, false), json('data')],
+    indexes: [],
+  },
   // Text messages (SMS) to engineers and admins: one row per text, listed in the admin console
   {
     id: 'sms_log',
