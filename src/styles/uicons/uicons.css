@@ -76,5 +76,6 @@
 .fi-rr-wrench-simple::before{content:"\ff25"}
 @font-face{font-family:"uicons-brands";src:url("uicons-brands.woff2") format("woff2");font-display:block}
 [class^="fi-brands-"]::before,[class*=" fi-brands-"]::before{font-family:"uicons-brands"!important;font-style:normal;font-weight:normal!important;line-height:1;display:inline-block;vertical-align:-.125em;-webkit-font-smoothing:antialiased}
+.fi-brands-instagram::before{content:"\f16e"}
 .fi-brands-linkedin::before{content:"\f17b"}
 .fi-brands-whatsapp::before{content:"\f1d2"}
