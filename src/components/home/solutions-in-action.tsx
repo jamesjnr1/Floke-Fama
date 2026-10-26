@@ -126,9 +126,10 @@ export function SolutionsInAction({ layout = 'wide', plain = false }: { layout?:
   return (
     <section aria-labelledby="in-action-title" className={`${plain ? 'pb-16 md:pb-28 ' : 'pattern-grid '}bg-paper pt-16 md:pt-32`}>
       <div className="relative isolate overflow-hidden bg-black">
-        {player('block h-[min(70svh,460px)] w-full object-cover sm:h-auto sm:aspect-[1024/436]')}
+        {/* The whole frame on every screen; on phones the title sits under the film instead of on it */}
+        {player('block aspect-[1024/436] w-full object-cover')}
         {!watching && (
-          <div className="absolute inset-0 flex flex-col items-center justify-end bg-[linear-gradient(180deg,transparent_40%,rgb(0_0_0/0.65)_100%)] px-5 pb-10 text-center md:pb-16">
+          <div className="flex flex-col items-center px-5 py-6 text-center sm:absolute sm:inset-0 sm:justify-end sm:bg-[linear-gradient(180deg,transparent_40%,rgb(0_0_0/0.65)_100%)] sm:py-0 sm:pb-10 md:pb-16">
             <h2 id="in-action-title" className="text-[clamp(1.75rem,1.1rem+2vw,3rem)] font-bold leading-tight tracking-[-0.02em] !text-white [text-shadow:0_2px_16px_rgb(0_0_0/0.4)]">
               Healthcare Solutions in Action
             </h2>

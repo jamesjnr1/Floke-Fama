@@ -100,15 +100,18 @@ export default async function SupportPage() {
 
       {/* Report a fault or request help */}
       <section id="request" className="pattern-dots scroll-mt-20 border-t border-line bg-paper py-14 md:py-20">
-        <div className="mx-auto grid max-w-[1280px] gap-10 px-5 md:px-10 lg:grid-cols-12 lg:gap-12">
-          <div className="lg:col-span-8">
-            <h2 className="text-2xl font-bold tracking-[-0.02em] text-ink md:text-3xl">Report a fault or request help</h2>
-            <p className="mt-2 text-ink-3">Tell us what you need and our support team will call you back.</p>
-            <div className="mt-6 rounded-lg border border-line bg-canvas p-6 md:p-8">
-              <SupportForm />
-            </div>
+        {/* The form across the full width; the ways to reach the support team and the branches underneath */}
+        <div className="mx-auto max-w-[1280px] px-5 md:px-10">
+          <h2 className="text-2xl font-bold tracking-[-0.02em] text-ink md:text-3xl">Report a fault or request help</h2>
+          <p className="mt-2 text-ink-3">Tell us what you need and our support team will call you back.</p>
+          <div className="mt-6 rounded-lg border border-line bg-canvas p-6 md:p-8">
+            <SupportForm />
           </div>
-          <aside className="lg:col-span-4 lg:pt-[4.25rem]">
+          <p className="mt-5 text-ink-3">
+            Already a client? <Link href="/portal" className="font-semibold text-brand-700 hover:underline">Log the fault in your client portal</Link> and follow it until it’s fixed.
+          </p>
+
+          <div className="mt-10 grid gap-5 md:grid-cols-2">
             <div className="overflow-hidden rounded-lg border border-line bg-paper">
               <p className="border-b border-line px-6 py-4 font-semibold text-ink">Contact the support team</p>
               <ul className="divide-y divide-line">
@@ -125,7 +128,7 @@ export default async function SupportPage() {
                 ))}
               </ul>
             </div>
-            <div className="mt-5 overflow-hidden rounded-lg border border-line bg-paper">
+            <div className="overflow-hidden rounded-lg border border-line bg-paper">
               <p className="border-b border-line px-6 py-4 font-semibold text-ink">Call your nearest branch</p>
               <ul className="divide-y divide-line">
                 {branches.filter((b) => b.phone).map((b) => (
@@ -141,10 +144,7 @@ export default async function SupportPage() {
                 ))}
               </ul>
             </div>
-            <p className="mt-5 text-ink-3">
-              Already a client? <Link href="/portal" className="font-semibold text-brand-700 hover:underline">Log the fault in your client portal</Link> and follow it until it’s fixed.
-            </p>
-          </aside>
+          </div>
         </div>
       </section>
     </>
