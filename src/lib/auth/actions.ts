@@ -4,7 +4,7 @@ import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { AccountsUnavailable, accountExists, findSavedAccount, hashPassword, saveAccount, type StoredAccount } from '@/lib/auth/accounts';
-import { ADMIN_COOKIE, nextFor, safeNext, SESSION_COOKIE, sessionCookie, signSession, type SessionUser } from '@/lib/auth/session';
+import { ADMIN_COOKIE, nextFor, safeNext, SESSION_COOKIE, sessionCookie, signSession, verifySession, type SessionUser } from '@/lib/auth/session';
 import { getAdminSession, getSession } from '@/lib/auth/server';
 import { roleFor } from '@/lib/auth/users';
 
@@ -101,8 +101,10 @@ export async function login(_prev: LoginState, form: FormData): Promise<LoginSta
     return { error: 'That email and password don’t match an account.', email: parsed.data.email };
   }
   attempts.delete(key);
-  // The admin sign-in page (/admin/login) only lets admins in
-  if (form.get('area') === 'admin' && roleFor(saved.email, saved.id) !== 'admin') return { error: 'This account doesn’t have access to the admin console.', email: parsed.data.email };
+  // The admin and engineer sign-in pages (/admin/login, /engineer/login) only let their own role in
+  const role = roleFor(saved.email, saved.id);
+  if (form.get('area') === 'admin' && role !== 'admin') return { error: 'This account doesn’t have access to the admin console.', email: parsed.data.email };
+  if (form.get('area') === 'engineer' && role !== 'engineer') return { error: 'This sign-in is for Flokefama engineers. Hospitals sign in to the client portal at /login.', email: parsed.data.email };
 
   await startSession({ sub: saved.id, name: saved.name, email: saved.email, role: roleFor(saved.email, saved.id), facility: saved.organisation, phone: saved.phone, keep: parsed.data.keep === 'on' }, parsed.data.next);
   return {};
@@ -131,9 +133,12 @@ export async function register(_prev: SignupState, form: FormData): Promise<Sign
   return {};
 }
 
+/** Signing out returns to the sign-in page the account uses (engineers to /engineer/login, hospitals to /login). */
 export async function logout() {
-  (await cookies()).delete(SESSION_COOKIE);
-  redirect('/login?signedout=1');
+  const jar = await cookies();
+  const s = await verifySession(jar.get(SESSION_COOKIE)?.value);
+  jar.delete(SESSION_COOKIE);
+  redirect(`${s?.role === 'engineer' ? '/engineer/login' : '/login'}?signedout=1`);
 }
 
 /** Signing out of the admin console returns to its own sign-in page. */

@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { ADMIN_COOKIE, roleAreas, roleHome, SESSION_COOKIE, sessionCookie, signedInAreas, signSession, verifySession } from '@/lib/auth/session';
+import { ADMIN_COOKIE, roleAreas, roleHome, roleLogin, SESSION_COOKIE, sessionCookie, signedInAreas, signSession, verifySession } from '@/lib/auth/session';
 
 const within = (pathname: string, prefix: string) => pathname === prefix || pathname.startsWith(`${prefix}/`);
 
@@ -16,9 +16,12 @@ export async function middleware(request: NextRequest) {
     return session ? NextResponse.redirect(new URL(roleHome[session.role], request.url)) : NextResponse.next();
   }
 
-  // The admin console has its own sign-in page; a signed-in admin goes straight to the console.
+  // The admin console and the engineer portal have their own sign-in pages; someone already signed in to that area goes straight in.
   if (pathname === '/admin/login') {
     return session?.role === 'admin' ? NextResponse.redirect(new URL('/admin', request.url)) : NextResponse.next();
+  }
+  if (pathname === '/engineer/login') {
+    return session?.role === 'engineer' ? NextResponse.redirect(new URL('/engineer', request.url)) : NextResponse.next();
   }
 
   const area = roleAreas.find((a) => within(pathname, a.prefix));
@@ -26,7 +29,7 @@ export async function middleware(request: NextRequest) {
   if (!needsSignIn) return NextResponse.next();
 
   if (!session) {
-    const login = new URL(area?.role === 'admin' ? '/admin/login' : '/login', request.url);
+    const login = new URL(area ? roleLogin[area.role] : '/login', request.url);
     login.searchParams.set('next', pathname + search);
     const res = NextResponse.redirect(login);
     res.cookies.delete(cookie); // clear expired or tampered cookies

@@ -361,6 +361,7 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
         defaultAssetId={fault.assetId}
         defaultDescription={fault.from ? `${fault.from.message}\n\nFrom the website (${fault.from.id}): ${fault.from.name}, ${fault.from.phone}.` : undefined}
         title={fault.from ? `Send an engineer (${fault.from.id})` : undefined}
+        submitLabel={fault.from ? 'Send an engineer' : undefined}
         onSubmit={(v) => {
           const id = nextTicketId(state);
           rawDispatch({ type: 'create', ticket: { assetId: v.assetId, description: v.description, priority: v.priority }, assignToMe: v.assignToMe });

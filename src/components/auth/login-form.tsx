@@ -6,8 +6,10 @@ import { useSite } from '@/components/site-provider';
 import { login, type LoginState } from '@/lib/auth/actions';
 import { cn } from '@/lib/utils';
 
-/** `admin`: the admin console's sign-in, which only lets admins in. */
-export function LoginForm({ next, notice, admin = false }: { next?: string; notice?: string; admin?: boolean }) {
+/** `area`: the admin console's or the engineer portal's own sign-in, which only lets that role in. */
+export function LoginForm({ next, notice, area }: { next?: string; notice?: string; area?: 'admin' | 'engineer' }) {
+  const staff = Boolean(area);
+  const what = area === 'admin' ? 'admin console' : area === 'engineer' ? 'engineer portal' : 'client portal';
   const { contact } = useSite();
   const [state, action, pending] = useActionState<LoginState, FormData>(login, {});
   const [show, setShow] = useState(false);
@@ -20,10 +22,10 @@ export function LoginForm({ next, notice, admin = false }: { next?: string; noti
 
       <form action={action} className="space-y-4" noValidate>
         {next && <input type="hidden" name="next" value={next} />}
-        {admin && <input type="hidden" name="area" value="admin" />}
+        {area && <input type="hidden" name="area" value={area} />}
         <label className="grid gap-1.5">
           <span className="text-sm font-medium text-ink-2">Email</span>
-          <input name="email" type="email" autoComplete="username" required defaultValue={state.email} placeholder={admin ? 'you@flokefama.com' : 'you@hospital.org'} className={field} />
+          <input name="email" type="email" autoComplete="username" required defaultValue={state.email} placeholder={staff ? 'you@flokefama.com' : 'you@hospital.org'} className={field} />
         </label>
         <label className="grid gap-1.5">
           <span className="text-sm font-medium text-ink-2">Password</span>
@@ -46,7 +48,7 @@ export function LoginForm({ next, notice, admin = false }: { next?: string; noti
           </label>
           <p className="text-right">
           <a
-            href={`mailto:${contact.support}?subject=${encodeURIComponent(admin ? 'Admin console: password reset' : 'Client portal: password reset')}&body=${encodeURIComponent(`Please reset the password for my ${admin ? 'admin console' : 'client portal'} account.\n\nEmail on the account: `)}`}
+            href={`mailto:${contact.support}?subject=${encodeURIComponent(`${what[0].toUpperCase()}${what.slice(1)}: password reset`)}&body=${encodeURIComponent(`Please reset the password for my ${what} account.\n\nEmail on the account: `)}`}
             className="whitespace-nowrap text-sm font-medium text-brand-700 underline-offset-4 hover:underline"
           >
             Forgot password?
