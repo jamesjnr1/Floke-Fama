@@ -64,7 +64,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         <div aria-hidden className="grid-fade-light absolute inset-0 -z-10" />
         <div className="mx-auto max-w-[1200px] px-5">
           <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm text-ink-3">
-            <Link href="/events" className="hover:text-ink">Events &amp; Activities</Link>
+            <Link href="/events" className="hover:text-ink">Events &amp; News</Link>
             <Icon name="fi-rr-angle-small-right" />
             <Link href="/events#news" className="hover:text-ink">News, Blog &amp; Press</Link>
           </nav>
