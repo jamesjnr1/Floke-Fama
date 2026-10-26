@@ -38,3 +38,29 @@ export async function emailSupport(subject: string, fields: Record<string, strin
   if (!res.ok) throw new Error(`Brevo responded ${res.status}: ${(await res.text().catch(() => '')).slice(0, 200)}`);
   return true;
 }
+
+/**
+ * A live check for the admin console (no email is sent): is the key accepted from this server, and is the sender
+ * confirmed in Brevo? Returns the reason in plain words when something is wrong.
+ */
+export async function brevoStatus(): Promise<{ ok: boolean; detail: string }> {
+  if (!key()) return { ok: false, detail: 'BREVO_API_KEY is not set on this deployment (add it in Vercel, then redeploy).' };
+  if (!sender()) return { ok: false, detail: 'BREVO_SENDER_EMAIL is not set on this deployment (add it in Vercel, then redeploy).' };
+  const get = (path: string) => fetch(`https://api.brevo.com/v3/${path}`, { headers: { Accept: 'application/json', 'api-key': key()! }, cache: 'no-store', signal: AbortSignal.timeout(8000) });
+  try {
+    const account = await get('account');
+    if (!account.ok) {
+      const message = ((await account.json().catch(() => ({}))) as { message?: string }).message ?? `error ${account.status}`;
+      if (/ip address/i.test(message))
+        return { ok: false, detail: `Brevo is blocking this server’s address. In Brevo → Security → Authorised IPs, turn off “blocking unknown IP addresses” (Vercel’s addresses change). Brevo said: ${message}` };
+      return { ok: false, detail: `Brevo did not accept the API key: ${message}. Check BREVO_API_KEY (an API key, not an SMTP key).` };
+    }
+    const { senders = [] } = (await (await get('senders')).json().catch(() => ({}))) as { senders?: { email: string; active?: boolean }[] };
+    const s = senders.find((x) => x.email.toLowerCase() === sender()!.toLowerCase());
+    if (!s) return { ok: false, detail: `${sender()} is not a sender in Brevo. Add it in Brevo → Senders and click the link in the confirmation email.` };
+    if (s.active === false) return { ok: false, detail: `${sender()} is not confirmed yet in Brevo. Click the link in Brevo’s confirmation email.` };
+    return { ok: true, detail: `Connected. Report a fault and the other support requests are emailed from ${sender()} to ${recipients().join(', ')}.` };
+  } catch {
+    return { ok: false, detail: 'Brevo could not be reached from this server. Try again in a minute.' };
+  }
+}

@@ -8,6 +8,7 @@ import { removeEngineer, setOrderStatus } from '@/lib/admin/actions';
 import { AddEngineerForm } from '@/components/admin/add-engineer-form';
 import { ConfirmButton } from '@/components/admin/confirm-button';
 import { configChecks, loadAdminData, type AdminData } from '@/lib/admin/data';
+import { brevoStatus } from '@/lib/support-email';
 import { adminLogout } from '@/lib/auth/actions';
 import { requireSession } from '@/lib/auth/server';
 import { catalogue } from '@/data/catalogue';
@@ -897,8 +898,10 @@ function Service({ data, now }: { data: AdminData; now: number }) {
   );
 }
 
-function System({ data }: { data: AdminData }) {
-  const checks = configChecks();
+async function System({ data }: { data: AdminData }) {
+  // Brevo is checked live (no email is sent), so the reason shows here when support emails aren't going out
+  const brevo = await brevoStatus();
+  const checks = [...configChecks(), { label: 'Support requests by email (Brevo)', ...brevo }];
   return (
     <>
       <Heading title="Database & settings" lead="Whether each table answers and how many rows it holds, and the settings the site depends on (set in Vercel → Settings → Environment Variables)." />
