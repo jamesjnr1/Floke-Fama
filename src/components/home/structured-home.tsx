@@ -8,7 +8,7 @@ import { metrics } from '@/data/seed';
 
 /**
  * The 'structured' home page: after the hero, a calm run of sections in one rhythm, each a contained block with
- * generous space around it. Stats band, what we do, the film (full width), the four pillars (the original cards, on green),
+ * generous space around it. Stats band, what we do, the film (full width), the six pillars (the original cards, on green),
  * mission / vision / aim in their colours, testimonials and a closing call to action. The light sections share
  * one white background and their patterns fade out before the edges, so the page reads as one continuous surface.
  */
