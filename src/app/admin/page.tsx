@@ -4,7 +4,7 @@ import { LiveRefresh } from '@/components/admin/live-refresh';
 import { LogoMark, LogoWordmark } from '@/components/layout/logo';
 import { Icon } from '@/components/ui/icon';
 import { UserAvatar } from '@/components/ui/user-avatar';
-import { removeEngineer, setOrderStatus } from '@/lib/admin/actions';
+import { removeEngineer, setOrderStatus, setSupportRequestStatus } from '@/lib/admin/actions';
 import { AddEngineerForm } from '@/components/admin/add-engineer-form';
 import { ConfirmButton } from '@/components/admin/confirm-button';
 import { configChecks, loadAdminData, type AdminData } from '@/lib/admin/data';
@@ -43,7 +43,7 @@ const orderStatusLabel: Record<OrderStatus, string> = { 'awaiting-payment': 'Awa
 const tidy = (n: string) => n.split(/(\s+|[()])/).map((w) => (/\d/.test(w) ? w.toUpperCase() : w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())).join('');
 const methodLabel: Record<string, string> = { momo: 'Mobile money', card: 'Card', bank: 'Bank transfer' };
 const ticketLabel: Record<string, string> = { new: 'Logged', assigned: 'Assigned', travelling: 'En route', onsite: 'On site', resolved: 'Resolved' };
-const smsKind: Record<string, string> = { urgent: 'Urgent fault', assigned: 'Job given', message: 'Hospital message', escalation: 'Not taken' };
+const smsKind: Record<string, string> = { website: 'Website fault', urgent: 'Urgent fault', assigned: 'Job given', message: 'Hospital message', escalation: 'Not taken' };
 const smsStatus: Record<string, string> = { sent: 'Sent', logged: 'Recorded only', failed: 'Not sent', sending: 'Sending' };
 const categoryName = (slug: string) => slug.replace(/-/g, ' ').replace(/^\w/, (c) => c.toUpperCase());
 
@@ -164,7 +164,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
 
             {tab === 'overview' && <Overview data={data} now={now} />}
             {/* The overview and the accounts read again every 30 s, so who is on which job stays current */}
-            {(tab === 'overview' || (tab === 'accounts' && params.account)) && <LiveRefresh seconds={30} />}
+            {(tab === 'overview' || tab === 'service' || (tab === 'accounts' && params.account)) && <LiveRefresh seconds={30} />}
             {tab === 'orders' && <Orders data={data} status={params.status} q={params.q} />}
             {tab === 'accounts' && (params.account ? <AccountDetail data={data} id={params.account} now={now} /> : <Accounts data={data} q={params.q} role={roles.some((r) => r.id && r.id === params.role) ? params.role : undefined} adding={params.add === 'engineer'} />)}
             {tab === 'products' && <Products data={data} />}
@@ -302,6 +302,7 @@ function Overview({ data, now }: { data: AdminData; now: number }) {
   return (
     <>
       <Heading title="Dashboard" lead="Who registers, who buys and what the service desk is doing. Figures update on every visit." />
+      <WebsiteRequestsNotice data={data} />
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Stat feature href="/admin?tab=orders" label="Orders" value={data.orders.length} note={`${data.orders.filter((o) => o.placedAt > since(30)).length} in the last 30 days`} />
         <Stat href="/admin?tab=accounts" label="Hospital accounts" value={clients.length} note={`${clients.filter((a) => a.createdAt > since(30)).length} new in the last 30 days`} />
@@ -846,6 +847,7 @@ function Service({ data, now }: { data: AdminData; now: number }) {
   return (
     <>
       <Heading title="Service desk" lead="Service requests from hospitals and the equipment Flokefama looks after." action={<div className="flex gap-2"><Csv table="tickets" label="Requests CSV" /><Csv table="equipment" label="Equipment CSV" /></div>} />
+      <WebsiteRequests data={data} />
       <div className="mb-4 grid gap-4 lg:grid-cols-3">
         <Panel title="Requests by priority">
           <Bars data={['critical', 'high', 'routine'].map((p) => ({ label: p[0].toUpperCase() + p.slice(1), value: data.desk.tickets.filter((t) => t.priority === p && t.status !== 'resolved').length, note: 'open' }))} />
@@ -895,6 +897,69 @@ function Service({ data, now }: { data: AdminData; now: number }) {
         ))}
       </Table>
     </>
+  );
+}
+
+const supportTypeLabel: Record<string, string> = { fault: 'Report a fault', maintenance: 'Book maintenance', installation: 'Installation', assistance: 'Other assistance' };
+const supportStatusLabel: Record<string, string> = { new: 'New', called: 'Called back', closed: 'Closed' };
+
+/** On the dashboard: requests from the Support page nobody has called back yet. */
+function WebsiteRequestsNotice({ data }: { data: AdminData }) {
+  const fresh = data.supportRequests.filter((r) => r.status === 'new');
+  if (!fresh.length) return null;
+  const faults = fresh.filter((r) => r.type === 'fault').length;
+  return (
+    <Link href="/admin?tab=service#website-requests" className="mb-4 flex items-center gap-4 rounded-2xl border border-signal/30 bg-[#fdf1f0] px-5 py-4 hover:border-signal/60">
+      <Icon name="fi-rr-exclamation" className="text-xl text-signal-700" />
+      <span className="flex-1">
+        <span className="block font-semibold text-ink">{fresh.length} new request{fresh.length === 1 ? '' : 's'} from the Support page{faults ? ` (${faults} fault${faults === 1 ? '' : 's'})` : ''}</span>
+        <span className="block text-[0.9375rem] text-ink-3">Latest: {fresh[0].facility}, {fresh[0].equipment}. Call them back, then mark them on the Service desk tab.</span>
+      </span>
+      <span className="font-semibold text-signal-700">View</span>
+    </Link>
+  );
+}
+
+/** Service desk tab: everything sent with the Support page's form, with who to call and a status to move along. */
+function WebsiteRequests({ data }: { data: AdminData }) {
+  const rows = data.supportRequests;
+  return (
+    <section id="website-requests" className="mb-8 scroll-mt-6">
+      <h2 className="mb-1 text-lg font-semibold">Requests from the Support page ({rows.filter((r) => r.status === 'new').length} new)</h2>
+      <p className="mb-3 text-[0.9375rem] text-ink-3">Sent with the Report a fault form by anyone, client or not. Engineers see them in their portal (From the website), call back and turn them into jobs; this list shows where each one stands.</p>
+      <Table head={['Received', 'Reference', 'Request', 'Hospital', 'Who to call', 'Equipment & details', 'Status']} empty={!rows.length}>
+        {rows.map((r) => (
+          <tr key={r.id}>
+            <td className="whitespace-nowrap">{timeFmt.format(new Date(r.at))}</td>
+            <td className="whitespace-nowrap font-mono text-[0.875rem]">{r.id}</td>
+            <td className="whitespace-nowrap">{r.type === 'fault' ? <Badge tone="bad">{supportTypeLabel[r.type]}</Badge> : supportTypeLabel[r.type] ?? r.type}</td>
+            <td className="font-medium">{r.facility}</td>
+            <td className="whitespace-nowrap">
+              {r.name}
+              <a href={`tel:${r.phone.replace(/[^\d+]/g, '')}`} className="block font-medium text-brand-700 hover:underline">{r.phone}</a>
+            </td>
+            <td className="min-w-[16rem]">
+              <span className="font-medium">{r.equipment}</span>
+              <span className="mt-0.5 block text-[0.875rem] text-ink-3">{r.message}</span>
+            </td>
+            <td>
+              {data.source === 'live' ? (
+                <form action={setSupportRequestStatus} className="flex items-center gap-2">
+                  <input type="hidden" name="id" value={r.id} />
+                  <select name="status" defaultValue={r.status} aria-label={`Status of ${r.id}`} className="h-9 rounded-lg border border-line bg-white px-2 text-[0.9375rem]">
+                    {Object.entries(supportStatusLabel).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+                  </select>
+                  <button className="h-9 rounded-lg bg-brand-700 px-3 text-[0.875rem] font-semibold text-white hover:bg-brand-800">Save</button>
+                </form>
+              ) : (
+                <Badge tone={r.status === 'new' ? 'bad' : r.status === 'called' ? 'warn' : 'good'}>{supportStatusLabel[r.status]}</Badge>
+              )}
+              {r.handledBy && <span className="mt-1 block text-[0.8125rem] text-ink-3">by {r.handledBy}{r.ticketId ? ` · job ${r.ticketId}` : ''}</span>}
+            </td>
+          </tr>
+        ))}
+      </Table>
+    </section>
   );
 }
 

@@ -89,3 +89,19 @@ export async function pushNew(before: ServiceState, after: ServiceState) {
     console.error('push: alerts not sent', e);
   }
 }
+
+/** One alert to every engineer's devices (e.g. a fault reported on the website). Never throws. */
+export async function pushToEngineers(alert: { body: string; url: string; tag: string }) {
+  if (!pushEnabled) return;
+  try {
+    const payload = JSON.stringify({ title: 'Flokefama Service', ...alert });
+    const sends = (await devices('engineer')).map((d) =>
+      webpush.sendNotification(JSON.parse(d.data) as PushSubscription, payload, { TTL: 60 * 60 * 24, urgency: 'high' }).catch((e: { statusCode?: number }) => {
+        if (e.statusCode === 404 || e.statusCode === 410) return removeSubscription((JSON.parse(d.data) as PushSubscription).endpoint);
+      }),
+    );
+    await Promise.race([Promise.allSettled(sends), new Promise((r) => setTimeout(r, 4000))]);
+  } catch (e) {
+    console.error('push: alert not sent', e);
+  }
+}

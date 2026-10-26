@@ -7,11 +7,14 @@ import type { Asset, Certificate, Priority, Ticket } from '@/lib/service/store';
 import { cn } from '@/lib/utils';
 
 /** Log a new equipment fault against an installed system. */
-export function LogFaultDialog({ open, onOpenChange, assets, defaultAssetId, onSubmit }: {
+export function LogFaultDialog({ open, onOpenChange, assets, defaultAssetId, defaultDescription, title = 'Log equipment fault', onSubmit }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
   assets: Asset[];
   defaultAssetId?: string;
+  /** Filled in when the job comes from a request on the website. */
+  defaultDescription?: string;
+  title?: string;
   onSubmit: (v: { assetId: string; description: string; priority: Priority; assignToMe: boolean }) => void;
 }) {
   const [assetId, setAssetId] = useState(defaultAssetId ?? assets[0]?.id ?? '');
@@ -21,12 +24,12 @@ export function LogFaultDialog({ open, onOpenChange, assets, defaultAssetId, onS
   useEffect(() => {
     if (open) {
       setAssetId(defaultAssetId ?? assets[0]?.id ?? '');
-      setDescription('');
+      setDescription(defaultDescription ?? '');
     }
-  }, [open, defaultAssetId, assets]);
+  }, [open, defaultAssetId, defaultDescription, assets]);
 
   return (
-    <PortalDialog open={open} onOpenChange={onOpenChange} title="Log equipment fault" description="The ticket is created immediately and appears in the service queue.">
+    <PortalDialog open={open} onOpenChange={onOpenChange} title={title} description="The ticket is created immediately and appears in the service queue.">
       <form
         onSubmit={(e) => {
           e.preventDefault();
