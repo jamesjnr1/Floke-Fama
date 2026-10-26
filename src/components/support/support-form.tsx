@@ -52,52 +52,44 @@ export function SupportForm() {
   if (result) return <Sent {...result} onReset={() => setResult(null)} />;
 
   return (
-    <form onSubmit={onSubmit} noValidate className="space-y-7">
-      {/* 1. What it's about: the request type as four square choices, then the equipment and the problem */}
-      <fieldset>
-        <Step n={1} title="What do you need?" />
-        <div role="radiogroup" aria-label="Request" className="clear-both grid grid-cols-2 gap-2.5 pt-4 lg:grid-cols-4">
-          {requestTypes.map((t) => (
-            <label key={t.id} className="group relative flex cursor-pointer items-center gap-3 border border-line bg-paper px-4 py-3.5 text-[0.9375rem] font-medium text-ink-2 transition hover:border-brand-500 has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50 has-[:checked]:text-brand-700 has-[:focus-visible]:ring-4 has-[:focus-visible]:ring-brand-500/20">
-              <input type="radio" name="type" value={t.id} defaultChecked={t.id === 'fault'} className="sr-only" />
-              <Icon name={typeIcons[t.id]} className="text-lg text-ink-3 group-has-[:checked]:text-brand-600" />
-              <span className="leading-tight">{t.label}</span>
-            </label>
-          ))}
-        </div>
-        {errors.type && <span role="alert" className="mt-1.5 block text-xs text-signal-700">{errors.type}</span>}
-        <div className="mt-4 grid gap-4">
-          <Field label="Equipment" error={errors.equipment}>
-            <input name="equipment" placeholder="e.g. Mindray BC-5150" aria-invalid={!!errors.equipment} className={field} />
-          </Field>
+    <form onSubmit={onSubmit} noValidate>
+      {/* What it's about: the request types as tabs across the top of the card */}
+      <div role="radiogroup" aria-label="What do you need?" className="grid grid-cols-2 gap-px border-b border-line bg-line md:grid-cols-4">
+        {requestTypes.map((t) => (
+          <label key={t.id} className="group flex cursor-pointer flex-col items-center justify-center gap-2 bg-canvas px-3 py-5 text-center text-[0.9375rem] font-medium text-ink-3 transition hover:bg-paper hover:text-ink has-[:checked]:bg-paper has-[:checked]:text-brand-700 has-[:checked]:shadow-[inset_0_-3px_0_var(--color-brand-600)] has-[:focus-visible]:ring-4 has-[:focus-visible]:ring-inset has-[:focus-visible]:ring-brand-500/25">
+            <input type="radio" name="type" value={t.id} defaultChecked={t.id === 'fault'} className="sr-only" />
+            <Icon name={typeIcons[t.id]} className="text-2xl group-has-[:checked]:text-brand-600" />
+            <span className="leading-tight">{t.label}</span>
+          </label>
+        ))}
+      </div>
+      {errors.type && <span role="alert" className="block px-6 pt-3 text-xs text-signal-700 md:px-9">{errors.type}</span>}
+
+      <div className="grid gap-5 p-6 md:grid-cols-2 md:p-9">
+        <Field label="Equipment" error={errors.equipment}>
+          <input name="equipment" placeholder="e.g. Mindray BC-5150" aria-invalid={!!errors.equipment} className={field} />
+        </Field>
+        <Field label="Hospital or lab" error={errors.facility}>
+          <input name="facility" autoComplete="organization" aria-invalid={!!errors.facility} className={field} />
+        </Field>
+        <div className="md:col-span-2">
           <Field label="What is happening?" error={errors.message}>
             <textarea name="message" rows={4} placeholder="Describe the fault or what you need: error codes, when it started, what you have tried." aria-invalid={!!errors.message} className={cn(field, 'h-auto resize-none py-3')} />
           </Field>
         </div>
-      </fieldset>
-
-      {/* 2. Who to call back */}
-      <div className="border-t border-line pt-7">
-        <fieldset>
-          <Step n={2} title="Who should we call back?" />
-          <div className="clear-both grid gap-4 pt-4 sm:grid-cols-3">
-            <Field label="Your name" error={errors.name}>
-              <input name="name" autoComplete="name" aria-invalid={!!errors.name} className={field} />
-            </Field>
-            <Field label="Hospital or lab" error={errors.facility}>
-              <input name="facility" autoComplete="organization" aria-invalid={!!errors.facility} className={field} />
-            </Field>
-            <Field label="Phone" error={errors.phone}>
-              <input name="phone" type="tel" autoComplete="tel" placeholder="+233" aria-invalid={!!errors.phone} className={field} />
-            </Field>
-          </div>
-        </fieldset>
+        <Field label="Your name" error={errors.name}>
+          <input name="name" autoComplete="name" aria-invalid={!!errors.name} className={field} />
+        </Field>
+        <Field label="Phone (we’ll call you back)" error={errors.phone}>
+          <input name="phone" type="tel" autoComplete="tel" placeholder="+233" aria-invalid={!!errors.phone} className={field} />
+        </Field>
       </div>
 
       <input name="website" tabIndex={-1} autoComplete="off" aria-hidden className="hidden" />
-      <div className="flex flex-col gap-3 border-t border-line pt-6 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm text-ink-3">
-          Equipment down right now? Call <a href={contact.phoneHref} className="font-semibold text-ink hover:text-brand-700">{contact.phone}</a>, 24/7.
+      <div className="flex flex-col gap-4 bg-brand-50 px-6 py-5 sm:flex-row sm:items-center sm:justify-between md:px-9">
+        <p className="flex items-center gap-3 text-[0.9375rem] text-ink-2">
+          <Icon name="fi-rr-phone-call" className="text-lg text-brand-600" />
+          <span>Equipment down right now? Call <a href={contact.phoneHref} className="font-semibold text-ink hover:text-brand-700">{contact.phone}</a>, 24/7.</span>
         </p>
         <button type="submit" disabled={pending} className={cn(button, 'w-full sm:w-auto')}>
           {pending ? 'Sending…' : <>Send request <Icon name="fi-rr-arrow-small-right" /></>}
@@ -113,16 +105,6 @@ const typeIcons: Record<SupportInput['type'], string> = {
   installation: 'fi-rr-settings',
   assistance: 'fi-rr-headset',
 };
-
-/** A numbered step heading (floated, so the legend lays out like any other block). */
-function Step({ n, title }: { n: number; title: string }) {
-  return (
-    <legend className="float-left flex w-full items-center gap-3 text-lg font-semibold text-ink">
-      <span className="grid size-7 place-items-center bg-brand-600 text-sm font-bold text-white">{n}</span>
-      {title}
-    </legend>
-  );
-}
 
 function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
   return (
@@ -143,7 +125,7 @@ function Sent({ delivered, data, onReset }: NonNullable<Result> & { onReset: () 
     body: [supportSummary(data), '', data.name, data.phone].join('\n'),
   });
   return (
-    <div className="py-4">
+    <div className="p-6 md:p-9">
       <span className="grid size-12 place-items-center bg-brand-600 text-xl text-white">
         <Icon name={delivered ? 'fi-rr-check' : 'fi-rr-paper-plane'} />
       </span>
