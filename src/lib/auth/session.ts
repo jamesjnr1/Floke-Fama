@@ -31,6 +31,9 @@ export const SESSION_TTL_SECONDS = 60 * 60; // 1 hour
 export const KEEP_TTL_SECONDS = 60 * 60 * 24 * 30;
 export const ttlFor = (user: { keep?: boolean }) => (user.keep ? KEEP_TTL_SECONDS : SESSION_TTL_SECONDS);
 
+/** Each role's own sign-in page: hospitals at /login, engineers and admins apart from them. */
+export const roleLogin: Record<Role, string> = { client: '/login', engineer: '/engineer/login', admin: '/admin/login' };
+
 /** Where each role lands after signing in. */
 export const roleHome: Record<Role, string> = { client: '/portal', engineer: '/engineer', admin: '/admin' };
 
@@ -46,7 +49,7 @@ export const signedInAreas = ['/checkout', '/quote'];
 
 /** Where a role may be sent after signing in: anywhere on the site except another role's area. */
 export function nextFor(role: Role, next: string | null) {
-  if (!next || next.startsWith('/login')) return roleHome[role];
+  if (!next || Object.values(roleLogin).some((l) => next === l || next.startsWith(`${l}?`) || next.startsWith(`${l}/`))) return roleHome[role];
   const area = roleAreas.find((a) => next === a.prefix || next.startsWith(`${a.prefix}/`));
   return area && area.role !== role ? roleHome[role] : next;
 }
