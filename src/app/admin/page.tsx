@@ -926,7 +926,7 @@ function WebsiteRequests({ data }: { data: AdminData }) {
   return (
     <section id="website-requests" className="mb-8 scroll-mt-6">
       <h2 className="mb-1 text-lg font-semibold">Requests from the Support page ({rows.filter((r) => r.status === 'new').length} new)</h2>
-      <p className="mb-3 text-[0.9375rem] text-ink-3">Sent with the Report a fault form by anyone, client or not. Call them back, then mark the request.</p>
+      <p className="mb-3 text-[0.9375rem] text-ink-3">Sent with the Report a fault form by anyone, client or not. Engineers see them in their portal (From the website), call back and turn them into jobs; this list shows where each one stands.</p>
       <Table head={['Received', 'Reference', 'Request', 'Hospital', 'Who to call', 'Equipment & details', 'Status']} empty={!rows.length}>
         {rows.map((r) => (
           <tr key={r.id}>
@@ -954,6 +954,7 @@ function WebsiteRequests({ data }: { data: AdminData }) {
               ) : (
                 <Badge tone={r.status === 'new' ? 'bad' : r.status === 'called' ? 'warn' : 'good'}>{supportStatusLabel[r.status]}</Badge>
               )}
+              {r.handledBy && <span className="mt-1 block text-[0.8125rem] text-ink-3">by {r.handledBy}{r.ticketId ? ` · job ${r.ticketId}` : ''}</span>}
             </td>
           </tr>
         ))}

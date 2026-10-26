@@ -6,11 +6,21 @@ import type { SupportInput } from '@/lib/support-schema';
 
 /**
  * Requests sent with the Support page's form (Report a fault, maintenance, installation, other), kept in Appwrite
- * (table `support_requests`) so the admin console lists them and the team can mark them called back and closed.
+ * (table `support_requests`). Engineers see them in their portal (From the website), call back, and turn a
+ * registered hospital's fault into a job on the service desk; the admin console lists them all.
  */
 export type SupportStatus = 'new' | 'called' | 'closed';
 export const supportStatuses: SupportStatus[] = ['new', 'called', 'closed'];
-export interface SupportRequest extends Omit<SupportInput, 'website'> { id: string; at: string; status: SupportStatus }
+export interface SupportRequest extends Omit<SupportInput, 'website'> {
+  id: string;
+  at: string;
+  status: SupportStatus;
+  /** Who last moved it on (engineer or admin), and when. */
+  handledBy?: string;
+  handledAt?: string;
+  /** The service desk job it became. */
+  ticketId?: string;
+}
 
 type Row = Models.Row & { status: string; data: string };
 
@@ -41,6 +51,11 @@ export async function listSupportRequests(limit = 200): Promise<SupportRequest[]
   });
 }
 
-export async function setSupportStatus(id: string, status: SupportStatus) {
-  await appwrite!.tables.updateRow({ databaseId: DATABASE_ID, tableId: TABLES.supportRequests, rowId: id, data: { status } });
+/** Moves a request on, recording who did it (and the job it became). */
+export async function setSupportStatus(id: string, status: SupportStatus, by: string, ticketId?: string) {
+  const row = await appwrite!.tables.getRow<Row>({ databaseId: DATABASE_ID, tableId: TABLES.supportRequests, rowId: id });
+  const data = { ...(JSON.parse(row.data) as object), handledBy: by, handledAt: new Date().toISOString(), ...(ticketId ? { ticketId } : {}) };
+  await appwrite!.tables.updateRow({ databaseId: DATABASE_ID, tableId: TABLES.supportRequests, rowId: id, data: { status, data: JSON.stringify(data) } });
 }
+
+export const isReference = (v: unknown): v is string => typeof v === 'string' && /^SR-[A-Z0-9]{6,16}$/.test(v);

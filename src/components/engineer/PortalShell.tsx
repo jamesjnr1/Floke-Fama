@@ -13,6 +13,7 @@ import { Notifications } from '@/components/service/Notifications';
 import { Overview } from '@/components/engineer/Overview';
 import { SystemsView } from '@/components/engineer/SystemsView';
 import { TicketsView } from '@/components/engineer/TicketsView';
+import { useWebsiteRequests, WebsiteView, type WebsiteRequest } from '@/components/engineer/WebsiteView';
 import { LogoMark, LogoWordmark } from '@/components/layout/logo';
 import { Icon } from '@/components/ui/icon';
 import { useSite } from '@/components/site-provider';
@@ -21,10 +22,11 @@ import { daysUntil, isOpen, nextTicketId, useEngineerStore, type Action, type As
 import { cn } from '@/lib/utils';
 import { UserAvatar } from '@/components/ui/user-avatar';
 
-type View = 'overview' | 'tickets' | 'systems' | 'calibration' | 'docs';
+type View = 'overview' | 'tickets' | 'website' | 'systems' | 'calibration' | 'docs';
 const nav: { id: View; label: string; icon: string }[] = [
   { id: 'overview', label: 'Overview', icon: 'fi-rr-apps' },
   { id: 'tickets', label: 'Service requests', icon: 'fi-rr-clipboard-list' },
+  { id: 'website', label: 'From the website', icon: 'fi-rr-globe' },
   { id: 'systems', label: 'Equipment', icon: 'fi-rr-microscope' },
   { id: 'calibration', label: 'Calibration', icon: 'fi-rr-badge-check' },
   { id: 'docs', label: 'Documents', icon: 'fi-rr-book-alt' },
@@ -77,7 +79,9 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
   const [view, setView] = useState<View>('overview');
   const [ticketId, setTicketId] = useState<string | null>(null);
   const [sheetId, setSheetId] = useState<string | null>(null);
-  const [fault, setFault] = useState<{ open: boolean; assetId?: string }>({ open: false });
+  const [fault, setFault] = useState<{ open: boolean; assetId?: string; from?: WebsiteRequest }>({ open: false });
+  const website = useWebsiteRequests();
+  const freshWebsite = website.requests?.filter((r) => r.status === 'new') ?? [];
   const [resolving, setResolving] = useState<Ticket | null>(null);
   const [calibrating, setCalibrating] = useState<Asset | null>(null);
   const [palette, setPalette] = useState(false);
@@ -131,8 +135,27 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
 
   const counts: Partial<Record<View, number>> = {
     tickets: state.tickets.filter((t) => isOpen(t) && (t.status === 'new' || t.engineer === me)).length,
+    website: freshWebsite.length,
     calibration: state.assets.filter((a) => !a.installation && daysUntil(a.nextCalibration) < 0).length,
   };
+
+  /**
+   * A request from the website becomes a job on the service desk: the fault dialog opens on the hospital's equipment
+   * (when it is registered) with the caller's details filled in.
+   */
+  const makeJob = useCallback(
+    (r: WebsiteRequest) => {
+      if (!state.assets.length) {
+        toast('No equipment registered yet', { description: `Register ${r.facility}’s equipment first, then make it a job.`, action: { label: 'Add equipment', onClick: addEquipment } });
+        return;
+      }
+      const key = (s: string) => s.trim().toLowerCase();
+      const theirs = state.assets.filter((a) => key(a.facility) === key(r.facility));
+      if (!theirs.length) toast(`${r.facility} has no registered equipment`, { description: 'Choose the system below, or close this and add their equipment first.', action: { label: 'Add equipment', onClick: addEquipment } });
+      setFault({ open: true, assetId: theirs[0]?.id, from: r });
+    },
+    [state.assets, addEquipment],
+  );
 
   const actions: Command[] = useMemo(
     () => [
@@ -156,9 +179,11 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
     const q = new URLSearchParams(location.search);
     const t = q.get('ticket');
     const a = q.get('asset');
+    const w = q.get('website');
     if (t) openTicket(t);
     else if (a) openAsset(a);
-    if (t || a) history.replaceState(null, '', '/engineer');
+    else if (w) setView('website');
+    if (t || a || w) history.replaceState(null, '', '/engineer');
   }, [ready, openTicket, openAsset]);
 
   const themeButton = (
@@ -272,9 +297,36 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
           ) : (
             <>
               {view === 'overview' && <AlertsBanner what="new service requests" />}
+              {view === 'overview' && freshWebsite.length > 0 && (
+                <button onClick={() => setView('website')} className="mb-6 flex w-full items-center gap-4 rounded-xl border border-[#e4b4ae] bg-[#fdf3f2] p-5 text-left transition hover:border-[#c9675b]">
+                  <span className="grid size-10 shrink-0 place-items-center rounded-md bg-[#b42318] text-white"><Icon name="fi-rr-globe" /></span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block font-semibold text-ink">{freshWebsite.length} new request{freshWebsite.length === 1 ? '' : 's'} from the website</span>
+                    <span className="block truncate text-sm text-ink-3">Latest: {freshWebsite[0].facility}, {freshWebsite[0].equipment}. Call them back.</span>
+                  </span>
+                  <span className="text-sm font-semibold text-[#b42318]">View</span>
+                </button>
+              )}
               {view === 'overview' && <Overview state={state} me={me} onOpenTicket={openTicket} onOpenAsset={openAsset} onGo={setView} onLogFault={logFault} />}
               {view === 'tickets' && (
                 <TicketsView state={state} me={me} selectedId={ticketId} onSelect={setTicketId} dispatch={dispatch} onResolve={setResolving} onOpenAsset={openAsset} onLogFault={logFault} />
+              )}
+              {view === 'website' && (
+                <WebsiteView
+                  requests={website.requests}
+                  enabled={website.enabled}
+                  me={me}
+                  onCalled={(r) => {
+                    website.update(r.id, 'called', me);
+                    toast.success('Marked as called back', { description: r.id });
+                  }}
+                  onClose={(r) => {
+                    website.update(r.id, 'closed', me);
+                    toast.success('Request closed', { description: r.id });
+                  }}
+                  onMakeJob={makeJob}
+                  onOpenTicket={openTicket}
+                />
               )}
               {view === 'systems' && <SystemsView state={state} onOpenAsset={openAsset} onAdd={addEquipment} />}
               {view === 'calibration' && <CalibrationView state={state} onRecord={setCalibrating} onOpenAsset={openAsset} />}
@@ -307,9 +359,13 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
         onOpenChange={(open) => setFault((f) => ({ ...f, open }))}
         assets={state.assets}
         defaultAssetId={fault.assetId}
+        defaultDescription={fault.from ? `${fault.from.message}\n\nFrom the website (${fault.from.id}): ${fault.from.name}, ${fault.from.phone}.` : undefined}
+        title={fault.from ? `Make ${fault.from.id} a job` : undefined}
         onSubmit={(v) => {
           const id = nextTicketId(state);
           rawDispatch({ type: 'create', ticket: { assetId: v.assetId, description: v.description, priority: v.priority }, assignToMe: v.assignToMe });
+          // A request from the website is closed with the job it became
+          if (fault.from) website.update(fault.from.id, 'closed', me, id);
           toast.success(`${id} logged`, { description: v.assignToMe ? 'Assigned to you and added to your queue.' : 'Added to the unassigned queue.' });
           setTicketId(id);
           setView('tickets');
