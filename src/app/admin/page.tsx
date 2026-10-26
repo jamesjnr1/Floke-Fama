@@ -42,6 +42,8 @@ const orderStatusLabel: Record<OrderStatus, string> = { 'awaiting-payment': 'Awa
 const tidy = (n: string) => n.split(/(\s+|[()])/).map((w) => (/\d/.test(w) ? w.toUpperCase() : w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())).join('');
 const methodLabel: Record<string, string> = { momo: 'Mobile money', card: 'Card', bank: 'Bank transfer' };
 const ticketLabel: Record<string, string> = { new: 'Logged', assigned: 'Assigned', travelling: 'En route', onsite: 'On site', resolved: 'Resolved' };
+const smsKind: Record<string, string> = { urgent: 'Urgent fault', assigned: 'Job given', message: 'Hospital message', escalation: 'Not taken' };
+const smsStatus: Record<string, string> = { sent: 'Sent', logged: 'Recorded only', failed: 'Not sent', sending: 'Sending' };
 const categoryName = (slug: string) => slug.replace(/-/g, ' ').replace(/^\w/, (c) => c.toUpperCase());
 
 /** Counts per key, largest first. */
@@ -857,6 +859,24 @@ function Service({ data, now }: { data: AdminData; now: number }) {
 
       <h2 className="mb-3 mt-8 text-lg font-semibold">Service requests</h2>
       <TicketTable tickets={data.desk.tickets} assetOf={assetOf} />
+
+      <h2 className="mb-1 mt-8 text-lg font-semibold">Text messages to engineers</h2>
+      <p className="mb-3 text-[0.9375rem] text-ink-3">Urgent faults, jobs given to an engineer, hospitals’ messages, and urgent requests nobody has taken. Turned on with SMS_PROVIDER (see Database &amp; settings).</p>
+      <Table head={['Sent', 'About', 'Job', 'To', 'Message', 'Status']} empty={!data.sms.length}>
+        {data.sms.map((m) => (
+          <tr key={m.id}>
+            <td className="whitespace-nowrap">{timeFmt.format(new Date(m.at))}</td>
+            <td className="whitespace-nowrap">{smsKind[m.kind] ?? m.kind}</td>
+            <td className="whitespace-nowrap font-mono text-[0.875rem]">{m.ref}</td>
+            <td className="font-mono text-[0.8125rem]">{m.to.split(',').map((n) => `+${n}`).join(', ')}</td>
+            <td className="min-w-[18rem] text-[0.875rem]">{m.text}</td>
+            <td className="whitespace-nowrap">
+              <Badge tone={m.status === 'sent' ? 'good' : m.status === 'failed' ? 'bad' : 'neutral'}>{smsStatus[m.status] ?? m.status}</Badge>
+              {m.status === 'failed' && m.detail && <span className="mt-1 block text-[0.8125rem] text-signal-700">{m.detail}</span>}
+            </td>
+          </tr>
+        ))}
+      </Table>
 
       <h2 className="mb-3 mt-8 text-lg font-semibold">Calibration due within 30 days ({due.length})</h2>
       <Table head={['Equipment', 'Serial', 'Hospital', 'Location', 'Last calibration', 'Due']} empty={!due.length}>

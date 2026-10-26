@@ -4,6 +4,7 @@ import { appwrite, DATABASE_ID, TABLES } from '@/lib/appwrite';
 import type { SessionUser } from '@/lib/auth/session';
 import { catalogue } from '@/data/catalogue';
 import { pushNew } from '@/lib/push';
+import { escalateStale, smsNew } from '@/lib/sms';
 import { createSeed, reducer, type Action, type Actor, type Asset, type Notification, type ServiceState, type Ticket } from '@/lib/service/desk';
 
 /**
@@ -183,7 +184,8 @@ export async function applyAction(s: SessionUser, action: Action): Promise<Servi
     const after = reducer(actorFor(s))(before, action);
     try {
       await saveChanges(before, after);
-      await pushNew(before, after); // alerts on phones and computers, for the new notifications
+      // Alerts on phones and computers for the new notifications, and texts for what engineers must act on
+      await Promise.all([pushNew(before, after), smsNew(before, after, actorFor(s)), escalateStale(after)]);
       return visibleTo(s, after);
     } catch (e) {
       if ((e as { code?: number }).code === 409 && attempt < 2) continue;
@@ -200,7 +202,7 @@ export async function registerPurchase(s: SessionUser, order: string, items: Ext
     const after = reducer(actorFor(s))({ ...before, purchases: [] }, { type: 'purchase', order, facility: facilityOf(s), items });
     try {
       await saveChanges(before, after);
-      await pushNew(before, after);
+      await Promise.all([pushNew(before, after), smsNew(before, after, actorFor(s))]);
       return;
     } catch (e) {
       if ((e as { code?: number }).code === 409 && attempt < 2) continue;
