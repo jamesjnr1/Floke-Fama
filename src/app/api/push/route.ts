@@ -29,7 +29,12 @@ export async function POST(req: NextRequest) {
   if (!s) return NextResponse.json({ error: 'Please sign in again.' }, { status: 401 });
   const sub = (await req.json().catch(() => null)) as unknown;
   if (!validSub(sub)) return NextResponse.json({ error: 'Invalid subscription.' }, { status: 400 });
-  await saveSubscription(s, { endpoint: sub.endpoint, keys: { p256dh: sub.keys.p256dh, auth: sub.keys.auth } });
+  try {
+    await saveSubscription(s, { endpoint: sub.endpoint, keys: { p256dh: sub.keys.p256dh, auth: sub.keys.auth } });
+  } catch (e) {
+    console.error('push: device not saved', e);
+    return NextResponse.json({ error: 'This device couldn’t be saved for alerts. An administrator can check Database & settings in the admin console.' }, { status: 502 });
+  }
   return NextResponse.json({ ok: true });
 }
 

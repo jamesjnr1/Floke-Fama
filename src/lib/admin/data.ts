@@ -120,6 +120,20 @@ export async function loadAdminData(): Promise<AdminData> {
   };
 }
 
+/** Phone alerts: both keys set, and each the right kind (a public key of 65 bytes starting 04, a private key of 32 bytes). */
+function pushCheck() {
+  const label = 'Phone alerts (Web Push)';
+  const pub = (process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? '').trim();
+  const priv = (process.env.VAPID_PRIVATE_KEY ?? '').trim();
+  if (!pub || !priv) return { label, ok: false, detail: 'NEXT_PUBLIC_VAPID_PUBLIC_KEY and VAPID_PRIVATE_KEY not set: phone alerts are off. Create them with npx web-push generate-vapid-keys.' };
+  const bytes = (v: string) => Buffer.from(v.replace(/^["']|["']$/g, ''), 'base64url');
+  const p = bytes(pub);
+  const k = bytes(priv);
+  if (p.length !== 65 || p[0] !== 4) return { label, ok: false, detail: 'NEXT_PUBLIC_VAPID_PUBLIC_KEY isn’t a valid public key (check for a missing character, spaces or quotes; the public key is the longer one). Redeploy after fixing it.' };
+  if (k.length !== 32) return { label, ok: false, detail: 'VAPID_PRIVATE_KEY isn’t a valid private key (it is the shorter key of the pair).' };
+  return { label, ok: true, detail: 'Alerts to engineers and hospitals on their phones. If a device can’t turn them on, the message on that device says why.' };
+}
+
 /** Settings the site depends on, without ever showing a secret's value. */
 export function configChecks() {
   const set = (v: string | undefined) => Boolean(v?.trim());
@@ -133,7 +147,7 @@ export function configChecks() {
     { label: 'Content webhook', ok: set(process.env.SANITY_REVALIDATE_SECRET), detail: set(process.env.SANITY_REVALIDATE_SECRET) ? 'Studio changes go live straight away.' : 'SANITY_REVALIDATE_SECRET not set: Studio changes appear within the cache time.' },
     { label: 'Quotes & messages (HubSpot)', ok: set(process.env.HUBSPOT_PORTAL_ID) && set(process.env.HUBSPOT_FORM_GUID), detail: 'Quote, demo and support requests are delivered to HubSpot; view them there.' },
     { label: 'Online payments', ok: set(process.env.NEXT_PUBLIC_PAYMENTS_PROVIDER), detail: set(process.env.NEXT_PUBLIC_PAYMENTS_PROVIDER) ? `Provider: ${process.env.NEXT_PUBLIC_PAYMENTS_PROVIDER}` : 'No payment provider: orders are placed as "awaiting payment".' },
-    { label: 'Push notifications', ok: set(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY) && set(process.env.VAPID_PRIVATE_KEY), detail: 'Alerts to engineers and hospitals on their phones.' },
+    pushCheck(),
     {
       label: 'Text messages (SMS)',
       ok: smsEnabled,

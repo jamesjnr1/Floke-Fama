@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto';
 import { Query, type Models } from 'node-appwrite';
 import webpush, { type PushSubscription } from 'web-push';
 import { appwrite, DATABASE_ID, isNotFound, TABLES } from '@/lib/appwrite';
+import { withTable } from '@/lib/appwrite-tables';
 import type { SessionUser } from '@/lib/auth/session';
 import type { Notification, ServiceState } from '@/lib/service/desk';
 
@@ -23,7 +24,7 @@ const rowIdFor = (endpoint: string) => createHash('sha256').update(endpoint).dig
 
 export async function saveSubscription(s: SessionUser, sub: PushSubscription) {
   const row = { account: s.email.toLowerCase(), role: s.role, facility: s.role === 'client' ? s.facility ?? s.name : '', data: JSON.stringify(sub) };
-  await appwrite!.tables.upsertRow({ databaseId: DATABASE_ID, tableId: TABLES.pushSubscriptions, rowId: rowIdFor(sub.endpoint), data: row });
+  await withTable(TABLES.pushSubscriptions, () => appwrite!.tables.upsertRow({ databaseId: DATABASE_ID, tableId: TABLES.pushSubscriptions, rowId: rowIdFor(sub.endpoint), data: row }));
 }
 
 export async function removeSubscription(endpoint: string) {
