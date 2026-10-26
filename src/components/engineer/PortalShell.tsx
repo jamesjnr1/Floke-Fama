@@ -15,6 +15,7 @@ import { SystemsView } from '@/components/engineer/SystemsView';
 import { TicketsView } from '@/components/engineer/TicketsView';
 import { useWebsiteRequests, WebsiteView, type WebsiteRequest } from '@/components/engineer/WebsiteView';
 import { LogoMark, LogoWordmark } from '@/components/layout/logo';
+import { LiveStatus } from '@/components/service/live-status';
 import { Icon } from '@/components/ui/icon';
 import { useSite } from '@/components/site-provider';
 import { logout } from '@/lib/auth/actions';
@@ -75,7 +76,7 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
   const { contact } = useSite();
   const me = user.name;
   const { theme, toggle } = useTheme();
-  const { state, dispatch: rawDispatch, ready } = useEngineerStore(me);
+  const { state, dispatch: rawDispatch, ready, syncedAt } = useEngineerStore(me);
   const [view, setView] = useState<View>('overview');
   const [ticketId, setTicketId] = useState<string | null>(null);
   const [sheetId, setSheetId] = useState<string | null>(null);
@@ -268,6 +269,7 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
             <kbd className="rounded-[4px] border border-line px-1.5 font-mono text-xs">Ctrl K</kbd>
           </button>
           <button onClick={() => setPalette(true)} aria-label="Search" className="grid size-10 shrink-0 place-items-center rounded-md border border-line bg-paper text-ink xl:hidden"><Icon name="fi-rr-search" /></button>
+          <LiveStatus at={syncedAt} className="hidden md:inline-flex" />
           {themeButton}
           <Notifications tone="light" items={mine} onRead={(id) => rawDispatch({ type: 'read', id })} onReadAll={() => rawDispatch({ type: 'readAll', audience: 'engineer' })} onOpen={onNotification} />
           <span className="hidden items-center gap-3 border-l border-line pl-4 md:flex">
