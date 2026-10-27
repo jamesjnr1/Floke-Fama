@@ -5,6 +5,7 @@ import type { SessionUser } from '@/lib/auth/session';
 import { catalogue } from '@/data/catalogue';
 import { pushNew } from '@/lib/push';
 import { escalateStale, smsNew } from '@/lib/sms';
+import { canonicalFacility } from '@/lib/service/facilities';
 import { createSeed, reducer, type Action, type Actor, type Asset, type Notification, type ServiceState, type Ticket } from '@/lib/service/desk';
 
 /**
@@ -186,6 +187,9 @@ export async function applyAction(s: SessionUser, action: Action): Promise<Servi
     // The hospital gets the engineer's own number, from their account (not from the browser)
     if (action.type === 'assign') action = { ...action, phone: s.phone?.trim() || undefined };
     if (action.type === 'create') action = { ...action, phone: s.phone?.trim() || undefined, newAsset: action.newAsset && cleanAsset(action.newAsset), ticket: { ...action.ticket, contactPhone: action.ticket.contactPhone?.trim().slice(0, 30) || undefined } };
+    // A Support page caller's machine goes under the hospital's own name when it is on record or registered
+    if (action.type === 'create' && action.newAsset)
+      action = { ...action, newAsset: { ...action.newAsset, facility: await canonicalFacility(action.newAsset.facility, [...new Set(before.assets.map((a) => a.facility))]) } };
     // The number the hospital gave for text updates
     if (action.type === 'request') action = { ...action, ticket: { ...action.ticket, contactPhone: action.ticket.contactPhone?.trim().slice(0, 30) || undefined } };
     const after = reducer(actorFor(s))(before, action);
