@@ -27,7 +27,8 @@ export const metadata: Metadata = {
   title: { default: 'Flokefama | Ghana’s No.1 Healthcare Company', template: '%s | Flokefama' },
   description:
     'Flokefama supplies, installs and maintains world-class medical equipment and laboratory diagnostics for hospitals across Ghana and West Africa. Official distributor of Mindray.',
-  openGraph: { type: 'website', siteName: 'Flokefama', images: ['/images/og-image.jpg'] },
+  // The share picture: the hero's first slide (?v= changes when it does, so apps fetch the new one)
+  openGraph: { type: 'website', siteName: 'Flokefama', images: [{ url: '/images/og-image.jpg?v=2', width: 1200, height: 630, alt: 'Flokefama, Ghana’s No.1 Healthcare Company' }] },
   twitter: { card: 'summary_large_image' },
   icons: { icon: '/images/favicon.png' },
   robots: allowIndexing ? undefined : { index: false, follow: false },
