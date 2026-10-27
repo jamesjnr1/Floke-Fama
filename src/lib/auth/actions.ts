@@ -3,10 +3,12 @@
 import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
-import { AccountsUnavailable, accountExists, findSavedAccount, hashPassword, saveAccount, type StoredAccount } from '@/lib/auth/accounts';
+import { AccountsUnavailable, accountExists, findAccount, findSavedAccount, hashPassword, saveAccount, type StoredAccount } from '@/lib/auth/accounts';
 import { ADMIN_COOKIE, cookieFor, ENGINEER_COOKIE, nextFor, safeNext, SESSION_COOKIE, sessionCookie, signSession, type SessionUser } from '@/lib/auth/session';
 import { getAdminSession, getEngineerSession, getSession } from '@/lib/auth/server';
 import { roleFor } from '@/lib/auth/users';
+import { appwrite } from '@/lib/appwrite';
+import { updateEngineerPhone } from '@/lib/service/server';
 
 export interface LoginState {
   error?: string;
@@ -195,4 +197,31 @@ export async function changePassword(_prev: PasswordState, form: FormData): Prom
   const saved = await guarded(() => saveAccount({ ...found.value!, salt, hash }));
   if (!saved.ok) return { errors: { form: UNAVAILABLE } };
   return { done: true };
+}
+
+export interface ProfileState {
+  errors?: Partial<Record<'phone' | 'form', string>>;
+  done?: boolean;
+  phone?: string;
+}
+
+/**
+ * The engineer portal's My profile: the engineer changes their own phone number. It is saved on their account
+ * (texts go to it), their session picks it up straight away, and the hospitals on their open jobs see the new one.
+ */
+export async function updateProfile(_prev: ProfileState, form: FormData): Promise<ProfileState> {
+  const s = await getEngineerSession();
+  if (!s) return { errors: { form: 'Your session has ended. Please sign in again.' } };
+  const phone = String(form.get('phone') ?? '').trim().replace(/\s+/g, ' ');
+  if (!/^[+\d][\d\s()-]{6,}$/.test(phone) || phone.length > 30) return { phone, errors: { phone: 'Enter a valid phone number, e.g. 024 123 4567.' } };
+  const account = await guarded(() => findAccount(s.email));
+  if (!account.ok) return { phone, errors: { form: UNAVAILABLE } };
+  if (!account.value) return { phone, errors: { form: 'Your account could not be found. Please sign in again.' } };
+  const saved = await guarded(() => saveAccount({ ...account.value!, phone }));
+  if (!saved.ok) return { phone, errors: { form: UNAVAILABLE } };
+  const { exp: _exp, ...user } = s;
+  void _exp;
+  (await cookies()).set(ENGINEER_COOKIE, await signSession({ ...user, phone }), sessionCookie(user));
+  if (appwrite) await updateEngineerPhone(s.name, phone).catch((e) => console.error('[profile] open jobs not updated', e));
+  return { done: true, phone };
 }

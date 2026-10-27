@@ -17,6 +17,10 @@ const specs: Record<string, { name: string; columns: Column[]; indexes?: { key: 
     name: 'Support requests',
     columns: [{ key: 'status', size: 16, required: true }, { key: 'facility', size: 160, required: false }, { key: 'data', required: true }],
   },
+  [TABLES.smsOptOut]: {
+    name: 'Hospitals who turned texts off',
+    columns: [{ key: 'account', size: 254, required: true }],
+  },
   [TABLES.smsLog]: {
     name: 'Text messages',
     columns: [
