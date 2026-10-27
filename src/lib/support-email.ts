@@ -74,7 +74,7 @@ export async function brevoStatus(): Promise<{ ok: boolean; detail: string }> {
     const s = senders.find((x) => x.email.toLowerCase() === sender()!.toLowerCase());
     if (!s) return { ok: false, detail: `${sender()} is not a sender in Brevo. Add it in Brevo → Senders and click the link in the confirmation email.` };
     if (s.active === false) return { ok: false, detail: `${sender()} is not confirmed yet in Brevo. Click the link in Brevo’s confirmation email.` };
-    return { ok: true, detail: `Connected. Report a fault and the other support requests are emailed from ${sender()} to ${recipients().join(', ')}.` };
+    return { ok: true, detail: `Connected. Support requests are emailed from ${sender()} to ${recipients().join(', ')}; new orders and demonstration requests to ${salesRecipients().join(', ')}.` };
   } catch {
     return { ok: false, detail: 'Brevo could not be reached from this server. Try again in a minute.' };
   }

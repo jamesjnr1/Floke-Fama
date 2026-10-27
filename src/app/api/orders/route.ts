@@ -3,7 +3,6 @@ import { Query, type Models } from 'node-appwrite';
 import { catalogue } from '@/data/catalogue';
 import { appwrite, DATABASE_ID, isNotFound, TABLES } from '@/lib/appwrite';
 import { getSession } from '@/lib/auth/server';
-import { createOrderDeal, hubspotConfigured } from '@/lib/hubspot';
 import { emailSales } from '@/lib/support-email';
 import { siteUrl } from '@/lib/utils';
 import { departmentLabel, timelineLabel, timelines } from '@/lib/order-needs';
@@ -14,9 +13,8 @@ import { registerPurchase } from '@/lib/service/server';
 /**
  * A hospital's orders (Appwrite table `orders`, one row per order, keyed by its reference). GET lists the
  * signed-in hospital's orders; POST records one placed at checkout and turns it into the hospital's equipment
- * (installation jobs for systems an engineer must commission), once, and tells sales: a deal in HubSpot and an email (`sales: true`
- * when either got there). Without Appwrite: `{ enabled: false }`,
- * and orders stay in the browser.
+ * (installation jobs for systems an engineer must commission), once. It lands on the admin console's sales board and
+ * sales gets an email. Without Appwrite: `{ enabled: false }`, and orders stay in the browser.
  */
 export const dynamic = 'force-dynamic';
 
@@ -65,6 +63,14 @@ export async function POST(req: NextRequest) {
     const qty = Math.min(50, Math.max(1, Math.floor(Number(x.qty) || 1)));
     return p ? [{ p, qty }] : [];
   });
+  const c = (o as { customer?: Record<string, unknown> }).customer ?? {};
+  const text = (v: unknown, max: number) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
+  const who = {
+    name: text(c.name, 120) || s.name,
+    email: s.email,
+    phone: text(c.phone, 40) || s.phone || '',
+    facility: text(c.organisation, 160) || s.facility || s.name,
+  };
   const order: SavedOrder = {
     reference: o.reference,
     placedAt: new Date().toISOString(),
@@ -79,11 +85,12 @@ export async function POST(req: NextRequest) {
       timeline: timelines.some((t) => t.id === o.needs?.timeline) ? String(o.needs?.timeline) : 'quarter',
       notes: String(o.needs?.notes ?? '').trim().slice(0, 1000),
     },
+    contact: { name: who.name, organisation: who.facility, phone: who.phone },
   };
 
   try {
     await appwrite.tables.getRow({ databaseId: DATABASE_ID, tableId: TABLES.orders, rowId: order.reference });
-    return NextResponse.json({ order, sales: null }, { headers: noStore }); // already recorded
+    return NextResponse.json({ order, sales: true }, { headers: noStore }); // already recorded
   } catch (e) {
     if (!isNotFound(e)) throw e;
   }
@@ -97,45 +104,30 @@ export async function POST(req: NextRequest) {
     await registerPurchase(s, order.reference, equipment);
   }
 
-  // Sales hears about it twice, each on its own: a deal in HubSpot and an email to the sales inbox (Brevo). If
-  // neither works, the page offers to send it by email or WhatsApp
-  const c = (o as { customer?: Record<string, unknown> }).customer ?? {};
-  const text = (v: unknown, max: number) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
+  // It is on the admin console's sales board now; sales also gets an email (Brevo) so they know to look
   const momo = (o as { momo?: { network?: unknown } }).momo;
-  const who = {
-    name: text(c.name, 120) || s.name,
-    email: s.email,
-    phone: text(c.phone, 40) || s.phone || '',
-    facility: text(c.organisation, 160) || s.facility || s.name,
-  };
   const lines = order.items.map((i) => ({ name: tidyName(i.name), qty: i.qty }));
   const payment = (order.method === 'momo' && text(momo?.network, 30)) || { momo: 'Mobile money', card: 'Card', bank: 'Bank transfer' }[order.method];
-  const timeline = { id: order.needs!.timeline as (typeof timelines)[number]['id'], label: timelineLabel(order.needs?.timeline)! };
+  const timeline = timelines.find((t) => t.id === order.needs?.timeline);
   const department = departmentLabel(order.needs?.department);
-  const delivered = await Promise.allSettled([
-    hubspotConfigured()
-      ? createOrderDeal({ reference: order.reference, ...who, items: lines, payment, region: order.region, address: order.address, department, timeline, notes: order.needs?.notes || undefined })
-          .then(() => true)
-      : Promise.resolve(false),
-    emailSales(
-      `${timeline.id === 'urgent' ? 'URGENT order' : 'New order'} ${order.reference}: ${who.facility}`,
-      {
-        Reference: order.reference,
-        Items: lines.map((i) => `• ${i.name} × ${i.qty}`).join('\n'),
-        ...(department ? { Department: department } : {}),
-        Needed: timeline.label,
-        ...(order.needs?.notes ? { Notes: order.needs.notes } : {}),
-        Payment: payment,
-        'Deliver to': [order.address, order.region].filter(Boolean).join(', '),
-        Name: who.name,
-        'Hospital or lab': who.facility,
-        Phone: who.phone,
-        Email: who.email,
-      },
-      { phone: who.phone, replyTo: who.email, link: { href: `${siteUrl}/admin?tab=orders&q=${order.reference}`, label: 'Open in the admin console' } },
-    ),
-  ]);
-  for (const r of delivered) if (r.status === 'rejected') console.error('[orders] sales not told', r.reason);
-  const sales = delivered.some((r) => r.status === 'fulfilled' && r.value);
+  await emailSales(
+    `${timeline?.id === 'urgent' ? 'URGENT order' : 'New order'} ${order.reference}: ${who.facility}`,
+    {
+      Reference: order.reference,
+      Items: lines.map((i) => `• ${i.name} × ${i.qty}`).join('\n'),
+      ...(department ? { Department: department } : {}),
+      Needed: timelineLabel(order.needs?.timeline) ?? '',
+      ...(order.needs?.notes ? { Notes: order.needs.notes } : {}),
+      Payment: payment,
+      'Deliver to': [order.address, order.region].filter(Boolean).join(', '),
+      Name: who.name,
+      'Hospital or lab': who.facility,
+      Phone: who.phone,
+      Email: who.email,
+    },
+    { phone: who.phone, replyTo: who.email, link: { href: `${siteUrl}/admin?tab=orders&order=${order.reference}`, label: 'Open it on the sales board' } },
+  ).catch((e) => console.error('[orders] sales email not sent', e));
+  // Saved on the sales board, so sales has it whether or not the email went
+  const sales = true;
   return NextResponse.json({ order, sales }, { headers: noStore });
 }
