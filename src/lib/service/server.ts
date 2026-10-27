@@ -106,7 +106,9 @@ function allowed(s: SessionUser, a: Action, state: ServiceState): string | null 
   switch (a.type) {
     case 'assign': return a.engineer === s.name && ownTicket(a.id) ? null : 'You can only assign requests to yourself.';
     case 'travel': case 'arrive': case 'note': case 'part': case 'resolve': return ownTicket(a.id) ? null : 'Unknown request.';
-    case 'create': return ownAsset(a.ticket.assetId) ? null : 'Unknown equipment.';
+    case 'create':
+      if (a.newAsset) return a.newAsset.id === a.ticket.assetId && !state.assets.some((x) => x.id === a.newAsset!.id) ? null : 'Invalid equipment.';
+      return ownAsset(a.ticket.assetId) ? null : 'Unknown equipment.';
     case 'calibrate': return ownAsset(a.assetId) ? null : 'Unknown equipment.';
     case 'addAsset': return state.assets.some((x) => x.id === a.asset.id) ? 'That equipment is already registered.' : null;
     case 'read': return ownNote(a.id) ? null : 'Unknown notification.';
@@ -183,6 +185,7 @@ export async function applyAction(s: SessionUser, action: Action): Promise<Servi
     if (action.type === 'addAsset') action = { ...action, asset: cleanAsset(action.asset) };
     // The hospital gets the engineer's own number, from their account (not from the browser)
     if (action.type === 'assign') action = { ...action, phone: s.phone?.trim() || undefined };
+    if (action.type === 'create') action = { ...action, phone: s.phone?.trim() || undefined, newAsset: action.newAsset && cleanAsset(action.newAsset) };
     const after = reducer(actorFor(s))(before, action);
     try {
       await saveChanges(before, after);

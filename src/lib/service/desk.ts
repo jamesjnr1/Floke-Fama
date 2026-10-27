@@ -163,7 +163,7 @@ export type Action =
   | { type: 'note'; id: string; text: string }
   | { type: 'part'; id: string; part: Part }
   | { type: 'resolve'; id: string; summary: string; calibrated: boolean }
-  | { type: 'create'; ticket: Pick<Ticket, 'assetId' | 'description' | 'priority'>; assignToMe: boolean }
+  | { type: 'create'; ticket: Pick<Ticket, 'assetId' | 'description' | 'priority'>; assignToMe: boolean; /** Equipment registered with the request (a website caller's machine not on record yet). */ newAsset?: Asset; /** Filled in by the server from the engineer's account. */ phone?: string }
   | { type: 'request'; ticket: Pick<Ticket, 'assetId' | 'description' | 'priority' | 'contactPhone' | 'preferredVisit'> }
   | { type: 'rate'; id: string; rating: number; feedback?: string }
   | { type: 'calibrate'; assetId: string; result: Certificate['result']; notes?: string }
@@ -226,14 +226,15 @@ export function reducer(actor: Actor) {
         return notify(next, `${label} is resolved. Your service report is ready, please rate the visit.`, { ticketId: action.id });
       }
       case 'create': {
-        const asset = state.assets.find((a) => a.id === action.ticket.assetId);
+        const assets = action.newAsset ? [...state.assets, action.newAsset] : state.assets;
+        const asset = assets.find((a) => a.id === action.ticket.assetId);
         const id = nextTicketId(state);
         const t: Ticket = {
           id, ...action.ticket, title: `${asset?.name ?? 'System'}: ${action.ticket.description.split(/[.\n]/)[0].slice(0, 60)}`,
-          status: action.assignToMe ? 'assigned' : 'new', engineer: action.assignToMe ? me : undefined, openedAt: now, parts: [], requestedBy: me,
+          status: action.assignToMe ? 'assigned' : 'new', engineer: action.assignToMe ? me : undefined, engineerPhone: action.assignToMe ? action.phone : undefined, openedAt: now, parts: [], requestedBy: me,
           log: [entry(`Ticket logged by ${me}`, 'system'), ...(action.assignToMe ? [entry(`Assigned to ${me}`)] : [])],
         };
-        return notify({ ...state, tickets: [t, ...state.tickets] }, `${id} opened for ${asset?.name ?? 'your system'}. An engineer is on it.`, { ticketId: id });
+        return notify({ ...state, assets, tickets: [t, ...state.tickets] }, `${id} opened for ${asset?.name ?? 'your system'}. An engineer is on it.`, { ticketId: id });
       }
       case 'request': {
         const asset = state.assets.find((a) => a.id === action.ticket.assetId);
