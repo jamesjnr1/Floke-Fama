@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Children, cloneElement, isValidElement } from 'react';
 import { Bars, Columns } from '@/components/admin/charts';
 import { LiveRefresh } from '@/components/admin/live-refresh';
 import { LogoMark, LogoWordmark } from '@/components/layout/logo';
@@ -101,7 +102,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
     const b = badges[id];
     if (!b?.n) return null;
     return (
-      <span title={`${b.n} ${b.title}`} className={cn('rounded-full px-2 py-0.5 text-[0.75rem] font-bold tabular-nums text-white', phone ? 'ml-1' : 'ml-auto', b.tone === 'red' ? 'bg-signal' : 'bg-brand-600')}>
+      <span title={`${b.n} ${b.title}`} className={cn('relative rounded-full px-2 py-0.5 text-[0.75rem] font-bold tabular-nums text-white', phone ? 'ml-1' : 'ml-auto', b.tone === 'red' ? 'bg-signal' : 'bg-brand-600')}>
         {b.n}
         <span className="sr-only"> {b.title}</span>
       </span>
@@ -185,9 +186,10 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
           </header>
 
           {/* Sections on phones and tablets */}
-          <nav aria-label="Admin sections" className="flex gap-1 overflow-x-auto rounded-2xl bg-white p-2 lg:hidden">
+          {/* Wraps onto a second line rather than scrolling sideways */}
+          <nav aria-label="Admin sections" className="flex flex-wrap gap-1 rounded-2xl bg-white p-2 lg:hidden">
             {tabs.filter((t) => allowed(t.id)).map((t) => (
-              <Link key={t.id} href={href(t.id)} aria-current={t.id === tab ? 'page' : undefined} className={cn(item(t.id === tab), 'shrink-0 whitespace-nowrap')}>
+              <Link key={t.id} href={href(t.id)} aria-current={t.id === tab ? 'page' : undefined} className={cn(item(t.id === tab), 'relative whitespace-nowrap px-3 py-2')}>
                 <Icon name={t.icon} /> {t.label}
                 {badge(t.id, true)}
               </Link>
@@ -257,7 +259,7 @@ const card = 'rounded-[1.25rem] bg-white shadow-[0_1px_2px_rgb(16_25_30/0.04),0_
 
 function Panel({ title, children, className, action }: { title: string; children: React.ReactNode; className?: string; action?: React.ReactNode }) {
   return (
-    <section className={cn(card, 'p-5 md:p-6', className)}>
+    <section className={cn(card, 'min-w-0 p-5 md:p-6', className)}>
       <div className="mb-5 flex items-center justify-between gap-3">
         <h2 className="text-lg font-semibold tracking-[-0.01em]">{title}</h2>
         {action}
@@ -301,14 +303,37 @@ function Csv({ table, label = 'Download CSV' }: { table: string; label?: string 
   );
 }
 
+/**
+ * A table that always fits, with no sideways scrolling: on wide screens its columns share the width and long text
+ * wraps; below that each row becomes a card, every value under its column's name.
+ */
 function Table({ head, children, empty }: { head: string[]; children: React.ReactNode; empty?: boolean }) {
+  // Each cell carries its column's name, shown above the value when rows stack as cards
+  const rows = Children.map(children, (row) => {
+    if (!isValidElement<{ children?: React.ReactNode }>(row)) return row;
+    let i = 0;
+    const cells = Children.map(row.props.children, (cell) =>
+      isValidElement<{ 'data-label'?: string }>(cell) && cell.type === 'td' ? cloneElement(cell, { 'data-label': head[i++] ?? '' }) : cell,
+    );
+    return cloneElement(row, {}, cells);
+  });
   return (
-    <div className={cn(card, 'overflow-x-auto')}>
-      <table className="w-full min-w-[760px] text-left text-[0.9375rem]">
-        <thead className="text-[0.875rem] text-ink-3">
-          <tr className="border-b border-[#edf1ef]">{head.map((h) => <th key={h} className="px-5 py-4 font-medium">{h}</th>)}</tr>
+    <div className={card}>
+      <table className="w-full text-left text-[0.9375rem] max-lg:block [&_td]:whitespace-normal [&_td_*]:whitespace-normal [&_td]:break-words [&_td.keep]:whitespace-nowrap [&_td_.keep]:whitespace-nowrap">
+        <thead className="text-[0.875rem] text-ink-3 max-lg:hidden">
+          <tr className="border-b border-[#edf1ef]">{head.map((h) => <th key={h} className="px-3 py-4 font-medium xl:px-5">{h}</th>)}</tr>
         </thead>
-        <tbody className="divide-y divide-[#edf1ef] [&_td]:px-5 [&_td]:py-3.5 [&_tr:hover]:bg-[#fafbfa]">{children}</tbody>
+        <tbody
+          className={cn(
+            'divide-y divide-[#edf1ef] max-lg:block [&_tr:hover]:bg-[#fafbfa]',
+            'lg:[&_td]:px-3 lg:[&_td]:py-3.5 xl:[&_td]:px-5',
+            // Cards on phones and tablets: one per row, each value labelled
+            'max-lg:[&_tr]:block max-lg:[&_tr]:px-5 max-lg:[&_tr]:py-4 max-lg:[&_td]:block max-lg:[&_td]:py-1.5',
+            "max-lg:[&_td]:before:block max-lg:[&_td]:before:text-[0.75rem] max-lg:[&_td]:before:font-semibold max-lg:[&_td]:before:uppercase max-lg:[&_td]:before:tracking-[0.06em] max-lg:[&_td]:before:text-ink-3 max-lg:[&_td]:before:content-[attr(data-label)]",
+          )}
+        >
+          {rows}
+        </tbody>
       </table>
       {empty && <p className="px-4 py-10 text-center text-ink-3">Nothing to show.</p>}
     </div>
@@ -929,7 +954,7 @@ function TicketTable({ tickets, assetOf }: { tickets: AdminData['desk']['tickets
         return (
           <tr key={t.id}>
             <td>
-              <span className="font-mono text-[0.875rem] font-semibold">{t.id}</span>
+              <span className="keep font-mono text-[0.875rem] font-semibold">{t.id}</span>
               <span className="block text-[0.8125rem] text-ink-3">{t.title}</span>
             </td>
             <td className="whitespace-nowrap">{fmt(t.openedAt)}</td>
@@ -1151,13 +1176,13 @@ function Waiting({ data, now }: { data: AdminData; now: number }) {
           const late = t.priority !== 'routine' && now - Date.parse(t.openedAt) > 30 * 60_000;
           return (
             <tr key={t.id}>
-              <td className="whitespace-nowrap font-mono text-[0.875rem]">{t.id}</td>
+              <td className="keep font-mono text-[0.875rem]">{t.id}</td>
               <td><Badge tone={t.priority === 'routine' ? 'neutral' : 'bad'}>{t.priority[0].toUpperCase() + t.priority.slice(1)}</Badge></td>
               <td className="font-medium">{a?.facility ?? '—'}</td>
               <td>{a ? tidy(a.name) : '—'}</td>
               <td className={cn('whitespace-nowrap', late && 'font-semibold text-signal-700')}>{since(t.openedAt, now)}</td>
-              <td className="whitespace-nowrap">{t.contactPhone ? <a href={`tel:${t.contactPhone.replace(/[^\d+]/g, '')}`} className="font-medium text-brand-700 hover:underline">{t.contactPhone}</a> : '—'}</td>
-              <td className="min-w-[15rem]"><AssignForm ticket={t.id} engineers={engineers} /></td>
+              <td className="whitespace-nowrap">{t.contactPhone ? <a href={`tel:${t.contactPhone.replace(/[^\d+]/g, '')}`} className="keep font-medium text-brand-700 hover:underline">{t.contactPhone}</a> : '—'}</td>
+              <td><AssignForm ticket={t.id} engineers={engineers} /></td>
             </tr>
           );
         })}
@@ -1197,14 +1222,14 @@ function WebsiteRequests({ data, now }: { data: AdminData; now: number }) {
         {rows.map((r) => (
           <tr key={r.id}>
             <td className="whitespace-nowrap">{timeFmt.format(new Date(r.at))}</td>
-            <td className="whitespace-nowrap font-mono text-[0.875rem]">{r.id}</td>
+            <td className="font-mono text-[0.875rem]">{r.id}</td>
             <td className="whitespace-nowrap">{r.type === 'fault' ? <Badge tone="bad">{supportTypeLabel[r.type]}</Badge> : supportTypeLabel[r.type] ?? r.type}</td>
             <td className="font-medium">{r.facility}</td>
             <td className="whitespace-nowrap">
               {r.name}
-              <a href={`tel:${r.phone.replace(/[^\d+]/g, '')}`} className="block font-medium text-brand-700 hover:underline">{r.phone}</a>
+              <a href={`tel:${r.phone.replace(/[^\d+]/g, '')}`} className="keep block font-medium text-brand-700 hover:underline">{r.phone}</a>
             </td>
-            <td className="min-w-[16rem]">
+            <td>
               <span className="font-medium">{supportSubject(r)}</span>
               {supportDetails(r)
                 .filter(([k]) => k !== 'Equipment' && k !== 'Help with')
@@ -1320,7 +1345,7 @@ async function Texts({ data, now }: { data: AdminData; now: number }) {
               {smsKind[m.kind] ?? m.kind}
               {m.ref && m.ref !== 'TEST' && <span className="block font-mono text-[0.8125rem] text-ink-3">{m.ref}</span>}
             </td>
-            <td className="min-w-[12rem]">
+            <td>
               {people(m.to).map((n) => (
                 <span key={n} className="block whitespace-nowrap text-[0.875rem]">
                   {byNumber.get(n) ?? 'Number'} <span className="font-mono text-[0.8125rem] text-ink-3">+{n}</span>

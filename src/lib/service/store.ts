@@ -23,6 +23,12 @@ type Remote = { enabled: false } | { enabled: true; state: ServiceState };
 async function fetchDesk(): Promise<Remote> {
   try {
     const r = await fetch('/api/service', { cache: 'no-store' });
+    // Signed out (the session ran out): back to this portal's sign-in, then straight back here
+    if (r.status === 401) {
+      const area = location.pathname.startsWith('/engineer') ? '/engineer/login' : '/login';
+      location.assign(`${area}?next=${encodeURIComponent(location.pathname + location.search)}`);
+      return new Promise<Remote>(() => {});
+    }
     if (!r.ok) return r.status === 503 ? { enabled: false } : Promise.reject(new Error(String(r.status)));
     return (await r.json()) as Remote;
   } catch {

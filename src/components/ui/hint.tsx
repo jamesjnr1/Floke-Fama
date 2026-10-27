@@ -9,6 +9,8 @@ import { cn } from '@/lib/utils';
  */
 export function Hint({ children, label = 'What does this mean?', className, align = 'left', onDark }: { children: React.ReactNode; label?: string; className?: string; align?: 'left' | 'right'; /** On a dark background. */ onDark?: boolean }) {
   const [open, setOpen] = useState(false);
+  // Which side it opens to: towards the middle of the screen, so it never runs off the edge
+  const [side, setSide] = useState<'left' | 'right'>(align);
   const id = useId();
   const box = useRef<HTMLSpanElement>(null);
   useEffect(() => {
@@ -29,7 +31,11 @@ export function Hint({ children, label = 'What does this mean?', className, alig
         aria-label={label}
         aria-expanded={open}
         aria-controls={id}
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => {
+          const r = box.current?.getBoundingClientRect();
+          if (r) setSide(r.left + 352 > window.innerWidth - 16 ? 'right' : 'left');
+          setOpen((o) => !o);
+        }}
         className={cn('grid size-5 place-items-center rounded-full border border-current text-[0.6875rem] font-bold leading-none transition', onDark ? 'text-white/70 hover:text-white' : 'text-ink-3 hover:text-brand-700')}
       >
         ?
@@ -39,8 +45,10 @@ export function Hint({ children, label = 'What does this mean?', className, alig
           id={id}
           role="note"
           className={cn(
-            'absolute top-7 z-40 w-[min(18rem,80vw)] rounded-xl bg-ink px-3.5 py-3 text-left text-[0.8125rem] font-normal normal-case leading-snug tracking-normal text-white shadow-[0_12px_30px_-12px_rgb(0_0_0/0.45)]',
-            align === 'right' ? 'right-0' : 'left-0',
+            // Readable: a comfortable width, normal size text, room between lines and points
+            'absolute top-8 z-50 block w-[min(22rem,calc(100vw-2rem))] whitespace-normal rounded-2xl bg-ink px-5 py-4 text-left text-[0.9375rem] font-normal normal-case leading-relaxed tracking-normal text-white shadow-[0_18px_40px_-14px_rgb(0_0_0/0.5)]',
+            '[&_b]:font-semibold [&_b]:text-white [&_br]:mb-3 [&_br]:block [&_br]:content-[""]',
+            side === 'right' ? 'right-0' : 'left-0',
           )}
         >
           {children}
