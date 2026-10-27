@@ -131,6 +131,7 @@ function Detail({ ticket: t, asset, dispatch }: { ticket: Ticket; asset?: Asset;
               {t.status === 'travelling' && `On the way${t.eta ? ` · arriving in about ${t.eta}` : ''}.`}
               {t.status === 'onsite' && 'On site and working on your system.'}
             </span>
+            {t.contactPhone && <span className="mt-1 flex items-center gap-1.5 text-xs text-ink-3"><Icon name="fi-rr-comment" /> Text updates go to {t.contactPhone}</span>}
           </span>
           {/* Who to reach: the engineer's own number once one is assigned, Flokefama's until then */}
           <span className="text-right">

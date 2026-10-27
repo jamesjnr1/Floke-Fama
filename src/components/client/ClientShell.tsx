@@ -38,7 +38,7 @@ const nav: { id: View; label: string; icon: string }[] = [
 ];
 
 /** Hospital dashboard (Flokefama Care): the facility's service desk, equipment, certificates and orders. */
-export function ClientShell({ user, products }: { user: { name: string; email: string; facility?: string }; products: CatalogueItem[] }) {
+export function ClientShell({ user, products }: { user: { name: string; email: string; facility?: string; phone?: string }; products: CatalogueItem[] }) {
   const { contact } = useSite();
   const facility = user.facility ?? user.name;
   const orders = useOrders(user.email);
@@ -241,10 +241,11 @@ export function ClientShell({ user, products }: { user: { name: string; email: s
         onOpenChange={(open) => setRequesting((r) => ({ ...r, open }))}
         assets={installed}
         defaultAssetId={requesting.assetId}
+        defaultPhone={user.phone}
         onSubmit={(v) => {
           const id = nextTicketId(state);
           rawDispatch({ type: 'request', ticket: v });
-          toast.success(`Request ${id} submitted`, { description: 'We’re assigning the nearest engineer. You can follow every step here.' });
+          toast.success(`Request ${id} submitted`, { description: `We’re assigning the nearest engineer. Follow every step here; we’ll also text ${v.contactPhone}.` });
           setTicketId(id);
           setView('requests');
         }}

@@ -70,11 +70,12 @@ export function TicketsView({ state, me, selectedId, onSelect, dispatch, onResol
             <Icon name="fi-rr-plus" />
           </button>
         </div>
-        <div className="mt-3 flex gap-4 overflow-x-auto border-b border-line" role="tablist" aria-label="Request filter">
+        {/* Spread across the column so all five always fit, without a sideways scroll */}
+        <div className="mt-3 flex justify-between gap-2 border-b border-line" role="tablist" aria-label="Request filter">
           {filters.map((f) => {
             const count = f.id === 'all' ? state.tickets.length : state.tickets.filter((t) => (f.id === 'open' ? isOpen(t) : f.id === 'mine' ? isOpen(t) && t.engineer === me : f.id === 'new' ? t.status === 'new' : t.status === 'resolved')).length;
             return (
-              <button key={f.id} role="tab" aria-selected={filter === f.id} onClick={() => setFilter(f.id)} className={cn('-mb-px shrink-0 border-b-2 py-2.5 text-sm', filter === f.id ? 'border-ink font-semibold text-ink' : 'border-transparent text-ink-3 hover:text-ink')}>
+              <button key={f.id} role="tab" aria-selected={filter === f.id} onClick={() => setFilter(f.id)} className={cn('-mb-px whitespace-nowrap border-b-2 py-2.5 text-sm', filter === f.id ? 'border-ink font-semibold text-ink' : 'border-transparent text-ink-3 hover:text-ink')}>
                 {f.label} <span className="ml-0.5 tabular-nums text-ink-3">{count}</span>
               </button>
             );

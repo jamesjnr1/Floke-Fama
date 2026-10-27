@@ -54,7 +54,7 @@ const orderStatusLabel = Object.fromEntries(salesStages.map((x) => [x.id, x.labe
 const tidy = (n: string) => n.split(/(\s+|[()])/).map((w) => (/\d/.test(w) ? w.toUpperCase() : w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())).join('');
 const methodLabel: Record<string, string> = { momo: 'Mobile money', card: 'Card', bank: 'Bank transfer' };
 const ticketLabel: Record<string, string> = { new: 'Logged', assigned: 'Assigned', travelling: 'En route', onsite: 'On site', resolved: 'Resolved' };
-const smsKind: Record<string, string> = { website: 'Website fault', urgent: 'Urgent fault', assigned: 'Job given', message: 'Hospital message', escalation: 'Not taken', test: 'Test text', hospitals: 'To all hospitals', checkin: 'Check-in', calibration: 'Calibration reminder', holiday: 'Holiday greeting' };
+const smsKind: Record<string, string> = { website: 'Website fault', urgent: 'Urgent fault', assigned: 'Job given', message: 'Hospital message', escalation: 'Not taken', test: 'Test text', hospitals: 'To all hospitals', checkin: 'Check-in', calibration: 'Calibration reminder', holiday: 'Holiday greeting', update: 'Update to hospital' };
 const smsStatus: Record<string, string> = { sent: 'Sent', logged: 'Recorded only', failed: 'Not sent', sending: 'Sending' };
 const categoryName = (slug: string) => slug.replace(/-/g, ' ').replace(/^\w/, (c) => c.toUpperCase());
 
@@ -1165,9 +1165,10 @@ function WebsiteRequests({ data }: { data: AdminData }) {
 async function Texts({ data, now }: { data: AdminData; now: number }) {
   const [hospitals, templates, upcoming] = await Promise.all([hospitalsToText().catch(() => []), messageTemplates(), upcomingClientTexts(data.desk, now)]);
   const auto = [
+    { title: 'Updates on a request', when: 'When an engineer is assigned, and when it is fixed, to the number the hospital gave with the request', text: 'Request TK-1042 (Mindray BC-5150 analyser): engineer Samuel Owusu is assigned. You can reach Samuel on 024 555 0101.', note: 'Then: “your … is fixed, please rate the visit”. On the way and on site show in the portal only.' },
     { title: 'Check-in after a repair', when: `${CHECK_IN_DAYS} days after a job is resolved, to that hospital`, text: checkInText('Mindray BC-5150 analyser', 'Ridge Hospital', '20 Oct', upcoming.phone), note: `${upcoming.checkIns} due in the coming days` },
     { title: 'Calibration reminder', when: `${CALIBRATION_NOTICE_DAYS} days before a machine is due, to that hospital`, text: calibrationText('Mindray BC-5150 analyser', 'Ridge Hospital', '12 Nov', upcoming.phone), note: `${upcoming.calibrations} machines due in the next six weeks` },
-    { title: 'Holidays and health days', when: `${upcoming.calendar.filter((o) => !o.off).length} a year, such as Christmas, World Health Day and Breast Cancer Awareness Month, to every hospital (the calendar is below)`, text: upcoming.next?.text ?? '', note: upcoming.next ? `Next: ${upcoming.next.name}, ${dateFmt.format(upcoming.next.date)}` : '' },
+    { title: 'Holidays and health days', when: `${upcoming.calendar.filter((o) => !o.off).length} a year: ${upcoming.calendar.filter((o) => !o.off).map((o) => o.name).join(', ')}, to every hospital`, text: upcoming.next?.text ?? '', note: upcoming.next ? `Next: ${upcoming.next.name}, ${dateFmt.format(upcoming.next.date)}` : '' },
   ];
   const byNumber = new Map(data.accounts.flatMap((a) => (a.phone && normalisePhone(a.phone) ? [[normalisePhone(a.phone)!, a.name] as const] : [])));
   const recent = data.sms.filter((m) => Date.parse(m.at) > now - 30 * DAY);
@@ -1186,7 +1187,7 @@ async function Texts({ data, now }: { data: AdminData; now: number }) {
         {clientTextsAuto ? (process.env.CRON_SECRET ? 'They are on.' : 'They are on, but need CRON_SECRET set in Vercel for the daily run.') : 'They are off (CLIENT_TEXTS=off, or texts are off).'}{' '}
         {hospitals.length} hospital{hospitals.length === 1 ? '' : 's'} can be texted; any hospital can turn texts off in its portal.
       </p>
-      <div className="mb-5 grid gap-3 lg:grid-cols-3">
+      <div className="mb-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
         {auto.map((a) => (
           <div key={a.title} className={cn(card, 'p-5')}>
             <p className="font-semibold">{a.title}</p>
@@ -1197,16 +1198,16 @@ async function Texts({ data, now }: { data: AdminData; now: number }) {
         ))}
       </div>
       <details className={cn(card, 'mb-5 p-5')}>
-        <summary className="cursor-pointer font-semibold">The greetings calendar: every holiday and health day for the next 12 months, with its message</summary>
-        <p className="mt-1 text-[0.875rem] text-ink-3">Sent at 9:00 on the day. Eid and other holidays whose date moves are sent from the box below. A day can be left out with CLIENT_TEXTS_SKIP in Vercel (its key is shown).</p>
+        <summary className="cursor-pointer font-semibold">The greetings calendar: holidays and health days for the next 12 months, with their messages</summary>
+        <p className="mt-1 text-[0.875rem] text-ink-3">To keep texts few, only the days marked “sent automatically” go out by themselves, at 9:00 on the day. The rest, and Eid, can be sent from the box below (Holiday or health day…). In Vercel, CLIENT_TEXTS_ADD adds a day to the automatic ones and CLIENT_TEXTS_SKIP takes one off (by the key shown).</p>
         <ul className="mt-4 divide-y divide-line">
           {upcoming.calendar.map((o) => (
-            <li key={`${o.key}-${o.date.getUTCFullYear()}`} className={cn('grid gap-2 py-3 md:grid-cols-[14rem_1fr]', o.off && 'opacity-50')}>
+            <li key={`${o.key}-${o.date.getUTCFullYear()}`} className={cn('grid gap-2 py-3 md:grid-cols-[14rem_1fr]', o.off && 'opacity-75')}>
               <div>
                 <p className="font-medium">{o.name}</p>
                 <p className="text-[0.875rem] text-ink-3">
                   {dateFmt.format(o.date)} · <span className="font-mono">{o.key}</span>
-                  {o.off && ' · left out'}
+                  {o.off ? ' · send by hand' : ' · sent automatically'}
                 </p>
               </div>
               <div>

@@ -44,13 +44,19 @@ function Shell({ open, onOpenChange, title, description, children, wide }: {
 
 const visits = ['As soon as possible', 'Today', 'Tomorrow', 'This week', 'Next scheduled visit'];
 
+/** Where the last request's number for text updates is remembered on this device, to fill in the next one. */
+const PHONE_KEY = 'ff-update-phone';
+const validPhone = (v: string) => /^\+?[\d\s()-]{9,20}$/.test(v.trim()) && v.replace(/\D/g, '').length >= 9;
+
 /** Submit a service request for one of the facility's systems. */
-export function RequestDialog({ open, onOpenChange, assets, defaultAssetId, onSubmit }: {
+export function RequestDialog({ open, onOpenChange, assets, defaultAssetId, defaultPhone, onSubmit }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
   assets: Asset[];
   defaultAssetId?: string;
-  onSubmit: (v: { assetId: string; description: string; priority: Priority; contactPhone?: string; preferredVisit: string }) => void;
+  /** The hospital account's own number, used when no number was given on this device before. */
+  defaultPhone?: string;
+  onSubmit: (v: { assetId: string; description: string; priority: Priority; contactPhone: string; preferredVisit: string }) => void;
 }) {
   const [assetId, setAssetId] = useState('');
   const [description, setDescription] = useState('');
@@ -58,6 +64,7 @@ export function RequestDialog({ open, onOpenChange, assets, defaultAssetId, onSu
   const [phone, setPhone] = useState('');
   const [visit, setVisit] = useState(visits[0]);
   const [error, setError] = useState('');
+  const [phoneError, setPhoneError] = useState('');
   // A fresh form each time it opens, and only then: the portal refreshes its data every few seconds, which must not
   // wipe what is being typed
   const wasOpen = useRef(false);
@@ -68,20 +75,30 @@ export function RequestDialog({ open, onOpenChange, assets, defaultAssetId, onSu
       setPriority('high');
       setVisit(visits[0]);
       setError('');
+      setPhoneError('');
+      let last = '';
+      try {
+        last = localStorage.getItem(PHONE_KEY) ?? '';
+      } catch {}
+      setPhone(last || defaultPhone || '');
     }
     wasOpen.current = open;
-  }, [open, defaultAssetId, assets]);
+  }, [open, defaultAssetId, assets, defaultPhone]);
 
   return (
     <Shell open={open} onOpenChange={onOpenChange} title="Request service" description="Tell us what’s wrong. The nearest engineer is assigned and you can follow every step here.">
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          if (description.trim().length < 5) {
-            setError('Describe the problem in a few words.');
-            return;
-          }
-          onSubmit({ assetId, description: description.trim(), priority, contactPhone: phone.trim() || undefined, preferredVisit: visit });
+          const badText = description.trim().length < 5;
+          const badPhone = !validPhone(phone);
+          setError(badText ? 'Describe the problem in a few words.' : '');
+          setPhoneError(badPhone ? 'Enter a phone number we can text, like 024 123 4567.' : '');
+          if (badText || badPhone) return;
+          try {
+            localStorage.setItem(PHONE_KEY, phone.trim());
+          } catch {}
+          onSubmit({ assetId, description: description.trim(), priority, contactPhone: phone.trim(), preferredVisit: visit });
           onOpenChange(false);
         }}
         className="space-y-5"
@@ -124,8 +141,13 @@ export function RequestDialog({ open, onOpenChange, assets, defaultAssetId, onSu
         </fieldset>
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="grid gap-1.5">
-            <span className="text-sm font-medium text-ink-2">Contact number (optional)</span>
-            <input value={phone} onChange={(e) => setPhone(e.target.value)} type="tel" placeholder="+233" className={cn(inputClass, 'h-12')} />
+            <span className="text-sm font-medium text-ink-2">Number for text updates</span>
+            <input value={phone} onChange={(e) => { setPhone(e.target.value); setPhoneError(''); }} type="tel" inputMode="tel" autoComplete="tel" placeholder="024 123 4567" aria-invalid={Boolean(phoneError)} className={cn(inputClass, 'h-12')} />
+            {phoneError ? (
+              <span role="alert" className="text-xs text-signal-700">{phoneError}</span>
+            ) : (
+              <span className="text-xs text-ink-3">We text it when an engineer is assigned (with their number) and when it’s fixed.</span>
+            )}
           </label>
           <label className="grid gap-1.5">
             <span className="text-sm font-medium text-ink-2">Preferred visit</span>
