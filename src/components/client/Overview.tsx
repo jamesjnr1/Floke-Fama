@@ -187,7 +187,7 @@ export function Overview({ name, facility, assets, tickets, orders, onOpenTicket
                           <span className="mt-2 flex items-center gap-2 text-sm text-ink-2">
                             {t.engineer && <EngineerFace name={t.engineer} className="size-8 bg-brand-50 text-xs text-brand-700" />}
                             <span className="min-w-0 leading-tight">
-                              {t.engineer ? <>{t.engineer}{t.eta ? <span className="block text-xs text-ink-3">ETA {t.eta}</span> : t.status === 'onsite' ? <span className="block text-xs text-ink-3">on site</span> : null}</> : <span className="text-ink-3">Assigning an engineer…</span>}
+                              {t.engineer ? <>{t.engineer}{t.engineerPhone && <span className="block text-xs font-medium tabular-nums text-ink">{t.engineerPhone}</span>}{t.eta ? <span className="block text-xs text-ink-3">ETA {t.eta}</span> : t.status === 'onsite' ? <span className="block text-xs text-ink-3">on site</span> : null}</> : <span className="text-ink-3">Assigning an engineer…</span>}
                             </span>
                           </span>
                         </span>
