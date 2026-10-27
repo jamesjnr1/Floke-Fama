@@ -121,7 +121,7 @@ export interface HospitalTextState {
 export async function sendToHospitals(_prev: HospitalTextState, form: FormData): Promise<HospitalTextState> {
   const s = await getAdminSession();
   if (!s) return { result: { ok: false, detail: 'Please sign in again.' } };
-  const text = String(form.get('text') ?? '').trim().slice(0, 300);
+  const text = String(form.get('text') ?? '').trim().slice(0, 459);
   if (form.get('confirm') !== 'on') return { text, result: { ok: false, detail: 'Tick the box to confirm who it goes to.' } };
   const r = await textAllHospitals(text, `ALL-${new Date().toISOString().slice(0, 10)}`);
   revalidatePath('/admin');
