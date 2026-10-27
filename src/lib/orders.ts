@@ -8,7 +8,11 @@ import type { CheckoutOrder, PaymentMethod } from '@/lib/payments';
  * With Appwrite set up they are saved on the server (/api/orders), which also turns them into the hospital's
  * equipment, so they show on every device. Without it they are kept in this browser, like the cart.
  */
-export type OrderStatus = 'awaiting-payment' | 'paid' | 'processing' | 'delivered';
+/**
+ * Where an order stands. Sales moves it along on the admin console's board: New (`awaiting-payment`, its original
+ * name) → Called → Price sent → Paid → Being prepared → Delivered, or Lost.
+ */
+export type OrderStatus = 'awaiting-payment' | 'called' | 'priced' | 'paid' | 'processing' | 'delivered' | 'lost';
 
 export interface SavedOrder {
   reference: string;
@@ -20,13 +24,23 @@ export interface SavedOrder {
   address: string;
   status: OrderStatus;
   needs?: CheckoutOrder['needs'];
+  /** Who to call about it, from checkout. */
+  contact?: { name: string; organisation: string; phone: string };
+  /** The price sales agreed, in Ghana cedis. */
+  amount?: number;
+  /** Sales' notes and moves, oldest first. */
+  log?: { at: string; by: string; text: string }[];
 }
 
+/** The status as the hospital sees it in its dashboard (sales' own steps read as one "Received"). */
 export const orderStatusLabel: Record<OrderStatus, string> = {
-  'awaiting-payment': 'Awaiting payment',
+  'awaiting-payment': 'Received',
+  called: 'Received',
+  priced: 'Price sent',
   paid: 'Paid',
   processing: 'Being prepared',
   delivered: 'Delivered',
+  lost: 'Cancelled',
 };
 
 const KEY = 'ff-orders';

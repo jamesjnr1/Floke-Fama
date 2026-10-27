@@ -2,7 +2,7 @@
 
 The new [flokefama.com](https://flokefama.com): a composable, headless healthcare platform for Flokefama Company Limited, a Ghana Club 100 supplier of medical equipment and diagnostics (founded 2008).
 
-**Stack:** Next.js 15 (App Router) · TypeScript · Tailwind CSS v4 · Poppins + Geist Sans · Radix / shadcn-style UI · Motion (Framer Motion) · Three.js · Sanity · Algolia · HubSpot · Vercel
+**Stack:** Next.js 15 (App Router) · TypeScript · Tailwind CSS v4 · Poppins + Geist Sans · Radix / shadcn-style UI · Motion (Framer Motion) · Three.js · Sanity · Algolia · Appwrite · Brevo · Vercel
 
 → Full architecture: [docs/05-architecture.md](docs/05-architecture.md) · Plain-language guide to how the site works and its integrations: [docs/Flokefama-Website-Guide.docx](docs/Flokefama-Website-Guide.docx)
 
@@ -15,7 +15,7 @@ npm install
 npm run dev          # http://localhost:3000, runs on seed data, no keys needed
 ```
 
-Optional integrations are switched on by environment variables. Copy `.env.example` to `.env.local` and fill in what's ready (Sanity, Algolia, HubSpot).
+Optional integrations are switched on by environment variables. Copy `.env.example` to `.env.local` and fill in what's ready (Sanity, Algolia, Appwrite, Brevo).
 
 | Command | What it does |
 |---|---|

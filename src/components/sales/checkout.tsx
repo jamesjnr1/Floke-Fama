@@ -35,7 +35,7 @@ const emptyDetails: Details = { name: '', organisation: '', phone: '', email: ''
 /**
  * Checkout in four steps (cart, delivery, payment, confirmation) with the order summary alongside. The only way to
  * order: "Order now" anywhere on the site lands here with the product in the cart (`adding`). Sales confirms the
- * price, so the order goes to them (HubSpot) as well as to the hospital's dashboard.
+ * price, so the order goes on their sales board (admin console) as well as the hospital's dashboard.
  */
 export function Checkout({ adding = [] }: { adding?: QuoteItem[] }) {
   const { contact } = useSite();
