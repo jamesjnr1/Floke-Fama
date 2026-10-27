@@ -9,7 +9,6 @@ export const metadata: Metadata = {
   robots: { index: false },
   manifest: '/manifest-service.webmanifest',
   appleWebApp: { capable: true, title: 'FF Service', statusBarStyle: 'black-translucent' },
-  icons: { icon: '/images/favicon.png', apple: '/images/apple-touch-icon.png' },
 };
 
 export default async function EngineerPortalPage() {
