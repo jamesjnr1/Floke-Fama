@@ -132,9 +132,13 @@ function Detail({ ticket: t, asset, dispatch }: { ticket: Ticket; asset?: Asset;
               {t.status === 'onsite' && 'On site and working on your system.'}
             </span>
           </span>
-          <a href={contact.phoneHref} className="inline-flex items-center gap-2 rounded-lg border border-line bg-paper px-3.5 py-2 text-sm font-medium text-ink hover:border-ink/30">
-            <Icon name="fi-rr-phone-call" className="text-brand-600" /> Call
-          </a>
+          {/* Who to reach: the engineer's own number once one is assigned, Flokefama's until then */}
+          <span className="text-right">
+            <span className="block text-xs text-ink-3">{t.engineer && t.engineerPhone ? `${t.engineer.split(' ')[0]}’s number` : 'Flokefama support'}</span>
+            <a href={`tel:${(t.engineerPhone ?? contact.phone).replace(/[^\d+]/g, '')}`} className="block whitespace-nowrap text-lg font-semibold tabular-nums text-ink hover:text-brand-700">
+              {t.engineer && t.engineerPhone ? t.engineerPhone : contact.phone}
+            </a>
+          </span>
         </div>
       )}
 

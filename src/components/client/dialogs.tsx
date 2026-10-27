@@ -4,7 +4,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import Image from 'next/image';
 import Link from 'next/link';
 import { helpHref } from '@/lib/links';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { inputClass, statusStyle, urgency, tag } from '@/components/client/ui';
 import { Icon, IconTile } from '@/components/ui/icon';
 import { downloadCertificate } from '@/lib/service/certificate';
@@ -58,14 +58,18 @@ export function RequestDialog({ open, onOpenChange, assets, defaultAssetId, onSu
   const [phone, setPhone] = useState('');
   const [visit, setVisit] = useState(visits[0]);
   const [error, setError] = useState('');
+  // A fresh form each time it opens, and only then: the portal refreshes its data every few seconds, which must not
+  // wipe what is being typed
+  const wasOpen = useRef(false);
   useEffect(() => {
-    if (open) {
+    if (open && !wasOpen.current) {
       setAssetId(defaultAssetId ?? assets[0]?.id ?? '');
       setDescription('');
       setPriority('high');
       setVisit(visits[0]);
       setError('');
     }
+    wasOpen.current = open;
   }, [open, defaultAssetId, assets]);
 
   return (

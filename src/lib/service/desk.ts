@@ -24,6 +24,8 @@ export interface Ticket {
   status: TicketStatus;
   openedAt: string;
   engineer?: string;
+  /** The assigned engineer's phone, so the hospital can call them directly. */
+  engineerPhone?: string;
   eta?: string;
   log: LogEntry[];
   parts: Part[];
@@ -155,7 +157,7 @@ export const nextTicketId = (s: ServiceState) => `TK-${Math.max(1000, ...s.ticke
 /* ---------- actions ---------- */
 export type Action =
   | { type: 'load'; state: ServiceState }
-  | { type: 'assign'; id: string; engineer: string }
+  | { type: 'assign'; id: string; engineer: string; /** Filled in by the server from the engineer's account. */ phone?: string }
   | { type: 'travel'; id: string; eta: string }
   | { type: 'arrive'; id: string }
   | { type: 'note'; id: string; text: string }
@@ -191,7 +193,7 @@ export function reducer(actor: Actor) {
       case 'load':
         return action.state;
       case 'assign':
-        return notify(patch(action.id, (t) => ({ ...t, status: 'assigned', engineer: action.engineer, log: [...t.log, entry(`Assigned to ${action.engineer}`)] })),
+        return notify(patch(action.id, (t) => ({ ...t, status: 'assigned', engineer: action.engineer, engineerPhone: action.phone, log: [...t.log, entry(`Assigned to ${action.engineer}`)] })),
           `${action.engineer} has been assigned to ${label}.`, { ticketId: action.id });
       case 'travel':
         return notify(patch(action.id, (t) => ({ ...t, status: 'travelling', eta: action.eta, log: [...t.log, entry(`En route · ETA ${action.eta}`)] })),
