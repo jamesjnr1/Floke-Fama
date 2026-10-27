@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { choiceClass, Field, fieldClass, GhostButton, PortalDialog, PrimaryButton } from '@/components/service/ui';
 import { Icon } from '@/components/ui/icon';
 import type { Asset, Certificate, Priority, Ticket } from '@/lib/service/store';
@@ -22,11 +22,15 @@ export function LogFaultDialog({ open, onOpenChange, assets, defaultAssetId, def
   const [description, setDescription] = useState('');
   const [priority, setPriority] = useState<Priority>('high');
   const [assignToMe, setAssignToMe] = useState(true);
+  // A fresh form each time it opens, and only then: the portal refreshes its data every few seconds, which must not
+  // wipe what is being typed
+  const wasOpen = useRef(false);
   useEffect(() => {
-    if (open) {
+    if (open && !wasOpen.current) {
       setAssetId(defaultAssetId ?? assets[0]?.id ?? '');
       setDescription(defaultDescription ?? '');
     }
+    wasOpen.current = open;
   }, [open, defaultAssetId, defaultDescription, assets]);
 
   return (
