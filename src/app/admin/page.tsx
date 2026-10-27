@@ -17,6 +17,8 @@ import type { OrderStatus, SavedOrder } from '@/lib/orders';
 import { salesStages } from '@/lib/sales-stages';
 import { departments, timelines } from '@/lib/order-needs';
 import { cn } from '@/lib/utils';
+import { statusStyle } from '@/components/client/ui';
+import type { TicketStatus as TicketStatusId } from '@/lib/service/store';
 
 /**
  * Admin console (/admin, ADMIN_EMAILS only): who registers, who buys what, the service desk and the health of the
@@ -278,6 +280,14 @@ function Table({ head, children, empty }: { head: string[]; children: React.Reac
     </div>
   );
 }
+
+/** A service request's status in the hospital portal's colours (a dot and coloured text), so both read the same. */
+const TicketStatus = ({ status }: { status: TicketStatusId }) => (
+  <span className={cn('inline-flex items-center gap-2 whitespace-nowrap text-[0.875rem] font-semibold', statusStyle[status].split(' ').find((c) => c.startsWith('text-')))}>
+    <span aria-hidden className="size-2 shrink-0 rounded-full bg-current" />
+    {ticketLabel[status]}
+  </span>
+);
 
 /** A status as a coloured dot and coloured text (no box). */
 const Badge = ({ children, tone = 'neutral' }: { children: React.ReactNode; tone?: 'neutral' | 'good' | 'warn' | 'bad' }) => (
@@ -889,7 +899,7 @@ function TicketTable({ tickets, assetOf }: { tickets: AdminData['desk']['tickets
             <td>{a ? tidy(a.name) : t.assetId}</td>
             <td>{a?.facility ?? '—'}</td>
             <td><Badge tone={t.priority === 'critical' ? 'bad' : t.priority === 'high' ? 'warn' : 'neutral'}>{t.priority[0].toUpperCase() + t.priority.slice(1)}</Badge></td>
-            <td><Badge tone={t.status === 'resolved' ? 'good' : 'neutral'}>{ticketLabel[t.status]}</Badge></td>
+            <td><TicketStatus status={t.status} /></td>
             <td>{t.engineer ?? <span className="text-signal-700">Unassigned</span>}</td>
             <td>{t.rating ? `${t.rating}/5` : '—'}</td>
           </tr>
@@ -921,7 +931,7 @@ const ago = (iso: string, now: number) => {
 
 function JobBadge({ job }: { job?: Job }) {
   if (!job) return <Badge tone="good">Available</Badge>;
-  return <Badge tone={job.ticket.status === 'onsite' ? 'warn' : 'neutral'}>{ticketLabel[job.ticket.status]}</Badge>;
+  return <TicketStatus status={job.ticket.status} />;
 }
 
 function JobLine({ job, data, now }: { job: Job; data: AdminData; now: number }) {

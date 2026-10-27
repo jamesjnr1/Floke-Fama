@@ -181,6 +181,8 @@ export async function applyAction(s: SessionUser, action: Action): Promise<Servi
     const why = allowed(s, action, before);
     if (why) throw new DeskError(why, 403);
     if (action.type === 'addAsset') action = { ...action, asset: cleanAsset(action.asset) };
+    // The hospital gets the engineer's own number, from their account (not from the browser)
+    if (action.type === 'assign') action = { ...action, phone: s.phone?.trim() || undefined };
     const after = reducer(actorFor(s))(before, action);
     try {
       await saveChanges(before, after);
