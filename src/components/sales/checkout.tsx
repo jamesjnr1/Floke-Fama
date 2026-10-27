@@ -12,7 +12,7 @@ import { useSession } from '@/lib/auth/use-session';
 import { composeLinks } from '@/lib/compose';
 import { departments, timelines } from '@/lib/order-needs';
 import { saveOrder } from '@/lib/orders';
-import { orderReference, startPayment, type CheckoutOrder, type PaymentMethod } from '@/lib/payments';
+import { orderReference, paymentsConfigured, startPayment, type CheckoutOrder, type PaymentMethod } from '@/lib/payments';
 import { quoteList, useQuoteList, type QuoteItem } from '@/lib/quote-list';
 import { cn } from '@/lib/utils';
 
@@ -116,12 +116,13 @@ export function Checkout({ adding = [] }: { adding?: QuoteItem[] }) {
     return (
       <div className="mx-auto max-w-xl rounded-2xl border border-line bg-paper p-10 text-center">
         <p className="text-2xl font-bold text-ink">Your cart is empty</p>
-        <p className="mt-2 text-ink-3">Add equipment from the shop with the + button, then come back here to pay.</p>
+        <p className="mt-2 text-ink-3">Add equipment from the shop with the + button, then come back here to order.</p>
         <Link href="/products" className="mt-6 inline-flex h-12 items-center rounded-lg bg-brand-600 px-6 font-semibold text-white hover:bg-brand-700">Browse the catalogue</Link>
       </div>
     );
 
-  const cta = ['Continue to delivery', 'Continue to payment', busy ? 'Opening secure payment…' : 'Make payment'][step];
+  // Until a payment provider is connected, the last button only places the order (sales confirms the price and payment)
+  const cta = ['Continue to delivery', 'Continue to payment', paymentsConfigured ? (busy ? 'Opening secure payment…' : 'Make payment') : busy ? 'Placing order…' : 'Place order'][step];
   const summaryItems = placed ? placed.items : items.map((x) => ({ slug: x.slug, name: x.name, qty: x.qty ?? 1 }));
 
   return (
@@ -305,7 +306,7 @@ export function Checkout({ adding = [] }: { adding?: QuoteItem[] }) {
             disabled={busy}
             className="mt-6 flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-[#e8ab00] font-semibold text-ink transition hover:bg-[#f5bb12] disabled:opacity-60"
           >
-            {step === 2 && <Lock className="size-4" aria-hidden />} {cta}
+            {step === 2 && paymentsConfigured && <Lock className="size-4" aria-hidden />} {cta}
           </button>
         )}
         {/* Ticket edge */}
