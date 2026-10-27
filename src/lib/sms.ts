@@ -5,6 +5,7 @@ import { isTableMissing, withTable } from '@/lib/appwrite-tables';
 import { roleFor } from '@/lib/auth/users';
 import type { Actor, Priority, ServiceState, Ticket } from '@/lib/service/desk';
 import { getSite } from '@/lib/site';
+import { registeredFacilities } from '@/lib/service/facilities';
 import { siteUrl } from '@/lib/utils';
 
 /**
@@ -212,6 +213,7 @@ async function hospitalUpdates(before: ServiceState, after: ServiceState) {
   const old = new Map(before.tickets.map((t) => [t.id, t]));
   const out: { ref: string; phone: string; text: string }[] = [];
   let office = '';
+  let registered: Set<string> | undefined;
   for (const t of after.tickets) {
     const prev = old.get(t.id);
     if (!t.contactPhone || !normalisePhone(t.contactPhone) || (prev && prev.status === t.status)) continue;
@@ -222,7 +224,12 @@ async function hospitalUpdates(before: ServiceState, after: ServiceState) {
     if (t.status === 'assigned') text = `Request ${t.id} (${equipment}): engineer ${eng} is assigned. You can reach ${eng.split(' ')[0]}${engPhone || ' through your portal'}.`;
     else if (t.status === 'resolved') {
       office ||= (await getSite()).contact.phone;
-      text = `Request ${t.id}: your ${equipment} is fixed. Please rate the visit in your Flokefama portal. If anything is not right, call ${office}.`;
+      registered ??= new Set(await registeredFacilities().catch(() => []));
+      const facility = after.assets.find((a) => a.id === t.assetId)?.facility ?? '';
+      // A hospital without an account (a Support page caller) has no portal to rate in: invite it to register instead
+      text = registered.has(facility)
+        ? `Request ${t.id}: your ${equipment} is fixed. Please rate the visit in your Flokefama portal. If anything is not right, call ${office}.`
+        : `Request ${t.id}: your ${equipment} is fixed. If anything is not right, call ${office}. To follow future visits online, register free at ${siteUrl.replace(/^https?:\/\//, '')}/login.`;
     }
     if (text) out.push({ ref: t.id, phone: t.contactPhone, text });
   }

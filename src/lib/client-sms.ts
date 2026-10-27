@@ -3,7 +3,7 @@ import { Query, type Models } from 'node-appwrite';
 import { appwrite, DATABASE_ID, TABLES } from '@/lib/appwrite';
 import { isTableMissing, withTable } from '@/lib/appwrite-tables';
 import { roleFor } from '@/lib/auth/users';
-import type { ServiceState } from '@/lib/service/desk';
+import { facilityKey, type ServiceState } from '@/lib/service/desk';
 import { getProducts } from '@/lib/data';
 import { getSite } from '@/lib/site';
 import { normalisePhone, plain, send, smsEnabled } from '@/lib/sms';
@@ -157,7 +157,6 @@ const tidy = (n: string) => n.split(/(\s+|[()])/).map((w) => (/\d/.test(w) ? w.t
 
 /* ---------- sending ---------- */
 
-const key = (s: string) => s.trim().toLowerCase();
 
 /** The admin console's "Send to hospitals": one text to every hospital that gets texts. */
 export async function textAllHospitals(text: string, ref: string) {
@@ -178,7 +177,7 @@ export async function clientDaily(desk: ServiceState, now = Date.now()) {
   if (!clientTextsAuto) return { checkIns: 0, calibrations: 0, holidays: 0 };
   const { contact } = await getSite();
   const people = await hospitalsToText();
-  const phonesAt = (facility: string) => people.filter((h) => key(h.facility) === key(facility)).map((h) => h.phone);
+  const phonesAt = (facility: string) => people.filter((h) => facilityKey(h.facility) === facilityKey(facility)).map((h) => h.phone);
   const done = { checkIns: 0, calibrations: 0, holidays: 0 };
   const once = async (rowId: string, kind: string, ref: string, phones: string[], text: string) => {
     if (!phones.length) return false;

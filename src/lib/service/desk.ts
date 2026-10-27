@@ -134,6 +134,8 @@ export const dueLabel = (s: string) => {
 export const assetImage = (a: Asset) => a.image ?? (a.productSlug ? `/images/products/${a.productSlug}.webp` : undefined);
 
 export const isOpen = (t: Ticket) => t.status !== 'resolved';
+/** A hospital name for comparing: “Korle-Bu Teaching Hospital” and “korle bu teaching hospital” are the same. */
+export const facilityKey = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
 export function assetStatus(asset: Asset, tickets: Ticket[]): AssetStatus {
   if (asset.installation) return 'installing';
   const open = tickets.filter((t) => t.assetId === asset.id && isOpen(t));

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { choiceClass, Field, fieldClass, GhostButton, PortalDialog, PrimaryButton } from '@/components/service/ui';
 import { Icon } from '@/components/ui/icon';
-import type { Asset, Certificate, Priority, Ticket } from '@/lib/service/store';
+import { facilityKey, type Asset, type Certificate, type Priority, type Ticket } from '@/lib/service/store';
 import { cn } from '@/lib/utils';
 
 const NEW = '__new';
@@ -28,8 +28,7 @@ export function LogFaultDialog({ open, onOpenChange, assets: all, defaultAssetId
   submitLabel?: string;
   onSubmit: (v: { assetId: string; description: string; priority: Priority; assignToMe: boolean; newEquipment?: string }) => void;
 }) {
-  const key = (s: string) => s.trim().toLowerCase();
-  const assets = forFacility ? all.filter((a) => key(a.facility) === key(forFacility)) : all;
+  const assets = forFacility ? all.filter((a) => facilityKey(a.facility) === facilityKey(forFacility)) : all;
   const [assetId, setAssetId] = useState(defaultAssetId ?? assets[0]?.id ?? (forFacility ? NEW : ''));
   const [equipment, setEquipment] = useState('');
   const [description, setDescription] = useState('');
