@@ -16,6 +16,7 @@ export const workingStates = [
 
 /** Other assistance: what it is about. */
 export const assistanceTopics = [
+  { id: 'demo', label: 'Product demonstration' },
   { id: 'training', label: 'Staff training' },
   { id: 'parts', label: 'Parts & consumables' },
   { id: 'documents', label: 'Manuals & certificates' },
@@ -48,7 +49,7 @@ export const supportSchema = z
     preferredDate: date,
     order: optional(40),
     location: optional(80),
-    topic: z.enum(['training', 'parts', 'documents', 'other', '']).optional().default(''),
+    topic: z.enum(['demo', 'training', 'parts', 'documents', 'other', '']).optional().default(''),
     /** Honeypot: real users never fill this. */
     website: z.string().max(0).optional().or(z.literal('')),
   })

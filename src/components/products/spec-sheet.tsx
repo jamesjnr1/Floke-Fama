@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { helpHref, orderHref } from '@/lib/links';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { AddToQuote } from '@/components/sales/add-to-quote';
@@ -91,7 +92,7 @@ export function SpecTabs({ product, categoryTitle }: { product: Product; categor
         <ul className="space-y-2">
           <DocRow title="Flokefama company brochure" kind="brochure" href={brochureUrl} />
           {(product.documents.length ? product.documents : [{ title: `${product.name} datasheet`, kind: 'datasheet' as const }]).map((d) => (
-            <DocRow key={d.title} title={d.title} kind={d.kind} href={d.url} requestHref={`/quote?product=${product.slug}&docs=1`} />
+            <DocRow key={d.title} title={d.title} kind={d.kind} href={d.url} requestHref={helpHref('documents', { equipment: product.name, message: `Please send the datasheet for the ${product.name}.` })} />
           ))}
         </ul>
       </TabsContent>
@@ -146,10 +147,10 @@ export function SpecActions({ product }: { product: Product }) {
   return (
     <div className="flex flex-wrap gap-3">
       <Button asChild arrow="up-right">
-        <Link href={`/quote?product=${product.slug}`}>Order now</Link>
+        <Link href={orderHref(product.slug)}>Order now</Link>
       </Button>
       <AddToQuote item={{ slug: product.slug, name: product.name, brand: product.brand, image: product.image }} />
-      <Link href={`/quote?intent=demo&product=${product.slug}`} className="inline-flex h-12 items-center px-2 text-sm font-medium text-brand-700 underline-offset-4 hover:underline">
+      <Link href={helpHref('demo', { equipment: product.name })} className="inline-flex h-12 items-center px-2 text-sm font-medium text-brand-700 underline-offset-4 hover:underline">
         Schedule a demonstration
       </Link>
     </div>

@@ -1,105 +1,17 @@
-import type { Metadata } from 'next';
-import Image from 'next/image';
-import Link from 'next/link';
-import { ProcurementFlow } from '@/components/quote/procurement-flow';
-import { Icon } from '@/components/ui/icon';
-import { getSite } from '@/lib/site';
-import { getCategories, getProducts } from '@/lib/data';
+import { redirect } from 'next/navigation';
+import { getProducts } from '@/lib/data';
+import { helpHref, orderHref } from '@/lib/links';
 
-/** Which department a machine usually serves, from its Shop category (the visitor can change it). */
-const departmentFor: Record<string, string> = {
-  'in-vitro-diagnostics': 'laboratory',
-  laboratory: 'laboratory',
-  consumables: 'laboratory',
-  'critical-care': 'icu',
-  'hospital-equipment': 'opd',
-};
-
-export const metadata: Metadata = {
-  title: 'Checkout: Order Equipment or Book a Demonstration',
-  description: 'Tell us your department, equipment and timeline. A Flokefama specialist replies within one business day.',
-};
-
+/**
+ * The old quote form's address. Ordering is now the cart and checkout, and demonstrations, documents and "can't find
+ * it" are requests on the Support page, so links and bookmarks to /quote land in the right place.
+ */
 export default async function QuotePage({ searchParams }: { searchParams: Promise<{ intent?: string; product?: string; products?: string; need?: string; docs?: string }> }) {
-  const { contact } = await getSite();
-  const [{ intent, product, products: listParam, need, docs }, products, categories] = await Promise.all([searchParams, getProducts(), getCategories()]);
-  const options = products.map((p) => ({ slug: p.slug, label: `${p.brand === 'Flokefama Select' ? '' : `${p.brand} `}${p.name}`, group: categories.find((c) => c.slug === p.category)?.title ?? 'Other' }));
-  // From the quote list: several products in one request
-  const listed = (listParam ?? '').split(',').map((s) => products.find((p) => p.slug === s.trim())).filter((p): p is (typeof products)[number] => Boolean(p)).slice(0, 30);
-  const preselected = [...new Set([options.find((o) => o.slug === product)?.label, ...listed.map((p) => options.find((o) => o.slug === p.slug)?.label), need?.trim()].filter((x): x is string => Boolean(x)))];
-  const listDepartments = [...new Set(listed.map((p) => departmentFor[p.category]).filter(Boolean))];
-  // Coming from a product page: quote for that machine, with its department chosen from its category
+  const [{ intent, product, products: list, need, docs }, products] = await Promise.all([searchParams, getProducts()]);
   const chosen = products.find((p) => p.slug === product);
-  const focus = chosen && { slug: chosen.slug, name: chosen.name, brand: chosen.brand, image: chosen.image, label: options.find((o) => o.slug === chosen.slug)!.label, category: categories.find((c) => c.slug === chosen.category)?.title };
-  const department = chosen ? departmentFor[chosen.category] : listDepartments.length === 1 ? listDepartments[0] : undefined;
-  const notes = chosen && docs ? `Please send the datasheet for the ${chosen.name}.` : undefined;
-
-  return (
-    <div className="bg-canvas pt-20">
-      <div className="mx-auto grid max-w-[1280px] gap-12 px-5 py-16 md:px-10 md:py-24 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
-        <aside className="lg:sticky lg:top-32 lg:self-start">
-          <h1 className="display text-[clamp(2rem,1.4rem+2vw,3rem)] leading-[1.1]">
-            {focus ? (intent === 'demo' ? 'Book a demonstration' : 'Complete your order') : listed.length ? `Your cart: ${listed.length} ${listed.length === 1 ? 'item' : 'items'}` : 'Tell us what you need'}
-          </h1>
-          <p className="mt-4 max-w-sm text-lg leading-relaxed text-ink-2">Send your order and a sales engineer will confirm price and delivery within one business day.</p>
-          {focus && (
-            <div className="mt-8 overflow-hidden rounded-4xl border border-line bg-paper" data-testid="quote-focus">
-              <div className="relative aspect-[16/10] bg-white">
-                {focus.image ? (
-                  <Image src={focus.image} alt="" fill sizes="(min-width: 1024px) 460px, 100vw" className="object-contain p-6" />
-                ) : (
-                  <Icon name="fi-rr-box-open" className="absolute inset-0 m-auto size-fit text-5xl text-ink-3" />
-                )}
-              </div>
-              <div className="border-t border-line p-5 md:p-6">
-                <p className="label">{intent === 'demo' ? 'Demonstration of' : 'Quote for'}</p>
-                <p className="mt-2 text-xl font-semibold leading-snug tracking-[-0.01em] text-ink">{focus.name}</p>
-                <p className="mt-1 text-sm text-ink-3">{focus.brand}{focus.category ? ` · ${focus.category}` : ''}</p>
-                <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm font-medium">
-                  <Link href={`/products/${focus.slug}`} className="flex items-center gap-1 text-brand-700 hover:text-brand-600">View product</Link>
-                  <Link href="/products" className="text-ink-3 hover:text-ink">Choose another machine</Link>
-                </div>
-              </div>
-            </div>
-          )}
-          {!focus && listed.length > 0 && (
-            <ul className="mt-8 divide-y divide-line overflow-hidden rounded-4xl border border-line bg-paper" data-testid="quote-list-summary">
-              {listed.map((p) => (
-                <li key={p.slug} className="flex items-center gap-4 p-4">
-                  <span className="relative size-14 shrink-0 overflow-hidden rounded-md border border-line bg-white">
-                    {p.image && <Image src={p.image} alt="" fill sizes="56px" className="object-contain p-1.5" />}
-                  </span>
-                  <span className="min-w-0">
-                    <Link href={`/products/${p.slug}`} className="block truncate font-medium text-ink hover:text-brand-700">{p.name}</Link>
-                    <span className="text-sm text-ink-3">{p.brand}</span>
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-          {/* What the buyer gets, in three plain lines */}
-          <ul className="mt-8 max-w-sm space-y-4">
-            {['Price and delivery confirmed within one business day', 'Pricing tailored to your facility', 'Installation, training and support'].map((t) => (
-              <li key={t} className="flex items-center gap-3 text-ink-2">
-                <span className="grid size-7 shrink-0 place-items-center rounded-full bg-brand-50 text-brand-700"><Icon name="fi-rr-check" className="text-sm" /></span>
-                {t}
-              </li>
-            ))}
-          </ul>
-          <div className="mt-10 max-w-sm border-t border-line pt-6">
-            <p className="text-sm text-ink-3">Prefer to talk?</p>
-            <div className="mt-2 flex flex-wrap gap-x-6 gap-y-2 font-medium">
-              <a href={contact.phoneHref} className="text-ink hover:text-brand-700">{contact.phone}</a>
-              <a href={contact.whatsapp} target="_blank" rel="noopener noreferrer" className="text-brand-700 hover:text-brand-600">WhatsApp us</a>
-            </div>
-          </div>
-        </aside>
-        <ProcurementFlow
-          key={product ?? listParam ?? 'none'}
-          options={options}
-          initial={{ intent: intent === 'demo' ? 'demo' : 'quote', equipment: preselected, ...(department ? { department } : {}), ...(notes ? { notes } : {}) }}
-        />
-      </div>
-    </div>
-  );
+  if (intent === 'demo') redirect(helpHref('demo', { equipment: chosen?.name }));
+  if (docs && chosen) redirect(helpHref('documents', { equipment: chosen.name, message: `Please send the datasheet for the ${chosen.name}.` }));
+  if (need?.trim()) redirect(helpHref('other', { message: `I'm looking for: ${need.trim().slice(0, 200)}` }));
+  const slugs = [product, ...(list ?? '').split(',')].map((s) => s?.trim()).filter((s): s is string => Boolean(s) && products.some((p) => p.slug === s));
+  redirect(slugs.length ? orderHref(...new Set(slugs)) : '/products');
 }

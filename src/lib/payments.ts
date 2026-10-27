@@ -12,6 +12,8 @@ export interface CheckoutOrder {
   customer: { name: string; organisation: string; phone: string; email: string; region: string; address: string };
   method: PaymentMethod;
   momo?: { network: string; number: string };
+  /** What it is for: the department, how soon it is needed (sets its priority for sales) and any notes. */
+  needs?: { department: string; timeline: string; notes: string };
 }
 
 export type PaymentResult = { status: 'redirect'; url: string } | { status: 'not-configured' };

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { submitToCrm } from '@/lib/crm';
-import { hubspotConfigured, noteSupportRequest } from '@/lib/hubspot';
+import { createDemoDeal, hubspotConfigured, noteSupportRequest } from '@/lib/hubspot';
 import { pushToEngineers } from '@/lib/push';
 import { smsWebsiteFault } from '@/lib/sms';
 import { emailSupport } from '@/lib/support-email';
@@ -42,7 +42,10 @@ export async function POST(request: Request) {
       'Phone': data.phone,
       ...Object.fromEntries(supportDetails(data)),
     }, data.phone),
-    hubspotConfigured()
+    // A demonstration is a sales lead: a deal for sales; anything else is noted on the caller's contact
+    hubspotConfigured() && data.type === 'assistance' && data.topic === 'demo'
+      ? createDemoDeal({ name: data.name, phone: data.phone, facility: data.facility, reference: saved ?? undefined, equipment: data.equipment || undefined, message: data.message }).then(() => true)
+      : hubspotConfigured()
       ? noteSupportRequest({
           name: data.name,
           phone: data.phone,
