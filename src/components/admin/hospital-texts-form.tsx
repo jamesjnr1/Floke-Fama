@@ -13,7 +13,9 @@ const parts = (n: number) => (n <= 160 ? 1 : Math.ceil(n / 153));
  * Admin console → Text messages: write (or pick) a message and send it to every hospital that gets texts, after
  * seeing how many hospitals and SMS it will take.
  */
-export function HospitalTextsForm({ templates, hospitals }: { templates: { id: string; label: string; text: string }[]; hospitals: number }) {
+export function HospitalTextsForm({ templates: all, hospitals }: { templates: { id: string; label: string; text: string; greeting?: boolean }[]; hospitals: number }) {
+  const templates = all.filter((t) => !t.greeting);
+  const greetings = all.filter((t) => t.greeting);
   const [state, action, pending] = useActionState<HospitalTextState, FormData>(sendToHospitals, {});
   const [text, setText] = useState(templates[0]?.text ?? '');
   const [picked, setPicked] = useState(templates[0]?.id ?? '');
@@ -38,6 +40,22 @@ export function HospitalTextsForm({ templates, hospitals }: { templates: { id: s
             {t.label}
           </button>
         ))}
+        <select
+          aria-label="A holiday or health day greeting"
+          value={greetings.some((g) => g.id === picked) ? picked : ''}
+          onChange={(e) => {
+            const g = greetings.find((x) => x.id === e.target.value);
+            if (!g) return;
+            setPicked(g.id);
+            setText(g.text);
+          }}
+          className={cn('h-9 rounded-lg border px-2 text-[0.875rem] font-medium', greetings.some((g) => g.id === picked) ? 'border-brand-700 bg-brand-700 text-white' : 'border-line bg-white')}
+        >
+          <option value="">Holiday or health day…</option>
+          {greetings.map((g) => (
+            <option key={g.id} value={g.id}>{g.label}</option>
+          ))}
+        </select>
       </div>
       <label className="mt-4 block">
         <span className="sr-only">Message</span>

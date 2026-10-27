@@ -381,7 +381,8 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
           const id = nextTicketId(state);
           // A machine the website caller named that isn't on record yet is registered for their hospital with the request
           const newAsset = v.newEquipment && fault.from ? newCallerAsset(v.newEquipment, fault.from.facility) : undefined;
-          rawDispatch({ type: 'create', ticket: { assetId: newAsset?.id ?? v.assetId, description: v.description, priority: v.priority }, assignToMe: v.assignToMe, newAsset });
+          // The caller's number gets the job's text updates
+          rawDispatch({ type: 'create', ticket: { assetId: newAsset?.id ?? v.assetId, description: v.description, priority: v.priority, contactPhone: fault.from?.phone }, assignToMe: v.assignToMe, newAsset });
           // A request from the website is closed with the service request it became
           if (fault.from) website.update(fault.from.id, 'closed', me, id);
           toast.success(`${id} logged`, { description: v.assignToMe ? 'Assigned to you and added to your queue.' : 'Added to the unassigned queue.' });

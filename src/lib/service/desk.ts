@@ -163,7 +163,7 @@ export type Action =
   | { type: 'note'; id: string; text: string }
   | { type: 'part'; id: string; part: Part }
   | { type: 'resolve'; id: string; summary: string; calibrated: boolean }
-  | { type: 'create'; ticket: Pick<Ticket, 'assetId' | 'description' | 'priority'>; assignToMe: boolean; /** Equipment registered with the request (a website caller's machine not on record yet). */ newAsset?: Asset; /** Filled in by the server from the engineer's account. */ phone?: string }
+  | { type: 'create'; ticket: Pick<Ticket, 'assetId' | 'description' | 'priority'> & { contactPhone?: string }; assignToMe: boolean; /** Equipment registered with the request (a website caller's machine not on record yet). */ newAsset?: Asset; /** Filled in by the server from the engineer's account. */ phone?: string }
   | { type: 'request'; ticket: Pick<Ticket, 'assetId' | 'description' | 'priority' | 'contactPhone' | 'preferredVisit'> }
   | { type: 'rate'; id: string; rating: number; feedback?: string }
   | { type: 'calibrate'; assetId: string; result: Certificate['result']; notes?: string }
