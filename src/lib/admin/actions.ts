@@ -9,6 +9,7 @@ import { getAdminSession } from '@/lib/auth/server';
 import { ENGINEER_ID_PREFIX } from '@/lib/auth/users';
 import type { OrderStatus, SavedOrder } from '@/lib/orders';
 import { salesStages, stageLabel } from '@/lib/sales-stages';
+import { sendTestSms } from '@/lib/sms';
 
 /** Reads an order, changes it and writes it back, with a line in its log saying who did what. Admins only. */
 async function changeOrder(reference: string, change: (o: SavedOrder) => { order: SavedOrder; log?: string } | null) {
@@ -95,4 +96,17 @@ export async function removeEngineer(form: FormData) {
   await appwrite.tables.deleteRow({ databaseId: DATABASE_ID, tableId: TABLES.accounts, rowId: id });
   revalidatePath('/admin');
   redirect('/admin?tab=accounts&role=engineer');
+}
+
+export interface TestSmsState {
+  result?: { ok: boolean; detail: string };
+  phone?: string;
+}
+
+/** Admin console → Database & settings: one test text to the number given, through the real gateway. Admins only. */
+export async function testSms(_prev: TestSmsState, form: FormData): Promise<TestSmsState> {
+  const s = await getAdminSession();
+  if (!s) return { result: { ok: false, detail: 'Please sign in again.' } };
+  const phone = String(form.get('phone') ?? '').trim().slice(0, 30);
+  return { phone, result: await sendTestSms(phone, s.name) };
 }
