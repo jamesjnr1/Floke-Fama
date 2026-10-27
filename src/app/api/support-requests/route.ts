@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { appwrite } from '@/lib/appwrite';
 import { isTableMissing } from '@/lib/appwrite-tables';
-import { getSession } from '@/lib/auth/server';
+import { getEngineerSession } from '@/lib/auth/server';
 import { isReference, listSupportRequests, setSupportStatus, supportStatuses, type SupportStatus } from '@/lib/support-requests';
 
 /**
@@ -12,10 +12,7 @@ import { isReference, listSupportRequests, setSupportStatus, supportStatuses, ty
 export const dynamic = 'force-dynamic';
 const noStore = { 'Cache-Control': 'private, no-store' };
 
-async function engineer() {
-  const s = await getSession();
-  return s?.role === 'engineer' ? s : null;
-}
+const engineer = () => getEngineerSession();
 
 export async function GET() {
   if (!appwrite) return NextResponse.json({ enabled: false });

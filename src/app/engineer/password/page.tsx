@@ -6,5 +6,5 @@ export const metadata: Metadata = { title: 'Change password', robots: { index: f
 
 export default async function EngineerPasswordPage() {
   const session = await requireSession('engineer', '/engineer/password');
-  return <ChangePassword email={session.email} back="/engineer" backLabel="Back to the engineer portal" />;
+  return <ChangePassword email={session.email} back="/engineer" backLabel="Back to the engineer portal" area="engineer" />;
 }

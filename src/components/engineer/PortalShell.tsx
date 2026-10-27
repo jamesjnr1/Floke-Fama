@@ -20,7 +20,7 @@ import { LogoMark, LogoWordmark } from '@/components/layout/logo';
 import { LiveStatus } from '@/components/service/live-status';
 import { Icon } from '@/components/ui/icon';
 import { useSite } from '@/components/site-provider';
-import { logout } from '@/lib/auth/actions';
+import { engineerLogout } from '@/lib/auth/actions';
 import { daysUntil, isOpen, nextTicketId, useEngineerStore, type Action, type Asset, type Notification, type Ticket } from '@/lib/service/store';
 import { cn } from '@/lib/utils';
 import { UserAvatar } from '@/components/ui/user-avatar';
@@ -255,7 +255,7 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
             <AlertsSwitch className="text-white/80 hover:text-white" />
             <Link href="/" className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-arrow-small-left" /> Flokefama website</Link>
             <Link href="/engineer/password" className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-lock" /> Change password</Link>
-            <form action={logout}>
+            <form action={engineerLogout}>
               <button type="submit" className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-sign-out-alt" /> Sign out</button>
             </form>
           </div>
@@ -286,7 +286,7 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
               <span className="block text-xs text-ink-3">{user.email}</span>
             </span>
           </span>
-          <form action={logout} className="lg:hidden">
+          <form action={engineerLogout} className="lg:hidden">
             <button type="submit" aria-label="Sign out" className="grid size-10 shrink-0 place-items-center rounded-md text-lg text-ink transition hover:bg-mist"><Icon name="fi-rr-sign-out-alt" /></button>
           </form>
         </header>

@@ -4,8 +4,8 @@ import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { AccountsUnavailable, accountExists, findSavedAccount, hashPassword, saveAccount, type StoredAccount } from '@/lib/auth/accounts';
-import { ADMIN_COOKIE, nextFor, safeNext, SESSION_COOKIE, sessionCookie, signSession, verifySession, type SessionUser } from '@/lib/auth/session';
-import { getAdminSession, getSession } from '@/lib/auth/server';
+import { ADMIN_COOKIE, cookieFor, ENGINEER_COOKIE, nextFor, safeNext, SESSION_COOKIE, sessionCookie, signSession, type SessionUser } from '@/lib/auth/session';
+import { getAdminSession, getEngineerSession, getSession } from '@/lib/auth/server';
 import { roleFor } from '@/lib/auth/users';
 
 export interface LoginState {
@@ -81,8 +81,8 @@ function failed(key: string) {
 }
 
 async function startSession(user: Omit<SessionUser, 'exp'>, next: string | undefined) {
-  // Admins get the admin console's own session, so they never show as signed in on the site
-  (await cookies()).set(user.role === 'admin' ? ADMIN_COOKIE : SESSION_COOKIE, await signSession(user), sessionCookie(user));
+  // Each role has its own session: hospitals on the site, engineers and admins only in their own areas
+  (await cookies()).set(cookieFor(user.role), await signSession(user), sessionCookie(user));
   redirect(nextFor(user.role, safeNext(next)));
 }
 
@@ -105,6 +105,9 @@ export async function login(_prev: LoginState, form: FormData): Promise<LoginSta
   const role = roleFor(saved.email, saved.id);
   if (form.get('area') === 'admin' && role !== 'admin') return { error: 'This account doesn’t have access to the admin console.', email: parsed.data.email };
   if (form.get('area') === 'engineer' && role !== 'engineer') return { error: 'This sign-in is for Flokefama engineers. Hospitals sign in to the client portal at /login.', email: parsed.data.email };
+  // The site's sign-in (/login) is for hospitals only
+  if (!form.get('area') && role === 'engineer') return { error: 'This sign-in is for hospitals. Engineers sign in to the engineer portal at /engineer/login.', email: parsed.data.email };
+  if (!form.get('area') && role === 'admin') return { error: 'This sign-in is for hospitals. Admins sign in to the admin console at /admin/login.', email: parsed.data.email };
 
   await startSession({ sub: saved.id, name: saved.name, email: saved.email, role: roleFor(saved.email, saved.id), facility: saved.organisation, phone: saved.phone, keep: parsed.data.keep === 'on' }, parsed.data.next);
   return {};
@@ -133,12 +136,16 @@ export async function register(_prev: SignupState, form: FormData): Promise<Sign
   return {};
 }
 
-/** Signing out returns to the sign-in page the account uses (engineers to /engineer/login, hospitals to /login). */
+/** Signing out of the site (a hospital) returns to its sign-in page. */
 export async function logout() {
-  const jar = await cookies();
-  const s = await verifySession(jar.get(SESSION_COOKIE)?.value);
-  jar.delete(SESSION_COOKIE);
-  redirect(`${s?.role === 'engineer' ? '/engineer/login' : '/login'}?signedout=1`);
+  (await cookies()).delete(SESSION_COOKIE);
+  redirect('/login?signedout=1');
+}
+
+/** Signing out of the engineer portal returns to its own sign-in page; a hospital session on the site is untouched. */
+export async function engineerLogout() {
+  (await cookies()).delete(ENGINEER_COOKIE);
+  redirect('/engineer/login?signedout=1');
 }
 
 /** Signing out of the admin console returns to its own sign-in page. */
@@ -166,7 +173,8 @@ const newPassword = z
  * the new one. Wrong current passwords count towards the same lock-out as sign-in.
  */
 export async function changePassword(_prev: PasswordState, form: FormData): Promise<PasswordState> {
-  const session = form.get('area') === 'admin' ? await getAdminSession() : await getSession();
+  const area = form.get('area');
+  const session = area === 'admin' ? await getAdminSession() : area === 'engineer' ? await getEngineerSession() : await getSession();
   if (!session) return { errors: { form: 'Your session has ended. Please sign in again.' } };
   const parsed = newPassword.safeParse({ current: form.get('current'), password: form.get('password'), confirm: form.get('confirm') });
   if (!parsed.success) {

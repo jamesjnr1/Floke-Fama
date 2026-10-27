@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { Query, type Models } from 'node-appwrite';
 import { catalogue } from '@/data/catalogue';
 import { appwrite, DATABASE_ID, isNotFound, TABLES } from '@/lib/appwrite';
-import { getSession } from '@/lib/auth/server';
+import { getClientSession } from '@/lib/auth/server';
 import { emailSales } from '@/lib/support-email';
 import { siteUrl } from '@/lib/utils';
 import { departmentLabel, timelineLabel, timelines } from '@/lib/order-needs';
@@ -29,7 +29,7 @@ const tidyName = (n: string) => n.split(/(\s+|[()])/).map((w) => (/\d/.test(w) ?
 
 export async function GET() {
   if (!appwrite) return NextResponse.json({ enabled: false });
-  const s = await getSession();
+  const s = await getClientSession();
   if (!s) return NextResponse.json({ error: 'Please sign in again.' }, { status: 401 });
   const { rows } = await appwrite.tables.listRows<OrderRow>({
     databaseId: DATABASE_ID,
@@ -43,7 +43,7 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   if (!appwrite) return NextResponse.json({ error: 'Orders are not set up.' }, { status: 503 });
   if (!sameOrigin(req)) return NextResponse.json({ error: 'Not allowed.' }, { status: 403 });
-  const s = await getSession();
+  const s = await getClientSession();
   if (!s) return NextResponse.json({ error: 'Please sign in again.' }, { status: 401 });
 
   const raw = await req.text();
