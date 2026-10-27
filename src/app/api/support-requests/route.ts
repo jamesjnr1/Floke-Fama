@@ -6,7 +6,7 @@ import { isReference, listSupportRequests, setSupportStatus, supportStatuses, ty
 
 /**
  * Requests from the Support page, for the engineer portal (From the website). GET lists them; POST
- * ({ id, status, ticketId? }) marks one called back or closed, or records the service request it became (Send an engineer).
+ * ({ id, status, ticketId? }) marks one called back or closed, or records the service request it became (Book a visit).
  * Engineers only. Without Appwrite the answer is `{ enabled: false }`.
  */
 export const dynamic = 'force-dynamic';

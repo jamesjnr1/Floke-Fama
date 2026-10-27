@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 /** What the portal holds, shown beside the form so engineers know they are in the right place. */
 const inside = [
   { icon: 'fi-rr-clipboard-list', title: 'Service requests', body: 'Faults from hospitals: take the job, en route, on site, resolved.' },
-  { icon: 'fi-rr-globe', title: 'From the website', body: 'Faults reported on the Support page: call back, or send an engineer.' },
+  { icon: 'fi-rr-globe', title: 'From the website', body: 'Faults reported on the Support page: call back, or book a visit.' },
   { icon: 'fi-rr-microscope', title: 'Equipment', body: 'Every system we look after, hospital by hospital.' },
   { icon: 'fi-rr-badge-check', title: 'Calibration', body: 'What is due, and the certificates you issue.' },
   { icon: 'fi-rr-bell', title: 'Alerts', body: 'New requests on your phone, even when the portal is closed.' },

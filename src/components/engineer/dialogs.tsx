@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { choiceClass, Field, fieldClass, GhostButton, PortalDialog, PrimaryButton } from '@/components/service/ui';
+import { Hint } from '@/components/ui/hint';
 import { Icon } from '@/components/ui/icon';
 import { facilityKey, type Asset, type Certificate, type Priority, type Ticket } from '@/lib/service/store';
 import { cn } from '@/lib/utils';
@@ -13,7 +14,7 @@ const NEW = '__new';
  * hospital's equipment is offered, and a machine not on record yet can be typed in: it is registered for the hospital
  * with the service request, in one step.
  */
-export function LogFaultDialog({ open, onOpenChange, assets: all, defaultAssetId, defaultDescription, forFacility, defaultEquipment, title = 'Log equipment fault', submitLabel = 'Log fault', onSubmit }: {
+export function LogFaultDialog({ open, onOpenChange, assets: all, defaultAssetId, defaultDescription, forFacility, defaultEquipment, defaultPriority, priorityNote, title = 'Log equipment fault', submitLabel = 'Log fault', onSubmit }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
   assets: Asset[];
@@ -22,6 +23,9 @@ export function LogFaultDialog({ open, onOpenChange, assets: all, defaultAssetId
   defaultDescription?: string;
   /** The website caller's hospital: their equipment only, or a new machine for them. */
   forFacility?: string;
+  /** The priority to start with (a website request's is set from the caller's answers), and why. */
+  defaultPriority?: Priority;
+  priorityNote?: string;
   /** The machine the caller named, for a new one. */
   defaultEquipment?: string;
   title?: string;
@@ -42,9 +46,11 @@ export function LogFaultDialog({ open, onOpenChange, assets: all, defaultAssetId
       setAssetId(defaultAssetId ?? assets[0]?.id ?? (forFacility ? NEW : ''));
       setEquipment(defaultEquipment ?? '');
       setDescription(defaultDescription ?? '');
+      setPriority(defaultPriority ?? 'high');
+      setAssignToMe(true);
     }
     wasOpen.current = open;
-  }, [open, defaultAssetId, defaultDescription, defaultEquipment, forFacility, assets]);
+  }, [open, defaultAssetId, defaultDescription, defaultEquipment, defaultPriority, forFacility, assets]);
   const adding = assetId === NEW;
 
   return (
@@ -74,7 +80,15 @@ export function LogFaultDialog({ open, onOpenChange, assets: all, defaultAssetId
           <textarea required autoFocus value={description} onChange={(e) => setDescription(e.target.value)} rows={3} placeholder="e.g. Error code E-21 on start-up" className={cn(fieldClass, 'py-2.5')} />
         </Field>
         <fieldset>
-          <legend className="text-sm font-medium text-ink-2">Priority</legend>
+          <legend className="flex items-center gap-2 text-sm font-medium text-ink-2">
+            Priority
+            <Hint>
+              <b className="font-semibold">Critical:</b> not working at all, patients affected. <b className="font-semibold">High:</b> working, but not right. Both text every engineer straight away, and the admins if nobody takes it in 30 minutes.
+              <br />
+              <b className="font-semibold">Routine:</b> maintenance, installation or advice; engineers see it in the portal, without a text.
+            </Hint>
+          </legend>
+          {priorityNote && <p className="mt-1 text-xs text-ink-3">{priorityNote} You can change it.</p>}
           <div className="mt-2 grid grid-cols-3 gap-2">
             {(['critical', 'high', 'routine'] as const).map((p) => (
               <button key={p} type="button" aria-pressed={priority === p} onClick={() => setPriority(p)} className={cn(choiceClass(priority === p), 'capitalize')}>
@@ -86,6 +100,7 @@ export function LogFaultDialog({ open, onOpenChange, assets: all, defaultAssetId
         <label className="flex items-center gap-3 text-sm text-ink-2">
           <input type="checkbox" checked={assignToMe} onChange={(e) => setAssignToMe(e.target.checked)} className="size-4 accent-[#007a4d]" />
           Assign to me
+          <Hint>Ticked: the job is yours, and the hospital gets a text with your name and number. Unticked: it waits under Unassigned for any engineer to take.</Hint>
         </label>
         <div className="flex justify-end gap-2 pt-2">
           <GhostButton type="button" onClick={() => onOpenChange(false)}>Cancel</GhostButton>

@@ -21,7 +21,7 @@ import { LiveStatus } from '@/components/service/live-status';
 import { Icon } from '@/components/ui/icon';
 import { useSite } from '@/components/site-provider';
 import { engineerLogout } from '@/lib/auth/actions';
-import { daysUntil, facilityKey, isOpen, nextTicketId, useEngineerStore, type Action, type Asset, type Notification, type Ticket } from '@/lib/service/store';
+import { daysUntil, facilityKey, isOpen, suggestedPriority, nextTicketId, useEngineerStore, type Action, type Asset, type Notification, type Ticket } from '@/lib/service/store';
 import { cn } from '@/lib/utils';
 import { UserAvatar } from '@/components/ui/user-avatar';
 
@@ -146,7 +146,7 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
   };
 
   /**
-   * A request from the website becomes a service request (Send an engineer): the fault dialog opens on the hospital's equipment
+   * A request from the website becomes a service request (Book a visit): the fault dialog opens on the hospital's equipment
    * (when it is registered) with the caller's details filled in.
    */
   const makeJob = useCallback(
@@ -322,6 +322,7 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
               {view === 'website' && (
                 <WebsiteView
                   requests={website.requests}
+                  tickets={state.tickets}
                   enabled={website.enabled}
                   me={me}
                   onCalled={(r) => {
@@ -374,8 +375,10 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
         }
         forFacility={fault.from?.facility}
         defaultEquipment={fault.from?.equipment}
-        title={fault.from ? `Send an engineer (${fault.from.id})` : undefined}
-        submitLabel={fault.from ? 'Send an engineer' : undefined}
+        title={fault.from ? `Book a visit (${fault.from.id})` : undefined}
+        submitLabel={fault.from ? 'Book a visit' : undefined}
+        defaultPriority={fault.from ? suggestedPriority(fault.from) : undefined}
+        priorityNote={fault.from ? (fault.from.type !== 'fault' ? 'Set from the request: not a fault.' : fault.from.working === 'down' ? 'Set from the caller: not working at all.' : 'Set from the caller: working, with problems.') : undefined}
         onSubmit={(v) => {
           const id = nextTicketId(state);
           // A machine the website caller named that isn't on record yet is registered for their hospital with the request
