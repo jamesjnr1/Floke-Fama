@@ -4,6 +4,8 @@ import { catalogue } from '@/data/catalogue';
 import { appwrite, DATABASE_ID, isNotFound, TABLES } from '@/lib/appwrite';
 import { getSession } from '@/lib/auth/server';
 import { createOrderDeal, hubspotConfigured } from '@/lib/hubspot';
+import { emailSales } from '@/lib/support-email';
+import { siteUrl } from '@/lib/utils';
 import { departmentLabel, timelineLabel, timelines } from '@/lib/order-needs';
 import { needsInstallation } from '@/lib/installation';
 import type { SavedOrder } from '@/lib/orders';
@@ -12,8 +14,8 @@ import { registerPurchase } from '@/lib/service/server';
 /**
  * A hospital's orders (Appwrite table `orders`, one row per order, keyed by its reference). GET lists the
  * signed-in hospital's orders; POST records one placed at checkout and turns it into the hospital's equipment
- * (installation jobs for systems an engineer must commission), once, and a deal in HubSpot for sales (`sales: true`
- * when it got there). Without Appwrite: `{ enabled: false }`,
+ * (installation jobs for systems an engineer must commission), once, and tells sales: a deal in HubSpot and an email (`sales: true`
+ * when either got there). Without Appwrite: `{ enabled: false }`,
  * and orders stay in the browser.
  */
 export const dynamic = 'force-dynamic';
@@ -95,31 +97,45 @@ export async function POST(req: NextRequest) {
     await registerPurchase(s, order.reference, equipment);
   }
 
-  // Sales gets it in HubSpot to confirm the total and payment; if HubSpot fails, the page offers "Send order to sales"
+  // Sales hears about it twice, each on its own: a deal in HubSpot and an email to the sales inbox (Brevo). If
+  // neither works, the page offers to send it by email or WhatsApp
   const c = (o as { customer?: Record<string, unknown> }).customer ?? {};
   const text = (v: unknown, max: number) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
   const momo = (o as { momo?: { network?: unknown } }).momo;
-  const sales = hubspotConfigured()
-    ? await createOrderDeal({
-        reference: order.reference,
-        name: text(c.name, 120) || s.name,
-        email: s.email,
-        phone: text(c.phone, 40) || s.phone || '',
-        facility: text(c.organisation, 160) || s.facility || s.name,
-        items: order.items.map((i) => ({ name: tidyName(i.name), qty: i.qty })),
-        payment: (order.method === 'momo' && text(momo?.network, 30)) || { momo: 'Mobile money', card: 'Card', bank: 'Bank transfer' }[order.method],
-        region: order.region,
-        address: order.address,
-        department: departmentLabel(order.needs?.department),
-        timeline: { id: order.needs!.timeline as (typeof timelines)[number]['id'], label: timelineLabel(order.needs?.timeline)! },
-        notes: order.needs?.notes || undefined,
-      }).then(
-        () => true,
-        (e) => {
-          console.error('[orders] not sent to HubSpot', e);
-          return false;
-        },
-      )
-    : false;
+  const who = {
+    name: text(c.name, 120) || s.name,
+    email: s.email,
+    phone: text(c.phone, 40) || s.phone || '',
+    facility: text(c.organisation, 160) || s.facility || s.name,
+  };
+  const lines = order.items.map((i) => ({ name: tidyName(i.name), qty: i.qty }));
+  const payment = (order.method === 'momo' && text(momo?.network, 30)) || { momo: 'Mobile money', card: 'Card', bank: 'Bank transfer' }[order.method];
+  const timeline = { id: order.needs!.timeline as (typeof timelines)[number]['id'], label: timelineLabel(order.needs?.timeline)! };
+  const department = departmentLabel(order.needs?.department);
+  const delivered = await Promise.allSettled([
+    hubspotConfigured()
+      ? createOrderDeal({ reference: order.reference, ...who, items: lines, payment, region: order.region, address: order.address, department, timeline, notes: order.needs?.notes || undefined })
+          .then(() => true)
+      : Promise.resolve(false),
+    emailSales(
+      `${timeline.id === 'urgent' ? 'URGENT order' : 'New order'} ${order.reference}: ${who.facility}`,
+      {
+        Reference: order.reference,
+        Items: lines.map((i) => `• ${i.name} × ${i.qty}`).join('\n'),
+        ...(department ? { Department: department } : {}),
+        Needed: timeline.label,
+        ...(order.needs?.notes ? { Notes: order.needs.notes } : {}),
+        Payment: payment,
+        'Deliver to': [order.address, order.region].filter(Boolean).join(', '),
+        Name: who.name,
+        'Hospital or lab': who.facility,
+        Phone: who.phone,
+        Email: who.email,
+      },
+      { phone: who.phone, replyTo: who.email, link: { href: `${siteUrl}/admin?tab=orders&q=${order.reference}`, label: 'Open in the admin console' } },
+    ),
+  ]);
+  for (const r of delivered) if (r.status === 'rejected') console.error('[orders] sales not told', r.reason);
+  const sales = delivered.some((r) => r.status === 'fulfilled' && r.value);
   return NextResponse.json({ order, sales }, { headers: noStore });
 }
