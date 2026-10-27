@@ -9,10 +9,10 @@ import { Icon } from '@/components/ui/icon';
 const field = 'h-12 w-full border border-line bg-paper px-4 text-base text-ink outline-none transition focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15 aria-[invalid=true]:border-signal';
 
 /**
- * Change password, the same page for every account: the current password, the new one twice. `area` is 'admin' in
- * the admin console (its own session); `back` is where the person came from.
+ * Change password, the same page for every account: the current password, the new one twice. `area` is 'admin' or
+ * 'engineer' in the admin console or engineer portal (each has its own session); `back` is where the person came from.
  */
-export function ChangePassword({ email, back, backLabel, area }: { email: string; back: string; backLabel: string; area?: 'admin' }) {
+export function ChangePassword({ email, back, backLabel, area }: { email: string; back: string; backLabel: string; area?: 'admin' | 'engineer' }) {
   const [state, action, pending] = useActionState<PasswordState, FormData>(changePassword, {});
   const e = state.errors ?? {};
   return (

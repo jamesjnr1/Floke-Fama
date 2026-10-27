@@ -179,7 +179,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             {/* The overview and the accounts read again every 30 s, so who is on which job stays current */}
             {/* Every tab reads the latest every 30 seconds (not while an engineer is being added, so the form is left alone) */}
             {params.add !== 'engineer' && <LiveRefresh seconds={30} />}
-            {tab === 'orders' && <Orders data={data} q={params.q} open={params.order} lost={params.lost === '1'} now={now} />}
+            {tab === 'orders' && <Orders data={data} q={params.q} open={params.order} stage={params.stage} now={now} />}
             {tab === 'accounts' && (params.account ? <AccountDetail data={data} id={params.account} now={now} /> : <Accounts data={data} q={params.q} role={roles.some((r) => r.id && r.id === params.role) ? params.role : undefined} adding={params.add === 'engineer'} />)}
             {tab === 'products' && <Products data={data} />}
             {tab === 'service' && <Service data={data} now={now} />}
@@ -404,11 +404,32 @@ function Mini({ label, value, note }: { label: string; value: string | number; n
 }
 
 const cedis = (n: number) => `GHS ${n.toLocaleString('en-GB')}`;
+/** The stages sales works on: everything before Delivered (and not Lost). */
+const openStages: OrderStatus[] = ['awaiting-payment', 'called', 'priced', 'paid', 'processing'];
+/** What the next step is called on an order's button, by its stage. */
+const nextStep: Partial<Record<OrderStatus, { to: OrderStatus; label: string }>> = {
+  'awaiting-payment': { to: 'called', label: 'Mark as called' },
+  called: { to: 'priced', label: 'Price sent' },
+  priced: { to: 'paid', label: 'Mark as paid' },
+  paid: { to: 'processing', label: 'Start preparing' },
+  processing: { to: 'delivered', label: 'Mark as delivered' },
+};
+const stageDot: Record<OrderStatus, string> = {
+  'awaiting-payment': 'bg-signal',
+  called: 'bg-[#e8ab00]',
+  priced: 'bg-[#e8ab00]',
+  paid: 'bg-brand-500',
+  processing: 'bg-brand-500',
+  delivered: 'bg-brand-800',
+  lost: 'bg-ink-3/50',
+};
+
 /**
- * The sales board: every shop order is a card, arriving in New. Sales calls the hospital, agrees the price and moves
- * the card along (one button), or opens it for the details, the price, notes and its history.
+ * The sales board: a line of the stages (how many orders and how much at each), then one list of orders to work
+ * through, most urgent and longest-waiting first. A row has the hospital, the order, the phone to tap and one button
+ * for the next step; it opens in place for the details, the price, notes and its history.
  */
-function Orders({ data, q, open, lost, now }: { data: AdminData; q?: string; open?: string; lost: boolean; now: number }) {
+function Orders({ data, q, open, stage, now }: { data: AdminData; q?: string; open?: string; stage?: string; now: number }) {
   const needle = q?.trim().toLowerCase();
   const account = (email: string) => data.accounts.find((a) => a.email === email);
   const who = (o: SavedOrder) => ({
@@ -419,94 +440,125 @@ function Orders({ data, q, open, lost, now }: { data: AdminData; q?: string; ope
   const matches = (o: SavedOrder) => !needle || [o.reference, o.account, who(o).facility, who(o).name, o.region, ...o.items.map((i) => i.name)].join(' ').toLowerCase().includes(needle);
   const orders = data.orders.filter(matches);
   const live = data.source === 'live';
-  const opened = open ? data.orders.find((o) => o.reference === open) : undefined;
-  const columns = salesStages.filter((x) => x.id !== 'lost');
-  const lostOnes = orders.filter((o) => o.status === 'lost');
-  const base = `/admin?tab=orders${q ? `&q=${encodeURIComponent(q)}` : ''}`;
+  const chosen = salesStages.find((x) => x.id === stage)?.id;
+  const urgent = (o: SavedOrder) => (o.needs?.timeline === 'urgent' ? 0 : 1);
+  const list = orders
+    .filter((o) => (chosen ? o.status === chosen : openStages.includes(o.status)))
+    .sort((x, y) =>
+      chosen === 'delivered' || chosen === 'lost'
+        ? y.placedAt.localeCompare(x.placedAt)
+        : openStages.indexOf(x.status) - openStages.indexOf(y.status) || urgent(x) - urgent(y) || x.placedAt.localeCompare(y.placedAt),
+    );
+  const link = (extra: Record<string, string | undefined>) => {
+    const p = new URLSearchParams({ tab: 'orders' });
+    for (const [k, v] of Object.entries({ q, stage: chosen, ...extra })) if (v) p.set(k, v);
+    return `/admin?${p}`;
+  };
+  const total = (os: SavedOrder[]) => os.reduce((n, o) => n + (o.amount ?? 0), 0);
 
   const move = (o: SavedOrder, to: OrderStatus, label: string, primary = false) =>
     live ? (
       <form action={setOrderStatus}>
         <input type="hidden" name="reference" value={o.reference} />
         <input type="hidden" name="status" value={to} />
-        <button className={cn('h-9 w-full rounded-lg px-3 text-[0.875rem] font-semibold transition', primary ? 'bg-brand-700 text-white hover:bg-brand-800' : 'border border-line bg-white hover:border-brand-600')}>{label}</button>
+        <button className={cn('h-9 whitespace-nowrap rounded-lg px-3.5 text-[0.875rem] font-semibold transition', primary ? 'bg-brand-700 text-white hover:bg-brand-800' : 'border border-line bg-white hover:border-brand-600')}>{label}</button>
       </form>
     ) : null;
 
-  const cardOf = (o: SavedOrder) => {
-    const w = who(o);
-    const i = salesStages.findIndex((x) => x.id === o.status);
-    const next = salesStages[i + 1]?.id !== 'lost' ? salesStages[i + 1] : undefined;
-    const units = o.items.reduce((n, x) => n + x.qty, 0);
-    return (
-      <li key={o.reference} className={cn('rounded-xl border bg-white p-3.5 shadow-[0_1px_2px_rgb(16_25_30/0.04)]', open === o.reference ? 'border-brand-600 ring-2 ring-brand-600/20' : 'border-[#e3e9e6]')}>
-        <Link href={`${base}&order=${o.reference}`} className="block">
-          <span className="flex items-center justify-between gap-2 text-[0.8125rem] text-ink-3">
-            <span className="font-mono font-semibold text-ink-2">{o.reference}</span>
-            <span>{ago(o.placedAt, now)} ago</span>
-          </span>
-          <span className="mt-1.5 block font-semibold leading-snug text-ink">{w.facility}</span>
-          <span className="mt-1 block text-[0.875rem] leading-snug text-ink-2">
-            {tidy(o.items[0]?.name ?? '')}
-            {o.items.length > 1 ? ` +${o.items.length - 1} more` : ''} · {units} {units === 1 ? 'item' : 'items'}
-          </span>
-          <span className="mt-2 flex flex-wrap items-center gap-1.5">
-            {o.needs?.timeline === 'urgent' && <Badge tone="bad">Urgent</Badge>}
-            {o.amount !== undefined && <span className="text-[0.875rem] font-semibold tabular-nums text-brand-800">{cedis(o.amount)}</span>}
-            {o.log?.length ? <span className="text-[0.8125rem] text-ink-3">{o.log.length} {o.log.length === 1 ? 'note' : 'notes'}</span> : null}
-          </span>
-        </Link>
-        {w.phone && (
-          <a href={`tel:${w.phone.replace(/[^\d+]/g, '')}`} className="mt-2 flex items-center gap-1.5 text-[0.875rem] font-medium text-brand-700 hover:underline">
-            <Icon name="fi-rr-phone-call" /> {w.name} · {w.phone}
-          </a>
-        )}
-        {next && <div className="mt-3">{move(o, next.id, `Move to ${next.label} →`)}</div>}
-      </li>
-    );
-  };
-
+  const openCount = orders.filter((o) => openStages.includes(o.status)).length;
   return (
     <>
       <Heading
         title="Sales board"
-        lead="Every order from the shop arrives in New. Call the hospital, agree the price, then move the card along. The hospital sees Price sent, Paid, Being prepared and Delivered in its dashboard."
-        action={<div className="flex flex-wrap items-center gap-2"><SearchBox tab="orders" q={q} placeholder="Reference, hospital, product…" /><Csv table="orders" /></div>}
+        lead="Call each new order, agree the price, then press the next step. The hospital follows Price sent, Paid, Being prepared and Delivered in its dashboard."
+        action={<div className="flex flex-wrap items-center gap-2"><SearchBox tab="orders" q={q} placeholder="Reference, hospital, product…" extra={{ stage: chosen }} /><Csv table="orders" /></div>}
       />
 
-      {opened && <OrderDetail o={opened} who={who(opened)} live={live} close={base} now={now} move={move} />}
+      {/* The stages as a line with dots: how many orders and how much at each; pick one to see only those */}
+      <nav aria-label="Stages" className={cn(card, 'mb-5 overflow-x-auto p-2')}>
+        <ol className="flex min-w-max items-stretch">
+          <li>
+            <Link href={link({ stage: undefined })} aria-current={!chosen ? 'page' : undefined} className={cn('flex h-full flex-col justify-center rounded-xl px-4 py-3 transition', !chosen ? 'bg-brand-700 text-white' : 'hover:bg-[#f1f4f2]')}>
+              <span className="text-[0.8125rem] font-medium opacity-80">To work on</span>
+              <span className="text-2xl font-semibold tabular-nums">{openCount}</span>
+            </Link>
+          </li>
+          {salesStages.filter((x) => x.id !== 'lost').map((st, i, all) => {
+            const at = orders.filter((o) => o.status === st.id);
+            const on = chosen === st.id;
+            return (
+              <li key={st.id} className="relative flex-1">
+                <Link href={link({ stage: st.id })} aria-current={on ? 'page' : undefined} className={cn('group relative flex h-full min-w-[9.5rem] flex-col items-center rounded-xl px-3 pb-3 pt-4 text-center transition', on ? 'bg-brand-50' : 'hover:bg-[#f1f4f2]')}>
+                  {/* the line joining the dots */}
+                  {i > 0 && <span aria-hidden className="absolute left-0 right-1/2 top-[1.375rem] h-0.5 bg-[#dbe5df]" />}
+                  {i < all.length - 1 && <span aria-hidden className="absolute left-1/2 right-0 top-[1.375rem] h-0.5 bg-[#dbe5df]" />}
+                  <span className={cn('relative z-10 size-3.5 rounded-full ring-4 ring-white', stageDot[st.id], on && 'ring-brand-50')} />
+                  <span className={cn('mt-2 text-[0.9375rem] font-semibold', on ? 'text-brand-800' : 'text-ink')}>{st.label}</span>
+                  <span className="text-[0.875rem] tabular-nums text-ink-3">
+                    {at.length} {at.length === 1 ? 'order' : 'orders'}
+                    {total(at) > 0 && <span className="block text-[0.8125rem]">{cedis(total(at))}</span>}
+                  </span>
+                </Link>
+              </li>
+            );
+          })}
+          <li>
+            <Link href={link({ stage: 'lost' })} aria-current={chosen === 'lost' ? 'page' : undefined} className={cn('flex h-full flex-col justify-center rounded-xl px-4 py-3 text-ink-3 transition', chosen === 'lost' ? 'bg-[#f1f4f2] text-ink' : 'hover:bg-[#f1f4f2]')}>
+              <span className="text-[0.8125rem] font-medium">Lost</span>
+              <span className="text-lg font-semibold tabular-nums">{orders.filter((o) => o.status === 'lost').length}</span>
+            </Link>
+          </li>
+        </ol>
+      </nav>
 
-      <div className="-mx-1 grid auto-cols-[minmax(215px,1fr)] grid-flow-col gap-3 overflow-x-auto px-1 pb-3">
-        {columns.map((col) => {
-          const list = orders.filter((o) => o.status === col.id);
-          const shown = col.id === 'delivered' ? list.slice(0, 8) : list;
-          const total = list.reduce((n, o) => n + (o.amount ?? 0), 0);
+      {/* The orders as one list to work down */}
+      <ul className={cn(card, 'divide-y divide-[#edf1ef] overflow-hidden')}>
+        {list.map((o) => {
+          const w = who(o);
+          const isOpen = open === o.reference;
+          const next = nextStep[o.status];
           return (
-            <section key={col.id} aria-label={col.label} className="flex min-h-[200px] flex-col rounded-[1.25rem] bg-[#f4f7f5] p-3">
-              <h2 className="flex items-baseline justify-between gap-2 px-1.5 pb-3 pt-1">
-                <span className="font-semibold">{col.label} <span className="font-normal text-ink-3">{list.length}</span></span>
-                {total > 0 && <span className="text-[0.8125rem] tabular-nums text-ink-3">{cedis(total)}</span>}
-              </h2>
-              <ul className="space-y-2.5">{shown.map(cardOf)}</ul>
-              {list.length > shown.length && <p className="px-1.5 pt-3 text-[0.8125rem] text-ink-3">+ {list.length - shown.length} older (search to find one)</p>}
-              {!list.length && <p className="px-1.5 text-[0.875rem] text-ink-3">{col.id === 'awaiting-payment' ? 'No new orders.' : 'None.'}</p>}
-            </section>
+            <li key={o.reference} className={cn(isOpen && 'bg-[#fafcfb]')}>
+              <div className="flex flex-wrap items-center gap-x-5 gap-y-3 px-5 py-4">
+                <Link href={isOpen ? link({}) : link({ order: o.reference })} aria-expanded={isOpen} className="flex min-w-0 flex-1 basis-80 items-start gap-3.5">
+                  <span className={cn('mt-1.5 size-2.5 shrink-0 rounded-full', stageDot[o.status])} aria-hidden />
+                  <span className="min-w-0">
+                    <span className="flex flex-wrap items-baseline gap-x-2.5">
+                      <span className="font-semibold text-ink">{w.facility}</span>
+                      {o.needs?.timeline === 'urgent' && <span className="text-[0.8125rem] font-semibold uppercase tracking-wide text-signal-700">Urgent</span>}
+                    </span>
+                    <span className="mt-0.5 block truncate text-[0.9375rem] text-ink-2">
+                      {o.items.map((i) => `${i.qty} × ${tidy(i.name)}`).join(', ')}
+                    </span>
+                    <span className="mt-0.5 block text-[0.8125rem] text-ink-3">
+                      <span className="font-mono">{o.reference}</span> · {orderStatusLabel[o.status]} · {ago(o.placedAt, now)} ago{o.log?.length ? ` · ${o.log.length} ${o.log.length === 1 ? 'note' : 'notes'}` : ''}
+                    </span>
+                  </span>
+                </Link>
+                <span className="w-28 text-right font-semibold tabular-nums text-brand-800">{o.amount !== undefined ? cedis(o.amount) : <span className="font-normal text-ink-3">No price yet</span>}</span>
+                {w.phone ? (
+                  <a href={`tel:${w.phone.replace(/[^\d+]/g, '')}`} className="inline-flex h-9 items-center gap-2 rounded-lg border border-line px-3 text-[0.875rem] font-medium text-brand-700 hover:border-brand-600">
+                    <Icon name="fi-rr-phone-call" /> {w.phone}
+                  </a>
+                ) : null}
+                {next && move(o, next.to, next.label, true)}
+              </div>
+              {isOpen && (
+                <div className="border-t border-[#edf1ef] px-5 pb-6 pt-5">
+                  <OrderDetail o={o} who={w} live={live} now={now} move={move} />
+                </div>
+              )}
+            </li>
           );
         })}
-      </div>
-
-      <div className="mt-4">
-        <Link href={lost ? base : `${base}&lost=1`} className="text-[0.9375rem] font-medium text-ink-3 hover:text-ink">
-          {lost ? 'Hide lost orders' : `Lost orders (${lostOnes.length})`}
-        </Link>
-        {lost && <ul className="mt-3 grid gap-2.5 sm:grid-cols-2 xl:grid-cols-4">{lostOnes.map(cardOf)}</ul>}
-      </div>
+        {!list.length && <li className="px-5 py-12 text-center text-ink-3">{chosen ? 'No orders at this stage.' : 'Nothing to work on. New orders appear here.'}</li>}
+      </ul>
     </>
   );
 }
 
 /** One order opened from the board: everything sales needs to call, the price, notes and what happened when. */
-function OrderDetail({ o, who, live, close, now, move }: { o: SavedOrder; who: { name: string; facility: string; phone: string }; live: boolean; close: string; now: number; move: (o: SavedOrder, to: OrderStatus, label: string, primary?: boolean) => React.ReactNode }) {
+function OrderDetail({ o, who, live, now, move }: { o: SavedOrder; who: { name: string; facility: string; phone: string }; live: boolean; now: number; move: (o: SavedOrder, to: OrderStatus, label: string, primary?: boolean) => React.ReactNode }) {
   const department = o.needs?.department && departments.find((d) => d.id === o.needs!.department)?.label;
   const needed = o.needs?.timeline && timelines.find((t) => t.id === o.needs!.timeline);
   const rows: [string, React.ReactNode][] = [
@@ -521,60 +573,54 @@ function OrderDetail({ o, who, live, close, now, move }: { o: SavedOrder; who: {
     ['Placed', `${fmt(o.placedAt)} (${ago(o.placedAt, now)} ago)`],
   ];
   return (
-    <Panel
-      title={`Order ${o.reference}`}
-      className="mb-5"
-      action={<Link href={close} className="rounded-lg border border-line px-3 py-1.5 text-[0.875rem] font-medium hover:border-ink">Close</Link>}
-    >
-      <div className="grid gap-6 lg:grid-cols-[1.1fr_1fr]">
-        <div>
-          <dl className="grid grid-cols-[8rem_1fr] gap-x-4 gap-y-2.5 text-[0.9375rem]">
-            {rows.map(([k, v]) => (
-              <div key={k} className="contents">
-                <dt className="text-ink-3">{k}</dt>
-                <dd>{v}</dd>
-              </div>
-            ))}
-          </dl>
-          <p className="mt-6 text-[0.875rem] font-medium text-ink-3">Stage</p>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {salesStages.map((st) =>
-              st.id === o.status ? (
-                <span key={st.id} className="inline-flex h-9 items-center rounded-lg bg-brand-700 px-3 text-[0.875rem] font-semibold text-white">{st.label}</span>
-              ) : live ? (
-                <div key={st.id}>{move(o, st.id, st.label)}</div>
-              ) : null,
-            )}
-          </div>
-        </div>
-        <div>
-          {live && (
-            <form action={saveOrderNote} className="space-y-3 rounded-xl border border-line p-4">
-              <input type="hidden" name="reference" value={o.reference} />
-              <label className="block">
-                <span className="text-[0.875rem] font-medium text-ink-3">Agreed price (GHS)</span>
-                <input name="amount" inputMode="decimal" defaultValue={o.amount ?? ''} placeholder="e.g. 85000" className="mt-1 h-10 w-full rounded-lg border border-line px-3" />
-              </label>
-              <label className="block">
-                <span className="text-[0.875rem] font-medium text-ink-3">Add a note</span>
-                <textarea name="note" rows={2} maxLength={1000} placeholder="e.g. Called, sending pro-forma today" className="mt-1 w-full resize-none rounded-lg border border-line px-3 py-2" />
-              </label>
-              <button className="h-10 rounded-lg bg-brand-700 px-4 text-[0.9375rem] font-semibold text-white hover:bg-brand-800">Save</button>
-            </form>
+    <div className="grid gap-6 lg:grid-cols-[1.1fr_1fr]">
+      <div>
+        <dl className="grid grid-cols-[8rem_1fr] gap-x-4 gap-y-2.5 text-[0.9375rem]">
+          {rows.map(([k, v]) => (
+            <div key={k} className="contents">
+              <dt className="text-ink-3">{k}</dt>
+              <dd>{v}</dd>
+            </div>
+          ))}
+        </dl>
+        <p className="mt-6 text-[0.875rem] font-medium text-ink-3">Move to any stage</p>
+        <div className="mt-2 flex flex-wrap gap-2">
+          {salesStages.map((st) =>
+            st.id === o.status ? (
+              <span key={st.id} className="inline-flex h-9 items-center rounded-lg bg-brand-700 px-3 text-[0.875rem] font-semibold text-white">{st.label}</span>
+            ) : live ? (
+              <div key={st.id}>{move(o, st.id, st.label)}</div>
+            ) : null,
           )}
-          <p className="mt-5 text-[0.875rem] font-medium text-ink-3">History</p>
-          <ol className="mt-2 space-y-2 text-[0.9375rem]">
-            {[...(o.log ?? [])].reverse().map((l, i) => (
-              <li key={i} className="border-l-2 border-[#bfd9c9] pl-3">
-                {l.text}
-                <span className="block text-[0.8125rem] text-ink-3">{l.by} · {timeFmt.format(new Date(l.at))}</span>
-              </li>
-            ))}
-            <li className="border-l-2 border-[#e3e9e6] pl-3 text-ink-3">Order placed on the website · {timeFmt.format(new Date(o.placedAt))}</li>
-          </ol>
         </div>
       </div>
-    </Panel>
+      <div>
+        {live && (
+          <form action={saveOrderNote} className="space-y-3 rounded-xl border border-line p-4">
+            <input type="hidden" name="reference" value={o.reference} />
+            <label className="block">
+              <span className="text-[0.875rem] font-medium text-ink-3">Agreed price (GHS)</span>
+              <input name="amount" inputMode="decimal" defaultValue={o.amount ?? ''} placeholder="e.g. 85000" className="mt-1 h-10 w-full rounded-lg border border-line px-3" />
+            </label>
+            <label className="block">
+              <span className="text-[0.875rem] font-medium text-ink-3">Add a note</span>
+              <textarea name="note" rows={2} maxLength={1000} placeholder="e.g. Called, sending pro-forma today" className="mt-1 w-full resize-none rounded-lg border border-line px-3 py-2" />
+            </label>
+            <button className="h-10 rounded-lg bg-brand-700 px-4 text-[0.9375rem] font-semibold text-white hover:bg-brand-800">Save</button>
+          </form>
+        )}
+        <p className="mt-5 text-[0.875rem] font-medium text-ink-3">History</p>
+        <ol className="mt-2 space-y-2 text-[0.9375rem]">
+          {[...(o.log ?? [])].reverse().map((l, i) => (
+            <li key={i} className="border-l-2 border-[#bfd9c9] pl-3">
+              {l.text}
+              <span className="block text-[0.8125rem] text-ink-3">{l.by} · {timeFmt.format(new Date(l.at))}</span>
+            </li>
+          ))}
+          <li className="border-l-2 border-[#e3e9e6] pl-3 text-ink-3">Order placed on the website · {timeFmt.format(new Date(o.placedAt))}</li>
+        </ol>
+      </div>
+    </div>
   );
 }
 

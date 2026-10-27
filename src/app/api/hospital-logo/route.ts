@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { ID, type Models } from 'node-appwrite';
 import { InputFile } from 'node-appwrite/file';
 import { appwrite, BUCKETS, DATABASE_ID, fileUrl, isNotFound, TABLES } from '@/lib/appwrite';
-import { getSession } from '@/lib/auth/server';
+import { getClientSession } from '@/lib/auth/server';
 
 /**
  * The signed-in hospital's logo, kept in Appwrite (bucket `hospital-logos`, row in `hospital_logos` keyed by
@@ -18,8 +18,7 @@ const TYPES: Record<string, string> = { 'image/webp': 'webp', 'image/png': 'png'
 type LogoRow = Models.Row & { fileId: string; facility: string };
 
 async function hospital() {
-  const s = await getSession();
-  return s && s.role === 'client' ? s : null;
+  return getClientSession();
 }
 
 /** Changes must come from this site (the session cookie is SameSite=Lax; this closes the rest). */

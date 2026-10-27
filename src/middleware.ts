@@ -1,15 +1,16 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { ADMIN_COOKIE, roleAreas, roleHome, roleLogin, SESSION_COOKIE, sessionCookie, signedInAreas, signSession, verifySession } from '@/lib/auth/session';
+import { cookieFor, roleAreas, roleHome, roleLogin, sessionCookie, signedInAreas, signSession, verifySession, type Role } from '@/lib/auth/session';
 
 const within = (pathname: string, prefix: string) => pathname === prefix || pathname.startsWith(`${prefix}/`);
 
 export async function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
-  // The admin console reads only its own cookie; the rest of the site only the site's (an admin is never signed in there)
-  const adminArea = within(pathname, '/admin');
-  const cookie = adminArea ? ADMIN_COOKIE : SESSION_COOKIE;
+  // Each area reads only its own session: the admin console its cookie, the engineer portal its own, and the rest of
+  // the site the hospitals' (an engineer or admin is never signed in on the site)
+  const areaRole: Role = within(pathname, '/admin') ? 'admin' : within(pathname, '/engineer') ? 'engineer' : 'client';
+  const cookie = cookieFor(areaRole);
   const found = await verifySession(request.cookies.get(cookie)?.value);
-  const session = adminArea ? (found?.role === 'admin' ? found : null) : found?.role === 'admin' ? null : found;
+  const session = found?.role === areaRole ? found : null;
 
   // Signed-in users skip the login page.
   if (pathname === '/login') {
