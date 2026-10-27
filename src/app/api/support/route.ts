@@ -1,16 +1,15 @@
 import { NextResponse } from 'next/server';
-import { submitToCrm } from '@/lib/crm';
-import { createDemoDeal, hubspotConfigured, noteSupportRequest } from '@/lib/hubspot';
 import { pushToEngineers } from '@/lib/push';
 import { smsWebsiteFault } from '@/lib/sms';
-import { emailSupport } from '@/lib/support-email';
+import { emailSales, emailSupport } from '@/lib/support-email';
 import { saveSupportRequest } from '@/lib/support-requests';
 import { clientIp, limited } from '@/lib/rate-limit';
-import { requestTypes, supportDetails, supportSchema, supportSubject, supportSummary } from '@/lib/support-schema';
+import { requestTypes, supportDetails, supportSchema, supportSubject } from '@/lib/support-schema';
 
 /**
  * Technical support requests from the Support page (Report a fault and the rest). Saved for the admin console
- * (Appwrite), emailed to the support inbox (Brevo), a fault texted to the engineers (SMS), and delivered to the CRM, whichever are configured; with neither (or if both fail), the visitor sends it by email or WhatsApp.
+ * (Appwrite), emailed to the support inbox (Brevo; a demonstration request to sales too), a fault texted to the
+ * engineers (SMS), whichever are configured; with neither (or if both fail), the visitor sends it by email or WhatsApp.
  */
 export async function POST(request: Request) {
   // Up to 5 requests per visitor every 10 minutes: plenty for a real fault, too few to flood the support inbox
@@ -24,7 +23,6 @@ export async function POST(request: Request) {
   const data = parsed.data;
   if (data.website) return NextResponse.json({ delivered: true });
 
-  const [firstname, ...rest] = data.name.split(' ');
   const kind = requestTypes.find((t) => t.id === data.type)?.label ?? 'Support request';
   // Saved first, so the reference goes into the email and the text
   const saved = await saveSupportRequest(data).catch((e) => {
@@ -42,21 +40,16 @@ export async function POST(request: Request) {
       'Phone': data.phone,
       ...Object.fromEntries(supportDetails(data)),
     }, data.phone),
-    // A demonstration is a sales lead: a deal for sales; anything else is noted on the caller's contact
-    hubspotConfigured() && data.type === 'assistance' && data.topic === 'demo'
-      ? createDemoDeal({ name: data.name, phone: data.phone, facility: data.facility, reference: saved ?? undefined, equipment: data.equipment || undefined, message: data.message }).then(() => true)
-      : hubspotConfigured()
-      ? noteSupportRequest({
-          name: data.name,
-          phone: data.phone,
-          facility: data.facility,
-          title: `${kind}${ref} from the Support page`,
-          lines: supportDetails(data),
-        }).then(() => true)
-      : submitToCrm(
-          { firstname, lastname: rest.join(' '), phone: data.phone, message: `[Technical support${ref}] ${supportSummary(data)}` },
-          { path: '/support', name: 'Technical support request' },
-        ),
+    // A demonstration is a sales lead: the sales inbox hears about it too
+    data.type === 'assistance' && data.topic === 'demo'
+      ? emailSales(`Demonstration request: ${data.facility} - ${supportSubject(data)}${ref}`, {
+          ...(saved ? { 'Reference': saved } : {}),
+          'Name': data.name,
+          'Hospital or lab': data.facility,
+          'Phone': data.phone,
+          ...Object.fromEntries(supportDetails(data)),
+        }, { phone: data.phone })
+      : Promise.resolve(false),
     // Engineers hear about it on their phones: a text for a fault, a portal alert for every request
     saved ? smsWebsiteFault({ reference: saved, ...data }).then(() => false) : Promise.resolve(false),
     saved

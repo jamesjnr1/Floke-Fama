@@ -8,20 +8,40 @@ import { accountExists, hashPassword, saveAccount } from '@/lib/auth/accounts';
 import { getAdminSession } from '@/lib/auth/server';
 import { ENGINEER_ID_PREFIX } from '@/lib/auth/users';
 import type { OrderStatus, SavedOrder } from '@/lib/orders';
+import { salesStages, stageLabel } from '@/lib/sales-stages';
 
-const statuses: OrderStatus[] = ['awaiting-payment', 'paid', 'processing', 'delivered'];
-
-/** Moves an order along (awaiting payment → paid → being prepared → delivered). Admins only. */
-export async function setOrderStatus(form: FormData) {
+/** Reads an order, changes it and writes it back, with a line in its log saying who did what. Admins only. */
+async function changeOrder(reference: string, change: (o: SavedOrder) => { order: SavedOrder; log?: string } | null) {
   const s = await getAdminSession();
-  if (s?.role !== 'admin' || !appwrite) return;
-  const reference = String(form.get('reference') ?? '');
-  const status = String(form.get('status') ?? '') as OrderStatus;
-  if (!/^FF-[A-Z0-9]{4,12}$/.test(reference) || !statuses.includes(status)) return;
+  if (s?.role !== 'admin' || !appwrite || !/^FF-[A-Z0-9]{4,12}$/.test(reference)) return;
   const row = await appwrite.tables.getRow({ databaseId: DATABASE_ID, tableId: TABLES.orders, rowId: reference });
   const order = JSON.parse(String((row as unknown as { data: string }).data)) as SavedOrder;
-  await appwrite.tables.updateRow({ databaseId: DATABASE_ID, tableId: TABLES.orders, rowId: reference, data: { data: JSON.stringify({ ...order, status }) } });
+  const next = change(order);
+  if (!next) return;
+  const log = next.log ? [...(order.log ?? []), { at: new Date().toISOString(), by: s.name, text: next.log }].slice(-100) : order.log;
+  await appwrite.tables.updateRow({ databaseId: DATABASE_ID, tableId: TABLES.orders, rowId: reference, data: { data: JSON.stringify({ ...next.order, log }) } });
   revalidatePath('/admin');
+}
+
+/** Moves an order to another column of the sales board. */
+export async function setOrderStatus(form: FormData) {
+  const status = String(form.get('status') ?? '') as OrderStatus;
+  if (!salesStages.some((x) => x.id === status)) return;
+  await changeOrder(String(form.get('reference') ?? ''), (o) => (o.status === status ? null : { order: { ...o, status }, log: `Moved to ${stageLabel(status)}` }));
+}
+
+/** Saves the agreed price (Ghana cedis) and/or adds a note, from the order's page on the sales board. */
+export async function saveOrderNote(form: FormData) {
+  const rawAmount = String(form.get('amount') ?? '').replace(/[,\s]/g, '');
+  const amount = rawAmount ? Number(rawAmount) : undefined;
+  const note = String(form.get('note') ?? '').trim().slice(0, 1000);
+  if (amount !== undefined && !(Number.isFinite(amount) && amount >= 0 && amount < 1e9)) return;
+  await changeOrder(String(form.get('reference') ?? ''), (o) => {
+    const priceChanged = amount !== undefined && amount !== o.amount;
+    if (!priceChanged && !note) return null;
+    const lines = [priceChanged ? `Price set to GHS ${amount!.toLocaleString('en-GB')}` : '', note].filter(Boolean);
+    return { order: priceChanged ? { ...o, amount } : o, log: lines.join(': ') };
+  });
 }
 
 export interface AddEngineerState {

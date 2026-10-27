@@ -7,7 +7,7 @@ How the site's back end will work once Flokefama goes beyond the preview, and **
 | Part | Today (preview) | Problem for real use |
 |---|---|---|
 | Public pages, Shop, news | Content files in the repo (`src/data/*`), Sanity wiring ready but not connected | Staff can't edit content without a developer |
-| Quote, contact, registration forms | Validated on the server; sent to HubSpot **if configured**, otherwise handed to email / WhatsApp | Works, but no CRM record until HubSpot is connected |
+| Orders, support and registration forms | Validated on the server; orders on the admin console's sales board and emailed to sales (Brevo), support requests to the engineers and the support inbox | Works |
 | Portal sign-in | Signed cookie + two demo accounts (`src/lib/auth/users.ts`) | No real accounts, no password reset |
 | Client portal + engineer portal | One shared service desk stored **in the browser** (`src/lib/service/store.ts`) | Each person sees their own copy; nothing is shared between devices |
 
@@ -24,7 +24,7 @@ The screens are finished. The back end replaces the *storage* underneath them; t
                      └──┬──────────────┬──────────────┬─────┘
                         │              │              │
           ┌─────────────▼──┐  ┌────────▼────────┐  ┌──▼──────────────────────┐
-          │  Sanity (CMS)  │  │ HubSpot (CRM)   │  │ Supabase                │
+          │  Sanity (CMS)  │  │ Sales board     │  │ Supabase                │
           │ products, news,│  │ quotes, demos,  │  │ Postgres database        │
           │ events, pages  │  │ contact, leads  │  │ Auth (accounts, reset)   │
           └────────────────┘  └─────────────────┘  │ Storage (certificates)   │
@@ -39,7 +39,7 @@ The screens are finished. The back end replaces the *storage* underneath them; t
 
 **One job per service:**
 - **Sanity** holds marketing content that staff edit: products, news, events, page text.
-- **HubSpot** holds sales leads: quotes, demos and contact messages.
+- **The sales board** (admin console → Orders) is where sales follows every order up; no separate CRM.
 - **Supabase** holds everything behind a login: accounts, facilities, equipment, service tickets, calibration certificates and notifications.
 
 Why Supabase for the portals:
@@ -91,7 +91,7 @@ These match the types the portals already use (`Ticket`, `Asset`, `Certificate`,
    - The site generates the certificate PDF (`src/lib/service/certificate.ts` already does this), saves it to Storage and sets the next due date.
    - The client sees it in Certificates.
    - Reminders go out 30 days before the due date (a scheduled job).
-5. **Quotes and contact.** These go to HubSpot as today. Nothing changes except connecting the account.
+5. **Orders and contact.** Orders go on the sales board and are emailed to sales (Brevo).
 
 ## 5. What I build (development work)
 
@@ -103,7 +103,7 @@ These match the types the portals already use (`Ticket`, `Asset`, `Certificate`,
 | 4 | Admin screens: approve registrations, manage facilities, assets and engineers |
 | 5 | Certificates to Storage; email notifications (Resend); 30-day calibration reminders |
 | 6 | Import script for Flokefama's real asset register (spreadsheet → database) |
-| 7 | Connect Sanity and HubSpot with the real accounts; move the content files into Sanity |
+| 7 | Connect Sanity with the real account; move the content files into Sanity |
 | 8 | Tests for every role (a hospital must never see another hospital's data), then a security review |
 
 ## 6. Everything you need to do
@@ -116,7 +116,7 @@ Create each one under a company email (e.g. it@ or admin@), not a personal one.
 | 1 | **Vercel** | Create a team; import this GitHub repo | Nothing: add the keys below in Vercel → Settings → Environment Variables |
 | 2 | **Supabase** | New project, region **London (eu-west-2)**, closest to Ghana. Or say the word and I'll create it through the Supabase account connected to this session | Project URL, anon key, service-role key (into Vercel, **never in chat or email**) |
 | 3 | **Sanity** | Create a project at sanity.io | Project ID, a read token |
-| 4 | **HubSpot** | Free CRM; a service key with read + write on contacts, companies and deals | Service key |
+| 4 | **Brevo** | Emails for support requests and new orders (free up to 300 a day) | API key, a confirmed sender |
 | 5 | **Resend** (email) | Create an account | API key |
 | 6 | SMS (optional) | A Ghanaian SMS provider, e.g. Hubtel | API credentials |
 
@@ -147,7 +147,7 @@ These are approximate monthly figures at small scale; check each provider's curr
 | Vercel | Pro (commercial use isn't allowed on the free plan) | ~$20 per team member |
 | Supabase | Pro (daily backups, no pausing) | ~$25 |
 | Sanity | Free tier is enough to start | $0 |
-| HubSpot | Free CRM | $0 |
+| Brevo | Free plan | $0 |
 | Resend | Free tier (3,000 emails / month) | $0 |
 | SMS | Pay per message | Depends on volume |
 
@@ -159,7 +159,7 @@ These are approximate monthly figures at small scale; check each provider's curr
 
 | Phase | Needs from you | Result |
 |---|---|---|
-| 1. Leads live | Vercel, HubSpot | Every quote and message lands in the CRM |
+| 1. Leads live | Vercel, Appwrite, Brevo | Every order lands on the sales board and in the sales inbox |
 | 2. Content editable | Sanity | Staff edit products, news and events themselves |
 | 3. Real portal accounts | Supabase, Resend, decisions B1 and B4 | Hospitals and engineers sign in with their own accounts |
 | 4. Live service desk | Asset register, engineer list, decisions B2, B3 and B5 | Real tickets, live updates, notifications |

@@ -15,7 +15,7 @@ Make Flokefama look like the market leader it says it is: a calm, confident, cli
 
 ## Technical decision (updated)
 
-**Chosen: composable (headless) architecture.** Next.js 15 on Vercel, Sanity CMS, Algolia search and HubSpot for leads. See [05-architecture.md](05-architecture.md).
+**Chosen: composable (headless) architecture.** Next.js 15 on Vercel, Sanity CMS, Algolia search, and a sales board in the admin console for leads. See [05-architecture.md](05-architecture.md).
 
 Why this over staying on WordPress + Elementor:
 - **Speed across West African networks:** static generation plus a global edge CDN, with a service worker for patchy connectivity.
@@ -65,7 +65,7 @@ Contact             (branches, map, form, WhatsApp)
 
 ### Phase 2 — Build (weeks 3–5)
 - [x] Next.js platform: home, product universe, deep spec sheets, procurement portal, client-portal demo, offline mode
-- [ ] Connect Vercel (preview URL for the client), then Sanity, Algolia and HubSpot accounts
+- [ ] Connect Vercel (preview URL for the client), then Sanity, Algolia, Appwrite and Brevo accounts
 - [ ] Import all 92 products with real photography and verified specs
 - [ ] Clean the content: consistent product photos (white background, square, WebP) and real alt text
 - [ ] SEO: meta descriptions, Open Graph images, `Organization` and `LocalBusiness` schema per branch, XML sitemap

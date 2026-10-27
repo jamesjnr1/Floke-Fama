@@ -48,7 +48,7 @@ That Flokefama is **Ghana’s No.1 healthcare company**, safe to trust with crit
 | Cross-sell | **Often requested together** on every product | ✅ new |
 | Instant conversation | **WhatsApp** with the product named in the first message, so sales knows what to quote | ✅ new |
 | Remove doubt before contact | **Buying FAQ**, why-buy strip, demonstrations | ✅ new |
-| Never lose a lead | Every form validates on the server and goes to the CRM; until the CRM is connected, the visitor sends it by email or WhatsApp in one tap | ✅ (HubSpot ⏳) |
+| Never lose a lead | Every order validates on the server, lands on the admin console's sales board and is emailed to sales; if it can't be saved, the visitor sends it by email or WhatsApp in one tap | ✅ |
 | Measure what works | **Conversion analytics**: quote and demo submissions, quote-list adds and requests, WhatsApp and call clicks, brochure downloads, datasheet requests; per page and product | ✅ new (shows once deployed on Vercel) |
 | Be found on Google | Product, FAQ, NewsArticle and Organization structured data; sitemap; fast pages | ✅ (indexing switched on only at launch) |
 | Keep customers | Client portal (service requests, live engineer tracking, certificates) | ✅ (real accounts ⏳ backend) |
@@ -56,7 +56,7 @@ That Flokefama is **Ghana’s No.1 healthcare company**, safe to trust with crit
 
 ### What Flokefama needs to do to get the full value
 
-1. **Connect HubSpot** (free CRM) so every quote lands as a deal: see `06-backend-plan.md`.
+1. **Use the sales board** (admin console → Orders): call each New order, set the agreed price, move the card along.
 2. **Deploy on Vercel and turn on Web Analytics** (Project → Analytics). The events above then appear with no further work.
 3. **Name an owner for WhatsApp and quote replies**, and keep to the one-business-day promise.
 4. **Send verified specifications** for the top 20 products; this unlocks product comparison and better Google results.

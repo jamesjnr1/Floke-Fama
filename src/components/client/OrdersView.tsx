@@ -36,7 +36,7 @@ export function OrdersView({ orders }: { orders: SavedOrder[] }) {
                 <p className="font-mono text-xs text-ink-3">{o.reference} · {fmtDate(o.placedAt)}</p>
                 <p className="mt-1 text-lg font-semibold text-ink">{units} {units === 1 ? 'item' : 'items'} · {methodLabel[o.method]}</p>
               </div>
-              <span className={cn('rounded-md px-2.5 py-1 text-xs font-medium', o.status === 'awaiting-payment' ? 'bg-signal/10 text-signal-700' : 'bg-brand-50 text-brand-700')}>
+              <span className={cn('rounded-md px-2.5 py-1 text-xs font-medium', o.status === 'lost' ? 'bg-mist text-ink-3' : o.status === 'delivered' ? 'bg-brand-600 text-white' : 'bg-brand-50 text-brand-700')}>
                 {orderStatusLabel[o.status]}
               </span>
             </div>
@@ -50,9 +50,9 @@ export function OrdersView({ orders }: { orders: SavedOrder[] }) {
             </ul>
             <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm">
               <p className="text-ink-3">Deliver to <span className="text-ink">{o.address ? `${o.address}, ` : ''}{o.region}</span></p>
-              {o.status === 'awaiting-payment' && (
+              {(o.status === 'awaiting-payment' || o.status === 'called' || o.status === 'priced') && (
                 <a href={contact.phoneHref} className="inline-flex items-center gap-2 font-medium text-brand-700 hover:underline">
-                  <Icon name="fi-rr-phone-call" /> Confirm payment with sales
+                  <Icon name="fi-rr-phone-call" /> Questions? Call sales
                 </a>
               )}
             </div>
