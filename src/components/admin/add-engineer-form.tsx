@@ -23,7 +23,7 @@ export function AddEngineerForm() {
   const e = state.errors ?? {};
 
   if (state.done) {
-    const details = `Flokefama engineer portal\nSign in: ${location.origin}/login\nEmail: ${state.done.email}\nPassword: ${state.done.password}`;
+    const details = `Flokefama engineer portal\nSign in: ${location.origin}/engineer/login\nEmail: ${state.done.email}\nPassword: ${state.done.password}`;
     return (
       <div>
         <p className="flex items-center gap-2 text-lg font-semibold text-brand-800">

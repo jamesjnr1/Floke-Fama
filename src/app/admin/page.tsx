@@ -9,6 +9,8 @@ import { AddEngineerForm } from '@/components/admin/add-engineer-form';
 import { ConfirmButton } from '@/components/admin/confirm-button';
 import { configChecks, loadAdminData, type AdminData } from '@/lib/admin/data';
 import { brevoStatus } from '@/lib/support-email';
+import { smsProvider, smsStatus as smsGatewayStatus } from '@/lib/sms';
+import { TestSmsForm } from '@/components/admin/test-sms-form';
 import { supportDetails, supportSubject } from '@/lib/support-schema';
 import { adminLogout } from '@/lib/auth/actions';
 import { requireSession } from '@/lib/auth/server';
@@ -185,7 +187,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             {tab === 'accounts' && (params.account ? <AccountDetail data={data} id={params.account} now={now} /> : <Accounts data={data} q={params.q} role={roles.some((r) => r.id && r.id === params.role) ? params.role : undefined} adding={params.add === 'engineer'} />)}
             {tab === 'products' && <Products data={data} />}
             {tab === 'service' && <Service data={data} now={now} />}
-            {tab === 'system' && <System data={data} />}
+            {tab === 'system' && <System data={data} phone={session.phone} />}
           </main>
         </div>
       </div>
@@ -1170,10 +1172,10 @@ function WebsiteRequests({ data }: { data: AdminData }) {
   );
 }
 
-async function System({ data }: { data: AdminData }) {
-  // Brevo is checked live (no email is sent), so the reason shows here when support emails aren't going out
-  const brevo = await brevoStatus();
-  const checks = [...configChecks(), { label: 'Support requests and new orders by email (Brevo)', ...brevo }];
+async function System({ data, phone }: { data: AdminData; phone?: string }) {
+  // Brevo and Arkesel are checked live (nothing is sent), so the reason shows here when emails or texts aren't going out
+  const [brevo, sms] = await Promise.all([brevoStatus(), smsGatewayStatus()]);
+  const checks = [...configChecks().map((c) => (c.label === 'Text messages (SMS)' && sms ? { ...c, ...sms } : c)), { label: 'Support requests and new orders by email (Brevo)', ...brevo }];
   return (
     <>
       <Heading title="Database & settings" lead="Whether each table answers and how many rows it holds, and the settings the site depends on (set in Vercel → Settings → Environment Variables)." />
@@ -1208,6 +1210,7 @@ async function System({ data }: { data: AdminData }) {
                 <span>
                   <span className="font-medium">{c.label}</span>
                   <span className="block text-[0.875rem] text-ink-3">{c.detail}</span>
+                  {c.label === 'Text messages (SMS)' && smsProvider && <TestSmsForm defaultPhone={phone} />}
                 </span>
               </li>
             ))}
