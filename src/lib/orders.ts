@@ -63,15 +63,29 @@ const askServer = (fresh = false) =>
     })
     .catch(() => false as const));
 
-/** Record an order from checkout (replaces one with the same reference). */
-export function saveOrder(order: CheckoutOrder, account: string) {
-  // On the server too (where it also becomes the hospital's equipment); harmless when the server doesn't keep orders
-  fetch('/api/orders', {
+/**
+ * Record an order from checkout (replaces one with the same reference). Resolves true once sales has it in the
+ * CRM, so the page needn't ask the hospital to send it.
+ */
+export function saveOrder(order: CheckoutOrder, account: string): Promise<boolean> {
+  // On the server too (where it also becomes the hospital's equipment and a deal for sales); harmless when the server doesn't keep orders
+  const sent = fetch('/api/orders', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ reference: order.reference, items: order.items, method: order.method, region: order.customer.region, address: order.customer.address }),
+    body: JSON.stringify({
+      reference: order.reference,
+      items: order.items,
+      method: order.method,
+      region: order.customer.region,
+      address: order.customer.address,
+      customer: { name: order.customer.name, organisation: order.customer.organisation, phone: order.customer.phone },
+      momo: order.momo ? { network: order.momo.network } : undefined,
+    }),
     keepalive: true,
   })
+    .then(async (r) => ((await r.json().catch(() => ({}))) as { sales?: boolean }).sales === true)
+    .catch(() => false);
+  sent
     .then(() => askServer(true))
     .then(() => listeners.forEach((l) => l()))
     .catch(() => {});
@@ -91,6 +105,7 @@ export function saveOrder(order: CheckoutOrder, account: string) {
     /* storage unavailable */
   }
   listeners.forEach((l) => l());
+  return sent;
 }
 
 /** This account's orders, newest first: from the server when it keeps them, else from this browser. */
