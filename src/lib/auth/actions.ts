@@ -1,11 +1,14 @@
 'use server';
 
+import { limited } from '@/lib/rate-limit';
+import { registeredFacilities } from '@/lib/service/facilities';
+import { facilityKey } from '@/lib/service/desk';
 import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { AccountsUnavailable, accountExists, findAccount, findSavedAccount, hashPassword, saveAccount, type StoredAccount } from '@/lib/auth/accounts';
 import { ADMIN_COOKIE, cookieFor, ENGINEER_COOKIE, nextFor, safeNext, SESSION_COOKIE, sessionCookie, signSession, type SessionUser } from '@/lib/auth/session';
-import { getAdminSession, getEngineerSession, getSession } from '@/lib/auth/server';
+import { getAdminSession, getConsoleSession, getEngineerSession, getSession } from '@/lib/auth/server';
 import { roleFor } from '@/lib/auth/users';
 import { appwrite } from '@/lib/appwrite';
 import { updateEngineerPhone } from '@/lib/service/server';
@@ -105,11 +108,11 @@ export async function login(_prev: LoginState, form: FormData): Promise<LoginSta
   attempts.delete(key);
   // The admin and engineer sign-in pages (/admin/login, /engineer/login) only let their own role in
   const role = roleFor(saved.email, saved.id);
-  if (form.get('area') === 'admin' && role !== 'admin') return { error: 'This account doesn’t have access to the admin console.', email: parsed.data.email };
+  if (form.get('area') === 'admin' && role !== 'admin' && role !== 'sales') return { error: 'This account doesn’t have access to the admin console.', email: parsed.data.email };
   if (form.get('area') === 'engineer' && role !== 'engineer') return { error: 'This sign-in is for Flokefama engineers. Hospitals sign in to the client portal at /login.', email: parsed.data.email };
   // The site's sign-in (/login) is for hospitals only
   if (!form.get('area') && role === 'engineer') return { error: 'This sign-in is for hospitals. Engineers sign in to the engineer portal at /engineer/login.', email: parsed.data.email };
-  if (!form.get('area') && role === 'admin') return { error: 'This sign-in is for hospitals. Admins sign in to the admin console at /admin/login.', email: parsed.data.email };
+  if (!form.get('area') && (role === 'admin' || role === 'sales')) return { error: 'This sign-in is for hospitals. Flokefama staff sign in to the admin console at /admin/login.', email: parsed.data.email };
 
   await startSession({ sub: saved.id, name: saved.name, email: saved.email, role: roleFor(saved.email, saved.id), facility: saved.organisation, phone: saved.phone, keep: parsed.data.keep === 'on' }, parsed.data.next);
   return {};
@@ -126,9 +129,20 @@ export async function register(_prev: SignupState, form: FormData): Promise<Sign
   }
   const d = parsed.data;
   if (d.website) return {};
+  // At most 10 new accounts an hour from one connection, so a bot can't create accounts in bulk
+  const ip = ((await headers()).get('x-forwarded-for') ?? '').split(',')[0].trim() || 'unknown';
+  if (limited(`register:${ip}`, 10, 60 * 60_000)) return { errors: { form: 'Too many new accounts from this connection. Please try again in an hour, or call us on +233 53 339 2863.' }, values };
   const taken = await guarded(() => accountExists(d.email));
   if (!taken.ok) return { errors: { form: UNAVAILABLE }, values };
   if (taken.value) return { errors: { email: 'There is already an account with this email. Sign in instead.' }, values };
+  // One account per hospital: the portal shows a hospital everything filed under its name, so a second account with
+  // the same name (whatever the capitals, spaces or dashes) would see another hospital's equipment and requests
+  if (roleFor(d.email) === 'client') {
+    const names = await guarded(() => registeredFacilities());
+    if (!names.ok) return { errors: { form: UNAVAILABLE }, values };
+    if (names.value.some((n) => facilityKey(n) === facilityKey(d.organisation)))
+      return { errors: { organisation: 'This hospital already has an account. Ask the colleague who registered it to sign you in, or call us on +233 53 339 2863.' }, values };
+  }
 
   const { salt, hash } = await hashPassword(d.password);
   const id = `hos-${crypto.randomUUID().slice(0, 8)}`;
@@ -176,7 +190,7 @@ const newPassword = z
  */
 export async function changePassword(_prev: PasswordState, form: FormData): Promise<PasswordState> {
   const area = form.get('area');
-  const session = area === 'admin' ? await getAdminSession() : area === 'engineer' ? await getEngineerSession() : await getSession();
+  const session = area === 'admin' ? await getConsoleSession() : area === 'engineer' ? await getEngineerSession() : await getSession();
   if (!session) return { errors: { form: 'Your session has ended. Please sign in again.' } };
   const parsed = newPassword.safeParse({ current: form.get('current'), password: form.get('password'), confirm: form.get('confirm') });
   if (!parsed.success) {

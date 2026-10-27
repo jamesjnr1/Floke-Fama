@@ -6,6 +6,7 @@ import { roleFor } from '@/lib/auth/users';
 import type { Actor, Priority, ServiceState, Ticket } from '@/lib/service/desk';
 import { getSite } from '@/lib/site';
 import { registeredFacilities } from '@/lib/service/facilities';
+import { listSupportRequests } from '@/lib/support-requests';
 import { siteUrl } from '@/lib/utils';
 
 /**
@@ -268,14 +269,15 @@ export async function escalateStale(desk: ServiceState, force = false) {
       const age = now - new Date(t.openedAt).getTime();
       return t.status === 'new' && isUrgent(t.priority) && age >= escalateMinutes * 60_000 && age < 864e5;
     });
-    if (!due.length) return 0;
+    const calls = await callbackEscalations(now);
+    if (!due.length) return calls;
     const rowId = (t: Ticket) => `esc-${t.id}`.replace(/[^a-zA-Z0-9._-]/g, '').slice(0, 36);
     const { rows } = await appwrite!.tables
       .listRows<LogRow>({ databaseId: DATABASE_ID, tableId: TABLES.smsLog, queries: [Query.equal('$id', due.map(rowId)), Query.select(['$id']), Query.limit(100)] })
       .catch((e) => (isTableMissing(e) ? { rows: [] as LogRow[] } : Promise.reject(e)));
     const done = new Set(rows.map((r) => r.$id));
     const todo = due.filter((t) => !done.has(rowId(t)));
-    if (!todo.length) return 0;
+    if (!todo.length) return calls;
     const extra = (process.env.SMS_ESCALATION_NUMBERS ?? '').split(',');
     const admins = (await staff()).filter((p) => p.role === 'admin').map((p) => p.phone);
     await Promise.all(
@@ -287,11 +289,39 @@ export async function escalateStale(desk: ServiceState, force = false) {
         );
       }),
     );
-    return todo.length;
+    return todo.length + calls;
   } catch (e) {
     console.error('sms: escalation check failed', e);
     return 0;
   }
+}
+
+/**
+ * Faults sent on the Support page that nobody has marked Called back after SMS_ESCALATE_MINUTES: the admins (and
+ * SMS_ESCALATION_NUMBERS) get one text each, with the caller's number, so someone calls. Up to a day old.
+ */
+async function callbackEscalations(now: number) {
+  const waiting = (await listSupportRequests(100).catch(() => [])).filter((r) => {
+    const age = now - Date.parse(r.at);
+    return r.type === 'fault' && r.status === 'new' && age >= escalateMinutes * 60_000 && age < 864e5;
+  });
+  if (!waiting.length) return 0;
+  const rowId = (id: string) => `cb-${id}`.replace(/[^a-zA-Z0-9._-]/g, '').slice(0, 36);
+  const { rows } = await appwrite!.tables
+    .listRows<LogRow>({ databaseId: DATABASE_ID, tableId: TABLES.smsLog, queries: [Query.equal('$id', waiting.map((r) => rowId(r.id))), Query.select(['$id']), Query.limit(100)] })
+    .catch((e) => (isTableMissing(e) ? { rows: [] as LogRow[] } : Promise.reject(e)));
+  const done = new Set(rows.map((r) => r.$id));
+  const todo = waiting.filter((r) => !done.has(rowId(r.id)));
+  if (!todo.length) return 0;
+  const to = [...(await staff()).filter((p) => p.role === 'admin').map((p) => p.phone), ...(process.env.SMS_ESCALATION_NUMBERS ?? '').split(',')];
+  await Promise.all(
+    todo.map((r) => {
+      const mins = Math.round((now - Date.parse(r.at)) / 60_000);
+      const text = `Nobody has called back ${plain(r.name, 30)} at ${plain(r.facility, 40)} (${plain(r.equipment ?? 'equipment', 30)}) after ${mins} min. Call ${plain(r.phone, 20)}. Ref ${r.id}.`;
+      return send('callback', r.id, to, text, rowId(r.id)).catch((e) => console.error('sms: call-back warning not recorded', e));
+    }),
+  );
+  return todo.length;
 }
 
 /** The latest texts, newest first, for the admin console. */

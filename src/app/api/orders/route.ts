@@ -36,7 +36,17 @@ export async function GET() {
     tableId: TABLES.orders,
     queries: [Query.equal('account', s.email.toLowerCase()), Query.orderDesc('$createdAt'), Query.limit(100)],
   });
-  const orders = rows.flatMap((r) => { try { return [JSON.parse(r.data) as SavedOrder]; } catch { return []; } });
+  // The hospital sees its order, never the sales team's notes and history; the price once it has been sent to them
+  const priced = new Set(['priced', 'paid', 'processing', 'delivered']);
+  const orders = rows.flatMap((r) => {
+    try {
+      const { log: _log, ...order } = JSON.parse(r.data) as SavedOrder;
+      void _log;
+      return [{ ...order, amount: priced.has(order.status) ? order.amount : undefined }];
+    } catch {
+      return [];
+    }
+  });
   return NextResponse.json({ enabled: true, orders }, { headers: noStore });
 }
 
