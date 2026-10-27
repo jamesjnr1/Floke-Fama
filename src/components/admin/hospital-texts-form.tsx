@@ -41,7 +41,7 @@ export function HospitalTextsForm({ templates, hospitals }: { templates: { id: s
       </div>
       <label className="mt-4 block">
         <span className="sr-only">Message</span>
-        <textarea name="text" value={text} onChange={(e) => setText(e.target.value)} maxLength={300} rows={4} placeholder="Write the message…" className="w-full resize-none rounded-xl border border-line px-3.5 py-3 text-[0.9375rem] leading-snug outline-none focus:border-brand-600" />
+        <textarea name="text" value={text} onChange={(e) => setText(e.target.value)} maxLength={459} rows={4} placeholder="Write the message…" className="w-full resize-none rounded-xl border border-line px-3.5 py-3 text-[0.9375rem] leading-snug outline-none focus:border-brand-600" />
       </label>
       <p className="mt-1 text-[0.8125rem] text-ink-3">
         {length} characters · {parts(length)} SMS per hospital · sent from “Flokefama”

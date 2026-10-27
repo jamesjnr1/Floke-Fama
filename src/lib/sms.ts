@@ -72,21 +72,27 @@ async function deliver(to: string[], text: string): Promise<{ status: SmsLogEntr
 }
 
 type LogRow = Models.Row & Omit<SmsLogEntry, 'id' | 'at'>;
-const save = (rowId: string, data: Omit<SmsLogEntry, 'id' | 'at'>, create = true) =>
+const write = (rowId: string, data: Omit<SmsLogEntry, 'id' | 'at'>, create: boolean) =>
   withTable(TABLES.smsLog, () =>
     create
       ? appwrite!.tables.createRow({ databaseId: DATABASE_ID, tableId: TABLES.smsLog, rowId, data })
       : appwrite!.tables.updateRow({ databaseId: DATABASE_ID, tableId: TABLES.smsLog, rowId, data }),
   );
+/** Records a text. A sms_log table made before greetings got longer keeps 320 characters, so a long one is shortened there. */
+const save = (rowId: string, data: Omit<SmsLogEntry, 'id' | 'at'>, create = true) =>
+  write(rowId, data, create).catch((e) => {
+    if ((e as { code?: number }).code !== 400 || data.text.length <= 320) throw e;
+    return write(rowId, { ...data, text: `${data.text.slice(0, 317)}...` }, create);
+  });
 
 /**
  * Sends one text to some numbers and records it. With `rowId` given, the record is written first and a second
  * attempt with the same id is skipped, so an escalation goes out once even if two servers notice it together.
  */
-export async function send(kind: string, ref: string, phones: string[], text: string, rowId?: string): Promise<{ status: SmsLogEntry['status']; detail: string } | undefined> {
+export async function send(kind: string, ref: string, phones: string[], text: string, rowId?: string, max = 300): Promise<{ status: SmsLogEntry['status']; detail: string } | undefined> {
   const to = [...new Set(phones.map(normalisePhone).filter((n): n is string => Boolean(n)))];
   if (!to.length) return;
-  const body = plain(text, 300);
+  const body = plain(text, max);
   const record = { kind, ref, to: to.join(',').slice(0, 400), text: body };
   const id = rowId ?? ID.unique();
   if (rowId) {
