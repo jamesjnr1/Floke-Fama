@@ -21,7 +21,7 @@ import { LiveStatus } from '@/components/service/live-status';
 import { Icon } from '@/components/ui/icon';
 import { useSite } from '@/components/site-provider';
 import { engineerLogout } from '@/lib/auth/actions';
-import { daysUntil, isOpen, nextTicketId, useEngineerStore, type Action, type Asset, type Notification, type Ticket } from '@/lib/service/store';
+import { daysUntil, facilityKey, isOpen, nextTicketId, useEngineerStore, type Action, type Asset, type Notification, type Ticket } from '@/lib/service/store';
 import { cn } from '@/lib/utils';
 import { UserAvatar } from '@/components/ui/user-avatar';
 
@@ -152,8 +152,7 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
   const makeJob = useCallback(
     (r: WebsiteRequest) => {
       // Their equipment if it is on record; otherwise the machine they named is added with the request
-      const key = (s: string) => s.trim().toLowerCase();
-      const theirs = state.assets.filter((a) => key(a.facility) === key(r.facility));
+      const theirs = state.assets.filter((a) => facilityKey(a.facility) === facilityKey(r.facility));
       setFault({ open: true, assetId: theirs[0]?.id, from: r });
     },
     [state.assets],
