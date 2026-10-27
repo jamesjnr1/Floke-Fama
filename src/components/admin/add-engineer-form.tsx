@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useActionState, useState } from 'react';
+import { useActionState, useEffect, useRef, useState } from 'react';
 import { addEngineer, type AddEngineerState } from '@/lib/admin/actions';
 import { Icon } from '@/components/ui/icon';
 import { cn } from '@/lib/utils';
@@ -18,7 +18,11 @@ const field = 'h-11 w-full rounded-xl border border-line bg-white px-3.5 text-[0
 /** Admin console → Accounts: add an engineer, then show the sign-in details to pass on. */
 export function AddEngineerForm() {
   const [state, action, pending] = useActionState<AddEngineerState, FormData>(addEngineer, {});
-  const [password, setPassword] = useState(suggest);
+  // Suggested in the browser once the form is shown, so the server and the browser never disagree about it; anything
+  // already typed in (on a slow phone, before the page's scripts were ready) is kept
+  const [password, setPassword] = useState('');
+  const passwordField = useRef<HTMLInputElement>(null);
+  useEffect(() => setPassword((p) => p || passwordField.current?.value || suggest()), []);
   const [copied, setCopied] = useState(false);
   const e = state.errors ?? {};
 
@@ -61,7 +65,7 @@ export function AddEngineerForm() {
         </Field>
         <Field label="Temporary password" error={e.password}>
           <span className="flex gap-2">
-            <input name="password" value={password} onChange={(ev) => setPassword(ev.target.value)} autoComplete="new-password" aria-invalid={!!e.password} className={cn(field, 'font-mono')} />
+            <input ref={passwordField} name="password" value={password} onChange={(ev) => setPassword(ev.target.value)} autoComplete="new-password" aria-invalid={!!e.password} className={cn(field, 'font-mono')} />
             <button type="button" onClick={() => setPassword(suggest())} title="Suggest another" aria-label="Suggest another password" className="grid size-11 shrink-0 place-items-center rounded-xl border border-line bg-white hover:border-ink/30">
               <Icon name="fi-rr-refresh" />
             </button>

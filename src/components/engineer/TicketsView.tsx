@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { useMemo, useRef, useState } from 'react';
 import { ticketStatusMeta } from '@/components/service/status';
 import { fieldClass, GhostButton, Panel, PrimaryButton, PriorityBadge, SectionLabel, tag } from '@/components/service/ui';
+import { Hint } from '@/components/ui/hint';
 import { Icon } from '@/components/ui/icon';
 import { fmtTime, isOpen, statusSteps, stepIndex, type Action, type EngineerState, type Ticket } from '@/lib/service/store';
 import { cn } from '@/lib/utils';
@@ -188,7 +189,14 @@ function TicketDetail({ ticket: t, state, me, dispatch, onResolve, onOpenAsset }
         {/* Next action */}
         {t.status !== 'resolved' && (
           <div className="mt-6 flex flex-wrap items-center gap-2 rounded-lg border border-line bg-canvas p-3">
-            <span className="mr-auto pl-1 text-[0.8125rem] font-semibold uppercase tracking-[0.08em] text-ink-3">Next step</span>
+            <span className="mr-auto flex items-center gap-2 pl-1 text-[0.8125rem] font-semibold uppercase tracking-[0.08em] text-ink-3">
+              Next step
+              <Hint>
+                Each button moves the job one step: <b className="font-semibold">Assign to me</b> → <b className="font-semibold">Start travel</b> → <b className="font-semibold">Arrived on site</b> → <b className="font-semibold">Resolve</b>. The hospital sees every step live, and gets a text when you take the job (with your number) and when you resolve it.
+                <br />
+                <b className="font-semibold">Take over</b> moves a job from another engineer to you, before they are on site.
+              </Hint>
+            </span>
             {(t.status === 'new' || (!mine && t.status !== 'onsite')) && (
               <PrimaryButton onClick={() => dispatch({ type: 'assign', id: t.id, engineer: me })}>
                 <Icon name="fi-rr-user-add" /> {t.status === 'new' ? 'Assign to me' : 'Take over'}

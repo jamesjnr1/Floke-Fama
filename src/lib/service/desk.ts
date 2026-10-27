@@ -134,6 +134,28 @@ export const dueLabel = (s: string) => {
 export const assetImage = (a: Asset) => a.image ?? (a.productSlug ? `/images/products/${a.productSlug}.webp` : undefined);
 
 export const isOpen = (t: Ticket) => t.status !== 'resolved';
+/**
+ * Where a visit booked from a Support page request stands, from its service request: it is only “assigned” once an
+ * engineer has actually taken the job.
+ */
+export function visitStatus(t: Pick<Ticket, 'status' | 'engineer'> | undefined): { label: string; tone: 'bad' | 'warn' | 'good' } {
+  if (!t) return { label: 'Visit booked', tone: 'warn' };
+  const who = t.engineer ?? 'The engineer';
+  if (t.status === 'new') return { label: 'Visit booked · waiting for an engineer', tone: 'bad' };
+  if (t.status === 'assigned') return { label: `Engineer assigned: ${who}`, tone: 'warn' };
+  if (t.status === 'travelling') return { label: `${who} is on the way`, tone: 'warn' };
+  if (t.status === 'onsite') return { label: `${who} is on site`, tone: 'warn' };
+  return { label: 'Fixed', tone: 'good' };
+}
+/**
+ * The priority a Support page request starts with, from the caller's answers: not working at all is critical,
+ * working but not right is high, everything else (maintenance, installation, other help) is routine.
+ */
+export function suggestedPriority(r: { type?: string; working?: string }): Priority {
+  if (r.type !== 'fault') return 'routine';
+  return r.working === 'down' ? 'critical' : 'high';
+}
+
 /** A hospital name for comparing: “Korle-Bu Teaching Hospital” and “korle bu teaching hospital” are the same. */
 export const facilityKey = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
 export function assetStatus(asset: Asset, tickets: Ticket[]): AssetStatus {

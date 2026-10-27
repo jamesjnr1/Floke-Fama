@@ -6,7 +6,8 @@ import { catalogue } from '@/data/catalogue';
 import { pushNew } from '@/lib/push';
 import { escalateStale, smsNew } from '@/lib/sms';
 import { canonicalFacility } from '@/lib/service/facilities';
-import { createSeed, reducer, type Action, type Actor, type Asset, type Notification, type ServiceState, type Ticket } from '@/lib/service/desk';
+import { supportDetails, type SupportInput } from '@/lib/support-schema';
+import { createSeed, facilityKey, reducer, type Action, type Actor, type Asset, type Notification, type ServiceState, type Ticket } from '@/lib/service/desk';
 
 /**
  * The service desk kept in Appwrite: one row per piece of equipment, request and notification, each holding
@@ -221,6 +222,53 @@ export async function updateEngineerPhone(name: string, phone: string) {
 }
 
 /** Turns a placed order into the hospital's equipment (and installation jobs), once per order. */
+/**
+ * A fault reported on the Support page as not working at all becomes a critical service request straight away, so it
+ * never waits for someone to press Book a visit. It is filed under the hospital's own name (when it is on record or
+ * registered), on the machine the caller named (added if new), and left unassigned for any engineer to take; the
+ * caller's number gets the job's texts. Engineers still call back first. Returns the new request's id.
+ */
+export async function autoBookVisit(reference: string, r: SupportInput): Promise<string | undefined> {
+  if (!appwrite || r.type !== 'fault' || r.working !== 'down') return;
+  for (let attempt = 0; ; attempt++) {
+    const before = await loadDesk();
+    const facility = await canonicalFacility(r.facility.trim().slice(0, 160), [...new Set(before.assets.map((a) => a.facility))]);
+    const named = (r.equipment ?? '').trim().slice(0, 120) || 'Equipment (not named)';
+    const existing = before.assets.find((a) => facilityKey(a.facility) === facilityKey(facility) && facilityKey(a.name) === facilityKey(named));
+    const newAsset = existing ? undefined : callerAsset(named, facility);
+    const description = `${supportDetails(r).map(([k, v]) => `${k}: ${v}`).join('\n')}\n\nFrom the website (${reference}): ${r.name}, ${r.phone}.`.slice(0, 1500);
+    const actor: Actor = { name: r.name.trim().slice(0, 80) || 'Support page', role: 'client', facility };
+    const after = reducer(actor)(before, {
+      type: 'create',
+      ticket: { assetId: existing?.id ?? newAsset!.id, description, priority: 'critical', contactPhone: r.phone.trim().slice(0, 30) },
+      assignToMe: false,
+      newAsset,
+    });
+    const job = after.tickets.find((t) => !before.tickets.some((b) => b.id === t.id));
+    try {
+      await saveChanges(before, after);
+      // A phone alert for the engineers; their text goes with the Support page's own (with this job's number)
+      await pushNew(before, after);
+      return job?.id;
+    } catch (e) {
+      if ((e as { code?: number }).code === 409 && attempt < 2) continue;
+      throw e;
+    }
+  }
+}
+
+/** A caller's machine that isn't on record yet, registered with the request (as the engineer portal's Book a visit does). */
+function callerAsset(name: string, facility: string): Asset {
+  const now = new Date();
+  const next = new Date(now);
+  next.setMonth(next.getMonth() + 12);
+  return {
+    id: `AS-${now.getTime().toString(36).toUpperCase()}${Math.random().toString(36).slice(2, 5).toUpperCase()}`,
+    name, brand: '', serial: 'Not recorded', facility, location: 'Location not set', readings: [],
+    installed: now.toISOString(), warrantyUntil: now.toISOString(), lastCalibration: now.toISOString(), nextCalibration: next.toISOString(), intervalMonths: 12, certificates: [],
+  };
+}
+
 export async function registerPurchase(s: SessionUser, order: string, items: Extract<Action, { type: 'purchase' }>['items']) {
   if (!items.length) return;
   for (let attempt = 0; ; attempt++) {

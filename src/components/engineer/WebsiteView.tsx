@@ -3,8 +3,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { GhostButton, Panel, PrimaryButton, tag } from '@/components/service/ui';
+import { Hint } from '@/components/ui/hint';
 import { Icon } from '@/components/ui/icon';
-import { fmtTime } from '@/lib/service/store';
+import { fmtTime, visitStatus, type Ticket } from '@/lib/service/store';
 import { supportDetails, supportSubject, type SupportInput } from '@/lib/support-schema';
 import { cn } from '@/lib/utils';
 
@@ -76,10 +77,12 @@ const filters: { id: Filter; label: string }[] = [
 
 /**
  * From the website: what people sent with the Support page's form, client or not. Call them back, then mark it;
- * when it needs a visit, "Send an engineer" opens a service request for the hospital's registered equipment.
+ * when it needs a visit, "Book a visit" opens a service request for the hospital's equipment.
  */
-export function WebsiteView({ requests, enabled, me, onCalled, onClose, onMakeJob, onOpenTicket }: {
+export function WebsiteView({ requests, tickets, enabled, me, onCalled, onClose, onMakeJob, onOpenTicket }: {
   requests: WebsiteRequest[] | null;
+  /** The service desk's requests, to show where each booked visit stands. */
+  tickets: Ticket[];
   enabled: boolean;
   me: string;
   onCalled: (r: WebsiteRequest) => void;
@@ -95,7 +98,16 @@ export function WebsiteView({ requests, enabled, me, onCalled, onClose, onMakeJo
 
   return (
     <div>
-      <p className="max-w-3xl text-sm text-ink-3">Sent with the Report a fault form on the Support page, by anyone. Call them back first. If it can be settled by phone, mark it Called back or Close. If it needs a visit, press Send an engineer: it becomes a service request, tracked like any other.</p>
+      <p className="max-w-3xl text-sm text-ink-3">
+        Sent with the form on the Support page, by anyone, client or not. Call them back first.{' '}
+        <Hint>
+          <b className="font-semibold">Called back:</b> settled on the phone, no visit needed.
+          <br />
+          <b className="font-semibold">Book a visit:</b> it needs an engineer on site. It becomes a service request, with the priority set from what the caller said; tick “Assign to me” to take it yourself, or leave it for any engineer under Unassigned. The caller is texted when an engineer takes it and when it is fixed.
+          <br />
+          <b className="font-semibold">Close:</b> nothing more to do (a test or a duplicate).
+        </Hint>
+      </p>
       <div className="mt-4 flex gap-4 overflow-x-auto border-b border-line" role="tablist" aria-label="Request filter">
         {filters.map((f) => (
           <button key={f.id} role="tab" aria-selected={filter === f.id} onClick={() => setFilter(f.id)} className={cn('-mb-px shrink-0 border-b-2 py-2.5 text-sm', filter === f.id ? 'border-ink font-semibold text-ink' : 'border-transparent text-ink-3 hover:text-ink')}>
@@ -133,7 +145,7 @@ export function WebsiteView({ requests, enabled, me, onCalled, onClose, onMakeJo
 
               <div className="mt-auto flex flex-wrap items-center gap-2 pt-4">
                 {r.status !== 'closed' && r.type !== 'assistance' && !r.ticketId && (
-                  <PrimaryButton onClick={() => onMakeJob(r)}><Icon name="fi-rr-plus" /> Send an engineer</PrimaryButton>
+                  <PrimaryButton onClick={() => onMakeJob(r)}><Icon name="fi-rr-calendar" /> Book a visit</PrimaryButton>
                 )}
                 {r.status === 'new' && <GhostButton onClick={() => onCalled(r)}><Icon name="fi-rr-check" /> Called back</GhostButton>}
                 {r.status !== 'closed' && <GhostButton onClick={() => onClose(r)}>Close</GhostButton>}
@@ -141,7 +153,7 @@ export function WebsiteView({ requests, enabled, me, onCalled, onClose, onMakeJo
                   <button onClick={() => onOpenTicket(r.ticketId!)} className="text-sm font-semibold text-brand-700 hover:underline">View service request {r.ticketId}</button>
                 )}
                 <span className="ml-auto text-xs text-ink-3">
-                  {statusLabel[r.status]}
+                  {r.ticketId ? visitStatus(tickets.find((t) => t.id === r.ticketId)).label : statusLabel[r.status]}
                   {r.status !== 'new' && r.handledBy && ` · ${r.handledBy === me ? 'you' : r.handledBy}`}
                   {r.status !== 'new' && r.handledAt && `, ${fmtTime(r.handledAt)}`}
                 </span>

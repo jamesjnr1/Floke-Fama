@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { helpHref } from '@/lib/links';
 import { useEffect, useRef, useState } from 'react';
 import { inputClass, statusStyle, urgency, tag } from '@/components/client/ui';
+import { Hint } from '@/components/ui/hint';
 import { Icon, IconTile } from '@/components/ui/icon';
 import { downloadCertificate } from '@/lib/service/certificate';
 import { assetImage, assetStatus, clientSteps, dueLabel, daysUntil, fmtDate, fmtTime, type Asset, type Priority, type Ticket } from '@/lib/service/store';
@@ -123,7 +124,12 @@ export function RequestDialog({ open, onOpenChange, assets, defaultAssetId, defa
           {error && <span role="alert" className="text-xs text-signal-700">{error}</span>}
         </label>
         <fieldset>
-          <legend className="text-sm font-medium text-ink-2">How urgent is it?</legend>
+          <legend className="flex items-center gap-2 text-sm font-medium text-ink-2">
+            How urgent is it?
+            <Hint>
+              <b className="font-semibold">System down</b> and <b className="font-semibold">Degraded</b> send a text to every Flokefama engineer straight away. <b className="font-semibold">Routine</b> goes to the service desk for the next visit.
+            </Hint>
+          </legend>
           <div className="mt-2 grid gap-2 sm:grid-cols-3">
             {(['critical', 'high', 'routine'] as const).map((p) => (
               <button

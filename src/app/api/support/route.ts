@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 import { pushToEngineers } from '@/lib/push';
 import { smsWebsiteFault } from '@/lib/sms';
 import { emailSales, emailSupport } from '@/lib/support-email';
-import { saveSupportRequest } from '@/lib/support-requests';
+import { saveSupportRequest, setSupportStatus } from '@/lib/support-requests';
+import { autoBookVisit } from '@/lib/service/server';
 import { clientIp, limited } from '@/lib/rate-limit';
 import { requestTypes, supportDetails, supportSchema, supportSubject } from '@/lib/support-schema';
 
@@ -30,6 +31,14 @@ export async function POST(request: Request) {
     return null;
   });
   const ref = saved ? ` (${saved})` : '';
+  // Not working at all: a critical service request at once, linked to this request (engineers still call back first)
+  const job = saved
+    ? await autoBookVisit(saved, data).catch((e) => {
+        console.error('[support] visit not booked automatically', e);
+        return undefined;
+      })
+    : undefined;
+  if (saved && job) await setSupportStatus(saved, 'new', 'Booked automatically', job).catch((e) => console.error('[support] job not linked', e));
   // Each channel on its own: one that fails doesn't stop the others
   const results = await Promise.allSettled([
     emailSupport(`${kind}: ${data.facility} - ${supportSubject(data)}${ref}`, {
@@ -51,7 +60,7 @@ export async function POST(request: Request) {
         }, { phone: data.phone })
       : Promise.resolve(false),
     // Engineers hear about it on their phones: a text for a fault, a portal alert for every request
-    saved ? smsWebsiteFault({ reference: saved, ...data }).then(() => false) : Promise.resolve(false),
+    saved ? smsWebsiteFault({ reference: saved, job, ...data }).then(() => false) : Promise.resolve(false),
     saved
       ? pushToEngineers({ body: `${kind} from ${data.facility}: ${supportSubject(data)}${data.working === 'down' ? ' (not working at all)' : ''}. Call ${data.name} back.`, url: `/engineer?website=${saved}`, tag: saved }).then(() => false)
       : Promise.resolve(false),
@@ -60,5 +69,5 @@ export async function POST(request: Request) {
   // Not delivered (nothing configured, or every channel failed): the visitor sends it themselves by email or
   // WhatsApp, pre-filled, so the request is never lost
   const delivered = Boolean(saved) || results.some((r) => r.status === 'fulfilled' && r.value);
-  return NextResponse.json({ delivered, reference: saved ?? undefined });
+  return NextResponse.json({ delivered, reference: saved ?? undefined, job });
 }

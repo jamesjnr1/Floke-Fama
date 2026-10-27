@@ -7,7 +7,7 @@ import type { SupportInput } from '@/lib/support-schema';
 /**
  * Requests sent with the Support page's form (Report a fault, maintenance, installation, other), kept in Appwrite
  * (table `support_requests`). Engineers see them in their portal (From the website), call back, and when a visit
- * is needed press Send an engineer, which opens a service request; the admin console lists them all.
+ * is needed press Book a visit, which opens a service request; the admin console lists them all.
  */
 export type SupportStatus = 'new' | 'called' | 'closed';
 export const supportStatuses: SupportStatus[] = ['new', 'called', 'closed'];
@@ -23,7 +23,7 @@ export interface SupportRequest extends Partial<Omit<SupportInput, 'website'>> {
   /** Who last moved it on (engineer or admin), and when. */
   handledBy?: string;
   handledAt?: string;
-  /** The service request it became (Send an engineer). */
+  /** The service request it became (Book a visit). */
   ticketId?: string;
 }
 
