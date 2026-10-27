@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Icon } from '@/components/ui/icon';
 import { useSite } from '@/components/site-provider';
@@ -26,6 +26,19 @@ export function SupportForm() {
   const [pending, setPending] = useState(false);
   const [result, setResult] = useState<Result>(null);
   const [type, setType] = useState<SupportInput['type']>('fault');
+  // Filled in from a link (e.g. "Book a demonstration" on a product: ?type=assistance&topic=demo&equipment=…)
+  const [prefill, setPrefill] = useState<Partial<Record<'topic' | 'equipment' | 'message', string>>>({});
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    const t = requestTypes.find((x) => x.id === q.get('type'))?.id;
+    if (!t) return;
+    setType(t);
+    setPrefill({
+      topic: assistanceTopics.find((x) => x.id === q.get('topic'))?.id,
+      equipment: q.get('equipment')?.slice(0, 160) || undefined,
+      message: q.get('message')?.slice(0, 2000) || undefined,
+    });
+  }, []);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -57,13 +70,13 @@ export function SupportForm() {
   const notes = (label: string, placeholder: string, required: boolean) => (
     <label className="flex flex-1 flex-col gap-1.5">
       <span className="text-sm font-medium text-ink-2">{label}{!required && <span className="font-normal text-ink-3"> (optional)</span>}</span>
-      <textarea name="message" rows={4} placeholder={placeholder} aria-invalid={!!errors.message} className={cn(field, 'h-auto min-h-[7.5rem] flex-1 resize-none py-3')} />
+      <textarea name="message" rows={4} placeholder={placeholder} defaultValue={prefill.message} aria-invalid={!!errors.message} className={cn(field, 'h-auto min-h-[7.5rem] flex-1 resize-none py-3')} />
       {errors.message && <span role="alert" className="text-xs text-signal-700">{errors.message}</span>}
     </label>
   );
   const equipment = (placeholder: string, optional = false) => (
     <Field label="Equipment" optional={optional} error={errors.equipment}>
-      <input name="equipment" placeholder={placeholder} aria-invalid={!!errors.equipment} className={field} />
+      <input name="equipment" placeholder={placeholder} defaultValue={prefill.equipment} aria-invalid={!!errors.equipment} className={field} />
     </Field>
   );
   const preferred = (
@@ -94,6 +107,7 @@ export function SupportForm() {
               checked={type === t.id}
               onChange={() => {
                 setType(t.id);
+                setPrefill({});
                 setErrors({});
               }}
               className="sr-only"
@@ -105,7 +119,7 @@ export function SupportForm() {
       </div>
 
       {/* The questions for this tab, then who to call back. key: a fresh set of fields for each tab */}
-      <div key={type} className="flex flex-1 flex-col gap-5 p-6 md:p-9">
+      <div key={`${type}:${JSON.stringify(prefill)}`} className="flex flex-1 flex-col gap-5 p-6 md:p-9">
         {type === 'fault' && (
           <>
             <div className="grid gap-5 md:grid-cols-2">
@@ -150,7 +164,7 @@ export function SupportForm() {
         )}
         {type === 'assistance' && (
           <>
-            <Choices name="topic" label="What do you need help with?" options={assistanceTopics} error={errors.topic} />
+            <Choices name="topic" label="What do you need help with?" options={assistanceTopics} picked={prefill.topic} error={errors.topic} />
             {equipment('If it is about a particular machine', true)}
             {notes('Tell us more', 'What do you need, and for whom?', true)}
           </>
@@ -185,14 +199,14 @@ export function SupportForm() {
 
 /** A question answered by picking one of a few square choices. */
 /** A question answered by picking one option on a single connected bar (no radio circles); the chosen one is filled in green. */
-function Choices({ name, label, options, error }: { name: string; label: string; options: readonly { id: string; label: string }[]; error?: string }) {
+function Choices({ name, label, options, picked, error }: { name: string; label: string; options: readonly { id: string; label: string }[]; picked?: string; error?: string }) {
   return (
     <fieldset>
       <legend className="text-sm font-medium text-ink-2">{label}</legend>
-      <div className={cn('mt-1.5 grid gap-px overflow-hidden rounded-lg border border-line bg-line', options.length > 2 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-2', error && 'border-signal')}>
+      <div className={cn('mt-1.5 grid gap-px overflow-hidden rounded-lg border border-line bg-line', options.length > 4 ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-5' : options.length > 2 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-2', error && 'border-signal')}>
         {options.map((o) => (
           <label key={o.id} className="flex min-h-12 cursor-pointer items-center justify-center bg-paper px-3 py-2.5 text-center text-[0.9375rem] font-medium leading-tight text-ink-2 transition hover:bg-mist has-[:checked]:bg-brand-600 has-[:checked]:text-white has-[:focus-visible]:ring-4 has-[:focus-visible]:ring-inset has-[:focus-visible]:ring-brand-500/30">
-            <input type="radio" name={name} value={o.id} className="sr-only" />
+            <input type="radio" name={name} value={o.id} defaultChecked={o.id === picked} className="sr-only" />
             {o.label}
           </label>
         ))}

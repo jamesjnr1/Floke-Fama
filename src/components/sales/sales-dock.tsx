@@ -79,7 +79,7 @@ export function SalesDock() {
     return () => document.removeEventListener('click', onClick);
   }, []);
 
-  const onQuotePage = pathname.startsWith('/quote') || pathname.startsWith('/checkout');
+  const onQuotePage = pathname.startsWith('/checkout');
   const onProduct = /^\/products\/[^/]+/.test(pathname);
 
   const whatsapp = () => {

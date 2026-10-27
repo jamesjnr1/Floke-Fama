@@ -3,6 +3,7 @@
 import * as Dialog from '@radix-ui/react-dialog';
 import Image from 'next/image';
 import Link from 'next/link';
+import { helpHref } from '@/lib/links';
 import { useEffect, useState } from 'react';
 import { inputClass, statusStyle, urgency, tag } from '@/components/client/ui';
 import { Icon, IconTile } from '@/components/ui/icon';
@@ -190,7 +191,7 @@ export function EquipmentSheet({ asset, tickets, onClose, onRequest, onOpenTicke
             )}
             {asset.productSlug && (
               <>
-                <Link href={`/quote?product=${asset.productSlug}`} className="inline-flex items-center gap-2 rounded-xl border border-line px-4 py-2.5 text-sm font-medium text-ink hover:border-ink/30">
+                <Link href={helpHref('parts', { equipment: asset.name })} className="inline-flex items-center gap-2 rounded-xl border border-line px-4 py-2.5 text-sm font-medium text-ink hover:border-ink/30">
                   <Icon name="fi-rr-shopping-cart" /> Order consumables
                 </Link>
                 <Link href={`/products/${asset.productSlug}`} target="_blank" className="inline-flex items-center gap-2 rounded-xl border border-line px-4 py-2.5 text-sm font-medium text-ink hover:border-ink/30">

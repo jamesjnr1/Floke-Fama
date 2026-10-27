@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { helpHref } from '@/lib/links';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, LayoutGroup, motion } from 'motion/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -160,7 +161,7 @@ export function Catalog({ products, categories, typeList }: {
         <div className="rounded-4xl border border-dashed border-line p-12 text-center">
           <p className="text-lg font-medium text-ink">No matches for “{query}”</p>
           <p className="mt-2 text-sm text-ink-3">Our team sources beyond the catalogue.</p>
-          <Link href={`/quote?need=${encodeURIComponent(query)}`} className="mt-5 inline-flex items-center gap-1 text-sm font-medium text-brand-600">
+          <Link href={helpHref('other', { message: `I'm looking for: ${query}` })} className="mt-5 inline-flex items-center gap-1 text-sm font-medium text-brand-600">
             Ask us to source it
           </Link>
         </div>

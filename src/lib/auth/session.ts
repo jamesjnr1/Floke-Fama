@@ -45,7 +45,7 @@ export const roleAreas: { prefix: string; role: Role }[] = [
 ];
 
 /** Pages that need a signed-in user of any role. */
-export const signedInAreas = ['/checkout', '/quote'];
+export const signedInAreas = ['/checkout'];
 
 /** Where a role may be sent after signing in: anywhere on the site except another role's area. */
 export function nextFor(role: Role, next: string | null) {

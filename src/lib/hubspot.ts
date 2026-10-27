@@ -2,8 +2,9 @@ import 'server-only';
 
 /**
  * HubSpot through a service key (HubSpot → Development → Service keys) or a private app's token, set as HUBSPOT_ACCESS_TOKEN.
- * Each quote becomes a deal on the sales pipeline, linked to the contact and the hospital (a company), with the full
- * request as a note; a support request adds a note to the caller's contact. HUBSPOT_PIPELINE_ID and
+ * Each shop order (and each demonstration asked for on the Support page) becomes a deal on the sales pipeline, linked
+ * to the contact and the hospital (a company), with the details as a note; other support requests add a note to the
+ * caller's contact. HUBSPOT_PIPELINE_ID and
  * HUBSPOT_DEAL_STAGE pick where new deals land (default: the first stage of the default pipeline), and
  * HUBSPOT_OWNER_ID who in sales owns them.
  */
@@ -106,22 +107,8 @@ async function addNote(body: string, associations: ReturnType<typeof to>[]) {
   await api('POST', '/crm/v3/objects/notes', { properties: { hs_note_body: body, hs_timestamp: new Date().toISOString() }, associations });
 }
 
-export type QuoteDeal = {
-  reference: string;
-  intent: 'quote' | 'demo';
-  name: string;
-  email: string;
-  phone: string;
-  role?: string;
-  facility: string;
-  department: string;
-  equipment: string[];
-  timeline: string;
-  priority: 'HIGH' | 'MEDIUM' | 'LOW';
-  notes?: string;
-};
-
-type Person = { name: string; email: string; phone: string; role?: string; facility: string };
+/** Who a deal is for; without an email (a Support page request) the contact is found by phone. */
+type Person = { name: string; email?: string; phone: string; role?: string; facility: string };
 
 /** A deal on the sales pipeline, linked to the person (a contact) and their hospital (a company), with the details as a note. */
 async function createDeal(who: Person, deal: { name: string; priority: 'HIGH' | 'MEDIUM' | 'LOW'; noteTitle: string; lines: Lines }) {
@@ -152,27 +139,8 @@ async function createDeal(who: Person, deal: { name: string; priority: 'HIGH' | 
   return created.id;
 }
 
-const from = (w: Person) => `${w.name}${w.role ? `, ${w.role}` : ''}, ${w.facility} · ${w.phone} · ${w.email}`;
+const from = (w: Person) => [`${w.name}${w.role ? `, ${w.role}` : ''}`, w.facility, w.phone, w.email].filter(Boolean).join(' · ');
 const summary = (names: string[]) => (names.length > 1 ? `${names[0]} +${names.length - 1} more` : names[0]);
-
-/** A quote or demonstration request as a deal, with its contact, hospital and the full request as a note. */
-export function createQuoteDeal(q: QuoteDeal) {
-  const kind = q.intent === 'demo' ? 'demonstration' : 'quote';
-  return createDeal(q, {
-    name: `${q.intent === 'demo' ? 'Demo' : 'Quote'}: ${summary(q.equipment)} · ${q.facility}`,
-    priority: q.priority,
-    noteTitle: `Website ${kind} request ${q.reference}`,
-    lines: [
-      ['Reference', q.reference],
-      ['Request', q.intent === 'demo' ? 'Demonstration' : 'Quotation'],
-      ['Department', q.department],
-      ['Equipment', q.equipment.map((e) => `• ${e}`).join('\n')],
-      ['Timeline', q.timeline],
-      ['Notes', q.notes],
-      ['From', from(q)],
-    ],
-  });
-}
 
 export type OrderDeal = Person & {
   reference: string;
@@ -180,6 +148,10 @@ export type OrderDeal = Person & {
   payment: string;
   region?: string;
   address?: string;
+  department?: string;
+  /** How soon it is needed: sets the deal's priority (urgent → high). */
+  timeline?: { id: 'urgent' | 'quarter' | 'planning'; label: string };
+  notes?: string;
 };
 
 /** A shop order as a deal: sales confirms the total and the payment with the hospital. */
@@ -187,14 +159,32 @@ export function createOrderDeal(o: OrderDeal) {
   const items = o.items.map((i) => `${i.name}${i.qty > 1 ? ` × ${i.qty}` : ''}`);
   return createDeal(o, {
     name: `Order ${o.reference}: ${summary(items)} · ${o.facility}`,
-    priority: 'HIGH',
+    priority: o.timeline?.id === 'planning' ? 'LOW' : o.timeline?.id === 'quarter' ? 'MEDIUM' : 'HIGH',
     noteTitle: `Shop order ${o.reference}, awaiting payment`,
     lines: [
       ['Reference', o.reference],
       ['Items', items.map((i) => `• ${i}`).join('\n')],
+      ['Department', o.department],
+      ['Needed', o.timeline?.label],
+      ['Notes', o.notes],
       ['Payment', o.payment],
       ['Deliver to', [o.address, o.region].filter(Boolean).join(', ')],
       ['From', from(o)],
+    ],
+  });
+}
+
+/** A demonstration requested on the Support page: a sales lead, so a deal rather than a note. */
+export function createDemoDeal(d: Person & { reference?: string; equipment?: string; message?: string }) {
+  return createDeal(d, {
+    name: `Demo: ${d.equipment || 'equipment'} · ${d.facility}`,
+    priority: 'MEDIUM',
+    noteTitle: `Demonstration requested on the Support page${d.reference ? ` (${d.reference})` : ''}`,
+    lines: [
+      ['Reference', d.reference],
+      ['Equipment', d.equipment],
+      ['Details', d.message],
+      ['From', from(d)],
     ],
   });
 }
@@ -212,14 +202,14 @@ export async function noteSupportRequest(s: { name: string; phone: string; facil
  * companies and deals? Returns the reason in plain words when something is wrong.
  */
 export async function hubspotStatus(): Promise<{ ok: boolean; detail: string }> {
-  if (!token()) return { ok: false, detail: 'HUBSPOT_ACCESS_TOKEN is not set: quotes are handed to the visitor’s email or WhatsApp (or the HubSpot form, if HUBSPOT_PORTAL_ID and HUBSPOT_FORM_GUID are set).' };
+  if (!token()) return { ok: false, detail: 'HUBSPOT_ACCESS_TOKEN is not set: orders are saved for the hospital’s dashboard but sales isn’t told; the confirmation offers to send them by email or WhatsApp.' };
   try {
     for (const object of ['contacts', 'companies', 'deals']) await api('GET', `/crm/v3/objects/${object}?limit=1`);
     const pipeline = await api<{ label: string; stages: { id: string; label: string; displayOrder: number }[] }>('GET', `/crm/v3/pipelines/deals/${pipelineId()}`);
     const stageId = await dealStage();
     const stage = pipeline.stages.find((s) => s.id === stageId);
     if (!stage) return { ok: false, detail: `HUBSPOT_DEAL_STAGE “${stageId}” is not a stage of the “${pipeline.label}” pipeline. Stages: ${pipeline.stages.map((s) => `${s.label} (${s.id})`).join(', ')}.` };
-    return { ok: true, detail: `Connected. Each quote and shop order becomes a deal in “${pipeline.label}” at “${stage.label}”, with its contact, hospital and a note; support requests are noted on the caller’s contact.` };
+    return { ok: true, detail: `Connected. Each shop order and demonstration request becomes a deal in “${pipeline.label}” at “${stage.label}”, with its contact, hospital and a note; support requests are noted on the caller’s contact.` };
   } catch (e) {
     if (e instanceof HubSpotError) {
       if (e.status === 401) return { ok: false, detail: 'HubSpot did not accept HUBSPOT_ACCESS_TOKEN. Copy the service key again from HubSpot → Development → Service keys (or create a new one).' };
