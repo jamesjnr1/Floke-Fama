@@ -3,6 +3,7 @@ import { Query, type Models } from 'node-appwrite';
 import { catalogue } from '@/data/catalogue';
 import { appwrite, DATABASE_ID, isNotFound, TABLES } from '@/lib/appwrite';
 import { getSession } from '@/lib/auth/server';
+import { createOrderDeal, hubspotConfigured } from '@/lib/hubspot';
 import { needsInstallation } from '@/lib/installation';
 import type { SavedOrder } from '@/lib/orders';
 import { registerPurchase } from '@/lib/service/server';
@@ -10,7 +11,8 @@ import { registerPurchase } from '@/lib/service/server';
 /**
  * A hospital's orders (Appwrite table `orders`, one row per order, keyed by its reference). GET lists the
  * signed-in hospital's orders; POST records one placed at checkout and turns it into the hospital's equipment
- * (installation jobs for systems an engineer must commission), once. Without Appwrite: `{ enabled: false }`,
+ * (installation jobs for systems an engineer must commission), once, and a deal in HubSpot for sales (`sales: true`
+ * when it got there). Without Appwrite: `{ enabled: false }`,
  * and orders stay in the browser.
  */
 export const dynamic = 'force-dynamic';
@@ -73,7 +75,7 @@ export async function POST(req: NextRequest) {
 
   try {
     await appwrite.tables.getRow({ databaseId: DATABASE_ID, tableId: TABLES.orders, rowId: order.reference });
-    return NextResponse.json({ order }, { headers: noStore }); // already recorded
+    return NextResponse.json({ order, sales: null }, { headers: noStore }); // already recorded
   } catch (e) {
     if (!isNotFound(e)) throw e;
   }
@@ -86,5 +88,31 @@ export async function POST(req: NextRequest) {
       .map(({ p, qty }) => ({ slug: p.slug, name: tidyName(p.name), brand: p.brand, image: p.image, qty, install: needsInstallation(p) }));
     await registerPurchase(s, order.reference, equipment);
   }
-  return NextResponse.json({ order }, { headers: noStore });
+
+  // Sales gets it in HubSpot to confirm the total and payment; if HubSpot fails, the page offers "Send order to sales"
+  const c = (o as { customer?: Record<string, unknown> }).customer ?? {};
+  const text = (v: unknown, max: number) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
+  const momo = (o as { momo?: { network?: unknown } }).momo;
+  const sales = hubspotConfigured()
+    ? await createOrderDeal({
+        reference: order.reference,
+        name: text(c.name, 120) || s.name,
+        email: s.email,
+        phone: text(c.phone, 40) || s.phone || '',
+        facility: text(c.organisation, 160) || s.facility || s.name,
+        items: order.items.map((i) => ({ name: tidyName(i.name), qty: i.qty })),
+        payment: [{ momo: 'Mobile money', card: 'Card', bank: 'Bank transfer' }[order.method], order.method === 'momo' && text(momo?.network, 30) ? `(${text(momo?.network, 30)})` : '']
+          .filter(Boolean)
+          .join(' '),
+        region: order.region,
+        address: order.address,
+      }).then(
+        () => true,
+        (e) => {
+          console.error('[orders] not sent to HubSpot', e);
+          return false;
+        },
+      )
+    : false;
+  return NextResponse.json({ order, sales }, { headers: noStore });
 }

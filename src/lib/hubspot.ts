@@ -82,9 +82,23 @@ function dealStage() {
   return firstStage;
 }
 
+type Lines = [string, string | undefined][];
+let priorities: Promise<{ label: string; value: string }[]> | undefined;
+/** The account's own value for this deal priority (HubSpot's are usually low/medium/high), or none if it has no such option. */
+async function priority(level: 'HIGH' | 'MEDIUM' | 'LOW') {
+  priorities ??= api<{ options?: { label: string; value: string }[] }>('GET', '/crm/v3/properties/deals/hs_priority')
+    .then((p) => p.options ?? [])
+    .catch(() => {
+      priorities = undefined;
+      return [];
+    });
+  const want = level.toLowerCase();
+  return (await priorities).find((o) => o.value.toLowerCase() === want || o.label.toLowerCase() === want)?.value;
+}
+
 const html = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 /** Lines of "Label: value" as a note HubSpot shows with line breaks. */
-const noteBody = (title: string, lines: [string, string | undefined][]) =>
+const noteBody = (title: string, lines: Lines) =>
   `<p><strong>${html(title)}</strong></p>` +
   lines.filter(([, v]) => v?.trim()).map(([k, v]) => `<p><strong>${html(k)}:</strong> ${html(v!).replace(/\n/g, '<br>')}</p>`).join('');
 
@@ -107,45 +121,86 @@ export type QuoteDeal = {
   notes?: string;
 };
 
-/** A quote or demonstration request as a deal, with its contact, hospital and the full request as a note. */
-export async function createQuoteDeal(q: QuoteDeal) {
-  const [firstname, ...rest] = q.name.trim().split(/\s+/);
+type Person = { name: string; email: string; phone: string; role?: string; facility: string };
+
+/** A deal on the sales pipeline, linked to the person (a contact) and their hospital (a company), with the details as a note. */
+async function createDeal(who: Person, deal: { name: string; priority: 'HIGH' | 'MEDIUM' | 'LOW'; noteTitle: string; lines: Lines }) {
+  const [firstname, ...rest] = who.name.trim().split(/\s+/);
   const [contactId, companyId, stage] = await Promise.all([
-    upsertContact({ email: q.email, firstname, lastname: rest.join(' '), phone: q.phone, company: q.facility, jobtitle: q.role }),
-    upsertCompany(q.facility),
+    upsertContact({ email: who.email, firstname, lastname: rest.join(' '), phone: who.phone, company: who.facility, jobtitle: who.role }),
+    upsertCompany(who.facility),
     dealStage(),
   ]);
   await api('PUT', `/crm/v4/objects/contact/${contactId}/associations/default/company/${companyId}`);
-  const what = q.equipment.length > 1 ? `${q.equipment[0]} +${q.equipment.length - 1} more` : q.equipment[0];
-  const lines: [string, string | undefined][] = [
-    ['Reference', q.reference],
-    ['Request', q.intent === 'demo' ? 'Demonstration' : 'Quotation'],
-    ['Department', q.department],
-    ['Equipment', q.equipment.map((e) => `• ${e}`).join('\n')],
-    ['Timeline', q.timeline],
-    ['Notes', q.notes],
-    ['From', `${q.name}${q.role ? `, ${q.role}` : ''}, ${q.facility} · ${q.phone} · ${q.email}`],
-  ];
-  const deal = await api<{ id: string }>('POST', '/crm/v3/objects/deals', {
-    properties: clean({
-      dealname: `${q.intent === 'demo' ? 'Demo' : 'Quote'}: ${what} · ${q.facility}`.slice(0, 250),
-      pipeline: pipelineId(),
-      dealstage: stage,
-      hs_priority: q.priority,
-      hubspot_owner_id: process.env.HUBSPOT_OWNER_ID?.trim(),
-      description: lines.filter(([, v]) => v?.trim()).map(([k, v]) => `${k}: ${v}`).join('\n').slice(0, 60_000),
-    }),
-    associations: [to(contactId, DEAL_TO_CONTACT), to(companyId, DEAL_TO_COMPANY)],
+  const required = {
+    dealname: deal.name.slice(0, 250),
+    pipeline: pipelineId(),
+    dealstage: stage,
+    description: deal.lines.filter(([, v]) => v?.trim()).map(([k, v]) => `${k}: ${v}`).join('\n').slice(0, 60_000),
+  };
+  const optional = clean({ hs_priority: await priority(deal.priority), hubspot_owner_id: process.env.HUBSPOT_OWNER_ID?.trim() });
+  const associations = [to(contactId, DEAL_TO_CONTACT), to(companyId, DEAL_TO_COMPANY)];
+  const created = await api<{ id: string }>('POST', '/crm/v3/objects/deals', { properties: { ...required, ...optional }, associations }).catch((e) => {
+    // A priority or owner this account doesn't accept mustn't lose the deal: try once without them
+    if (e instanceof HubSpotError && e.status === 400 && Object.keys(optional).length) {
+      console.error('[hubspot] deal refused with priority/owner, sending without them', e.message);
+      return api<{ id: string }>('POST', '/crm/v3/objects/deals', { properties: required, associations });
+    }
+    throw e;
   });
-  await addNote(noteBody(`Website ${q.intent === 'demo' ? 'demonstration' : 'quote'} request ${q.reference}`, lines), [
-    to(deal.id, NOTE_TO_DEAL),
-    to(contactId, NOTE_TO_CONTACT),
-  ]);
-  return deal.id;
+  await addNote(noteBody(deal.noteTitle, deal.lines), [to(created.id, NOTE_TO_DEAL), to(contactId, NOTE_TO_CONTACT)]);
+  return created.id;
+}
+
+const from = (w: Person) => `${w.name}${w.role ? `, ${w.role}` : ''}, ${w.facility} · ${w.phone} · ${w.email}`;
+const summary = (names: string[]) => (names.length > 1 ? `${names[0]} +${names.length - 1} more` : names[0]);
+
+/** A quote or demonstration request as a deal, with its contact, hospital and the full request as a note. */
+export function createQuoteDeal(q: QuoteDeal) {
+  const kind = q.intent === 'demo' ? 'demonstration' : 'quote';
+  return createDeal(q, {
+    name: `${q.intent === 'demo' ? 'Demo' : 'Quote'}: ${summary(q.equipment)} · ${q.facility}`,
+    priority: q.priority,
+    noteTitle: `Website ${kind} request ${q.reference}`,
+    lines: [
+      ['Reference', q.reference],
+      ['Request', q.intent === 'demo' ? 'Demonstration' : 'Quotation'],
+      ['Department', q.department],
+      ['Equipment', q.equipment.map((e) => `• ${e}`).join('\n')],
+      ['Timeline', q.timeline],
+      ['Notes', q.notes],
+      ['From', from(q)],
+    ],
+  });
+}
+
+export type OrderDeal = Person & {
+  reference: string;
+  items: { name: string; qty: number }[];
+  payment: string;
+  region?: string;
+  address?: string;
+};
+
+/** A shop order as a deal: sales confirms the total and the payment with the hospital. */
+export function createOrderDeal(o: OrderDeal) {
+  const items = o.items.map((i) => `${i.name}${i.qty > 1 ? ` × ${i.qty}` : ''}`);
+  return createDeal(o, {
+    name: `Order ${o.reference}: ${summary(items)} · ${o.facility}`,
+    priority: 'HIGH',
+    noteTitle: `Shop order ${o.reference}, awaiting payment`,
+    lines: [
+      ['Reference', o.reference],
+      ['Items', items.map((i) => `• ${i}`).join('\n')],
+      ['Payment', o.payment],
+      ['Deliver to', [o.address, o.region].filter(Boolean).join(', ')],
+      ['From', from(o)],
+    ],
+  });
 }
 
 /** A support request from the Support page as a note on the caller's contact, so sales sees the history. */
-export async function noteSupportRequest(s: { name: string; phone: string; facility: string; title: string; lines: [string, string | undefined][] }) {
+export async function noteSupportRequest(s: { name: string; phone: string; facility: string; title: string; lines: Lines }) {
   const [firstname, ...rest] = s.name.trim().split(/\s+/);
   const contactId = await upsertContact({ firstname, lastname: rest.join(' '), phone: s.phone, company: s.facility });
   await addNote(noteBody(s.title, s.lines), [to(contactId, NOTE_TO_CONTACT)]);
@@ -164,7 +219,7 @@ export async function hubspotStatus(): Promise<{ ok: boolean; detail: string }> 
     const stageId = await dealStage();
     const stage = pipeline.stages.find((s) => s.id === stageId);
     if (!stage) return { ok: false, detail: `HUBSPOT_DEAL_STAGE “${stageId}” is not a stage of the “${pipeline.label}” pipeline. Stages: ${pipeline.stages.map((s) => `${s.label} (${s.id})`).join(', ')}.` };
-    return { ok: true, detail: `Connected. Each quote becomes a deal in “${pipeline.label}” at “${stage.label}”, with its contact, hospital and a note; support requests are noted on the caller’s contact.` };
+    return { ok: true, detail: `Connected. Each quote and shop order becomes a deal in “${pipeline.label}” at “${stage.label}”, with its contact, hospital and a note; support requests are noted on the caller’s contact.` };
   } catch (e) {
     if (e instanceof HubSpotError) {
       if (e.status === 401) return { ok: false, detail: 'HubSpot did not accept HUBSPOT_ACCESS_TOKEN. Copy the service key again from HubSpot → Development → Service keys (or create a new one).' };
