@@ -23,6 +23,7 @@ export const TABLES = {
   pushSubscriptions: 'push_subscriptions',
   smsLog: 'sms_log',
   supportRequests: 'support_requests',
+  smsOptOut: 'sms_optout',
 } as const;
 export const BUCKETS = { hospitalLogos: 'hospital-logos' } as const;
 

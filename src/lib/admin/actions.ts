@@ -10,6 +10,7 @@ import { ENGINEER_ID_PREFIX } from '@/lib/auth/users';
 import type { OrderStatus, SavedOrder } from '@/lib/orders';
 import { salesStages, stageLabel } from '@/lib/sales-stages';
 import { sendTestSms } from '@/lib/sms';
+import { textAllHospitals } from '@/lib/client-sms';
 
 /** Reads an order, changes it and writes it back, with a line in its log saying who did what. Admins only. */
 async function changeOrder(reference: string, change: (o: SavedOrder) => { order: SavedOrder; log?: string } | null) {
@@ -109,4 +110,20 @@ export async function testSms(_prev: TestSmsState, form: FormData): Promise<Test
   if (!s) return { result: { ok: false, detail: 'Please sign in again.' } };
   const phone = String(form.get('phone') ?? '').trim().slice(0, 30);
   return { phone, result: await sendTestSms(phone, s.name) };
+}
+
+export interface HospitalTextState {
+  result?: { ok: boolean; detail: string };
+  text?: string;
+}
+
+/** Admin console → Text messages → Send to hospitals: one text to every hospital that gets texts. Admins only. */
+export async function sendToHospitals(_prev: HospitalTextState, form: FormData): Promise<HospitalTextState> {
+  const s = await getAdminSession();
+  if (!s) return { result: { ok: false, detail: 'Please sign in again.' } };
+  const text = String(form.get('text') ?? '').trim().slice(0, 300);
+  if (form.get('confirm') !== 'on') return { text, result: { ok: false, detail: 'Tick the box to confirm who it goes to.' } };
+  const r = await textAllHospitals(text, `ALL-${new Date().toISOString().slice(0, 10)}`);
+  revalidatePath('/admin');
+  return { text: r.ok ? '' : text, result: r };
 }

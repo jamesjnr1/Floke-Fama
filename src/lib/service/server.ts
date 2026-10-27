@@ -199,6 +199,21 @@ export async function applyAction(s: SessionUser, action: Action): Promise<Servi
   }
 }
 
+/** An engineer changed their phone number: the hospitals on their open jobs see the new one. */
+export async function updateEngineerPhone(name: string, phone: string) {
+  for (let attempt = 0; ; attempt++) {
+    const before = await loadDesk();
+    const after = { ...before, tickets: before.tickets.map((t) => (t.engineer === name && t.status !== 'resolved' && t.engineerPhone !== phone ? { ...t, engineerPhone: phone } : t)) };
+    try {
+      await saveChanges(before, after);
+      return;
+    } catch (e) {
+      if ((e as { code?: number }).code === 409 && attempt < 2) continue;
+      throw e;
+    }
+  }
+}
+
 /** Turns a placed order into the hospital's equipment (and installation jobs), once per order. */
 export async function registerPurchase(s: SessionUser, order: string, items: Extract<Action, { type: 'purchase' }>['items']) {
   if (!items.length) return;

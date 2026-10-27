@@ -38,7 +38,7 @@ export function normalisePhone(raw: string) {
 }
 
 /** Plain characters only, so one text stays one text (curly quotes and dashes switch phones to a 70-character limit). */
-const plain = (s: string, max: number) => {
+export const plain = (s: string, max: number) => {
   const t = s.replace(/[‘’]/g, "'").replace(/[“”]/g, '"').replace(/[–—]/g, '-').replace(/[^\x20-\x7e]/g, '').trim();
   return t.length > max ? `${t.slice(0, max - 1).trim()}.` : t;
 };
@@ -83,7 +83,7 @@ const save = (rowId: string, data: Omit<SmsLogEntry, 'id' | 'at'>, create = true
  * Sends one text to some numbers and records it. With `rowId` given, the record is written first and a second
  * attempt with the same id is skipped, so an escalation goes out once even if two servers notice it together.
  */
-async function send(kind: string, ref: string, phones: string[], text: string, rowId?: string): Promise<{ status: SmsLogEntry['status']; detail: string } | undefined> {
+export async function send(kind: string, ref: string, phones: string[], text: string, rowId?: string): Promise<{ status: SmsLogEntry['status']; detail: string } | undefined> {
   const to = [...new Set(phones.map(normalisePhone).filter((n): n is string => Boolean(n)))];
   if (!to.length) return;
   const body = plain(text, 300);
@@ -107,7 +107,7 @@ async function send(kind: string, ref: string, phones: string[], text: string, r
 export async function sendTestSms(phone: string, by: string): Promise<{ ok: boolean; detail: string }> {
   if (!smsEnabled) return { ok: false, detail: 'Texts are off: set SMS_PROVIDER (and the gateway keys) in Vercel, then redeploy.' };
   if (!normalisePhone(phone)) return { ok: false, detail: 'Enter a Ghana phone number, e.g. 024 123 4567.' };
-  const r = await send('test', 'TEST', [phone], `Flokefama: test text from the website, sent by ${plain(by, 40)}. Texts to engineers are working.`);
+  const r = await send('test', 'TEST', [phone], `Test text from the Flokefama website, sent by ${plain(by, 40)}. Texts to engineers are working.`);
   if (!r) return { ok: false, detail: 'That number could not be used.' };
   if (r.status === 'logged') return { ok: true, detail: 'Recorded but not sent: SMS_PROVIDER is "log". Set it to "arkesel" to send real texts.' };
   return r.status === 'sent' ? { ok: true, detail: `Sent from "${sender}". It should arrive within a minute.` } : { ok: false, detail: r.detail };
@@ -177,11 +177,11 @@ export async function smsNew(before: ServiceState, after: ServiceState, actor: A
       const prev = old.get(t.id);
       const { facility, equipment } = where(t, after);
       if (!prev && t.status === 'new' && isUrgent(t.priority))
-        jobs.push({ kind: 'urgent', ref: t.id, to: (p) => p.role === 'engineer' && p.name !== actor.name, text: `Flokefama: ${t.priority.toUpperCase()} fault at ${facility} - ${equipment}. Job ${t.id} needs an engineer. Open: ${jobLink(t.id)}` });
+        jobs.push({ kind: 'urgent', ref: t.id, to: (p) => p.role === 'engineer' && p.name !== actor.name, text: `${t.priority.toUpperCase()} fault at ${facility} - ${equipment}. Job ${t.id} needs an engineer. Open: ${jobLink(t.id)}` });
       if (t.engineer && t.engineer !== prev?.engineer && t.engineer !== actor.name)
-        jobs.push({ kind: 'assigned', ref: t.id, to: (p) => p.role === 'engineer' && p.name === t.engineer, text: `Flokefama: Job ${t.id} at ${facility} - ${equipment} is now yours (${t.priority}). Open: ${jobLink(t.id)}` });
+        jobs.push({ kind: 'assigned', ref: t.id, to: (p) => p.role === 'engineer' && p.name === t.engineer, text: `Job ${t.id} at ${facility} - ${equipment} is now yours (${t.priority}). Open: ${jobLink(t.id)}` });
       const note = prev && t.engineer && t.status !== 'resolved' && actor.role === 'client' && t.log.length > prev.log.length && t.log.at(-1)?.kind === 'note';
-      if (note) jobs.push({ kind: 'message', ref: t.id, to: (p) => p.role === 'engineer' && p.name === t.engineer, text: `Flokefama: New message from ${facility} on job ${t.id} (${equipment}). Open: ${jobLink(t.id)}` });
+      if (note) jobs.push({ kind: 'message', ref: t.id, to: (p) => p.role === 'engineer' && p.name === t.engineer, text: `New message from ${facility} on job ${t.id} (${equipment}). Open: ${jobLink(t.id)}` });
     }
     if (!jobs.length) return;
     const people = await staff();
@@ -201,7 +201,7 @@ export async function smsWebsiteFault(r: { reference: string; type: string; name
   try {
     const people = (await staff()).filter((p) => p.role === 'engineer');
     const down = r.working === 'down' ? ' NOT WORKING AT ALL.' : '';
-    const text = `Flokefama: Fault reported on the website by ${plain(r.facility, 40)} - ${plain(r.equipment, 40)}.${down} Call ${plain(r.name, 30)} on ${plain(r.phone, 20)}. Ref ${r.reference}.`;
+    const text = `Fault reported on the website by ${plain(r.facility, 40)} - ${plain(r.equipment, 40)}.${down} Call ${plain(r.name, 30)} on ${plain(r.phone, 20)}. Ref ${r.reference}.`;
     await Promise.race([send('website', r.reference, people.map((p) => p.phone), text), new Promise((ok) => setTimeout(ok, 6000))]);
   } catch (e) {
     console.error('sms: website fault not texted', e);
@@ -238,7 +238,7 @@ export async function escalateStale(desk: ServiceState, force = false) {
       todo.map((t) => {
         const { facility, equipment } = where(t, desk);
         const mins = Math.round((now - new Date(t.openedAt).getTime()) / 60_000);
-        return send('escalation', t.id, [...admins, ...extra], `Flokefama: No engineer has taken ${t.priority.toUpperCase()} job ${t.id} at ${facility} - ${equipment} after ${mins} min. Open: ${siteUrl}/admin?tab=service`, rowId(t)).catch((e) =>
+        return send('escalation', t.id, [...admins, ...extra], `No engineer has taken ${t.priority.toUpperCase()} job ${t.id} at ${facility} - ${equipment} after ${mins} min. Open: ${siteUrl}/admin?tab=service`, rowId(t)).catch((e) =>
           console.error('sms: escalation not recorded', e),
         );
       }),
