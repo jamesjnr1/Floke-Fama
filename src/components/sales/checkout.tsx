@@ -40,6 +40,8 @@ export function Checkout() {
   const [network, setNetwork] = useState(networks[0]);
   const [momo, setMomo] = useState('');
   const [placed, setPlaced] = useState<CheckoutOrder | null>(null);
+  /** Sales has the order in the CRM (null while sending). */
+  const [withSales, setWithSales] = useState<boolean | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const units = items.reduce((n, x) => n + (x.qty ?? 1), 0);
@@ -82,7 +84,9 @@ export function Checkout() {
         window.location.href = result.url;
         return;
       }
-      if (user) saveOrder(order, user.email);
+      setWithSales(null);
+      if (user) saveOrder(order, user.email).then(setWithSales);
+      else setWithSales(false);
       setPlaced(order);
     }
     setStep((s) => Math.min(s + 1, 3));
@@ -217,10 +221,12 @@ export function Checkout() {
                 <span className="mx-auto grid size-14 place-items-center rounded-full bg-brand-50 text-brand-600"><Check className="size-7" strokeWidth={2.5} /></span>
                 <h2 className="mt-5 text-2xl font-bold text-ink">Order {placed.reference} received</h2>
                 <p className="mx-auto mt-2 max-w-md text-ink-2">
-                  Online payment is being switched on. Until then our sales team confirms the total and how to pay by {methods.find((m) => m.id === placed.method)?.label.toLowerCase()}.
+                  {withSales
+                    ? `Our sales team has your order and will call you to confirm the total and how to pay by ${methods.find((m) => m.id === placed.method)?.label.toLowerCase()}.`
+                    : `Online payment is being switched on. Until then our sales team confirms the total and how to pay by ${methods.find((m) => m.id === placed.method)?.label.toLowerCase()}.`}
                 </p>
                 <div className="mx-auto mt-6 grid max-w-sm gap-2">
-                  <Link href={quoteHref(items)} className="flex h-12 items-center justify-center rounded-lg bg-brand-600 font-semibold text-white hover:bg-brand-700">Send order to sales</Link>
+                  {withSales === false && <Link href={quoteHref(items)} className="flex h-12 items-center justify-center rounded-lg bg-brand-600 font-semibold text-white hover:bg-brand-700">Send order to sales</Link>}
                   <a href={contact.phoneHref} className="flex h-12 items-center justify-center rounded-lg border border-line font-semibold text-ink hover:border-ink/30">Call {contact.phone}</a>
                   <Link href="/portal?view=orders" className="mt-2 text-sm font-medium text-brand-700 hover:underline">View your orders in the dashboard</Link>
                 </div>
