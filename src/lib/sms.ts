@@ -177,11 +177,11 @@ export async function smsNew(before: ServiceState, after: ServiceState, actor: A
       const prev = old.get(t.id);
       const { facility, equipment } = where(t, after);
       if (!prev && t.status === 'new' && isUrgent(t.priority))
-        jobs.push({ kind: 'urgent', ref: t.id, to: (p) => p.role === 'engineer' && p.name !== actor.name, text: `FLOKEFAMA: ${t.priority.toUpperCase()} fault at ${facility} - ${equipment}. Job ${t.id} needs an engineer. Open: ${jobLink(t.id)}` });
+        jobs.push({ kind: 'urgent', ref: t.id, to: (p) => p.role === 'engineer' && p.name !== actor.name, text: `Flokefama: ${t.priority.toUpperCase()} fault at ${facility} - ${equipment}. Job ${t.id} needs an engineer. Open: ${jobLink(t.id)}` });
       if (t.engineer && t.engineer !== prev?.engineer && t.engineer !== actor.name)
-        jobs.push({ kind: 'assigned', ref: t.id, to: (p) => p.role === 'engineer' && p.name === t.engineer, text: `FLOKEFAMA: Job ${t.id} at ${facility} - ${equipment} is now yours (${t.priority}). Open: ${jobLink(t.id)}` });
+        jobs.push({ kind: 'assigned', ref: t.id, to: (p) => p.role === 'engineer' && p.name === t.engineer, text: `Flokefama: Job ${t.id} at ${facility} - ${equipment} is now yours (${t.priority}). Open: ${jobLink(t.id)}` });
       const note = prev && t.engineer && t.status !== 'resolved' && actor.role === 'client' && t.log.length > prev.log.length && t.log.at(-1)?.kind === 'note';
-      if (note) jobs.push({ kind: 'message', ref: t.id, to: (p) => p.role === 'engineer' && p.name === t.engineer, text: `FLOKEFAMA: New message from ${facility} on job ${t.id} (${equipment}). Open: ${jobLink(t.id)}` });
+      if (note) jobs.push({ kind: 'message', ref: t.id, to: (p) => p.role === 'engineer' && p.name === t.engineer, text: `Flokefama: New message from ${facility} on job ${t.id} (${equipment}). Open: ${jobLink(t.id)}` });
     }
     if (!jobs.length) return;
     const people = await staff();
@@ -201,7 +201,7 @@ export async function smsWebsiteFault(r: { reference: string; type: string; name
   try {
     const people = (await staff()).filter((p) => p.role === 'engineer');
     const down = r.working === 'down' ? ' NOT WORKING AT ALL.' : '';
-    const text = `FLOKEFAMA: Fault reported on the website by ${plain(r.facility, 40)} - ${plain(r.equipment, 40)}.${down} Call ${plain(r.name, 30)} on ${plain(r.phone, 20)}. Ref ${r.reference}.`;
+    const text = `Flokefama: Fault reported on the website by ${plain(r.facility, 40)} - ${plain(r.equipment, 40)}.${down} Call ${plain(r.name, 30)} on ${plain(r.phone, 20)}. Ref ${r.reference}.`;
     await Promise.race([send('website', r.reference, people.map((p) => p.phone), text), new Promise((ok) => setTimeout(ok, 6000))]);
   } catch (e) {
     console.error('sms: website fault not texted', e);
@@ -238,7 +238,7 @@ export async function escalateStale(desk: ServiceState, force = false) {
       todo.map((t) => {
         const { facility, equipment } = where(t, desk);
         const mins = Math.round((now - new Date(t.openedAt).getTime()) / 60_000);
-        return send('escalation', t.id, [...admins, ...extra], `FLOKEFAMA: No engineer has taken ${t.priority.toUpperCase()} job ${t.id} at ${facility} - ${equipment} after ${mins} min. Open: ${siteUrl}/admin?tab=service`, rowId(t)).catch((e) =>
+        return send('escalation', t.id, [...admins, ...extra], `Flokefama: No engineer has taken ${t.priority.toUpperCase()} job ${t.id} at ${facility} - ${equipment} after ${mins} min. Open: ${siteUrl}/admin?tab=service`, rowId(t)).catch((e) =>
           console.error('sms: escalation not recorded', e),
         );
       }),
