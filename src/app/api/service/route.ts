@@ -1,6 +1,6 @@
 import { after, NextResponse, type NextRequest } from 'next/server';
 import { appwrite } from '@/lib/appwrite';
-import { getSession } from '@/lib/auth/server';
+import { getSession, renewSession } from '@/lib/auth/server';
 import type { Action } from '@/lib/service/desk';
 import { applyAction, DeskError, loadDesk, visibleTo } from '@/lib/service/server';
 import { escalateStale } from '@/lib/sms';
@@ -28,6 +28,7 @@ export async function GET() {
   if (!s) return NextResponse.json({ error: 'Please sign in again.' }, { status: 401 });
   try {
     const desk = await loadDesk();
+    await renewSession(s);
     // While anyone has a portal open, urgent requests nobody has taken are escalated by text (after the answer is sent)
     after(() => escalateStale(desk));
     return NextResponse.json({ enabled: true, state: visibleTo(s, desk) }, { headers: noStore });
