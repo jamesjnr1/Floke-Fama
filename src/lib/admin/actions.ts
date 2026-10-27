@@ -4,18 +4,19 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { appwrite, DATABASE_ID, TABLES } from '@/lib/appwrite';
-import { accountExists, hashPassword, saveAccount } from '@/lib/auth/accounts';
-import { getAdminSession } from '@/lib/auth/server';
-import { ENGINEER_ID_PREFIX } from '@/lib/auth/users';
+import { accountExists, findAccount, hashPassword, saveAccount } from '@/lib/auth/accounts';
+import { getAdminSession, getConsoleSession } from '@/lib/auth/server';
+import { ENGINEER_ID_PREFIX, roleFor } from '@/lib/auth/users';
+import { assignByAdmin, DeskError } from '@/lib/service/server';
 import type { OrderStatus, SavedOrder } from '@/lib/orders';
 import { salesStages, stageLabel } from '@/lib/sales-stages';
 import { sendTestSms } from '@/lib/sms';
 import { textAllHospitals } from '@/lib/client-sms';
 
-/** Reads an order, changes it and writes it back, with a line in its log saying who did what. Admins only. */
+/** Reads an order, changes it and writes it back, with a line in its log saying who did what. Admins and the sales team. */
 async function changeOrder(reference: string, change: (o: SavedOrder) => { order: SavedOrder; log?: string } | null) {
-  const s = await getAdminSession();
-  if (s?.role !== 'admin' || !appwrite || !/^FF-[A-Z0-9]{4,12}$/.test(reference)) return;
+  const s = await getConsoleSession();
+  if (!s || !appwrite || !/^FF-[A-Z0-9]{4,12}$/.test(reference)) return;
   const row = await appwrite.tables.getRow({ databaseId: DATABASE_ID, tableId: TABLES.orders, rowId: reference });
   const order = JSON.parse(String((row as unknown as { data: string }).data)) as SavedOrder;
   const next = change(order);
@@ -23,6 +24,26 @@ async function changeOrder(reference: string, change: (o: SavedOrder) => { order
   const log = next.log ? [...(order.log ?? []), { at: new Date().toISOString(), by: s.name, text: next.log }].slice(-100) : order.log;
   await appwrite.tables.updateRow({ databaseId: DATABASE_ID, tableId: TABLES.orders, rowId: reference, data: { data: JSON.stringify({ ...next.order, log }) } });
   revalidatePath('/admin');
+}
+
+export interface AssignState { result?: { ok: boolean; detail: string } }
+
+/** Admin console → Service desk: gives a job nobody has taken to an engineer. Admins only. */
+export async function assignEngineer(_prev: AssignState, form: FormData): Promise<AssignState> {
+  const s = await getAdminSession();
+  if (s?.role !== 'admin') return { result: { ok: false, detail: 'Please sign in again.' } };
+  const ticket = String(form.get('ticket') ?? '');
+  const email = String(form.get('engineer') ?? '').trim().toLowerCase();
+  if (!/^TK-\d{1,8}$/.test(ticket) || !email) return { result: { ok: false, detail: 'Choose an engineer.' } };
+  const acc = await findAccount(email);
+  if (!acc || roleFor(acc.email, acc.id) !== 'engineer') return { result: { ok: false, detail: 'That person is not an engineer.' } };
+  try {
+    await assignByAdmin(s.name, ticket, { name: acc.name, phone: acc.phone });
+  } catch (e) {
+    return { result: { ok: false, detail: e instanceof DeskError ? e.message : 'Not saved. Please try again.' } };
+  }
+  revalidatePath('/admin');
+  return { result: { ok: true, detail: `${ticket} is now ${acc.name}’s. They and the hospital have been told.` } };
 }
 
 /** Moves an order to another column of the sales board. */

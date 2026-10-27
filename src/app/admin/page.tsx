@@ -12,11 +12,12 @@ import { configChecks, loadAdminData, type AdminData } from '@/lib/admin/data';
 import { brevoStatus } from '@/lib/support-email';
 import { normalisePhone, smsProvider, smsStatus as smsGatewayStatus } from '@/lib/sms';
 import { TestSmsForm } from '@/components/admin/test-sms-form';
+import { AssignForm } from '@/components/admin/assign-form';
 import { HospitalTextsForm } from '@/components/admin/hospital-texts-form';
 import { CALIBRATION_NOTICE_DAYS, CHECK_IN_DAYS, calibrationText, checkInText, clientTextsAuto, hospitalsToText, messageTemplates, upcomingClientTexts } from '@/lib/client-sms';
 import { supportDetails, supportSubject } from '@/lib/support-schema';
 import { adminLogout } from '@/lib/auth/actions';
-import { requireSession } from '@/lib/auth/server';
+import { requireConsole } from '@/lib/auth/server';
 import { catalogue } from '@/data/catalogue';
 import type { OrderStatus, SavedOrder } from '@/lib/orders';
 import { salesStages } from '@/lib/sales-stages';
@@ -56,7 +57,7 @@ const orderStatusLabel = Object.fromEntries(salesStages.map((x) => [x.id, x.labe
 const tidy = (n: string) => n.split(/(\s+|[()])/).map((w) => (/\d/.test(w) ? w.toUpperCase() : w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())).join('');
 const methodLabel: Record<string, string> = { momo: 'Mobile money', card: 'Card', bank: 'Bank transfer' };
 const ticketLabel: Record<string, string> = { new: 'Logged', assigned: 'Assigned', travelling: 'En route', onsite: 'On site', resolved: 'Resolved' };
-const smsKind: Record<string, string> = { website: 'Website fault', urgent: 'Urgent fault', assigned: 'Job given', message: 'Hospital message', escalation: 'Not taken', test: 'Test text', hospitals: 'To all hospitals', checkin: 'Check-in', calibration: 'Calibration reminder', holiday: 'Holiday greeting', update: 'Update to hospital' };
+const smsKind: Record<string, string> = { website: 'Website fault', urgent: 'Urgent fault', assigned: 'Job given', message: 'Hospital message', escalation: 'Not taken', test: 'Test text', hospitals: 'To all hospitals', checkin: 'Check-in', calibration: 'Calibration reminder', holiday: 'Holiday greeting', update: 'Update to hospital', callback: 'Not called back' };
 const smsStatus: Record<string, string> = { sent: 'Sent', logged: 'Recorded only', failed: 'Not sent', sending: 'Sending' };
 const categoryName = (slug: string) => slug.replace(/-/g, ' ').replace(/^\w/, (c) => c.toUpperCase());
 
@@ -79,13 +80,16 @@ function weekly(dates: string[], weeks: number, now: number) {
 }
 
 export default async function AdminPage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
-  const session = await requireSession('admin', '/admin');
+  const session = await requireConsole('/admin');
   const params = await searchParams;
-  const tab: Tab = tabs.some((t) => t.id === params.tab) ? (params.tab as Tab) : 'overview';
+  // The sales team sees only the sales board and product demand; any other tab opens the sales board
+  const sales = session.role === 'sales';
+  const allowed = (id: Tab) => !sales || id === 'orders' || id === 'products';
+  const tab: Tab = tabs.some((t) => t.id === params.tab) && allowed(params.tab as Tab) ? (params.tab as Tab) : sales ? 'orders' : 'overview';
   const data = await loadAdminData();
   const now = data.source === 'sample' ? Date.UTC(2026, 9, 19, 12) : Date.now();
 
-  const menu = tabs.filter((t) => t.id !== 'system');
+  const menu = tabs.filter((t) => t.id !== 'system' && allowed(t.id));
   // A mark on a tab when something there needs a look: red for action, green for news
   const badges: Partial<Record<Tab, { n: number; tone: 'red' | 'green'; title: string }>> = {
     orders: { n: data.orders.filter((o) => o.status === 'awaiting-payment').length, tone: 'red', title: 'new orders to call' },
@@ -127,9 +131,11 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
           </nav>
           <p className="mt-8 px-3.5 text-[0.8125rem] font-semibold tracking-[0.08em] text-ink-3">GENERAL</p>
           <div className="mt-2 space-y-1">
-            <Link href={href('system')} aria-current={tab === 'system' ? 'page' : undefined} className={item(tab === 'system')}>
-              <Icon name="fi-rr-database" className={tab === 'system' ? 'text-brand-600' : ''} /> Database &amp; settings
-            </Link>
+            {!sales && (
+              <Link href={href('system')} aria-current={tab === 'system' ? 'page' : undefined} className={item(tab === 'system')}>
+                <Icon name="fi-rr-database" className={tab === 'system' ? 'text-brand-600' : ''} /> Database &amp; settings
+              </Link>
+            )}
             <Link href="/admin/password" className={item(false)}>
               <Icon name="fi-rr-lock" /> Change password
             </Link>
@@ -180,7 +186,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
 
           {/* Sections on phones and tablets */}
           <nav aria-label="Admin sections" className="flex gap-1 overflow-x-auto rounded-2xl bg-white p-2 lg:hidden">
-            {tabs.map((t) => (
+            {tabs.filter((t) => allowed(t.id)).map((t) => (
               <Link key={t.id} href={href(t.id)} aria-current={t.id === tab ? 'page' : undefined} className={cn(item(t.id === tab), 'shrink-0 whitespace-nowrap')}>
                 <Icon name={t.icon} /> {t.label}
                 {badge(t.id, true)}
@@ -663,12 +669,13 @@ function OrderDetail({ o, who, live, now, move }: { o: SavedOrder; who: { name: 
   );
 }
 
-const roleLabel = (r: string) => (r === 'client' ? 'Hospital' : r === 'engineer' ? 'Engineer' : 'Admin');
+const roleLabel = (r: string) => (r === 'client' ? 'Hospital' : r === 'engineer' ? 'Engineer' : r === 'sales' ? 'Sales' : 'Admin');
 const roles = [
   { id: '', label: 'All' },
   { id: 'client', label: 'Hospitals' },
   { id: 'engineer', label: 'Engineers' },
   { id: 'admin', label: 'Admins' },
+  { id: 'sales', label: 'Sales' },
 ];
 
 function Accounts({ data, q, role, adding }: { data: AdminData; q?: string; role?: string; adding?: boolean }) {
@@ -679,7 +686,7 @@ function Accounts({ data, q, role, adding }: { data: AdminData; q?: string; role
   return (
     <>
       <Heading
-        hint={<>Hospitals register themselves at /login. Engineers are added here (Add engineer) and sign in at /engineer/login. Admins are the emails listed in ADMIN_EMAILS in Vercel. Passwords are never shown.</>}
+        hint={<>Hospitals register themselves at /login. Engineers are added here (Add engineer) and sign in at /engineer/login. Admins are the emails listed in ADMIN_EMAILS in Vercel, and the sales team those in SALES_EMAILS (they see only Orders and Product demand). Passwords are never shown.</>}
         title="Accounts"
         lead={`${data.accounts.length} registered accounts: hospitals, ${engineers.length} engineer${engineers.length === 1 ? '' : 's'} and admins. Click an account for its details. Passwords are never shown or stored in readable form.`}
         action={
@@ -1082,7 +1089,8 @@ function Service({ data, now }: { data: AdminData; now: number }) {
     <>
       <Heading hint={<><b>Service requests</b> are jobs on equipment, followed by the engineers in their portal. <b>Requests from the Support page</b> come from anyone; engineers call back, then mark them Called back, book a visit (it becomes a service request) or close them. “Visit booked · waiting for an engineer” means nobody has taken the job yet.</>}
         title="Service desk" lead="Service requests from hospitals and the equipment Flokefama looks after." action={<div className="flex gap-2"><Csv table="tickets" label="Requests CSV" /><Csv table="equipment" label="Equipment CSV" /></div>} />
-      <WebsiteRequests data={data} />
+      <Waiting data={data} now={now} />
+      <WebsiteRequests data={data} now={now} />
       <div className="mb-4 grid gap-4 lg:grid-cols-3">
         <Panel title="Requests by priority">
           <Bars data={['critical', 'high', 'routine'].map((p) => ({ label: p[0].toUpperCase() + p.slice(1), value: data.desk.tickets.filter((t) => t.priority === p && t.status !== 'resolved').length, note: 'open' }))} />
@@ -1117,6 +1125,47 @@ function Service({ data, now }: { data: AdminData; now: number }) {
   );
 }
 
+const since = (iso: string, now: number) => {
+  const m = Math.max(0, Math.round((now - Date.parse(iso)) / 60_000));
+  return m < 60 ? `${m} min` : m < 48 * 60 ? `${Math.round(m / 60)} h` : `${Math.round(m / 1440)} days`;
+};
+
+/**
+ * Service desk tab: jobs no engineer has taken, oldest first, with how long each has waited. The admin can give one
+ * to an engineer, who is texted that it is theirs (and the hospital gets their name and number).
+ */
+function Waiting({ data, now }: { data: AdminData; now: number }) {
+  const rank: Record<string, number> = { critical: 0, high: 1, routine: 2 };
+  const jobs = data.desk.tickets.filter((t) => t.status === 'new').sort((a, b) => rank[a.priority] - rank[b.priority] || a.openedAt.localeCompare(b.openedAt));
+  const engineers = data.accounts.filter((a) => a.role === 'engineer').map((a) => ({ email: a.email, name: a.name }));
+  return (
+    <section id="waiting" className="mb-8 scroll-mt-6">
+      <h2 className="mb-1 flex items-center gap-2 text-lg font-semibold">
+        Waiting for an engineer ({jobs.length})
+        <Hint>Jobs nobody has taken yet. Urgent ones (critical, high) texted every engineer when they came in; if one is still here after 30 minutes the admins get a text. Call an engineer, or choose one here and press Assign: they are texted that the job is theirs, and the hospital gets their name and number.</Hint>
+      </h2>
+      <p className="mb-3 text-[0.9375rem] text-ink-3">Most urgent first, then the longest waiting.</p>
+      <Table head={['Request', 'Priority', 'Hospital', 'Equipment', 'Waiting', 'Who to call', 'Give it to']} empty={!jobs.length}>
+        {jobs.map((t) => {
+          const a = data.desk.assets.find((x) => x.id === t.assetId);
+          const late = t.priority !== 'routine' && now - Date.parse(t.openedAt) > 30 * 60_000;
+          return (
+            <tr key={t.id}>
+              <td className="whitespace-nowrap font-mono text-[0.875rem]">{t.id}</td>
+              <td><Badge tone={t.priority === 'routine' ? 'neutral' : 'bad'}>{t.priority[0].toUpperCase() + t.priority.slice(1)}</Badge></td>
+              <td className="font-medium">{a?.facility ?? '—'}</td>
+              <td>{a ? tidy(a.name) : '—'}</td>
+              <td className={cn('whitespace-nowrap', late && 'font-semibold text-signal-700')}>{since(t.openedAt, now)}</td>
+              <td className="whitespace-nowrap">{t.contactPhone ? <a href={`tel:${t.contactPhone.replace(/[^\d+]/g, '')}`} className="font-medium text-brand-700 hover:underline">{t.contactPhone}</a> : '—'}</td>
+              <td className="min-w-[15rem]"><AssignForm ticket={t.id} engineers={engineers} /></td>
+            </tr>
+          );
+        })}
+      </Table>
+    </section>
+  );
+}
+
 const supportTypeLabel: Record<string, string> = { fault: 'Report a fault', maintenance: 'Book maintenance', installation: 'Installation', assistance: 'Other assistance' };
 const supportStatusLabel: Record<string, string> = { new: 'New', called: 'Called back', closed: 'Closed' };
 
@@ -1138,7 +1187,7 @@ function WebsiteRequestsNotice({ data }: { data: AdminData }) {
 }
 
 /** Service desk tab: everything sent with the Support page's form, with who to call and where each one stands (read-only). */
-function WebsiteRequests({ data }: { data: AdminData }) {
+function WebsiteRequests({ data, now }: { data: AdminData; now: number }) {
   const rows = data.supportRequests;
   return (
     <section id="website-requests" className="mb-8 scroll-mt-6">
@@ -1172,9 +1221,14 @@ function WebsiteRequests({ data }: { data: AdminData }) {
               ) : (
                 <Badge tone={r.status === 'new' ? 'bad' : r.status === 'called' ? 'warn' : 'good'}>{supportStatusLabel[r.status]}</Badge>
               )}
+              {r.status === 'new' && (
+                <span className={cn('mt-1 block whitespace-nowrap text-[0.8125rem]', r.type === 'fault' && now - Date.parse(r.at) > 30 * 60_000 ? 'font-semibold text-signal-700' : 'text-ink-3')}>
+                  Not called back yet · {since(r.at, now)}
+                </span>
+              )}
               {r.status !== 'new' && r.handledBy && (
                 <span className="mt-1 block whitespace-nowrap text-[0.8125rem] text-ink-3">
-                  {r.ticketId ? 'booked by' : 'by'} {r.handledBy}
+                  {r.status === 'called' ? 'called back by' : r.ticketId ? 'booked by' : 'by'} {r.handledBy}
                   {r.handledAt ? `, ${timeFmt.format(new Date(r.handledAt))}` : ''}
                   {r.ticketId ? ` · ${r.ticketId}` : ''}
                 </span>

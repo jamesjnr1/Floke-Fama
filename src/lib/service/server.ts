@@ -223,6 +223,30 @@ export async function updateEngineerPhone(name: string, phone: string) {
 
 /** Turns a placed order into the hospital's equipment (and installation jobs), once per order. */
 /**
+ * The admin console gives a job to an engineer (after the 30-minute warning, say): the same as the engineer pressing
+ * Assign to me, so the engineer is texted that the job is theirs and the hospital gets their name and number.
+ */
+export async function assignByAdmin(admin: string, ticketId: string, engineer: { name: string; phone?: string }) {
+  for (let attempt = 0; ; attempt++) {
+    const before = await loadDesk();
+    const t = before.tickets.find((x) => x.id === ticketId);
+    if (!t) throw new DeskError('That request no longer exists.', 404);
+    if (t.status === 'resolved' || t.status === 'onsite') throw new DeskError('That request is already being worked on.');
+    // The admin acts for the desk; the engineer named is texted because they are not the one acting
+    const actor: Actor = { name: admin, role: 'engineer' };
+    const after = reducer(actor)(before, { type: 'assign', id: ticketId, engineer: engineer.name, phone: engineer.phone?.trim() || undefined });
+    try {
+      await saveChanges(before, after);
+      await Promise.all([pushNew(before, after), smsNew(before, after, actor)]);
+      return;
+    } catch (e) {
+      if ((e as { code?: number }).code === 409 && attempt < 2) continue;
+      throw e;
+    }
+  }
+}
+
+/**
  * A fault reported on the Support page as not working at all becomes a critical service request straight away, so it
  * never waits for someone to press Book a visit. It is filed under the hospital's own name (when it is on record or
  * registered), on the machine the caller named (added if new), and left unassigned for any engineer to take; the
