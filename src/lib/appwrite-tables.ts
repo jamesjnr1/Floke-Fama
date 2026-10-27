@@ -27,7 +27,7 @@ const specs: Record<string, { name: string; columns: Column[]; indexes?: { key: 
       { key: 'kind', size: 32, required: true },
       { key: 'ref', size: 64, required: false },
       { key: 'to', size: 400, required: true },
-      { key: 'text', size: 320, required: true },
+      { key: 'text', size: 480, required: true },
       { key: 'status', size: 16, required: true },
       { key: 'detail', size: 200, required: false },
     ],
