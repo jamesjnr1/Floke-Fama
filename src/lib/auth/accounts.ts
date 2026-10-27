@@ -77,6 +77,9 @@ async function findByEmail(email: string): Promise<StoredAccount | null> {
   }
 }
 
+/** The saved account with this email (for its profile), or null. */
+export const findAccount = (email: string) => findByEmail(email);
+
 /** Whether an account already uses this email. */
 export async function accountExists(email: string) {
   return Boolean(await findByEmail(email));

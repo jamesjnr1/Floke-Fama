@@ -101,7 +101,7 @@ export async function loadAdminData(): Promise<AdminData> {
         return { assets: [], tickets: [], notifications: [] };
       },
     ),
-    smsEnabled ? recentSms() : Promise.resolve([]),
+    smsEnabled ? recentSms(200) : Promise.resolve([]),
     // Created by the site on the first request, so until then there is simply nothing to list
     track(TABLES.supportRequests, 'Support requests (website form)', () => listSupportRequests().catch((e) => (isTableMissing(e) ? [] : Promise.reject(e)))),
     accountPictures().catch(() => ({}) as Record<string, string>),

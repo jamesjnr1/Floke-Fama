@@ -12,6 +12,7 @@ import { Overview } from '@/components/client/Overview';
 import { RequestsView } from '@/components/client/RequestsView';
 import { LogoMark, LogoWordmark } from '@/components/layout/logo';
 import { AlertsBanner, AlertsSwitch, useNotificationPopups } from '@/components/service/alerts';
+import { TextsSwitch } from '@/components/client/texts-switch';
 import { Notifications } from '@/components/service/Notifications';
 import { EngineerPhotosProvider } from '@/components/service/engineer-photos';
 import { LiveStatus } from '@/components/service/live-status';
@@ -161,6 +162,7 @@ export function ClientShell({ user, products }: { user: { name: string; email: s
           <div className="space-y-2.5">
             <a href={contact.phoneHref} className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-phone-call" /> {contact.phone}</a>
             <AlertsSwitch className="text-white/80 hover:text-white" />
+            <TextsSwitch className="text-white/80 hover:text-white" />
             <Link href="/" className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-arrow-small-left" /> Flokefama website</Link>
             <Link href="/portal/password" className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-lock" /> Change password</Link>
             <form action={logout}>

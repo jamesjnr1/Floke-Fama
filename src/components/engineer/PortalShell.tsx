@@ -185,7 +185,9 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
     if (t) openTicket(t);
     else if (a) openAsset(a);
     else if (w) setView('website');
-    if (t || a || w) history.replaceState(null, '', '/engineer');
+    // From My profile: Change photo
+    if (q.get('photo')) setChangingPhoto(true);
+    if (t || a || w || q.get('photo')) history.replaceState(null, '', '/engineer');
   }, [ready, openTicket, openAsset]);
 
   const themeButton = (
@@ -250,6 +252,7 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
             <a href={contact.phoneHref} className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-phone-call" /> {contact.phone}</a>
             <AlertsSwitch className="text-white/80 hover:text-white" />
             <Link href="/" className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-arrow-small-left" /> Flokefama website</Link>
+            <Link href="/engineer/profile" className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-user" /> My profile</Link>
             <Link href="/engineer/password" className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-lock" /> Change password</Link>
             <form action={engineerLogout}>
               <button type="submit" className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-sign-out-alt" /> Sign out</button>
@@ -282,6 +285,7 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
               <span className="block text-xs text-ink-3">{user.email}</span>
             </span>
           </span>
+          <Link href="/engineer/profile" aria-label="My profile" className="grid size-10 shrink-0 place-items-center rounded-md text-lg text-ink transition hover:bg-mist lg:hidden"><Icon name="fi-rr-user" /></Link>
           <form action={engineerLogout} className="lg:hidden">
             <button type="submit" aria-label="Sign out" className="grid size-10 shrink-0 place-items-center rounded-md text-lg text-ink transition hover:bg-mist"><Icon name="fi-rr-sign-out-alt" /></button>
           </form>

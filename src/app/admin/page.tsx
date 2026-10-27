@@ -9,8 +9,10 @@ import { AddEngineerForm } from '@/components/admin/add-engineer-form';
 import { ConfirmButton } from '@/components/admin/confirm-button';
 import { configChecks, loadAdminData, type AdminData } from '@/lib/admin/data';
 import { brevoStatus } from '@/lib/support-email';
-import { smsProvider, smsStatus as smsGatewayStatus } from '@/lib/sms';
+import { normalisePhone, smsProvider, smsStatus as smsGatewayStatus } from '@/lib/sms';
 import { TestSmsForm } from '@/components/admin/test-sms-form';
+import { HospitalTextsForm } from '@/components/admin/hospital-texts-form';
+import { CALIBRATION_NOTICE_DAYS, CHECK_IN_DAYS, calibrationText, checkInText, clientTextsAuto, hospitalsToText, messageTemplates, upcomingClientTexts } from '@/lib/client-sms';
 import { supportDetails, supportSubject } from '@/lib/support-schema';
 import { adminLogout } from '@/lib/auth/actions';
 import { requireSession } from '@/lib/auth/server';
@@ -29,13 +31,14 @@ import type { TicketStatus as TicketStatusId } from '@/lib/service/store';
  */
 export const dynamic = 'force-dynamic';
 
-type Tab = 'overview' | 'orders' | 'accounts' | 'products' | 'service' | 'system';
+type Tab = 'overview' | 'orders' | 'accounts' | 'products' | 'service' | 'texts' | 'system';
 const tabs: { id: Tab; label: string; icon: string }[] = [
   { id: 'overview', label: 'Overview', icon: 'fi-rr-apps' },
   { id: 'orders', label: 'Orders', icon: 'fi-rr-box-open' },
   { id: 'accounts', label: 'Accounts', icon: 'fi-rr-users' },
   { id: 'products', label: 'Product demand', icon: 'fi-rr-shopping-cart' },
   { id: 'service', label: 'Service desk', icon: 'fi-rr-tools' },
+  { id: 'texts', label: 'Text messages', icon: 'fi-rr-comment' },
   { id: 'system', label: 'Database & settings', icon: 'fi-rr-database' },
 ];
 
@@ -51,7 +54,7 @@ const orderStatusLabel = Object.fromEntries(salesStages.map((x) => [x.id, x.labe
 const tidy = (n: string) => n.split(/(\s+|[()])/).map((w) => (/\d/.test(w) ? w.toUpperCase() : w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())).join('');
 const methodLabel: Record<string, string> = { momo: 'Mobile money', card: 'Card', bank: 'Bank transfer' };
 const ticketLabel: Record<string, string> = { new: 'Logged', assigned: 'Assigned', travelling: 'En route', onsite: 'On site', resolved: 'Resolved' };
-const smsKind: Record<string, string> = { website: 'Website fault', urgent: 'Urgent fault', assigned: 'Job given', message: 'Hospital message', escalation: 'Not taken' };
+const smsKind: Record<string, string> = { website: 'Website fault', urgent: 'Urgent fault', assigned: 'Job given', message: 'Hospital message', escalation: 'Not taken', test: 'Test text', hospitals: 'To all hospitals', checkin: 'Check-in', calibration: 'Calibration reminder', holiday: 'Holiday greeting' };
 const smsStatus: Record<string, string> = { sent: 'Sent', logged: 'Recorded only', failed: 'Not sent', sending: 'Sending' };
 const categoryName = (slug: string) => slug.replace(/-/g, ' ').replace(/^\w/, (c) => c.toUpperCase());
 
@@ -187,6 +190,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             {tab === 'accounts' && (params.account ? <AccountDetail data={data} id={params.account} now={now} /> : <Accounts data={data} q={params.q} role={roles.some((r) => r.id && r.id === params.role) ? params.role : undefined} adding={params.add === 'engineer'} />)}
             {tab === 'products' && <Products data={data} />}
             {tab === 'service' && <Service data={data} now={now} />}
+            {tab === 'texts' && <Texts data={data} now={now} />}
             {tab === 'system' && <System data={data} phone={session.phone} />}
           </main>
         </div>
@@ -1069,24 +1073,6 @@ function Service({ data, now }: { data: AdminData; now: number }) {
       <h2 className="mb-3 mt-8 text-lg font-semibold">Service requests</h2>
       <TicketTable tickets={data.desk.tickets} assetOf={assetOf} />
 
-      <h2 className="mb-1 mt-8 text-lg font-semibold">Text messages to engineers</h2>
-      <p className="mb-3 text-[0.9375rem] text-ink-3">Urgent faults, jobs given to an engineer, hospitals’ messages, and urgent requests nobody has taken. Turned on with SMS_PROVIDER (see Database &amp; settings).</p>
-      <Table head={['Sent', 'About', 'Job', 'To', 'Message', 'Status']} empty={!data.sms.length}>
-        {data.sms.map((m) => (
-          <tr key={m.id}>
-            <td className="whitespace-nowrap">{timeFmt.format(new Date(m.at))}</td>
-            <td className="whitespace-nowrap">{smsKind[m.kind] ?? m.kind}</td>
-            <td className="whitespace-nowrap font-mono text-[0.875rem]">{m.ref}</td>
-            <td className="font-mono text-[0.8125rem]">{m.to.split(',').map((n) => `+${n}`).join(', ')}</td>
-            <td className="min-w-[18rem] text-[0.875rem]">{m.text}</td>
-            <td className="whitespace-nowrap">
-              <Badge tone={m.status === 'sent' ? 'good' : m.status === 'failed' ? 'bad' : 'neutral'}>{smsStatus[m.status] ?? m.status}</Badge>
-              {m.status === 'failed' && m.detail && <span className="mt-1 block text-[0.8125rem] text-signal-700">{m.detail}</span>}
-            </td>
-          </tr>
-        ))}
-      </Table>
-
       <h2 className="mb-3 mt-8 text-lg font-semibold">Calibration due within 30 days ({due.length})</h2>
       <Table head={['Equipment', 'Serial', 'Hospital', 'Location', 'Last calibration', 'Due']} empty={!due.length}>
         {due.map((a) => (
@@ -1169,6 +1155,82 @@ function WebsiteRequests({ data }: { data: AdminData }) {
         ))}
       </Table>
     </section>
+  );
+}
+
+/**
+ * Every text the website has sent, newest first: what it was about, who got it (by name where the number belongs to
+ * an account), the message exactly as sent, and whether the gateway accepted it (with its reason if not).
+ */
+async function Texts({ data, now }: { data: AdminData; now: number }) {
+  const [hospitals, templates, upcoming] = await Promise.all([hospitalsToText().catch(() => []), messageTemplates(), upcomingClientTexts(data.desk, now)]);
+  const auto = [
+    { title: 'Check-in after a repair', when: `${CHECK_IN_DAYS} days after a job is resolved, to that hospital`, text: checkInText('Mindray BC-5150 analyser', 'Ridge Hospital', '20 Oct', upcoming.phone), note: `${upcoming.checkIns} due in the coming days` },
+    { title: 'Calibration reminder', when: `${CALIBRATION_NOTICE_DAYS} days before a machine is due, to that hospital`, text: calibrationText('Mindray BC-5150 analyser', 'Ridge Hospital', '12 Nov', upcoming.phone), note: `${upcoming.calibrations} machines due in the next six weeks` },
+    { title: 'Holiday greetings', when: 'New Year’s Day, Independence Day, Easter Sunday and Christmas Day, to every hospital', text: upcoming.next?.text ?? '', note: upcoming.next ? `Next: ${upcoming.next.name}, ${dateFmt.format(upcoming.next.date)}` : '' },
+  ];
+  const byNumber = new Map(data.accounts.flatMap((a) => (a.phone && normalisePhone(a.phone) ? [[normalisePhone(a.phone)!, a.name] as const] : [])));
+  const recent = data.sms.filter((m) => Date.parse(m.at) > now - 30 * DAY);
+  const people = (to: string) => to.split(',').filter(Boolean);
+  return (
+    <>
+      <Heading
+        title="Text messages"
+        lead={<>Texts to engineers about their work, and to hospitals to keep in touch. Below, every text sent, newest first: what it was about, who got it, the message exactly as it arrived, and whether it went out. Texts are sent from “Flokefama”{smsProvider === 'arkesel' ? ' through Arkesel' : ''}; send a test from <Link href="/admin?tab=system" className="font-medium text-brand-700 underline">Database &amp; settings</Link>.</>}
+      />
+      {!smsProvider && <p className="mb-5 rounded-xl bg-[#fdf6e3] px-4 py-3 text-[0.9375rem] text-[#7a5200]">Texts are off: set SMS_PROVIDER and SMS_API_KEY in Vercel (see Database &amp; settings).</p>}
+
+      <h2 className="mb-1 text-lg font-semibold">Texts to hospitals</h2>
+      <p className="mb-4 text-[0.9375rem] text-ink-3">
+        To keep in touch between visits. The automatic ones go out once a day at 9:00, each only once.{' '}
+        {clientTextsAuto ? (process.env.CRON_SECRET ? 'They are on.' : 'They are on, but need CRON_SECRET set in Vercel for the daily run.') : 'They are off (CLIENT_TEXTS=off, or texts are off).'}{' '}
+        {hospitals.length} hospital{hospitals.length === 1 ? '' : 's'} can be texted; any hospital can turn texts off in its portal.
+      </p>
+      <div className="mb-5 grid gap-3 lg:grid-cols-3">
+        {auto.map((a) => (
+          <div key={a.title} className={cn(card, 'p-5')}>
+            <p className="font-semibold">{a.title}</p>
+            <p className="mt-0.5 text-[0.875rem] text-ink-3">{a.when}</p>
+            <p className="mt-3 rounded-2xl rounded-bl-md bg-[#eef3f0] px-3.5 py-2.5 text-[0.9375rem] leading-snug">{a.text}</p>
+            {a.note && <p className="mt-2 text-[0.8125rem] text-ink-3">{a.note}</p>}
+          </div>
+        ))}
+      </div>
+      <div className="mb-8"><HospitalTextsForm templates={templates} hospitals={hospitals.length} /></div>
+
+      <h2 className="mb-3 text-lg font-semibold">Every text sent</h2>
+      <div className="mb-5 grid gap-3 sm:grid-cols-3">
+        <Mini label="Texts in the last 30 days" value={recent.length} note={`to ${recent.reduce((n, m) => n + people(m.to).length, 0)} phones`} />
+        <Mini label="Sent" value={recent.filter((m) => m.status === 'sent').length} note="accepted by the gateway" />
+        <Mini label="Not sent" value={recent.filter((m) => m.status === 'failed').length} note="the reason is shown on each" />
+      </div>
+      <Table head={['When', 'About', 'To', 'Message', 'Status']} empty={!data.sms.length}>
+        {data.sms.map((m) => (
+          <tr key={m.id} className="align-top">
+            <td className="whitespace-nowrap">{timeFmt.format(new Date(m.at))}</td>
+            <td className="whitespace-nowrap">
+              {smsKind[m.kind] ?? m.kind}
+              {m.ref && m.ref !== 'TEST' && <span className="block font-mono text-[0.8125rem] text-ink-3">{m.ref}</span>}
+            </td>
+            <td className="min-w-[12rem]">
+              {people(m.to).map((n) => (
+                <span key={n} className="block whitespace-nowrap text-[0.875rem]">
+                  {byNumber.get(n) ?? 'Number'} <span className="font-mono text-[0.8125rem] text-ink-3">+{n}</span>
+                </span>
+              ))}
+            </td>
+            <td className="min-w-[20rem]">
+              <span className="block rounded-2xl rounded-bl-md bg-[#eef3f0] px-3.5 py-2.5 text-[0.9375rem] leading-snug">{m.text}</span>
+              <span className="mt-1 block text-[0.8125rem] text-ink-3">{m.text.length} characters · {m.text.length <= 160 ? '1 SMS' : `${Math.ceil(m.text.length / 153)} SMS`} per phone</span>
+            </td>
+            <td className="whitespace-nowrap">
+              <Badge tone={m.status === 'sent' ? 'good' : m.status === 'failed' ? 'bad' : 'neutral'}>{smsStatus[m.status] ?? m.status}</Badge>
+              {m.status === 'failed' && m.detail && <span className="mt-1 block max-w-[16rem] whitespace-normal text-[0.8125rem] text-signal-700">{m.detail}</span>}
+            </td>
+          </tr>
+        ))}
+      </Table>
+    </>
   );
 }
 

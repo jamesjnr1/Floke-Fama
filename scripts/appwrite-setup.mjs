@@ -104,6 +104,13 @@ const tables = [
     columns: [text('kind', 32), text('ref', 64, false), text('to', 400), text('text', 320), text('status', 16), text('detail', 200, false)],
     indexes: [],
   },
+  // Hospitals who turned Flokefama's texts off in their portal (one row per account)
+  {
+    id: 'sms_optout',
+    name: 'Hospitals who turned texts off',
+    columns: [text('account', 254)],
+    indexes: [],
+  },
 ];
 
 try {
