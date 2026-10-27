@@ -1,3 +1,5 @@
+import { cn } from '@/lib/utils';
+
 /**
  * Small charts for the admin console, in plain HTML: one series each, in the company green, with the value shown on
  * hover (and in the bar's title for screen readers).
@@ -40,7 +42,8 @@ export function Columns({ data, label }: { data: { label: string; value: number 
       </div>
       <div className="mt-3 flex gap-2 sm:gap-3">
         {data.map((d, i) => (
-          <span key={d.label} className="flex-1 whitespace-nowrap text-center text-[0.8125rem] text-ink-3">
+          // On a phone every other date is left out, so the dates never push the chart wider than the screen
+          <span key={d.label} className={cn('min-w-0 flex-1 whitespace-nowrap text-center text-[0.8125rem] text-ink-3', i % 2 === 1 && data.length > 6 && 'max-sm:invisible')}>
             {i % 2 === 0 || data.length <= 8 ? d.label : ''}
           </span>
         ))}
