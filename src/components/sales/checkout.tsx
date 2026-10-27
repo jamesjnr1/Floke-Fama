@@ -4,13 +4,16 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { AnimatePresence, motion } from 'motion/react';
 import { Check, CreditCard, Landmark, Lock, Minus, Plus, Smartphone, Trash2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
 import { useSite } from '@/components/site-provider';
 import { track } from '@/lib/analytics';
 import { useSession } from '@/lib/auth/use-session';
+import { composeLinks } from '@/lib/compose';
+import { departments, timelines } from '@/lib/order-needs';
 import { saveOrder } from '@/lib/orders';
 import { orderReference, startPayment, type CheckoutOrder, type PaymentMethod } from '@/lib/payments';
-import { quoteHref, quoteList, useQuoteList } from '@/lib/quote-list';
+import { quoteList, useQuoteList, type QuoteItem } from '@/lib/quote-list';
 import { cn } from '@/lib/utils';
 
 const regions = ['Greater Accra', 'Ashanti', 'Central', 'Eastern', 'Western', 'Volta', 'Northern', 'Bono', 'Bono East', 'Upper East', 'Upper West', 'Other'];
@@ -26,13 +29,26 @@ const methods: { id: PaymentMethod; label: string; hint: string; icon: typeof Sm
   { id: 'bank', label: 'Bank transfer', hint: 'We send an invoice with our bank details and your order reference. Ideal for purchase orders.', icon: Landmark, badges: ['Invoice'] },
 ];
 
-type Details = { name: string; organisation: string; phone: string; email: string; region: string; address: string };
-const emptyDetails: Details = { name: '', organisation: '', phone: '', email: '', region: 'Greater Accra', address: '' };
+type Details = { name: string; organisation: string; phone: string; email: string; region: string; address: string; department: string; timeline: string; notes: string };
+const emptyDetails: Details = { name: '', organisation: '', phone: '', email: '', region: 'Greater Accra', address: '', department: '', timeline: 'quarter', notes: '' };
 
-/** Checkout in four steps (cart, delivery, payment, confirmation) with the order summary alongside. */
-export function Checkout() {
+/**
+ * Checkout in four steps (cart, delivery, payment, confirmation) with the order summary alongside. The only way to
+ * order: "Order now" anywhere on the site lands here with the product in the cart (`adding`). Sales confirms the
+ * price, so the order goes to them (HubSpot) as well as to the hospital's dashboard.
+ */
+export function Checkout({ adding = [] }: { adding?: QuoteItem[] }) {
   const { contact } = useSite();
+  const router = useRouter();
   const items = useQuoteList();
+  // Products from an "Order now" link go into the cart once, then the address is tidied
+  const added = useRef(false);
+  useEffect(() => {
+    if (added.current || adding.length === 0) return;
+    added.current = true;
+    for (const item of adding) quoteList.add(item);
+    router.replace('/checkout', { scroll: false });
+  }, [adding, router]);
   const { user } = useSession();
   const [step, setStep] = useState(0);
   const [details, setDetails] = useState<Details>(emptyDetails);
@@ -58,7 +74,7 @@ export function Checkout() {
     }));
   }, [user]);
 
-  const set = (k: keyof Details) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => setDetails((d) => ({ ...d, [k]: e.target.value }));
+  const set = (k: keyof Details) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => setDetails((d) => ({ ...d, [k]: e.target.value }));
 
   const next = async () => {
     setError('');
@@ -75,6 +91,7 @@ export function Checkout() {
         customer: details,
         method,
         momo: method === 'momo' ? { network, number: momo } : undefined,
+        needs: { department: details.department, timeline: details.timeline, notes: details.notes.trim() },
       };
       setBusy(true);
       track('checkout_pay', { items: units, method });
@@ -88,12 +105,14 @@ export function Checkout() {
       if (user) saveOrder(order, user.email).then(setWithSales);
       else setWithSales(false);
       setPlaced(order);
+      // The order is placed: the cart starts empty again (the summary shows the placed order)
+      quoteList.clear();
     }
     setStep((s) => Math.min(s + 1, 3));
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  if (items.length === 0 && !placed)
+  if (items.length === 0 && !placed && adding.length === 0)
     return (
       <div className="mx-auto max-w-xl rounded-2xl border border-line bg-paper p-10 text-center">
         <p className="text-2xl font-bold text-ink">Your cart is empty</p>
@@ -175,6 +194,23 @@ export function Checkout() {
                   </label>
                   <label><span className={labelCls}>Delivery address</span><input value={details.address} onChange={set('address')} autoComplete="street-address" placeholder="Town, street, landmark" className={field} /></label>
                 </div>
+                <h2 className="mt-7 font-semibold text-ink">About the order</h2>
+                <div className="mt-4 grid gap-4 rounded-xl border border-line p-5 sm:grid-cols-2">
+                  <label><span className={labelCls}>Department <span className="text-ink-3/70">(optional)</span></span>
+                    <select value={details.department} onChange={set('department')} className={field}>
+                      <option value="">Not sure / several</option>
+                      {departments.map((d) => <option key={d.id} value={d.id}>{d.label}</option>)}
+                    </select>
+                  </label>
+                  <label><span className={labelCls}>When do you need it?</span>
+                    <select value={details.timeline} onChange={set('timeline')} className={field}>
+                      {timelines.map((t) => <option key={t.id} value={t.id}>{t.label}: {t.detail.toLowerCase()}</option>)}
+                    </select>
+                  </label>
+                  <label className="sm:col-span-2"><span className={labelCls}>Notes for our sales team <span className="text-ink-3/70">(optional)</span></span>
+                    <textarea value={details.notes} onChange={set('notes')} rows={3} maxLength={1000} placeholder="e.g. Configuration, a tender deadline, installation needs" className={cn(field, 'h-auto resize-none py-2.5')} />
+                  </label>
+                </div>
               </>
             )}
 
@@ -226,7 +262,7 @@ export function Checkout() {
                     : `Online payment is being switched on. Until then our sales team confirms the total and how to pay by ${methods.find((m) => m.id === placed.method)?.label.toLowerCase()}.`}
                 </p>
                 <div className="mx-auto mt-6 grid max-w-sm gap-2">
-                  {withSales === false && <Link href={quoteHref(items)} className="flex h-12 items-center justify-center rounded-lg bg-brand-600 font-semibold text-white hover:bg-brand-700">Send order to sales</Link>}
+                  {withSales === false && <SendToSales order={placed} />}
                   <a href={contact.phoneHref} className="flex h-12 items-center justify-center rounded-lg border border-line font-semibold text-ink hover:border-ink/30">Call {contact.phone}</a>
                   <Link href="/portal?view=orders" className="mt-2 text-sm font-medium text-brand-700 hover:underline">View your orders in the dashboard</Link>
                 </div>
@@ -260,7 +296,7 @@ export function Checkout() {
         </dl>
         <div className="flex items-baseline justify-between gap-4 border-t-2 border-white/80 pt-5">
           <span className="text-sm text-white/80">Total</span>
-          <span className="text-right text-lg font-bold">Confirmed on payment</span>
+          <span className="text-right text-lg font-bold">Confirmed by sales</span>
         </div>
         {step < 3 && (
           <button
@@ -275,6 +311,33 @@ export function Checkout() {
         {/* Ticket edge */}
         <span aria-hidden className="absolute inset-x-0 bottom-0 h-3 bg-[radial-gradient(circle_at_8px_12px,var(--color-canvas)_6px,transparent_6.5px)] bg-[length:16px_12px] bg-repeat-x" />
       </aside>
+    </div>
+  );
+}
+
+/** When sales couldn't be told automatically: the whole order, pre-filled, by email or WhatsApp. */
+function SendToSales({ order }: { order: CheckoutOrder }) {
+  const { contact } = useSite();
+  const c = order.customer;
+  const links = composeLinks({
+    to: contact.sales,
+    whatsapp: contact.whatsapp,
+    subject: `Order ${order.reference}: ${c.organisation}`,
+    body: [
+      ...order.items.map((x) => `• ${x.name} × ${x.qty}`),
+      '',
+      order.needs?.department ? `Department: ${departments.find((d) => d.id === order.needs!.department)?.label}` : undefined,
+      order.needs ? `Needed: ${timelines.find((t) => t.id === order.needs!.timeline)?.label}` : undefined,
+      order.needs?.notes ? `Notes: ${order.needs.notes}` : undefined,
+      `Payment: ${methods.find((m) => m.id === order.method)?.label}`,
+      `Deliver to: ${c.address}, ${c.region}`,
+      `From: ${c.name}, ${c.organisation} · ${c.phone} · ${c.email}`,
+    ].filter((l) => typeof l === 'string').join('\n'),
+  });
+  return (
+    <div className="grid grid-cols-2 gap-2">
+      <a href={links.email} className="flex h-12 items-center justify-center rounded-lg bg-brand-600 font-semibold text-white hover:bg-brand-700">Email it to sales</a>
+      <a href={links.whatsapp} target="_blank" rel="noopener noreferrer" className="flex h-12 items-center justify-center rounded-lg border border-line font-semibold text-ink hover:border-ink/30">WhatsApp</a>
     </div>
   );
 }

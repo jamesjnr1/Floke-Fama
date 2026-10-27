@@ -4,6 +4,7 @@ import { catalogue } from '@/data/catalogue';
 import { appwrite, DATABASE_ID, isNotFound, TABLES } from '@/lib/appwrite';
 import { getSession } from '@/lib/auth/server';
 import { createOrderDeal, hubspotConfigured } from '@/lib/hubspot';
+import { departmentLabel, timelineLabel, timelines } from '@/lib/order-needs';
 import { needsInstallation } from '@/lib/installation';
 import type { SavedOrder } from '@/lib/orders';
 import { registerPurchase } from '@/lib/service/server';
@@ -71,6 +72,11 @@ export async function POST(req: NextRequest) {
     region: String(o.region ?? '').slice(0, 80),
     address: String(o.address ?? '').slice(0, 300),
     status: 'awaiting-payment',
+    needs: {
+      department: departmentLabel(o.needs?.department) ? String(o.needs?.department) : '',
+      timeline: timelines.some((t) => t.id === o.needs?.timeline) ? String(o.needs?.timeline) : 'quarter',
+      notes: String(o.needs?.notes ?? '').trim().slice(0, 1000),
+    },
   };
 
   try {
@@ -101,11 +107,12 @@ export async function POST(req: NextRequest) {
         phone: text(c.phone, 40) || s.phone || '',
         facility: text(c.organisation, 160) || s.facility || s.name,
         items: order.items.map((i) => ({ name: tidyName(i.name), qty: i.qty })),
-        payment: [{ momo: 'Mobile money', card: 'Card', bank: 'Bank transfer' }[order.method], order.method === 'momo' && text(momo?.network, 30) ? `(${text(momo?.network, 30)})` : '']
-          .filter(Boolean)
-          .join(' '),
+        payment: (order.method === 'momo' && text(momo?.network, 30)) || { momo: 'Mobile money', card: 'Card', bank: 'Bank transfer' }[order.method],
         region: order.region,
         address: order.address,
+        department: departmentLabel(order.needs?.department),
+        timeline: { id: order.needs!.timeline as (typeof timelines)[number]['id'], label: timelineLabel(order.needs?.timeline)! },
+        notes: order.needs?.notes || undefined,
       }).then(
         () => true,
         (e) => {

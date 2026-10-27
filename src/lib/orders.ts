@@ -19,6 +19,7 @@ export interface SavedOrder {
   region: string;
   address: string;
   status: OrderStatus;
+  needs?: CheckoutOrder['needs'];
 }
 
 export const orderStatusLabel: Record<OrderStatus, string> = {
@@ -80,6 +81,7 @@ export function saveOrder(order: CheckoutOrder, account: string): Promise<boolea
       address: order.customer.address,
       customer: { name: order.customer.name, organisation: order.customer.organisation, phone: order.customer.phone },
       momo: order.momo ? { network: order.momo.network } : undefined,
+      needs: order.needs,
     }),
     keepalive: true,
   })
@@ -98,6 +100,7 @@ export function saveOrder(order: CheckoutOrder, account: string): Promise<boolea
     region: order.customer.region,
     address: order.customer.address,
     status: 'awaiting-payment',
+    needs: order.needs,
   };
   try {
     localStorage.setItem(KEY, JSON.stringify([saved, ...read().filter((o) => o.reference !== order.reference)].slice(0, 50)));

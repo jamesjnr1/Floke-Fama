@@ -121,10 +121,10 @@ export function ClosingCta() {
           <h2 id="closing-cta" className="display text-[clamp(2.25rem,1.4rem+2.6vw,3.5rem)] text-white">
             Equip your facility with Ghana’s No.1 healthcare company<span className="text-signal">.</span>
           </h2>
-          <p className="no-justify mt-5 max-w-xl text-lg leading-relaxed text-white/80">Tell us what you need and our team will send a technical proposal, with installation, training and support included.</p>
+          <p className="no-justify mt-5 max-w-xl text-lg leading-relaxed text-white/80">Choose your equipment and our team confirms price and delivery, with installation, training and support included.</p>
           <div className="mt-9 flex flex-wrap gap-3">
             <Button asChild size="lg" arrow="right" className="bg-white text-brand-800 hover:bg-white/90">
-              <Link href="/quote">Request a quote</Link>
+              <Link href="/products">Order equipment</Link>
             </Button>
             <Button asChild size="lg" variant="red" arrow="right">
               <Link href="/support">Contact us</Link>
