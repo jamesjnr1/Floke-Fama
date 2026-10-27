@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Bars, Columns } from '@/components/admin/charts';
 import { LiveRefresh } from '@/components/admin/live-refresh';
 import { LogoMark, LogoWordmark } from '@/components/layout/logo';
+import { Hint } from '@/components/ui/hint';
 import { Icon } from '@/components/ui/icon';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { removeEngineer, saveOrderNote, setOrderStatus } from '@/lib/admin/actions';
@@ -22,6 +23,7 @@ import { salesStages } from '@/lib/sales-stages';
 import { departments, timelines } from '@/lib/order-needs';
 import { cn } from '@/lib/utils';
 import { statusStyle } from '@/components/client/ui';
+import { visitStatus } from '@/lib/service/desk';
 import type { TicketStatus as TicketStatusId } from '@/lib/service/store';
 
 /**
@@ -84,7 +86,23 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
   const now = data.source === 'sample' ? Date.UTC(2026, 9, 19, 12) : Date.now();
 
   const menu = tabs.filter((t) => t.id !== 'system');
-  const newOrders = data.orders.filter((o) => o.status === 'awaiting-payment').length;
+  // A mark on a tab when something there needs a look: red for action, green for news
+  const badges: Partial<Record<Tab, { n: number; tone: 'red' | 'green'; title: string }>> = {
+    orders: { n: data.orders.filter((o) => o.status === 'awaiting-payment').length, tone: 'red', title: 'new orders to call' },
+    service: { n: data.supportRequests.filter((r) => r.status === 'new' && !r.ticketId).length + data.desk.tickets.filter((t) => t.status === 'new').length, tone: 'red', title: 'new Support page requests and jobs no engineer has taken' },
+    accounts: { n: data.accounts.filter((a) => now - Date.parse(a.createdAt) < DAY).length, tone: 'green', title: 'registered in the last 24 hours' },
+    texts: { n: data.sms.filter((m) => m.status === 'failed' && now - Date.parse(m.at) < DAY).length, tone: 'red', title: 'texts not sent in the last 24 hours' },
+  };
+  const badge = (id: Tab, phone?: boolean) => {
+    const b = badges[id];
+    if (!b?.n) return null;
+    return (
+      <span title={`${b.n} ${b.title}`} className={cn('rounded-full px-2 py-0.5 text-[0.75rem] font-bold tabular-nums text-white', phone ? 'ml-1' : 'ml-auto', b.tone === 'red' ? 'bg-signal' : 'bg-brand-600')}>
+        {b.n}
+        <span className="sr-only"> {b.title}</span>
+      </span>
+    );
+  };
   const href = (id: Tab) => (id === 'overview' ? '/admin' : `/admin?tab=${id}`);
   const item = (active: boolean) =>
     cn('flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-[0.9375rem] font-medium transition', active ? 'bg-brand-50 text-brand-800 shadow-[inset_0_0_0_1px_rgb(0_122_77/0.12)]' : 'text-ink-3 hover:bg-[#f1f4f2] hover:text-ink');
@@ -103,7 +121,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             {menu.map((t) => (
               <Link key={t.id} href={href(t.id)} aria-current={t.id === tab ? 'page' : undefined} className={item(t.id === tab)}>
                 <Icon name={t.icon} className={t.id === tab ? 'text-brand-600' : ''} /> {t.label}
-                {t.id === 'orders' && newOrders > 0 && <span className="ml-auto rounded-full bg-signal px-2 py-0.5 text-[0.75rem] font-bold text-white" title="New orders to call">{newOrders}</span>}
+                {badge(t.id)}
               </Link>
             ))}
           </nav>
@@ -165,6 +183,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             {tabs.map((t) => (
               <Link key={t.id} href={href(t.id)} aria-current={t.id === tab ? 'page' : undefined} className={cn(item(t.id === tab), 'shrink-0 whitespace-nowrap')}>
                 <Icon name={t.icon} /> {t.label}
+                {badge(t.id, true)}
               </Link>
             ))}
           </nav>
@@ -210,13 +229,16 @@ function Notice({ tone, children }: { tone: 'warn' | 'info'; children: React.Rea
   );
 }
 
-function Heading({ title, lead, action, picture }: { title: string; lead?: React.ReactNode; action?: React.ReactNode; picture?: React.ReactNode }) {
+function Heading({ title, lead, action, picture, hint }: { title: string; lead?: React.ReactNode; action?: React.ReactNode; picture?: React.ReactNode; hint?: React.ReactNode }) {
   return (
     <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
       <div className="flex items-center gap-5">
         {picture}
         <div>
-          <h1 className="text-[clamp(2rem,1.6rem+1.2vw,2.625rem)] font-semibold leading-tight tracking-[-0.03em]">{title}</h1>
+          <h1 className="flex items-center gap-3 text-[clamp(2rem,1.6rem+1.2vw,2.625rem)] font-semibold leading-tight tracking-[-0.03em]">
+            {title}
+            {hint && <Hint label={`About ${title}`}>{hint}</Hint>}
+          </h1>
           {lead && <p className="mt-1.5 text-ink-3">{lead}</p>}
         </div>
       </div>
@@ -485,6 +507,7 @@ function Orders({ data, q, open, stage, now }: { data: AdminData; q?: string; op
   return (
     <>
       <Heading
+        hint={<>Every order placed in the shop. Call each new one, agree the price, then press the next step: <b>Mark as called</b> → <b>Price sent</b> → <b>Mark as paid</b> → <b>Start preparing</b> → <b>Mark as delivered</b>. The hospital sees each stage in its dashboard. Open an order to record the amount and notes, or move it to any stage (Lost if it did not go ahead).</>}
         title="Sales board"
         lead="Call each new order, agree the price, then press the next step. The hospital follows Price sent, Paid, Being prepared and Delivered in its dashboard."
         action={<div className="flex flex-wrap items-center gap-2"><SearchBox tab="orders" q={q} placeholder="Reference, hospital, product…" extra={{ stage: chosen }} /><Csv table="orders" /></div>}
@@ -656,6 +679,7 @@ function Accounts({ data, q, role, adding }: { data: AdminData; q?: string; role
   return (
     <>
       <Heading
+        hint={<>Hospitals register themselves at /login. Engineers are added here (Add engineer) and sign in at /engineer/login. Admins are the emails listed in ADMIN_EMAILS in Vercel. Passwords are never shown.</>}
         title="Accounts"
         lead={`${data.accounts.length} registered accounts: hospitals, ${engineers.length} engineer${engineers.length === 1 ? '' : 's'} and admins. Click an account for its details. Passwords are never shown or stored in readable form.`}
         action={
@@ -1056,7 +1080,8 @@ function Service({ data, now }: { data: AdminData; now: number }) {
   const due = data.desk.assets.filter((a) => a.nextCalibration && a.nextCalibration < soon).sort((a, b) => a.nextCalibration.localeCompare(b.nextCalibration));
   return (
     <>
-      <Heading title="Service desk" lead="Service requests from hospitals and the equipment Flokefama looks after." action={<div className="flex gap-2"><Csv table="tickets" label="Requests CSV" /><Csv table="equipment" label="Equipment CSV" /></div>} />
+      <Heading hint={<><b>Service requests</b> are jobs on equipment, followed by the engineers in their portal. <b>Requests from the Support page</b> come from anyone; engineers call back, then mark them Called back, book a visit (it becomes a service request) or close them. “Visit booked · waiting for an engineer” means nobody has taken the job yet.</>}
+        title="Service desk" lead="Service requests from hospitals and the equipment Flokefama looks after." action={<div className="flex gap-2"><Csv table="tickets" label="Requests CSV" /><Csv table="equipment" label="Equipment CSV" /></div>} />
       <WebsiteRequests data={data} />
       <div className="mb-4 grid gap-4 lg:grid-cols-3">
         <Panel title="Requests by priority">
@@ -1118,7 +1143,7 @@ function WebsiteRequests({ data }: { data: AdminData }) {
   return (
     <section id="website-requests" className="mb-8 scroll-mt-6">
       <h2 className="mb-1 text-lg font-semibold">Requests from the Support page ({rows.filter((r) => r.status === 'new').length} new)</h2>
-      <p className="mb-3 text-[0.9375rem] text-ink-3">Sent with the Report a fault form by anyone, client or not. Engineers see them in their portal (From the website), call back and, when a visit is needed, send an engineer (a service request). The engineers set the status; this list shows where each one stands.</p>
+      <p className="mb-3 text-[0.9375rem] text-ink-3">Sent with the Report a fault form by anyone, client or not. Engineers see them in their portal (From the website), call back and, when a visit is needed, book a visit (a service request). The engineers set the status; this list shows where each one stands.</p>
       <Table head={['Received', 'Reference', 'Request', 'Hospital', 'Who to call', 'Equipment & details', 'Status']} empty={!rows.length}>
         {rows.map((r) => (
           <tr key={r.id}>
@@ -1142,10 +1167,14 @@ function WebsiteRequests({ data }: { data: AdminData }) {
             </td>
             <td>
               {/* Engineers move requests on in their portal; the console only shows where each one stands */}
-              <Badge tone={r.status === 'new' ? 'bad' : r.status === 'called' ? 'warn' : 'good'}>{r.ticketId ? 'Engineer sent' : supportStatusLabel[r.status]}</Badge>
+              {r.ticketId ? (
+                <Badge tone={visitStatus(data.desk.tickets.find((t) => t.id === r.ticketId)).tone}>{visitStatus(data.desk.tickets.find((t) => t.id === r.ticketId)).label}</Badge>
+              ) : (
+                <Badge tone={r.status === 'new' ? 'bad' : r.status === 'called' ? 'warn' : 'good'}>{supportStatusLabel[r.status]}</Badge>
+              )}
               {r.status !== 'new' && r.handledBy && (
                 <span className="mt-1 block whitespace-nowrap text-[0.8125rem] text-ink-3">
-                  by {r.handledBy}
+                  {r.ticketId ? 'booked by' : 'by'} {r.handledBy}
                   {r.handledAt ? `, ${timeFmt.format(new Date(r.handledAt))}` : ''}
                   {r.ticketId ? ` · ${r.ticketId}` : ''}
                 </span>
@@ -1176,6 +1205,7 @@ async function Texts({ data, now }: { data: AdminData; now: number }) {
   return (
     <>
       <Heading
+        hint={<>Every text the website sends, through Arkesel from “Flokefama”: to engineers about urgent faults, to admins when nobody takes an urgent job in 30 minutes, and to hospitals when an engineer is assigned and when a job is fixed, plus check-ins, calibration reminders and five greetings a year. “Not sent” shows Arkesel’s reason.</>}
         title="Text messages"
         lead={<>Texts to engineers about their work, and to hospitals to keep in touch. Below, every text sent, newest first: what it was about, who got it, the message exactly as it arrived, and whether it went out. Texts are sent from “Flokefama”{smsProvider === 'arkesel' ? ' through Arkesel' : ''}; send a test from <Link href="/admin?tab=system" className="font-medium text-brand-700 underline">Database &amp; settings</Link>.</>}
       />

@@ -13,6 +13,7 @@ import { RequestsView } from '@/components/client/RequestsView';
 import { LogoMark, LogoWordmark } from '@/components/layout/logo';
 import { AlertsBanner, AlertsSwitch, useNotificationPopups } from '@/components/service/alerts';
 import { TextsSwitch } from '@/components/client/texts-switch';
+import { Hint } from '@/components/ui/hint';
 import { Notifications } from '@/components/service/Notifications';
 import { EngineerPhotosProvider } from '@/components/service/engineer-photos';
 import { LiveStatus } from '@/components/service/live-status';
@@ -162,7 +163,12 @@ export function ClientShell({ user, products }: { user: { name: string; email: s
           <div className="space-y-2.5">
             <a href={contact.phoneHref} className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-phone-call" /> {contact.phone}</a>
             <AlertsSwitch className="text-white/80 hover:text-white" />
-            <TextsSwitch className="text-white/80 hover:text-white" />
+            <span className="flex items-center gap-2">
+              <TextsSwitch className="text-white/80 hover:text-white" />
+              <Hint onDark>
+                Our check-ins after a repair, calibration reminders and a few greetings a year. Texts about your own service requests (engineer assigned, fixed) always come, to the number you give with each request.
+              </Hint>
+            </span>
             <Link href="/" className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-arrow-small-left" /> Flokefama website</Link>
             <Link href="/portal/password" className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-lock" /> Change password</Link>
             <form action={logout}>

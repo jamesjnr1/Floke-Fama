@@ -6,9 +6,10 @@
  * - Alerts (Web Push): shows new service requests and updates even when the site is closed; tapping one opens it.
  * Bump VERSION to invalidate old caches on deploy.
  */
-const VERSION = 'v4';
+const VERSION = 'v5';
 // Signed-in areas are never cached: private data must not survive sign-out on shared hospital machines.
-const PRIVATE = ['/portal', '/engineer', '/login'];
+// (v5 adds the admin console, and the new version clears any admin pages an older one saved.)
+const PRIVATE = ['/portal', '/engineer', '/login', '/admin'];
 const PAGE_CACHE = `pages-${VERSION}`;
 const ASSET_CACHE = `assets-${VERSION}`;
 const PRECACHE = ['/offline', '/products', '/images/logo.png', '/images/favicon.png'];
