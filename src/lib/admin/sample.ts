@@ -30,7 +30,7 @@ export function sampleData(): AdminData {
   );
 
   const popular = catalogue.slice(0, 30);
-  const statuses: OrderStatus[] = ['awaiting-payment', 'paid', 'processing', 'delivered', 'delivered', 'delivered'];
+  const statuses: OrderStatus[] = ['called', 'priced', 'priced', 'paid', 'processing', 'delivered', 'delivered', 'delivered', 'delivered', 'lost'];
   const orders = Array.from({ length: 64 }, (_, i) => {
     const a = pick(accounts.slice(0, 46));
     const age = Math.floor(rnd() * rnd() * 84);
