@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { helpHref } from '@/lib/links';
 import { EngineerFace } from '@/components/service/engineer-photos';
 import { Card, CardTitle, statusBar, statusStyle, tag } from '@/components/client/ui';
 import { Icon } from '@/components/ui/icon';
@@ -293,7 +294,7 @@ export function Overview({ name, facility, assets, tickets, orders, onOpenTicket
             </div>
             <div className="grid grid-cols-2 border-t border-white/15 text-sm">
               <Link href="/products" className="px-6 py-4 text-white/85 transition hover:bg-white/5 hover:text-white">Order equipment →</Link>
-              <Link href="/quote?intent=demo" className="border-l border-white/15 px-6 py-4 text-white/85 transition hover:bg-white/5 hover:text-white">Book training →</Link>
+              <Link href={helpHref('training')} className="border-l border-white/15 px-6 py-4 text-white/85 transition hover:bg-white/5 hover:text-white">Book training →</Link>
             </div>
           </div>
         </div>

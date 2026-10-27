@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { orderHref } from '@/lib/links';
 import { notFound } from 'next/navigation';
 import { BuyAssurance, MobileQuoteBar, RelatedProducts, relatedProducts } from '@/components/products/product-extras';
 import { ProductGallery } from '@/components/products/product-gallery';
@@ -58,7 +59,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                 <p className="truncate text-sm font-semibold text-ink">{product.brand} {product.name}</p>
                 <p className="text-xs text-ink-3">Priced to your configuration · reply within one business day</p>
               </div>
-              <Link href={`/quote?product=${product.slug}`} className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-lg bg-brand-600 px-4 text-sm font-medium text-white transition hover:bg-brand-700">
+              <Link href={orderHref(product.slug)} className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-lg bg-brand-600 px-4 text-sm font-medium text-white transition hover:bg-brand-700">
                 Order now
               </Link>
             </div>

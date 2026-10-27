@@ -70,5 +70,3 @@ export const quoteList = {
   clear: () => write([]),
 };
 
-/** The quote page link for a list of products. */
-export const quoteHref = (items: QuoteItem[]) => `/quote?products=${items.map((x) => x.slug).join(',')}`;

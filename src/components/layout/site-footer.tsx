@@ -81,9 +81,9 @@ export async function SiteFooter() {
 
           <div className="col-span-2 flex flex-col gap-2.5 md:col-span-3 lg:col-span-3">
             <h2 className="text-sm font-semibold text-white">Need equipment?</h2>
-            <p className="text-sm">Get a technical proposal for your facility.</p>
-            <Link href="/quote" className="group inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-white underline-offset-4 hover:underline">
-              Request a quote
+            <p className="text-sm">Order from the shop; sales confirms price and delivery.</p>
+            <Link href="/products" className="group inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-white underline-offset-4 hover:underline">
+              Order equipment
               <ArrowUpRight className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden />
             </Link>
             <SocialLinks className="mt-2" buttonClassName="text-white/75 hover:text-white" />
