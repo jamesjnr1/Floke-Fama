@@ -151,16 +151,12 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
    */
   const makeJob = useCallback(
     (r: WebsiteRequest) => {
-      if (!state.assets.length) {
-        toast('No equipment registered yet', { description: `Register ${r.facility}’s equipment first, then send an engineer.`, action: { label: 'Add equipment', onClick: addEquipment } });
-        return;
-      }
+      // Their equipment if it is on record; otherwise the machine they named is added with the request
       const key = (s: string) => s.trim().toLowerCase();
       const theirs = state.assets.filter((a) => key(a.facility) === key(r.facility));
-      if (!theirs.length) toast(`${r.facility} has no registered equipment`, { description: 'Choose the system below, or close this and add their equipment first.', action: { label: 'Add equipment', onClick: addEquipment } });
       setFault({ open: true, assetId: theirs[0]?.id, from: r });
     },
-    [state.assets, addEquipment],
+    [state.assets],
   );
 
   const actions: Command[] = useMemo(
@@ -373,11 +369,15 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
             ? `${supportDetails(fault.from).filter(([k]) => k !== 'Equipment').map(([k, v]) => `${k}: ${v}`).join('\n')}\n\nFrom the website (${fault.from.id}): ${fault.from.name}, ${fault.from.phone}.`
             : undefined
         }
+        forFacility={fault.from?.facility}
+        defaultEquipment={fault.from?.equipment}
         title={fault.from ? `Send an engineer (${fault.from.id})` : undefined}
         submitLabel={fault.from ? 'Send an engineer' : undefined}
         onSubmit={(v) => {
           const id = nextTicketId(state);
-          rawDispatch({ type: 'create', ticket: { assetId: v.assetId, description: v.description, priority: v.priority }, assignToMe: v.assignToMe });
+          // A machine the website caller named that isn't on record yet is registered for their hospital with the request
+          const newAsset = v.newEquipment && fault.from ? newCallerAsset(v.newEquipment, fault.from.facility) : undefined;
+          rawDispatch({ type: 'create', ticket: { assetId: newAsset?.id ?? v.assetId, description: v.description, priority: v.priority }, assignToMe: v.assignToMe, newAsset });
           // A request from the website is closed with the service request it became
           if (fault.from) website.update(fault.from.id, 'closed', me, id);
           toast.success(`${id} logged`, { description: v.assignToMe ? 'Assigned to you and added to your queue.' : 'Added to the unassigned queue.' });
@@ -420,4 +420,26 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
       <CommandPalette open={palette} onOpenChange={setPalette} state={state} actions={actions} onOpenTicket={openTicket} onOpenAsset={openAsset} />
     </div>
   );
+}
+
+/** A website caller's machine, registered with the service request (its details are completed on the visit). */
+function newCallerAsset(name: string, facility: string): Asset {
+  const now = new Date();
+  const next = new Date(now);
+  next.setMonth(next.getMonth() + 12);
+  return {
+    id: `AS-${now.getTime().toString(36).toUpperCase()}${Math.random().toString(36).slice(2, 5).toUpperCase()}`,
+    name,
+    brand: '',
+    serial: 'Not recorded',
+    facility,
+    location: 'Location not set',
+    readings: [],
+    installed: now.toISOString(),
+    warrantyUntil: now.toISOString(),
+    lastCalibration: now.toISOString(),
+    nextCalibration: next.toISOString(),
+    intervalMonths: 12,
+    certificates: [],
+  };
 }

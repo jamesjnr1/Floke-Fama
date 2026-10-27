@@ -6,19 +6,32 @@ import { Icon } from '@/components/ui/icon';
 import type { Asset, Certificate, Priority, Ticket } from '@/lib/service/store';
 import { cn } from '@/lib/utils';
 
-/** Log a new equipment fault against an installed system. */
-export function LogFaultDialog({ open, onOpenChange, assets, defaultAssetId, defaultDescription, title = 'Log equipment fault', submitLabel = 'Log fault', onSubmit }: {
+const NEW = '__new';
+
+/**
+ * Log a new equipment fault against an installed system. For a request from the website (`forFacility`), only that
+ * hospital's equipment is offered, and a machine not on record yet can be typed in: it is registered for the hospital
+ * with the service request, in one step.
+ */
+export function LogFaultDialog({ open, onOpenChange, assets: all, defaultAssetId, defaultDescription, forFacility, defaultEquipment, title = 'Log equipment fault', submitLabel = 'Log fault', onSubmit }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
   assets: Asset[];
   defaultAssetId?: string;
   /** Filled in when the job comes from a request on the website. */
   defaultDescription?: string;
+  /** The website caller's hospital: their equipment only, or a new machine for them. */
+  forFacility?: string;
+  /** The machine the caller named, for a new one. */
+  defaultEquipment?: string;
   title?: string;
   submitLabel?: string;
-  onSubmit: (v: { assetId: string; description: string; priority: Priority; assignToMe: boolean }) => void;
+  onSubmit: (v: { assetId: string; description: string; priority: Priority; assignToMe: boolean; newEquipment?: string }) => void;
 }) {
-  const [assetId, setAssetId] = useState(defaultAssetId ?? assets[0]?.id ?? '');
+  const key = (s: string) => s.trim().toLowerCase();
+  const assets = forFacility ? all.filter((a) => key(a.facility) === key(forFacility)) : all;
+  const [assetId, setAssetId] = useState(defaultAssetId ?? assets[0]?.id ?? (forFacility ? NEW : ''));
+  const [equipment, setEquipment] = useState('');
   const [description, setDescription] = useState('');
   const [priority, setPriority] = useState<Priority>('high');
   const [assignToMe, setAssignToMe] = useState(true);
@@ -27,28 +40,37 @@ export function LogFaultDialog({ open, onOpenChange, assets, defaultAssetId, def
   const wasOpen = useRef(false);
   useEffect(() => {
     if (open && !wasOpen.current) {
-      setAssetId(defaultAssetId ?? assets[0]?.id ?? '');
+      setAssetId(defaultAssetId ?? assets[0]?.id ?? (forFacility ? NEW : ''));
+      setEquipment(defaultEquipment ?? '');
       setDescription(defaultDescription ?? '');
     }
     wasOpen.current = open;
-  }, [open, defaultAssetId, defaultDescription, assets]);
+  }, [open, defaultAssetId, defaultDescription, defaultEquipment, forFacility, assets]);
+  const adding = assetId === NEW;
 
   return (
     <PortalDialog open={open} onOpenChange={onOpenChange} title={title} description="The ticket is created immediately and appears in the service queue.">
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          if (!description.trim()) return;
-          onSubmit({ assetId, description: description.trim(), priority, assignToMe });
+          if (!description.trim() || (adding && equipment.trim().length < 2) || !assetId) return;
+          onSubmit({ assetId, description: description.trim(), priority, assignToMe, newEquipment: adding ? equipment.trim() : undefined });
           onOpenChange(false);
         }}
         className="space-y-4"
       >
-        <Field label="System">
+        <Field label={forFacility ? `Equipment at ${forFacility}` : 'System'}>
           <select value={assetId} onChange={(e) => setAssetId(e.target.value)} className={cn(fieldClass, 'h-11')}>
-            {assets.map((a) => <option key={a.id} value={a.id}>{a.name} · {a.facility}</option>)}
+            {assets.map((a) => <option key={a.id} value={a.id}>{a.name} · {forFacility ? a.location : a.facility}</option>)}
+            {forFacility && <option value={NEW}>{assets.length ? 'Another machine (add it)' : 'Add their machine'}</option>}
           </select>
         </Field>
+        {adding && (
+          <Field label="Which machine?">
+            <input required value={equipment} onChange={(e) => setEquipment(e.target.value)} placeholder="e.g. Mindray BC-5150 analyser" className={cn(fieldClass, 'h-11')} />
+            <span className="mt-1 block text-xs text-ink-3">It is added to {forFacility}’s equipment with this request.</span>
+          </Field>
+        )}
         <Field label="What’s happening?">
           <textarea required autoFocus value={description} onChange={(e) => setDescription(e.target.value)} rows={3} placeholder="e.g. Error code E-21 on start-up" className={cn(fieldClass, 'py-2.5')} />
         </Field>
@@ -68,7 +90,7 @@ export function LogFaultDialog({ open, onOpenChange, assets, defaultAssetId, def
         </label>
         <div className="flex justify-end gap-2 pt-2">
           <GhostButton type="button" onClick={() => onOpenChange(false)}>Cancel</GhostButton>
-          <PrimaryButton type="submit" disabled={!description.trim()}>{submitLabel}</PrimaryButton>
+          <PrimaryButton type="submit" disabled={!description.trim() || !assetId || (adding && equipment.trim().length < 2)}>{submitLabel}</PrimaryButton>
         </div>
       </form>
     </PortalDialog>
