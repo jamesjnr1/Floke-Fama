@@ -48,6 +48,20 @@ export function OrdersView({ orders }: { orders: SavedOrder[] }) {
                 </li>
               ))}
             </ul>
+            {o.amount !== undefined && (
+              <div className="mt-4 rounded-lg bg-brand-50 px-4 py-3 text-sm">
+                <p className="font-semibold text-ink">Price agreed: GHS {o.amount.toLocaleString('en-GB')}</p>
+                <p className="mt-0.5 text-ink-2">
+                  {o.status === 'priced'
+                    ? `Next: pay by ${methodLabel[o.method].toLowerCase()} as our sales team explained. Once it is paid, we prepare and deliver your order.`
+                    : o.status === 'paid'
+                      ? 'Paid, thank you. We are preparing your order.'
+                      : o.status === 'processing'
+                        ? 'Being prepared for delivery.'
+                        : 'Delivered.'}
+                </p>
+              </div>
+            )}
             <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm">
               <p className="text-ink-3">Deliver to <span className="text-ink">{o.address ? `${o.address}, ` : ''}{o.region}</span></p>
               {(o.status === 'awaiting-payment' || o.status === 'called' || o.status === 'priced') && (

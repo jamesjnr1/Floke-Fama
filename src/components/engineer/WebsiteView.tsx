@@ -24,6 +24,25 @@ export interface WebsiteRequest extends Partial<Omit<SupportInput, 'website'>> {
 }
 
 const POLL_MS = 30_000;
+
+/** “Call back now”, with how long the caller has waited (red after 30 minutes for a fault, when the admins are texted). */
+function CallBackNow({ at, fault }: { at: string; fault: boolean }) {
+  const [now, setNow] = useState<number | null>(null);
+  useEffect(() => {
+    setNow(Date.now());
+    const id = setInterval(() => setNow(Date.now()), 30_000);
+    return () => clearInterval(id);
+  }, []);
+  if (now === null) return null;
+  const mins = Math.max(0, Math.round((now - Date.parse(at)) / 60_000));
+  const late = fault && mins >= 30;
+  return (
+    <p className={cn('mt-2 inline-flex items-center gap-1.5 text-sm font-semibold', late ? 'text-[#b42318]' : 'text-[#7a5200]')}>
+      <Icon name="fi-rr-phone-call" /> Call back now · waiting {mins < 60 ? `${mins} min` : `${Math.round(mins / 60)} h`}
+      {late && ' · overdue'}
+    </p>
+  );
+}
 const typeLabel: Record<WebsiteRequest['type'], string> = { fault: 'Fault', maintenance: 'Maintenance', installation: 'Installation', assistance: 'Other assistance' };
 const statusLabel: Record<WebsiteRequest['status'], string> = { new: 'New', called: 'Called back', closed: 'Closed' };
 
@@ -127,6 +146,7 @@ export function WebsiteView({ requests, tickets, enabled, me, onCalled, onClose,
               <p className="mt-3 text-base font-semibold text-ink">{r.facility}</p>
               <p className="text-sm font-medium text-ink-2">{supportSubject(r)}</p>
               {r.working === 'down' && <p className="mt-2 text-sm font-semibold text-[#b42318]">Not working at all</p>}
+              {r.status === 'new' && <CallBackNow at={r.at} fault={r.type === 'fault'} />}
               <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
                 {supportDetails(r)
                   .filter(([k]) => k !== 'Equipment' && k !== 'Help with' && !(k === 'Status' && r.working === 'down'))

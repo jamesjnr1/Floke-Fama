@@ -7,7 +7,10 @@ const securityHeaders = [
   { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
   { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
   // Baseline CSP: no one may frame the site, no plugins, no <base> hijacking
-  { key: 'Content-Security-Policy', value: "frame-ancestors 'self'; object-src 'none'; base-uri 'self'" },
+  { key: 'Content-Security-Policy', value: "frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self'" },
+  // A site opened from a link can't reach back into this one (WhatsApp and maps links still open normally)
+  { key: 'Cross-Origin-Opener-Policy', value: 'same-origin-allow-popups' },
+  { key: 'X-Permitted-Cross-Domain-Policies', value: 'none' },
 ];
 
 // Pre-launch safety: every response carries noindex until the launch switch is set

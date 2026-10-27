@@ -1,8 +1,8 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { loadAdminData } from '@/lib/admin/data';
-import { getAdminSession } from '@/lib/auth/server';
+import { getConsoleSession } from '@/lib/auth/server';
 
-/** CSV downloads for the admin console (orders, accounts, service requests, equipment). Admins only. */
+/** CSV downloads for the admin console (orders, accounts, service requests, equipment). Admins; the sales team only orders. */
 export const dynamic = 'force-dynamic';
 
 // A leading = + - @ would run as a formula in Excel, so such cells get a ' in front
@@ -14,10 +14,10 @@ const cell = (v: unknown) => {
 const csv = (head: string[], rows: unknown[][]) => [head, ...rows].map((r) => r.map(cell).join(',')).join('\r\n');
 
 export async function GET(req: NextRequest) {
-  const s = await getAdminSession();
-  if (s?.role !== 'admin') return NextResponse.json({ error: 'Not allowed.' }, { status: 403 });
-  const d = await loadAdminData();
+  const s = await getConsoleSession();
   const table = req.nextUrl.searchParams.get('table');
+  if (!s || (s.role !== 'admin' && table !== 'orders')) return NextResponse.json({ error: 'Not allowed.' }, { status: 403 });
+  const d = await loadAdminData();
   let body: string;
   if (table === 'orders') body = csv(['Reference', 'Placed', 'Account', 'Items', 'Units', 'Payment', 'Region', 'Address', 'Status'], d.orders.map((o) => [o.reference, o.placedAt, o.account, o.items.map((i) => `${i.qty} x ${i.name}`).join('; '), o.items.reduce((n, i) => n + i.qty, 0), o.method, o.region, o.address, o.status]));
   else if (table === 'accounts') body = csv(['Name', 'Organisation', 'Email', 'Phone', 'Role', 'Registered'], d.accounts.map((a) => [a.name, a.organisation, a.email, a.phone, a.role, a.createdAt]));

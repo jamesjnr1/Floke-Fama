@@ -1,7 +1,7 @@
 import 'server-only';
 import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { ADMIN_COOKIE, ENGINEER_COOKIE, roleLogin, SESSION_COOKIE, verifySession, type Role } from '@/lib/auth/session';
+import { ADMIN_COOKIE, ENGINEER_COOKIE, isConsoleRole, roleLogin, SESSION_COOKIE, verifySession, type Role } from '@/lib/auth/session';
 
 /**
  * Three separate sessions, one cookie each: hospitals on the site (ff_session), engineers in the engineer portal
@@ -18,6 +18,17 @@ export const getClientSession = () => sessionFrom(SESSION_COOKIE, 'client');
 export const getEngineerSession = () => sessionFrom(ENGINEER_COOKIE, 'engineer');
 /** The signed-in admin, from the admin console's own cookie. */
 export const getAdminSession = () => sessionFrom(ADMIN_COOKIE, 'admin');
+/** Whoever is signed in to the admin console: an admin, or the sales team (limited to the sales tabs). */
+export async function getConsoleSession() {
+  const s = await verifySession((await cookies()).get(ADMIN_COOKIE)?.value);
+  return s && isConsoleRole(s.role) ? s : null;
+}
+/** The admin console's pages: an admin or the sales team, else to the console's sign-in. */
+export async function requireConsole(path: string) {
+  const session = await getConsoleSession();
+  if (!session) redirect(`${roleLogin.admin}?next=${encodeURIComponent(path)}`);
+  return session;
+}
 
 /**
  * For what the hospital and engineer portals share (the service desk, alerts, photos): the engineer when the call

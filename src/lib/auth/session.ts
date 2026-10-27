@@ -6,7 +6,10 @@
  * client: a hospital or facility account (everyone who signs up on the site). engineer: Flokefama's service engineers.
  * admin: the site administrators (the /admin console).
  */
-export type Role = 'client' | 'engineer' | 'admin';
+/** `sales` is the sales team: the admin console, limited to the orders (sales board) and product demand. */
+export type Role = 'client' | 'engineer' | 'admin' | 'sales';
+/** Who may open the admin console at all (what they see inside depends on the role). */
+export const isConsoleRole = (r: Role | undefined) => r === 'admin' || r === 'sales';
 
 export interface SessionUser {
   sub: string;
@@ -28,7 +31,7 @@ export const ADMIN_COOKIE = 'ff_admin';
 /** The engineer portal's own session, kept apart from the site's too: the site is for hospitals only. */
 export const ENGINEER_COOKIE = 'ff_engineer';
 /** Each role's session cookie: hospitals on the site (ff_session), engineers and admins in their own areas. */
-export const cookieFor = (role: Role) => (role === 'admin' ? ADMIN_COOKIE : role === 'engineer' ? ENGINEER_COOKIE : SESSION_COOKIE);
+export const cookieFor = (role: Role) => (isConsoleRole(role) ? ADMIN_COOKIE : role === 'engineer' ? ENGINEER_COOKIE : SESSION_COOKIE);
 /** Sign-out after this long without activity: every visit to the site renews the session (sliding expiry). */
 export const SESSION_TTL_SECONDS = 60 * 60; // 1 hour
 /** With "Keep me signed in": 30 days without use (still renewed by every visit). */
@@ -36,10 +39,10 @@ export const KEEP_TTL_SECONDS = 60 * 60 * 24 * 30;
 export const ttlFor = (user: { keep?: boolean }) => (user.keep ? KEEP_TTL_SECONDS : SESSION_TTL_SECONDS);
 
 /** Each role's own sign-in page: hospitals at /login, engineers and admins apart from them. */
-export const roleLogin: Record<Role, string> = { client: '/login', engineer: '/engineer/login', admin: '/admin/login' };
+export const roleLogin: Record<Role, string> = { client: '/login', engineer: '/engineer/login', admin: '/admin/login', sales: '/admin/login' };
 
 /** Where each role lands after signing in. */
-export const roleHome: Record<Role, string> = { client: '/portal', engineer: '/engineer', admin: '/admin' };
+export const roleHome: Record<Role, string> = { client: '/portal', engineer: '/engineer', admin: '/admin', sales: '/admin?tab=orders' };
 
 /** Areas only one role may open. Everything else (shop, checkout, quotes) is open to any signed-in user. */
 export const roleAreas: { prefix: string; role: Role }[] = [
@@ -61,13 +64,13 @@ export function nextFor(role: Role, next: string | null) {
 /**
  * The key that signs sessions. Set SESSION_SECRET (32+ random characters) in Vercel. Without it a key is derived
  * from the Appwrite API key (also private); with neither, production uses a random key per server instance, so
- * sessions can never be forged (visitors may just be asked to sign in again). Only local development and previews
- * fall back to a fixed key.
+ * sessions can never be forged (visitors may just be asked to sign in again). Only local development (off Vercel)
+ * falls back to a fixed key.
  */
 const secret =
   process.env.SESSION_SECRET?.trim() ||
   (process.env.APPWRITE_API_KEY?.trim() ? `ff-session:${process.env.APPWRITE_API_KEY.trim()}` : '') ||
-  (process.env.VERCEL_ENV === 'production' ? crypto.randomUUID() + crypto.randomUUID() : 'flokefama-preview-only-secret--set-SESSION_SECRET');
+  (process.env.VERCEL ? crypto.randomUUID() + crypto.randomUUID() : 'flokefama-preview-only-secret--set-SESSION_SECRET');
 
 const enc = new TextEncoder();
 let keyPromise: Promise<CryptoKey> | null = null;

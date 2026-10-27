@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { cookieFor, roleAreas, roleHome, roleLogin, sessionCookie, signedInAreas, signSession, verifySession, type Role } from '@/lib/auth/session';
+import { cookieFor, isConsoleRole, roleAreas, roleHome, roleLogin, sessionCookie, signedInAreas, signSession, verifySession, type Role } from '@/lib/auth/session';
 
 const within = (pathname: string, prefix: string) => pathname === prefix || pathname.startsWith(`${prefix}/`);
 
@@ -10,7 +10,8 @@ export async function middleware(request: NextRequest) {
   const areaRole: Role = within(pathname, '/admin') ? 'admin' : within(pathname, '/engineer') ? 'engineer' : 'client';
   const cookie = cookieFor(areaRole);
   const found = await verifySession(request.cookies.get(cookie)?.value);
-  const session = found?.role === areaRole ? found : null;
+  // The admin console lets in admins and the sales team (who see only the sales tabs)
+  const session = found && (areaRole === 'admin' ? isConsoleRole(found.role) : found.role === areaRole) ? found : null;
 
   // Signed-in users skip the login page.
   if (pathname === '/login') {
@@ -19,7 +20,7 @@ export async function middleware(request: NextRequest) {
 
   // The admin console and the engineer portal have their own sign-in pages; someone already signed in to that area goes straight in.
   if (pathname === '/admin/login') {
-    return session?.role === 'admin' ? NextResponse.redirect(new URL('/admin', request.url)) : NextResponse.next();
+    return session ? NextResponse.redirect(new URL(roleHome[session.role], request.url)) : NextResponse.next();
   }
   if (pathname === '/engineer/login') {
     return session?.role === 'engineer' ? NextResponse.redirect(new URL('/engineer', request.url)) : NextResponse.next();
@@ -37,7 +38,7 @@ export async function middleware(request: NextRequest) {
     return res;
   }
   // Each role's own area (client portal, engineer portal) is closed to other roles.
-  if (area && session.role !== area.role) return NextResponse.redirect(new URL(roleHome[session.role], request.url));
+  if (area && session.role !== area.role && !(area.role === 'admin' && isConsoleRole(session.role))) return NextResponse.redirect(new URL(roleHome[session.role], request.url));
 
   // Activity renews the session (sliding expiry), so it only ends after an hour without use (30 days with "Keep me signed in").
   const res = NextResponse.next();
