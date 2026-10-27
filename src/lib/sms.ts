@@ -21,7 +21,10 @@ const provider = (process.env.SMS_PROVIDER ?? '').trim().toLowerCase();
 const PROVIDERS = ['log', 'arkesel', 'mnotify', 'hubtel'];
 export const smsProvider = PROVIDERS.includes(provider) ? provider : '';
 export const smsEnabled = Boolean(appwrite && smsProvider);
-const sender = (process.env.SMS_SENDER_ID || 'FLOKEFAMA').slice(0, 11);
+/** The sender ID exactly as approved with the gateway (letters' case included): Flokefama's own is "Flokefama". */
+const sender = (process.env.SMS_SENDER_ID?.trim() || 'Flokefama').slice(0, 11);
+/** Arkesel's address; SMS_API_URL only to point tests at a stand-in. */
+const arkesel = () => (process.env.SMS_API_URL?.trim() || 'https://sms.arkesel.com').replace(/\/$/, '');
 const urgent = new Set((process.env.SMS_URGENT_PRIORITIES ?? 'critical,high').split(',').map((p) => p.trim()).filter(Boolean));
 export const escalateMinutes = Math.max(0, Number(process.env.SMS_ESCALATE_MINUTES ?? 30) || 0);
 
@@ -48,7 +51,7 @@ async function deliver(to: string[], text: string): Promise<{ status: SmsLogEntr
   const read = async (res: Response) => ({ ok: res.ok, body: (await res.json().catch(() => ({}))) as { status?: string; message?: string } });
   if (smsProvider === 'arkesel') {
     const key = process.env.SMS_API_KEY ?? '';
-    const r = await read(await fetch('https://sms.arkesel.com/api/v2/sms/send', { ...json({ sender, message: text, recipients: to }), headers: { 'Content-Type': 'application/json', 'api-key': key } }));
+    const r = await read(await fetch(`${arkesel()}/api/v2/sms/send`, { ...json({ sender, message: text, recipients: to }), headers: { 'Content-Type': 'application/json', 'api-key': key } }));
     return r.ok && r.body.status === 'success' ? { status: 'sent', detail: 'Arkesel' } : { status: 'failed', detail: `Arkesel: ${r.body.message ?? 'not accepted'}` };
   }
   if (smsProvider === 'mnotify') {
@@ -80,7 +83,7 @@ const save = (rowId: string, data: Omit<SmsLogEntry, 'id' | 'at'>, create = true
  * Sends one text to some numbers and records it. With `rowId` given, the record is written first and a second
  * attempt with the same id is skipped, so an escalation goes out once even if two servers notice it together.
  */
-async function send(kind: string, ref: string, phones: string[], text: string, rowId?: string) {
+async function send(kind: string, ref: string, phones: string[], text: string, rowId?: string): Promise<{ status: SmsLogEntry['status']; detail: string } | undefined> {
   const to = [...new Set(phones.map(normalisePhone).filter((n): n is string => Boolean(n)))];
   if (!to.length) return;
   const body = plain(text, 300);
@@ -97,6 +100,40 @@ async function send(kind: string, ref: string, phones: string[], text: string, r
   const result = await deliver(to, body).catch((e: Error) => ({ status: 'failed' as const, detail: plain(e.message || 'Gateway not reachable', 180) }));
   await save(id, { ...record, ...result, detail: plain(result.detail, 190) }, !rowId);
   if (result.status === 'failed') console.error(`sms: ${kind} ${ref} not sent:`, result.detail);
+  return result;
+}
+
+/** The admin console's "Send a test text": one text to the number given, recorded like the rest. */
+export async function sendTestSms(phone: string, by: string): Promise<{ ok: boolean; detail: string }> {
+  if (!smsEnabled) return { ok: false, detail: 'Texts are off: set SMS_PROVIDER (and the gateway keys) in Vercel, then redeploy.' };
+  if (!normalisePhone(phone)) return { ok: false, detail: 'Enter a Ghana phone number, e.g. 024 123 4567.' };
+  const r = await send('test', 'TEST', [phone], `Flokefama: test text from the website, sent by ${plain(by, 40)}. Texts to engineers are working.`);
+  if (!r) return { ok: false, detail: 'That number could not be used.' };
+  if (r.status === 'logged') return { ok: true, detail: 'Recorded but not sent: SMS_PROVIDER is "log". Set it to "arkesel" to send real texts.' };
+  return r.status === 'sent' ? { ok: true, detail: `Sent from "${sender}". It should arrive within a minute.` } : { ok: false, detail: r.detail };
+}
+
+/**
+ * A live check for the admin console (nothing is sent): for Arkesel, whether the key is accepted and the SMS balance.
+ * Null for the other providers, which keep their settings check.
+ */
+export async function smsStatus(): Promise<{ ok: boolean; detail: string } | null> {
+  if (smsProvider !== 'arkesel') return null;
+  const key = process.env.SMS_API_KEY?.trim();
+  if (!key) return { ok: false, detail: 'SMS_PROVIDER is "arkesel" but SMS_API_KEY is not set (Arkesel → Dashboard → API keys). Add it in Vercel, then redeploy.' };
+  try {
+    const res = await fetch(`${arkesel()}/api/v2/clients/balance-details`, { headers: { Accept: 'application/json', 'api-key': key }, cache: 'no-store', signal: AbortSignal.timeout(8000) });
+    const body = (await res.json().catch(() => ({}))) as { status?: string; message?: string; data?: { sms_balance?: string | number; main_balance?: string | number } };
+    if (!res.ok || body.status !== 'success') return { ok: false, detail: `Arkesel did not accept SMS_API_KEY: ${body.message ?? `error ${res.status}`}. Copy the API key again from Arkesel (Dashboard → API keys).` };
+    const balance = body.data?.sms_balance;
+    const low = balance !== undefined && Number(String(balance).replace(/[^\d.]/g, '')) < 20;
+    return {
+      ok: !low,
+      detail: `Connected to Arkesel, sending from "${sender}"${balance !== undefined ? `. SMS balance: ${balance}` : ''}${low ? ' (low: top up in Arkesel so texts keep going out)' : ''}. Send a test text below to check the sender ID is approved.`,
+    };
+  } catch {
+    return { ok: false, detail: 'Arkesel could not be reached from this server. Try again in a minute.' };
+  }
 }
 
 /* ---------- who ---------- */
