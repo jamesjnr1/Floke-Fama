@@ -25,6 +25,10 @@ export interface SessionUser {
 export const SESSION_COOKIE = 'ff_session';
 /** The admin console's own session, kept apart from the site's: an admin signed in there is not signed in on the site. */
 export const ADMIN_COOKIE = 'ff_admin';
+/** The engineer portal's own session, kept apart from the site's too: the site is for hospitals only. */
+export const ENGINEER_COOKIE = 'ff_engineer';
+/** Each role's session cookie: hospitals on the site (ff_session), engineers and admins in their own areas. */
+export const cookieFor = (role: Role) => (role === 'admin' ? ADMIN_COOKIE : role === 'engineer' ? ENGINEER_COOKIE : SESSION_COOKIE);
 /** Sign-out after this long without activity: every visit to the site renews the session (sliding expiry). */
 export const SESSION_TTL_SECONDS = 60 * 60; // 1 hour
 /** With "Keep me signed in": 30 days without use (still renewed by every visit). */
