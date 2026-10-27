@@ -185,7 +185,9 @@ export async function applyAction(s: SessionUser, action: Action): Promise<Servi
     if (action.type === 'addAsset') action = { ...action, asset: cleanAsset(action.asset) };
     // The hospital gets the engineer's own number, from their account (not from the browser)
     if (action.type === 'assign') action = { ...action, phone: s.phone?.trim() || undefined };
-    if (action.type === 'create') action = { ...action, phone: s.phone?.trim() || undefined, newAsset: action.newAsset && cleanAsset(action.newAsset) };
+    if (action.type === 'create') action = { ...action, phone: s.phone?.trim() || undefined, newAsset: action.newAsset && cleanAsset(action.newAsset), ticket: { ...action.ticket, contactPhone: action.ticket.contactPhone?.trim().slice(0, 30) || undefined } };
+    // The number the hospital gave for text updates
+    if (action.type === 'request') action = { ...action, ticket: { ...action.ticket, contactPhone: action.ticket.contactPhone?.trim().slice(0, 30) || undefined } };
     const after = reducer(actorFor(s))(before, action);
     try {
       await saveChanges(before, after);

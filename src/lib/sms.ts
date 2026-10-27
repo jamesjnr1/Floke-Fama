@@ -4,6 +4,7 @@ import { appwrite, DATABASE_ID, isNotFound, TABLES } from '@/lib/appwrite';
 import { isTableMissing, withTable } from '@/lib/appwrite-tables';
 import { roleFor } from '@/lib/auth/users';
 import type { Actor, Priority, ServiceState, Ticket } from '@/lib/service/desk';
+import { getSite } from '@/lib/site';
 import { siteUrl } from '@/lib/utils';
 
 /**
@@ -189,13 +190,43 @@ export async function smsNew(before: ServiceState, after: ServiceState, actor: A
       const note = prev && t.engineer && t.status !== 'resolved' && actor.role === 'client' && t.log.length > prev.log.length && t.log.at(-1)?.kind === 'note';
       if (note) jobs.push({ kind: 'message', ref: t.id, to: (p) => p.role === 'engineer' && p.name === t.engineer, text: `New message from ${facility} on job ${t.id} (${equipment}). Open: ${jobLink(t.id)}` });
     }
-    if (!jobs.length) return;
-    const people = await staff();
-    const sends = jobs.map((j) => send(j.kind, j.ref, people.filter(j.to).map((p) => p.phone), j.text).catch((e) => console.error('sms: not recorded', e)));
+    const updates = await hospitalUpdates(before, after);
+    if (!jobs.length && !updates.length) return;
+    const people = jobs.length ? await staff() : [];
+    const sends = [
+      ...jobs.map((j) => send(j.kind, j.ref, people.filter(j.to).map((p) => p.phone), j.text).catch((e) => console.error('sms: not recorded', e))),
+      ...updates.map((u) => send('update', u.ref, [u.phone], u.text).catch((e) => console.error('sms: update not recorded', e))),
+    ];
     await Promise.race([Promise.allSettled(sends), new Promise((r) => setTimeout(r, 6000))]);
   } catch (e) {
     console.error('sms: texts not sent', e);
   }
+}
+
+/**
+ * Updates to the hospital on its own request, at the number it gave for them (the request's contact number). Only
+ * the two that matter, to keep texts few: an engineer is assigned (with the engineer's number), and it is fixed.
+ * On the way and on site show in the portal.
+ */
+async function hospitalUpdates(before: ServiceState, after: ServiceState) {
+  const old = new Map(before.tickets.map((t) => [t.id, t]));
+  const out: { ref: string; phone: string; text: string }[] = [];
+  let office = '';
+  for (const t of after.tickets) {
+    const prev = old.get(t.id);
+    if (!t.contactPhone || !normalisePhone(t.contactPhone) || (prev && prev.status === t.status)) continue;
+    const { equipment } = where(t, after);
+    const eng = plain(t.engineer ?? 'Our engineer', 30);
+    const engPhone = t.engineerPhone ? ` on ${plain(t.engineerPhone, 20)}` : '';
+    let text = '';
+    if (t.status === 'assigned') text = `Request ${t.id} (${equipment}): engineer ${eng} is assigned. You can reach ${eng.split(' ')[0]}${engPhone || ' through your portal'}.`;
+    else if (t.status === 'resolved') {
+      office ||= (await getSite()).contact.phone;
+      text = `Request ${t.id}: your ${equipment} is fixed. Please rate the visit in your Flokefama portal. If anything is not right, call ${office}.`;
+    }
+    if (text) out.push({ ref: t.id, phone: t.contactPhone, text });
+  }
+  return out;
 }
 
 /**

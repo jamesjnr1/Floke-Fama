@@ -14,8 +14,9 @@ import { siteUrl } from '@/lib/utils';
  * /api/cron/clients at 9:00 Ghana time):
  * - a check-in 7 days after a repair or installation is resolved ("we hope it is working well");
  * - a calibration reminder 14 days before a machine is due;
- * - greetings on holidays and health days through the year (the calendar below: Christmas, World Health Day,
- *   Breast Cancer Awareness Month and more). CLIENT_TEXTS_SKIP=tb,malaria leaves some out.
+ * - greetings on five days a year: Independence Day, Easter, World Health Day, Breast Cancer Awareness Month and
+ *   Christmas (with New Year). The other days in the calendar are ready to send from the admin console;
+ *   CLIENT_TEXTS_ADD=nurses,heart sends some automatically too, CLIENT_TEXTS_SKIP=easter leaves one out.
  * The admin console also sends to all hospitals at once (new arrivals, Eid and other moving holidays, news).
  * Each goes once (recorded in sms_log). Hospitals can turn them off in their portal (table sms_optout).
  * CLIENT_TEXTS=off stops the automatic ones; sending from the admin console still works.
@@ -25,7 +26,11 @@ export const CHECK_IN_DAYS = 7;
 export const CALIBRATION_NOTICE_DAYS = 14;
 /** Greetings can run to three SMS parts (459 plain characters); work texts stay short. */
 export const GREETING_MAX = 459;
-const skipped = new Set((process.env.CLIENT_TEXTS_SKIP ?? '').split(',').map((k) => k.trim().toLowerCase()).filter(Boolean));
+const keys = (v?: string) => new Set((v ?? '').split(',').map((k) => k.trim().toLowerCase()).filter(Boolean));
+const skipped = keys(process.env.CLIENT_TEXTS_SKIP);
+const added = keys(process.env.CLIENT_TEXTS_ADD);
+/** The greetings sent automatically, to keep texts to hospitals few. */
+const AUTO = new Set(['independence', 'easter', 'health', 'breast', 'christmas']);
 const DAY = 864e5;
 
 type AccountRow = Models.Row & { name: string; email: string; organisation: string; phone: string };
@@ -100,8 +105,8 @@ export function easterSunday(year: number) {
 const sign = 'Warm regards from all of us at Flokefama.';
 
 /**
- * The holidays and health days greeted automatically, in date order, with their text. Each `key` can be left out
- * with CLIENT_TEXTS_SKIP. Eid and other holidays whose date moves are sent from the admin console instead.
+ * The holidays and health days, in date order, with their text. Five go out automatically (AUTO); `off` marks the
+ * rest, which the admin console can send. Eid and other holidays whose date moves are sent from there too.
  */
 export function occasions(year: number) {
   const on = (m: number, d: number) => new Date(Date.UTC(year, m - 1, d));
@@ -123,7 +128,7 @@ export function occasions(year: number) {
     { key: 'aids', name: 'World AIDS Day', date: on(12, 1), text: `Today is World AIDS Day. We remember those we have lost and honour every health worker testing, treating and supporting people living with HIV. Thank you for your care and commitment. Flokefama is proud to support your work with reliable laboratory equipment. ${sign}` },
     { key: 'christmas', name: 'Christmas Day', date: on(12, 25), text: 'Merry Christmas and Happy New Year from Flokefama! Thank you for your trust and support. May this season bring you and your loved ones joy, peace, and good health. We remain committed to advancing healthcare through reliable medical equipment and solutions that support better patient care. We look forward to serving you better in the coming year. Warm wishes from all of us at Flokefama!' },
   ];
-  return all.sort((a, b) => a.date.getTime() - b.date.getTime()).map((o) => ({ ...o, off: skipped.has(o.key) }));
+  return all.sort((a, b) => a.date.getTime() - b.date.getTime()).map((o) => ({ ...o, off: skipped.has(o.key) || !(AUTO.has(o.key) || added.has(o.key)) }));
 }
 
 export const checkInText = (machine: string, facility: string, visit: string, phone: string) =>
@@ -143,6 +148,8 @@ export async function messageTemplates() {
     { id: 'greeting', label: 'Thank you', text: `Thank you from Flokefama! We are grateful for your trust and partnership in ${year}. Our engineers remain ready to support you; call ${contact.phone} or request a visit in your Flokefama portal. ${sign}` },
     { id: 'checkin', label: 'Check-in', text: `Hello from Flokefama. We hope your equipment is working well. If anything needs attention, call us on ${contact.phone} or request a visit in your portal.` },
     { id: 'custom', label: 'Your own message', text: '' },
+    // Every greeting in the calendar, to send one that doesn't go automatically (or send one again)
+    ...occasions(year).map((o) => ({ id: o.key, label: o.name, text: o.text, greeting: true })),
   ];
 }
 
