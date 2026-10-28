@@ -9,7 +9,8 @@ import { safeNext } from '@/lib/auth/session';
 export const metadata: Metadata = { title: 'Portal access', robots: { index: false } };
 
 /**
- * Portal access for hospitals: a split screen outside the marketing chrome. A doctor on the left, a quiet light
+ * Portal access for hospitals: a split screen outside the marketing chrome. Flokefama's lab team on the left (the CEO:
+ * only photos of people we know), a quiet light
  * panel on the right with Sign in and Register tabs. On phones the photo becomes a short banner. Engineers sign in
  * on their own page (/engineer/login), linked at the foot.
  */
@@ -20,12 +21,12 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
     <main id="main" className="grid min-h-[100svh] bg-paper lg:grid-cols-2">
       <section className="relative isolate flex min-h-[300px] flex-col justify-between overflow-hidden bg-brand-800 p-6 text-white h-[40svh] md:p-10 lg:sticky lg:top-0 lg:h-[100svh] lg:p-12 lg:pb-28">
         <Image
-          src="/images/headers/login-hospital.webp"
-          alt="A smiling doctor in a white coat with a stethoscope at a clinic"
+          src="/images/headers/team-lab.webp"
+          alt="Flokefama’s engineering and quality control team in a hospital laboratory"
           fill
           priority
           sizes="(min-width: 1024px) 50vw, 100vw"
-          className="-z-20 object-cover object-[50%_20%]"
+          className="-z-20 object-cover object-[6%_30%]"
         />
         <div aria-hidden className="absolute inset-0 -z-10 bg-brand-800/15 mix-blend-multiply" />
         <div aria-hidden className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgb(11_21_16/0.4)_0%,transparent_28%,transparent_45%,rgb(19_66_40/0.7)_75%,rgb(11_21_16/0.92)_100%)]" />

@@ -26,6 +26,8 @@ const phoneCopies = new Set([
   '/images/headers/support-agent.webp',
   '/images/headers/support-puzzle.webp',
   '/images/headers/support-team.webp',
+  '/images/headers/team-engineers.webp',
+  '/images/headers/team-lab.webp',
   '/images/awards/ghana-club-100-trophy.webp',
   '/images/news/flokefama-supports-zodf-ramadan-distribution-programme-cover.webp',
   '/images/news/quality-verification-the-cornerstone-of-healthcare-excellence-in-ghana-1.webp',
