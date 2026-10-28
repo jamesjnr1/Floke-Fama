@@ -16,6 +16,26 @@ const set = (next: State) => {
 };
 let timer: ReturnType<typeof setTimeout> | undefined;
 
+/**
+ * When the hour without activity seems to have run out, asks the server first (without counting as activity): the
+ * portal's own updates may have kept the session alive meanwhile. Only a session that really ended is announced.
+ */
+function schedule(exp: number) {
+  clearTimeout(timer);
+  timer = setTimeout(async () => {
+    try {
+      const res = await fetch('/api/session?peek=1', { cache: 'no-store', credentials: 'same-origin' });
+      const json = (await res.json()) as { user: ClientUser | null; exp?: number };
+      if (json.user && json.exp && json.exp * 1000 > Date.now()) return schedule(json.exp);
+    } catch {
+      return; // can't tell (offline): say nothing rather than something wrong
+    }
+    if (state.status !== 'in') return;
+    set({ status: 'out', user: null, exp: 0 });
+    toast('You’ve been signed out', { description: 'For your security, we sign you out after an hour without activity.' });
+  }, Math.max(1000, exp * 1000 - Date.now() + 1000));
+}
+
 /** Asks the server who is signed in (this also renews the session), and schedules the automatic sign-out. */
 export async function refreshSession() {
   try {
@@ -24,13 +44,8 @@ export async function refreshSession() {
     const wasIn = state.status === 'in';
     set(json.user ? { status: 'in', user: json.user, exp: json.exp ?? 0 } : { status: 'out', user: null, exp: 0 });
     clearTimeout(timer);
-    if (json.user && json.exp) {
-      // When the hour without activity runs out, show the visitor as signed out straight away.
-      timer = setTimeout(() => {
-        set({ status: 'out', user: null, exp: 0 });
-        toast('You’ve been signed out', { description: 'For your security, we sign you out after an hour without activity.' });
-      }, Math.max(0, json.exp * 1000 - Date.now()));
-    } else if (wasIn && !json.user) {
+    if (json.user && json.exp) schedule(json.exp);
+    else if (wasIn && !json.user) {
       toast('You’ve been signed out');
     }
   } catch {

@@ -4,8 +4,12 @@ import { SESSION_COOKIE, sessionCookie, signSession, verifySession } from '@/lib
 
 export const dynamic = 'force-dynamic';
 
-/** Who is signed in (for the header on every page). Each call counts as activity and renews the session. */
-export async function GET() {
+/**
+ * Who is signed in (for the header on every page). Each call counts as activity and renews the session, except
+ * `?peek=1`, which only says whether the session is still alive (and until when) without renewing it.
+ */
+export async function GET(req: Request) {
+  const peek = new URL(req.url).searchParams.has('peek');
   const jar = await cookies();
   const session = await verifySession(jar.get(SESSION_COOKIE)?.value);
   // The site is for hospitals: admins and engineers sign in to their own areas, so an older session of theirs on
@@ -15,6 +19,10 @@ export async function GET() {
     return NextResponse.json({ user: null }, { headers: { 'Cache-Control': 'no-store' } });
   }
   if (!session) return NextResponse.json({ user: null }, { headers: { 'Cache-Control': 'no-store' } });
+  if (peek) {
+    const { name, email, role, facility, phone } = session;
+    return NextResponse.json({ user: { name, email, role, facility, phone }, exp: session.exp }, { headers: { 'Cache-Control': 'no-store' } });
+  }
   const { exp: _exp, ...user } = session;
   void _exp;
   const token = await signSession(user);
