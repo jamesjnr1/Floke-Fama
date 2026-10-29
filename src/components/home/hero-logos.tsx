@@ -14,12 +14,15 @@ function box(w: number, h: number, area: number, maxW: number, maxH: number) {
 }
 
 /**
- * Our Clients & Partners, under the hero: a white band with the partners' logos in one still row (no boxes), then
- * the client hospitals by code (the CEO, Oct 2026: hospitals are not named on the website).
+ * Our Clients & Partners, under the hero: a white band with the real logos in one still row (no boxes). Hospitals
+ * show only their logo: no name is written on the page (their alt text is their code, e.g. "Client hospital FF-H02").
  */
 export async function HeroLogos() {
   const { technologyPartners, clients } = await getSite();
-  const logos = technologyPartners.map((l) => ({ name: l.name, logo: l.logo, w: l.w, h: l.h }));
+  const logos = [
+    ...technologyPartners.map((l) => ({ name: l.name, logo: l.logo, w: l.w, h: l.h })),
+    ...clients.filter((c) => c.logo).map((c) => ({ name: c.code ? `Client hospital ${c.code}` : 'Client hospital', logo: c.logo, w: c.w, h: c.h })),
+  ];
   const row = (hidden: boolean) =>
     logos.map((l) => {
       const b = l.logo ? box(l.w, l.h, 7000, 170, 72) : null;
@@ -42,18 +45,7 @@ export async function HeroLogos() {
       {/* Still: every logo once, in one even row that wraps on smaller screens */}
       <ul className="mx-auto mt-2 flex max-w-[1440px] flex-wrap items-center justify-center px-5 py-2 md:px-10">
         {row(false)}
-        {clients.map((c) => (
-          <li key={c.code ?? c.name} className="flex h-24 shrink-0 items-center px-3 xl:px-4">
-            <span className="flex flex-col items-center border border-line px-4 py-2 text-center">
-              <span className="font-mono text-lg font-bold tracking-[0.04em] text-brand-800">{c.code}</span>
-              {c.kind && <span className="text-xs text-ink-3">{c.kind}</span>}
-            </span>
-          </li>
-        ))}
       </ul>
-      <p className="mx-auto max-w-[1280px] px-5 text-center text-sm text-ink-3 md:px-10">
-        Client hospitals are shown by code. Trusted by over 700 hospitals and laboratories across Ghana.
-      </p>
     </div>
   );
 }
