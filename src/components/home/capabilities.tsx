@@ -1,7 +1,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { Check } from 'lucide-react';
+import { Check, ImageIcon } from 'lucide-react';
 import { Reveal } from '@/components/motion/reveal';
+import { getSite } from '@/lib/site';
 import { cn } from '@/lib/utils';
 
 /** Each pillar has its own accent (number, ticks and link), so the six read as a set but stay distinct. */
@@ -14,94 +15,34 @@ export const accents = {
   amber: { num: 'bg-[#a87a00]', tick: 'text-[#a87a00]', bar: 'bg-[#e8ab00]' },
 } as const;
 
-export const pillars = [
-  {
-    title: 'In-Vitro Diagnostics',
-    body: 'Analysers with matched reagents and controls, from the official distributor of Mindray.',
-    points: ['Biochemistry & haematology analysers', 'Point-of-care testing', 'Microbiology equipment'],
-    href: '/products?category=in-vitro-diagnostics',
-    image: '/images/products/auto-heamatology-analyzer-bc5150.webp',
-    alt: 'Mindray BC-5150 haematology analyser',
-    product: true,
-    accent: 'green',
-  },
-  {
-    title: 'Patient Monitoring & Lifecare Systems',
-    body: 'Monitors, defibrillators, CTG and life support for wards, theatres and intensive care.',
-    points: ['Patient monitors', 'Defibrillators & ECG', 'Ventilators, CPAP & oxygen therapy'],
-    href: '/products?category=critical-care',
-    image: '/images/products/patient-monitor-comen.webp',
-    alt: 'Comen patient monitor',
-    product: true,
-    accent: 'teal',
-  },
-  {
-    title: 'Imaging',
-    body: 'Diagnostic imaging from portable ultrasound to CT, MRI and digital X-ray.',
-    points: ['Ultrasound', 'CT, MRI & digital X-ray', 'Mammography'],
-    href: '/services#departments',
-    image: '/images/equipment/ct.webp',
-    alt: 'A CT scanner in a hospital imaging room',
-    product: false,
-    accent: 'blue',
-  },
-  {
-    title: 'Orthopaedics',
-    body: 'Implants and instruments for joint replacement, fracture fixation and spinal surgery.',
-    points: ['Arthroplasty (hip & knee)', 'Trauma plates & nails', 'Spine systems'],
-    href: '/services#departments',
-    image: '/images/solutions/arthroplasty.webp',
-    alt: 'Orthopaedic joint replacement implants',
-    product: false,
-    accent: 'slate',
-  },
-  {
-    title: 'Biomedical Engineering & Spare Parts',
-    body: 'Our engineers install, calibrate and maintain every system we supply, with genuine spare parts.',
-    points: ['Installation & commissioning', 'Calibration & repairs', 'Genuine spare parts'],
-    href: '/services',
-    image: '/images/pillars/biomedical-lab.webp',
-    alt: 'A laboratory scientist in gloves working with laboratory equipment',
-    product: false,
-    accent: 'red',
-  },
-  {
-    title: 'Reagents & Consumables',
-    body: 'A continuous, reliable supply of reagents, cuvettes, lamps and disposables.',
-    points: ['Chemistry reagents', 'Spare lamps & cuvettes', 'Six branches nationwide'],
-    href: '/products?category=consumables',
-    image: '/images/products/ba-88a-bulb.webp',
-    alt: 'Replacement lamp for the Mindray BA-88A analyser',
-    product: true,
-    accent: 'amber',
-  },
-] as const;
+/** The pillars' accents in order (the Studio sets the pillars; each takes the next accent). */
+const order = ['green', 'teal', 'blue', 'slate', 'red', 'amber'] as const;
 
 /**
- * Home: "Six pillars of medical infrastructure" (the CEO's list). Six equal cards, three to a row, on a coloured band (the deep navy gradient by
+ * Home: "Six pillars of medical infrastructure" (the CEO's list), edited in the Studio (Site content → Home → Our solutions). Six equal cards, three to a row, on a coloured band (the deep navy gradient by
  * default; `background` sets another): a photo, the pillar's number, what it covers in one line and three points;
  * the whole card opens that part of the site.
  */
-export function Capabilities({ background = 'bg-[linear-gradient(160deg,#10191e_0%,#16232a_55%,#0b3b40_100%)]' }: { background?: string }) {
+export async function Capabilities({ background = 'bg-[linear-gradient(160deg,#10191e_0%,#16232a_55%,#0b3b40_100%)]' }: { background?: string }) {
+  const { solutions } = await getSite();
   return (
     <section aria-labelledby="capabilities-title" className={cn('relative isolate overflow-hidden section-y', background)}>
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal className="flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
           <div>
-            <p className="inline-block w-fit bg-white/10 px-2.5 py-1 text-[0.75rem] font-semibold uppercase tracking-[0.08em] text-brand-300">Our solutions</p>
+            <p className="inline-block w-fit bg-white/10 px-2.5 py-1 text-[0.75rem] font-semibold uppercase tracking-[0.08em] text-brand-300">{solutions.kicker}</p>
             <h2 id="capabilities-title" className="display mt-4 text-[clamp(2rem,1.3rem+2.6vw,3.5rem)] text-white">
-              Six pillars of <br className="hidden sm:block" />
-              <span className="text-brand-300">medical infrastructure.</span>
+              {solutions.title} <br className="hidden sm:block" />
+              <span className="text-brand-300">{solutions.highlight}</span>
             </h2>
           </div>
-          <p className="no-justify max-w-md text-lg leading-relaxed text-white/80">
-            From diagnostics to delivery: one partner for the equipment, the engineers and the supplies that keep it running.
-          </p>
+          <p className="no-justify max-w-md text-lg leading-relaxed text-white/80">{solutions.lead}</p>
         </Reveal>
 
         <ol className="swipe-row mt-10 gap-4 md:mt-14 md:grid-cols-2 lg:grid-cols-3 lg:gap-5">
-          {pillars.map((p, i) => {
-            const a = accents[p.accent];
+          {solutions.items.map((p, i) => {
+            const a = accents[order[i % order.length]];
+            const product = p.fit === 'contain';
             return (
               <li key={p.title}>
                 <Reveal delay={i * 0.06} className="h-full">
@@ -109,14 +50,24 @@ export function Capabilities({ background = 'bg-[linear-gradient(160deg,#10191e_
                     href={p.href}
                     className="group flex h-full flex-col overflow-hidden bg-paper shadow-[0_30px_60px_-40px_rgb(0_0_0/0.7)] transition duration-500 ease-out-expo hover:-translate-y-1.5"
                   >
-                    <div className={cn('relative aspect-[16/11] overflow-hidden', p.product ? 'bg-white' : 'bg-midnight')}>
-                      <Image
-                        src={p.image}
-                        alt={p.alt}
-                        fill
-                        sizes="(min-width: 1024px) 420px, (min-width: 768px) 50vw, 84vw"
-                        className={cn('transition-transform duration-700 ease-out-expo group-hover:scale-105', p.product ? 'object-contain p-3' : 'object-cover')}
-                      />
+                    <div className={cn('relative aspect-[16/11] overflow-hidden', !p.image ? 'bg-mist' : product ? 'bg-white' : 'bg-midnight')}>
+                      {p.image ? (
+                        <Image
+                          src={p.image}
+                          alt={p.alt ?? p.title}
+                          fill
+                          sizes="(min-width: 1024px) 420px, (min-width: 768px) 50vw, 84vw"
+                          className={cn('transition-transform duration-700 ease-out-expo group-hover:scale-105', product ? 'object-contain p-3' : 'object-cover')}
+                        />
+                      ) : (
+                        // No photo yet (set one in the Studio): a quiet placeholder
+                        <span className="absolute inset-0 grid place-items-center">
+                          <span className="flex flex-col items-center gap-2 text-ink-3">
+                            <ImageIcon className="size-10 opacity-50" strokeWidth={1.5} aria-hidden />
+                            <span className="text-sm">Photo coming soon</span>
+                          </span>
+                        </span>
+                      )}
                       <span className={cn('absolute left-4 top-4 grid size-11 place-items-center rounded-xl text-base font-bold text-white', a.num)}>
                         {String(i + 1).padStart(2, '0')}
                       </span>

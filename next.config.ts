@@ -4,10 +4,11 @@ const securityHeaders = [
   { key: 'X-Content-Type-Options', value: 'nosniff' },
   { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
   { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
-  { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+  { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), payment=(self), usb=(), browsing-topics=()' },
   { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
   // Baseline CSP: no one may frame the site, no plugins, no <base> hijacking
-  { key: 'Content-Security-Policy', value: "frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self'" },
+  // On Vercel (always HTTPS) any stray http:// link is loaded over HTTPS; not locally, where the site runs on plain http
+  { key: 'Content-Security-Policy', value: `frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self'${process.env.VERCEL ? '; upgrade-insecure-requests' : ''}` },
   // A site opened from a link can't reach back into this one (WhatsApp and maps links still open normally)
   { key: 'Cross-Origin-Opener-Policy', value: 'same-origin-allow-popups' },
   { key: 'X-Permitted-Cross-Domain-Policies', value: 'none' },

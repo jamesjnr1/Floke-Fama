@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { equipment } from '@/data/equipment';
+import type { HeroMedia } from '@/lib/site-content';
 import { cn } from '@/lib/utils';
 
 /** How long each slide shows before the next, in seconds. */
@@ -30,12 +31,16 @@ const pairs: [Product, Product][] = [
   ],
 ];
 
-type Slide = { key: string; label: string } & ({ kind: 'intro' } | { kind: 'equipment'; e: (typeof equipment)[number] } | { kind: 'products'; pair: [Product, Product] });
+type Slide = { key: string; label: string } & ({ kind: 'intro' } | { kind: 'media'; m: HeroMedia } | { kind: 'equipment'; e: (typeof equipment)[number] } | { kind: 'products'; pair: [Product, Product] });
 
-/** The company first, then all the large equipment, then the products from the shop two to a slide. */
-const slides: Slide[] = [
+/**
+ * The company first, then the engineering department's installation photos and videos (from the Studio), then all
+ * the large equipment (unless the Studio says to show only the installations), then the shop's products two to a slide.
+ */
+const buildSlides = (media: HeroMedia[], mediaOnly: boolean): Slide[] => [
   { key: 'intro', label: 'Flokefama', kind: 'intro' },
-  ...equipment.map((e): Slide => ({ key: e.slug, label: e.title, kind: 'equipment', e })),
+  ...media.map((m, i): Slide => ({ key: `media-${i}`, label: m.caption, kind: 'media', m })),
+  ...(mediaOnly ? [] : equipment.map((e): Slide => ({ key: e.slug, label: e.title, kind: 'equipment', e }))),
   ...pairs.map((pair): Slide => ({ key: `products-${pair[0].slug}`, label: `${pair[0].title} and ${pair[1].title}`, kind: 'products', pair })),
 ];
 
@@ -47,11 +52,12 @@ const slides: Slide[] = [
  * themselves; hovering or focusing the hero holds the slide, and with reduced motion nothing moves on by itself.
  * Swipe on touch screens, or use the chevrons at the sides (the first slide has only next).
  */
-export function HeroSlides({ intro }: { intro: React.ReactNode }) {
+export function HeroSlides({ intro, media = [], mediaOnly = false }: { intro: React.ReactNode; media?: HeroMedia[]; mediaOnly?: boolean }) {
+  const [slides] = useState(() => buildSlides(media, mediaOnly));
   const [index, setIndex] = useState(0);
   const [held, setHeld] = useState(false);
   const touch = useRef<number | null>(null);
-  const go = useCallback((i: number) => setIndex((i + slides.length) % slides.length), []);
+  const go = useCallback((i: number) => setIndex((i + slides.length) % slides.length), [slides.length]);
 
   // Dark on the white product slides, white over the photos
   const arrow = cn(
@@ -63,9 +69,10 @@ export function HeroSlides({ intro }: { intro: React.ReactNode }) {
   // Move on after a while, unless the hero is held (hovered or focused) or the visitor asked for less motion
   useEffect(() => {
     if (held || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const t = setTimeout(() => go(index + 1), SECONDS * 1000);
+    // A video slide moves on when the video ends (see MediaSlide); give it longer in case that never fires
+    const t = setTimeout(() => go(index + 1), (slides[index].kind === 'media' && slides[index].m.kind === 'video' ? 45 : SECONDS) * 1000);
     return () => clearTimeout(t);
-  }, [index, held, go]);
+  }, [index, held, go, slides]);
 
   return (
     <div
@@ -102,7 +109,7 @@ export function HeroSlides({ intro }: { intro: React.ReactNode }) {
                 on ? 'opacity-100' : 'pointer-events-none opacity-0',
               )}
             >
-              {s.kind === 'intro' ? intro : s.kind === 'equipment' ? <EquipmentSlide e={s.e} n={i + 1} total={slides.length} priority={i === 1} /> : <ProductsSlide pair={s.pair} />}
+              {s.kind === 'intro' ? intro : s.kind === 'media' ? <MediaSlide m={s.m} n={i + 1} total={slides.length} on={on} onEnd={() => !held && go(i + 1)} /> : s.kind === 'equipment' ? <EquipmentSlide e={s.e} n={i + 1} total={slides.length} priority={i === 1} /> : <ProductsSlide pair={s.pair} />}
             </div>
           );
         })}
@@ -148,6 +155,40 @@ function EquipmentSlide({ e, n, total, priority }: { e: (typeof equipment)[numbe
             , {e.credit.license}
           </span>
         )}
+      </figcaption>
+    </figure>
+  );
+}
+
+/**
+ * An installation photo or video from the engineering department (set in the Studio), filling the hero like the
+ * equipment slides. A video plays muted only while its slide shows, then the hero moves on.
+ */
+function MediaSlide({ m, n, total, on, onEnd }: { m: HeroMedia; n: number; total: number; on: boolean; onEnd: () => void }) {
+  const video = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    const v = video.current;
+    if (!v) return;
+    if (on && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      v.currentTime = 0;
+      v.play().catch(() => {});
+    } else v.pause();
+  }, [on]);
+  return (
+    <figure className="flex w-full self-stretch">
+      <div aria-hidden className="absolute inset-x-0 bottom-0 -top-[72px] -z-10 bg-black">
+        {m.kind === 'video' ? (
+          <video ref={video} src={on ? m.src : undefined} poster={m.poster} muted playsInline preload="none" onEnded={onEnd} controlsList="nodownload" disablePictureInPicture className="absolute inset-0 h-full w-full object-cover" />
+        ) : (
+          <Image src={m.src} alt="" fill sizes="100vw" className="object-cover" />
+        )}
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(0_0_0/0.45)_0%,transparent_22%,transparent_50%,rgb(0_0_0/0.72)_100%)]" />
+      </div>
+      <figcaption className="mx-auto mt-auto w-full max-w-[1280px] px-5 pb-6 pt-40 text-center md:px-10 lg:pb-8">
+        <span className="block text-sm font-medium text-white/75">
+          {String(n).padStart(2, '0')} / {String(total).padStart(2, '0')} · {m.label || 'Flokefama engineering'}
+        </span>
+        <span className="mt-1 block text-[clamp(1.5rem,1.1rem+1.2vw,2.25rem)] font-bold tracking-[-0.02em] text-white [text-shadow:0_2px_14px_rgb(0_0_0/0.35)]">{m.caption}</span>
       </figcaption>
     </figure>
   );

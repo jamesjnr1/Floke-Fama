@@ -8,6 +8,8 @@ import { getEvents } from '@/lib/data';
 import { longDate } from '@/lib/events';
 import type { EventItem } from '@/lib/types';
 import { cn, siteUrl, jsonLdHtml } from '@/lib/utils';
+import { PhotoGallery } from '@/components/media/photo-gallery';
+import { getSite } from '@/lib/site';
 
 // Re-render daily so events move from Upcoming to Past, and the countdown stays right.
 export const revalidate = 86400;
@@ -20,6 +22,7 @@ export const metadata: Metadata = {
 
 export default async function EventsPage() {
   const events = await getEvents();
+  const { eventAlbums } = await getSite();
   const today = new Date().toISOString().slice(0, 10);
   const upcoming = events.filter((e) => e.date >= today).sort((a, b) => a.date.localeCompare(b.date));
   const past = events.filter((e) => e.date < today).sort((a, b) => b.date.localeCompare(a.date));
@@ -63,6 +66,26 @@ export default async function EventsPage() {
           )}
         </div>
       </section>
+
+      {/* Event photos: albums added in the Studio (Site content → Events photos); hidden until the first album */}
+      {eventAlbums.length > 0 && (
+        <section id="event-photos" aria-labelledby="event-photos-title" className="scroll-mt-28 border-t border-line bg-canvas section-y">
+          <div className="mx-auto max-w-[1280px] px-5 md:px-10">
+            <Reveal>
+              <h2 id="event-photos-title" className="display text-[clamp(1.9rem,1.2rem+2.4vw,3.25rem)]">Event photos</h2>
+            </Reveal>
+            {eventAlbums.map((a) => (
+              <div key={a.title} className="mt-10 md:mt-14">
+                <h3 className="mb-5 flex flex-wrap items-baseline gap-x-3 text-xl font-semibold tracking-[-0.01em] text-ink">
+                  {a.title}
+                  {a.date && <span className="text-base font-normal text-ink-3">{new Date(`${a.date}T12:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</span>}
+                </h3>
+                <PhotoGallery photos={a.photos} label={a.title} />
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       <NewsGrid />
       {jsonLd.length > 0 && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdHtml(jsonLd) }} />}

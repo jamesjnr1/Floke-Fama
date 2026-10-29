@@ -24,7 +24,7 @@ export const metadata: Metadata = {
 };
 
 export default async function AboutPage() {
-  const { ceo } = await getSite();
+  const { ceo, photos } = await getSite();
   return (
     <>
       <SitePageHero page="about" />
@@ -54,7 +54,7 @@ export default async function AboutPage() {
             </Reveal>
             <Reveal delay={0.1} className="lg:col-span-7">
               <figure className="relative aspect-[4/3] overflow-hidden bg-midnight">
-                <Image src="/images/office-team.webp" alt="Inside the Flokefama head office: the ‘Together we do great things’ wall" fill sizes="(min-width: 1024px) 60vw, 100vw" className="object-cover" />
+                <Image src={photos.office} alt="Inside the Flokefama head office: the ‘Together we do great things’ wall" fill sizes="(min-width: 1024px) 60vw, 100vw" className="object-cover" />
                 <figcaption className="absolute bottom-4 left-4 bg-paper/90 px-3 py-1.5 text-xs font-medium text-ink backdrop-blur">Head office · Santa Maria, Accra</figcaption>
               </figure>
             </Reveal>
@@ -64,7 +64,7 @@ export default async function AboutPage() {
 
       {/* Leadership. Portrait from the current site's media library; the profile is the CEO's own text (Oct 2026). */}
       {ceoStyle === 'message' ? (
-        <CeoMessage ceo={ceo} />
+        <CeoMessage ceo={ceo} officePhoto={photos.office} />
       ) : ceoStyle === 'feature' ? (
         <CeoFeature ceo={ceo} />
       ) : (
@@ -72,7 +72,7 @@ export default async function AboutPage() {
         <div className="mx-auto grid max-w-[1280px] gap-10 px-5 md:px-10 lg:grid-cols-12 lg:items-start lg:gap-16">
           <Reveal className="lg:col-span-5">
             <figure className="relative mx-auto aspect-[4/5] max-w-md overflow-hidden rounded-lg bg-[#e9e6e3] lg:max-w-none">
-              <Image src="/images/ceo-emmanuel-kenney.jpg" alt={`${ceo.name}, Founder and Chief Executive Officer of Flokefama`} fill sizes="(min-width: 1024px) 40vw, 100vw" className="object-cover object-top" />
+              <Image src={ceo.photo} alt={`${ceo.name}, Founder and Chief Executive Officer of Flokefama`} fill sizes="(min-width: 1024px) 40vw, 100vw" className="object-cover object-top" />
             </figure>
           </Reveal>
           <Reveal delay={0.08} className="lg:col-span-7">

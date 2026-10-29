@@ -25,7 +25,7 @@ function withBoldName(text: string) {
  * Honours in a green box on the right, with Education and then Philanthropy & Purpose (opened by his creed) running
  * down beside it and on across the full width below it.
  */
-export function CeoMessage({ ceo }: { ceo: Ceo }) {
+export function CeoMessage({ ceo, officePhoto }: { ceo: Ceo; officePhoto?: string }) {
   const list = (items: Ceo['education']) => (
     <ul className="space-y-5">
       {items.map((x) => (
@@ -40,7 +40,7 @@ export function CeoMessage({ ceo }: { ceo: Ceo }) {
   return (
     <section id="ceo" aria-labelledby="ceo-title" className="scroll-mt-28">
       <div className="relative isolate grid h-[160px] place-items-center overflow-hidden md:h-[220px]">
-        <Image src="/images/office-team.webp" alt="" fill sizes="100vw" className="-z-10 object-cover object-[center_35%]" />
+        <Image src={officePhoto ?? '/images/office-team.webp'} alt="" fill sizes="100vw" className="-z-10 object-cover object-[center_35%]" />
         <div aria-hidden className="absolute inset-0 -z-10 bg-black/70" />
         <h2 id="ceo-title" className="text-[clamp(2.25rem,1.6rem+2vw,3.5rem)] font-bold tracking-[-0.02em] !text-white [text-shadow:0_2px_16px_rgb(0_0_0/0.35)]">
           Leadership
@@ -63,7 +63,7 @@ export function CeoMessage({ ceo }: { ceo: Ceo }) {
           </Reveal>
           <Reveal delay={0.08}>
             <div className="relative aspect-[4/5] overflow-hidden bg-[#e9e6e3] shadow-[0_10px_30px_-18px_rgb(11_21_16/0.35)]">
-              <Image src="/images/ceo-emmanuel-kenney.jpg" alt={`${ceo.name}, Founder and Chief Executive Officer of Flokefama`} fill sizes="(min-width: 1024px) 45vw, 100vw" className="object-cover object-top" />
+              <Image src={ceo.photo} alt={`${ceo.name}, Founder and Chief Executive Officer of Flokefama`} fill sizes="(min-width: 1024px) 45vw, 100vw" className="object-cover object-top" />
             </div>
           </Reveal>
         </div>

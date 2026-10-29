@@ -1,6 +1,6 @@
 /* Generated from the current flokefama.com shop (92 products) by the catalogue import. Do not edit by hand:
- * product names, categories, brands, descriptions and images are as published there; key features come from
- * the Flokefama brochure. `source` is the product's path on the current site (used for redirects). */
+ * product names, brands, descriptions and images are as published there; key features come from
+ * the Flokefama brochure. Categories follow the CEO's five (src/lib/categories.ts). `source` is the product's path on the current site (used for redirects). */
 import type { Product } from '@/lib/types';
 
 export const catalogue: Product[] = [
@@ -44,7 +44,7 @@ export const catalogue: Product[] = [
     "slug": "a-n-d-bp-monitor",
     "name": "A.N.D BP MONITOR",
     "brand": "A.N.D",
-    "category": "critical-care",
+    "category": "medical-equipment",
     "types": [
       "Blood Pressure Monitors & Diagnostic Tools"
     ],
@@ -72,7 +72,7 @@ export const catalogue: Product[] = [
     "slug": "air-mattress",
     "name": "AIR MATTRESS",
     "brand": "Floke",
-    "category": "hospital-equipment",
+    "category": "medical-equipment",
     "types": [
       "Hospital Furniture",
       "Storage Solutions"
@@ -102,7 +102,7 @@ export const catalogue: Product[] = [
     "slug": "aneriod-sphyg",
     "name": "ANERIOD SPHYG",
     "brand": "Floke",
-    "category": "critical-care",
+    "category": "medical-equipment",
     "types": [
       "Cardiology & Monitoring Equipment"
     ],
@@ -197,7 +197,7 @@ export const catalogue: Product[] = [
     "slug": "autoclave-machine-100l",
     "name": "Autoclave Machine 100L",
     "brand": "Floke",
-    "category": "laboratory",
+    "category": "surgical-theatre",
     "types": [
       "Autoclave Machines",
       "Microbiology Equipment & Reagents"
@@ -225,7 +225,7 @@ export const catalogue: Product[] = [
     "slug": "autoclave-machine-24l",
     "name": "Autoclave Machine 24L",
     "brand": "Floke",
-    "category": "laboratory",
+    "category": "surgical-theatre",
     "types": [
       "Autoclave Machines",
       "Microbiology Equipment & Reagents"
@@ -255,7 +255,7 @@ export const catalogue: Product[] = [
     "slug": "autoclave-machine-35l",
     "name": "Autoclave Machine 35L",
     "brand": "Floke",
-    "category": "laboratory",
+    "category": "surgical-theatre",
     "types": [
       "Autoclave Machines"
     ],
@@ -281,7 +281,7 @@ export const catalogue: Product[] = [
     "slug": "autoclave-machine-50l",
     "name": "Autoclave Machine 50L",
     "brand": "Floke",
-    "category": "laboratory",
+    "category": "surgical-theatre",
     "types": [
       "Autoclave Machines"
     ],
@@ -307,7 +307,7 @@ export const catalogue: Product[] = [
     "slug": "autoclave-machine-75l",
     "name": "Autoclave Machine 75L",
     "brand": "Floke",
-    "category": "laboratory",
+    "category": "surgical-theatre",
     "types": [
       "Autoclave Machines"
     ],
@@ -333,7 +333,7 @@ export const catalogue: Product[] = [
     "slug": "b-pp-monitor-shs",
     "name": "B.PP MONITOR- SHS",
     "brand": "S.H.S",
-    "category": "critical-care",
+    "category": "medical-equipment",
     "types": [
       "Blood Pressure Monitors & Diagnostic Tools"
     ],
@@ -359,7 +359,7 @@ export const catalogue: Product[] = [
     "slug": "ba-88a-bulb",
     "name": "BA 88A BULB",
     "brand": "Mindray",
-    "category": "consumables",
+    "category": "medical-consumables",
     "types": [],
     "summary": "The BA 88A BULB is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics.",
     "description": [
@@ -384,7 +384,7 @@ export const catalogue: Product[] = [
     "slug": "baby-basinet",
     "name": "Baby Basinet",
     "brand": "Floke",
-    "category": "hospital-equipment",
+    "category": "medical-equipment",
     "types": [
       "Patient Care & Hospital Beds"
     ],
@@ -412,7 +412,7 @@ export const catalogue: Product[] = [
     "slug": "baby-cot",
     "name": "Baby Cot",
     "brand": "Floke",
-    "category": "hospital-equipment",
+    "category": "medical-equipment",
     "types": [
       "Patient Care & Hospital Beds"
     ],
@@ -442,7 +442,7 @@ export const catalogue: Product[] = [
     "slug": "baby-scale",
     "name": "BABY SCALE",
     "brand": "KINLEE",
-    "category": "hospital-equipment",
+    "category": "medical-equipment",
     "types": [],
     "summary": "The BABY SCALE is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics.",
     "description": [
@@ -469,7 +469,7 @@ export const catalogue: Product[] = [
     "slug": "biological-microscope",
     "name": "BIOLOGICAL MICROSCOPE",
     "brand": "Floke",
-    "category": "laboratory",
+    "category": "in-vitro-diagnostics",
     "types": [
       "Digital Microscopes"
     ],
@@ -497,7 +497,7 @@ export const catalogue: Product[] = [
     "slug": "bp-machine-with-stand",
     "name": "BP Machine with Stand",
     "brand": "Floke",
-    "category": "critical-care",
+    "category": "medical-equipment",
     "types": [
       "Blood Pressure Monitors & Diagnostic Tools"
     ],
@@ -523,7 +523,7 @@ export const catalogue: Product[] = [
     "slug": "cardiotocography-machine-ctg",
     "name": "Cardiotocography Machine (CTG)",
     "brand": "JUMPER",
-    "category": "critical-care",
+    "category": "medical-equipment",
     "types": [
       "Cardiology & Monitoring Equipment"
     ],
@@ -551,7 +551,7 @@ export const catalogue: Product[] = [
     "slug": "centrifuge-2",
     "name": "CENTRIFUGE 2",
     "brand": "Floke",
-    "category": "laboratory",
+    "category": "in-vitro-diagnostics",
     "types": [
       "Centrifuges"
     ],
@@ -577,7 +577,7 @@ export const catalogue: Product[] = [
     "slug": "chemistry-cuvette-bs-230",
     "name": "CHEMISTRY CUVETTE Bs-230",
     "brand": "Mindray",
-    "category": "consumables",
+    "category": "medical-consumables",
     "types": [
       "Chemistry Reagents"
     ],
@@ -604,7 +604,7 @@ export const catalogue: Product[] = [
     "slug": "children-bed",
     "name": "Children Bed",
     "brand": "Floke",
-    "category": "hospital-equipment",
+    "category": "medical-equipment",
     "types": [
       "Bedding"
     ],
@@ -631,7 +631,7 @@ export const catalogue: Product[] = [
     "slug": "cpap-machine",
     "name": "CPAP MACHINE",
     "brand": "YUWELL",
-    "category": "critical-care",
+    "category": "medical-equipment",
     "types": [
       "CPAP Machines"
     ],
@@ -692,7 +692,7 @@ export const catalogue: Product[] = [
     "slug": "defibrillator-a-ed",
     "name": "DEFIBRILLATOR (A.ED)",
     "brand": "A.E.D",
-    "category": "critical-care",
+    "category": "medical-equipment",
     "types": [
       "Defibrillators"
     ],
@@ -718,7 +718,7 @@ export const catalogue: Product[] = [
     "slug": "defribillator",
     "name": "Defribillator",
     "brand": "COMEN",
-    "category": "critical-care",
+    "category": "medical-equipment",
     "types": [
       "Defibrillators"
     ],
@@ -741,7 +741,7 @@ export const catalogue: Product[] = [
     "slug": "dental-chair",
     "name": "Dental Chair",
     "brand": "Floke",
-    "category": "hospital-equipment",
+    "category": "medical-equipment",
     "types": [
       "Hospital Furniture"
     ],
@@ -767,7 +767,7 @@ export const catalogue: Product[] = [
     "slug": "diagnostic-set",
     "name": "DIAGNOSTIC SET",
     "brand": "Floke",
-    "category": "critical-care",
+    "category": "medical-equipment",
     "types": [
       "Blood Pressure Monitors & Diagnostic Tools"
     ],
@@ -790,7 +790,7 @@ export const catalogue: Product[] = [
     "slug": "digital-thermometer",
     "name": "DIGITAL THERMOMETER",
     "brand": "Floke",
-    "category": "critical-care",
+    "category": "medical-equipment",
     "types": [],
     "summary": "The DIGITAL THERMOMETER is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics.",
     "description": [
@@ -815,7 +815,7 @@ export const catalogue: Product[] = [
     "slug": "dp-10-ultrasound",
     "name": "DP 10 ULTRASOUND",
     "brand": "Mindray",
-    "category": "critical-care",
+    "category": "medical-equipment",
     "types": [],
     "summary": "The DP 10 ULTRASOUND is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics.",
     "description": [
@@ -839,7 +839,7 @@ export const catalogue: Product[] = [
     "slug": "ecg-12-channel",
     "name": "ECG 12 CHANNEL",
     "brand": "BIOCARE",
-    "category": "critical-care",
+    "category": "medical-equipment",
     "types": [
       "ECG Machines"
     ],
@@ -865,7 +865,7 @@ export const catalogue: Product[] = [
     "slug": "electric-cautery-digital-diathermy-machine",
     "name": "Electric Cautery Digital (Diathermy Machine)",
     "brand": "Floke",
-    "category": "hospital-equipment",
+    "category": "surgical-theatre",
     "types": [
       "Hospital & Surgical Equipment"
     ],
@@ -891,7 +891,7 @@ export const catalogue: Product[] = [
     "slug": "electronic-scale-with-height",
     "name": "ELECTRONIC SCALE WITH HEIGHT",
     "brand": "KINLEE",
-    "category": "hospital-equipment",
+    "category": "medical-equipment",
     "types": [],
     "summary": "The ELECTRONIC SCALE WITH HEIGHT is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics.",
     "description": [
@@ -911,7 +911,7 @@ export const catalogue: Product[] = [
     "slug": "electronic-scale-with-height-and-fat",
     "name": "ELECTRONIC SCALE WITH HEIGHT AND FAT",
     "brand": "KINLEE",
-    "category": "hospital-equipment",
+    "category": "medical-equipment",
     "types": [],
     "summary": "The ELECTRONIC SCALE WITH HEIGHT AND FAT is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics.",
     "description": [
@@ -935,7 +935,7 @@ export const catalogue: Product[] = [
     "slug": "electrophoresis-machine",
     "name": "Electrophoresis Machine",
     "brand": "Floke",
-    "category": "laboratory",
+    "category": "in-vitro-diagnostics",
     "types": [
       "Laboratory Accessories"
     ],
@@ -961,7 +961,7 @@ export const catalogue: Product[] = [
     "slug": "emergency-trolley",
     "name": "EMERGENCY TROLLEY",
     "brand": "Floke",
-    "category": "hospital-equipment",
+    "category": "surgical-theatre",
     "types": [
       "Storage Solutions"
     ],
@@ -984,7 +984,7 @@ export const catalogue: Product[] = [
     "slug": "examiation-lamp",
     "name": "Examiation Lamp",
     "brand": "Floke",
-    "category": "hospital-equipment",
+    "category": "surgical-theatre",
     "types": [
       "Hospital & Surgical Equipment"
     ],
@@ -1010,7 +1010,7 @@ export const catalogue: Product[] = [
     "slug": "examination-bed",
     "name": "EXAMINATION BED",
     "brand": "Floke",
-    "category": "hospital-equipment",
+    "category": "medical-equipment",
     "types": [
       "Patient Care & Hospital Beds"
     ],
@@ -1036,7 +1036,7 @@ export const catalogue: Product[] = [
     "slug": "fetal-doppler-small",
     "name": "FETAL DOPPLER SMALL",
     "brand": "JUMPER",
-    "category": "critical-care",
+    "category": "medical-equipment",
     "types": [],
     "summary": "The FETAL DOPPLER SMALL is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics.",
     "description": [
@@ -1060,7 +1060,7 @@ export const catalogue: Product[] = [
     "slug": "first-aid-bag-red",
     "name": "FIRST AID BAG (Red)",
     "brand": "Floke",
-    "category": "consumables",
+    "category": "medical-consumables",
     "types": [
       "Medical Disposables & Consumables"
     ],
@@ -1087,7 +1087,7 @@ export const catalogue: Product[] = [
     "slug": "fridge-thermometer",
     "name": "Fridge Thermometer",
     "brand": "Floke",
-    "category": "laboratory",
+    "category": "in-vitro-diagnostics",
     "types": [
       "Laboratory Accessories"
     ],
@@ -1180,7 +1180,7 @@ export const catalogue: Product[] = [
     "slug": "handheld-pulse-oximeter",
     "name": "Handheld Pulse Oximeter",
     "brand": "TOMORROW",
-    "category": "critical-care",
+    "category": "medical-equipment",
     "types": [],
     "summary": "The Handheld Pulse Oximeter is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics.",
     "description": [
@@ -1200,7 +1200,7 @@ export const catalogue: Product[] = [
     "slug": "handheld-tally-counter",
     "name": "Handheld Tally Counter",
     "brand": "Floke",
-    "category": "laboratory",
+    "category": "in-vitro-diagnostics",
     "types": [
       "Laboratory Accessories"
     ],
@@ -1226,7 +1226,7 @@ export const catalogue: Product[] = [
     "slug": "hybrid-graphic-printer",
     "name": "HYBRID GRAPHIC PRINTER",
     "brand": "SONY",
-    "category": "critical-care",
+    "category": "medical-equipment",
     "types": [],
     "summary": "The HYBRID GRAPHIC PRINTER is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics.",
     "description": [
@@ -1246,7 +1246,7 @@ export const catalogue: Product[] = [
     "slug": "infant-radiant-warmer",
     "name": "Infant Radiant Warmer",
     "brand": "Floke",
-    "category": "hospital-equipment",
+    "category": "medical-equipment",
     "types": [
       "Patient Care & Hospital Beds"
     ],
@@ -1273,7 +1273,7 @@ export const catalogue: Product[] = [
     "slug": "kinlee-scale-manual",
     "name": "KINLEE SCALE MANUAL",
     "brand": "KINLEE",
-    "category": "hospital-equipment",
+    "category": "medical-equipment",
     "types": [],
     "summary": "The KINLEE SCALE MANUAL is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics.",
     "description": [
@@ -1297,7 +1297,7 @@ export const catalogue: Product[] = [
     "slug": "lab-incubator",
     "name": "Lab Incubator",
     "brand": "Floke",
-    "category": "laboratory",
+    "category": "in-vitro-diagnostics",
     "types": [
       "Incubators"
     ],
@@ -1324,7 +1324,7 @@ export const catalogue: Product[] = [
     "slug": "lab-incubator-30-l",
     "name": "Lab Incubator 30 L",
     "brand": "Floke",
-    "category": "laboratory",
+    "category": "in-vitro-diagnostics",
     "types": [
       "Incubators"
     ],
@@ -1351,7 +1351,7 @@ export const catalogue: Product[] = [
     "slug": "medicine-trolley-2-step",
     "name": "MEDICINE  TROLLEY -2 STEP",
     "brand": "Floke",
-    "category": "hospital-equipment",
+    "category": "medical-equipment",
     "types": [
       "Storage Solutions"
     ],
@@ -1378,7 +1378,7 @@ export const catalogue: Product[] = [
     "slug": "medicine-trolley-3-step",
     "name": "MEDICINE TROLLEY – 3 STEP",
     "brand": "Floke",
-    "category": "hospital-equipment",
+    "category": "medical-equipment",
     "types": [
       "Storage Solutions"
     ],
@@ -1404,7 +1404,7 @@ export const catalogue: Product[] = [
     "slug": "micropalte-washer",
     "name": "MICROPALTE WASHER",
     "brand": "Mindray",
-    "category": "laboratory",
+    "category": "in-vitro-diagnostics",
     "types": [
       "Laboratory Accessories"
     ],
@@ -1427,7 +1427,7 @@ export const catalogue: Product[] = [
     "slug": "microscope-screen",
     "name": "MICROSCOPE (SCREEN)",
     "brand": "Floke",
-    "category": "laboratory",
+    "category": "in-vitro-diagnostics",
     "types": [
       "Digital Microscopes"
     ],
@@ -1453,7 +1453,7 @@ export const catalogue: Product[] = [
     "slug": "microscope-olympus-cx23",
     "name": "Microscope Olympus – CX23",
     "brand": "OLYMPUS",
-    "category": "laboratory",
+    "category": "in-vitro-diagnostics",
     "types": [
       "Digital Microscopes"
     ],
@@ -1480,7 +1480,7 @@ export const catalogue: Product[] = [
     "slug": "microscope-olympus-cx-33",
     "name": "Microscope Olympus-CX 33",
     "brand": "OLYMPUS",
-    "category": "laboratory",
+    "category": "in-vitro-diagnostics",
     "types": [
       "Digital Microscopes"
     ],
@@ -1506,7 +1506,7 @@ export const catalogue: Product[] = [
     "slug": "multifuctional-bed-1-crank",
     "name": "Multifuctional Bed – 1 Crank",
     "brand": "Floke",
-    "category": "hospital-equipment",
+    "category": "medical-equipment",
     "types": [
       "Bedding"
     ],
@@ -1533,7 +1533,7 @@ export const catalogue: Product[] = [
     "slug": "multifunctional-bed-2-crank",
     "name": "MULTIFUNCTIONAL BED -2 CRANK",
     "brand": "Floke",
-    "category": "hospital-equipment",
+    "category": "medical-equipment",
     "types": [
       "Bedding"
     ],
@@ -1556,7 +1556,7 @@ export const catalogue: Product[] = [
     "slug": "nebulizer-machine-adult",
     "name": "Nebulizer Machine Adult",
     "brand": "Floke",
-    "category": "critical-care",
+    "category": "medical-equipment",
     "types": [
       "Nebulizer Masks"
     ],
@@ -1579,7 +1579,7 @@ export const catalogue: Product[] = [
     "slug": "omron-digital-scale",
     "name": "Omron Digital Scale",
     "brand": "OMRON",
-    "category": "hospital-equipment",
+    "category": "medical-equipment",
     "types": [],
     "summary": "The Omron Digital Scale is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics.",
     "description": [
@@ -1603,7 +1603,7 @@ export const catalogue: Product[] = [
     "slug": "omron-m2",
     "name": "OMRON M2",
     "brand": "OMRON",
-    "category": "critical-care",
+    "category": "medical-equipment",
     "types": [
       "Blood Pressure Monitors & Diagnostic Tools"
     ],
@@ -1631,7 +1631,7 @@ export const catalogue: Product[] = [
     "slug": "omron-m3",
     "name": "Omron M3",
     "brand": "OMRON",
-    "category": "critical-care",
+    "category": "medical-equipment",
     "types": [
       "Blood Pressure Monitors & Diagnostic Tools"
     ],
@@ -1659,7 +1659,7 @@ export const catalogue: Product[] = [
     "slug": "omron-m7",
     "name": "OMRON M7",
     "brand": "OMRON",
-    "category": "critical-care",
+    "category": "medical-equipment",
     "types": [
       "Blood Pressure Monitors & Diagnostic Tools"
     ],
@@ -1686,7 +1686,7 @@ export const catalogue: Product[] = [
     "slug": "omron-nebulizer",
     "name": "Omron Nebulizer",
     "brand": "OMRON",
-    "category": "critical-care",
+    "category": "medical-equipment",
     "types": [
       "Nebulizer Masks"
     ],
@@ -1713,7 +1713,7 @@ export const catalogue: Product[] = [
     "slug": "onetouch-select-plus-metre",
     "name": "ONETOUCH SELECT PLUS METRE",
     "brand": "ONETOUCH",
-    "category": "in-vitro-diagnostics",
+    "category": "rapid-diagnostics",
     "types": [
       "Point-of-Care Testing (POCT)"
     ],
@@ -1739,7 +1739,7 @@ export const catalogue: Product[] = [
     "slug": "oxygen-concentrator-10l",
     "name": "OXYGEN CONCENTRATOR 10L",
     "brand": "YUWELL",
-    "category": "critical-care",
+    "category": "medical-equipment",
     "types": [
       "Oxygen Concentrators"
     ],
@@ -1766,7 +1766,7 @@ export const catalogue: Product[] = [
     "slug": "oxygen-cylinder-10l",
     "name": "Oxygen Cylinder 10L",
     "brand": "Floke",
-    "category": "critical-care",
+    "category": "medical-equipment",
     "types": [
       "Respiratory & Oxygen Therapy"
     ],
@@ -1789,7 +1789,7 @@ export const catalogue: Product[] = [
     "slug": "oxygen-cylinder-40l",
     "name": "Oxygen Cylinder 40L",
     "brand": "Floke",
-    "category": "critical-care",
+    "category": "medical-equipment",
     "types": [
       "Respiratory & Oxygen Therapy"
     ],
@@ -1812,7 +1812,7 @@ export const catalogue: Product[] = [
     "slug": "patient-monitor-comen",
     "name": "Patient Monitor- Comen",
     "brand": "COMEN",
-    "category": "critical-care",
+    "category": "medical-equipment",
     "types": [
       "Patient Monitors"
     ],
@@ -1839,7 +1839,7 @@ export const catalogue: Product[] = [
     "slug": "patient-monitor-normal",
     "name": "PATIENT MONITOR-Normal",
     "brand": "Floke",
-    "category": "critical-care",
+    "category": "medical-equipment",
     "types": [
       "Patient Monitors"
     ],
@@ -1865,7 +1865,7 @@ export const catalogue: Product[] = [
     "slug": "patient-stretcher",
     "name": "Patient Stretcher",
     "brand": "Floke",
-    "category": "hospital-equipment",
+    "category": "surgical-theatre",
     "types": [
       "Patient Care & Hospital Beds"
     ],
@@ -1891,7 +1891,7 @@ export const catalogue: Product[] = [
     "slug": "ph-meter",
     "name": "PH METER",
     "brand": "Floke",
-    "category": "laboratory",
+    "category": "in-vitro-diagnostics",
     "types": [
       "Laboratory Accessories"
     ],
@@ -1920,7 +1920,7 @@ export const catalogue: Product[] = [
     "slug": "portable-suction-machine",
     "name": "Portable Suction Machine",
     "brand": "Floke",
-    "category": "hospital-equipment",
+    "category": "surgical-theatre",
     "types": [
       "Suction Machines"
     ],
@@ -1947,7 +1947,7 @@ export const catalogue: Product[] = [
     "slug": "pulse-oximetervisamat",
     "name": "Pulse Oximeter",
     "brand": "VISOMAT",
-    "category": "critical-care",
+    "category": "medical-equipment",
     "types": [],
     "summary": "The Pulse Oximeter(Visamat) is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics.",
     "description": [
@@ -1971,7 +1971,7 @@ export const catalogue: Product[] = [
     "slug": "pulse-oximeter-promed",
     "name": "Pulse Oximeter (Promed)",
     "brand": "PROMED",
-    "category": "critical-care",
+    "category": "medical-equipment",
     "types": [],
     "summary": "The Pulse Oximeter (Promed) is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics.",
     "description": [
@@ -1995,7 +1995,7 @@ export const catalogue: Product[] = [
     "slug": "pulse-oximeteraccare",
     "name": "Pulse Oximeter(Accare)",
     "brand": "ACCARE",
-    "category": "critical-care",
+    "category": "medical-equipment",
     "types": [],
     "summary": "The Pulse Oximeter(Accare) is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics.",
     "description": [
@@ -2019,7 +2019,7 @@ export const catalogue: Product[] = [
     "slug": "pulse-oximeterhbo-smart",
     "name": "Pulse Oximeter(HBO-Smart)",
     "brand": "HBO-SMART",
-    "category": "critical-care",
+    "category": "medical-equipment",
     "types": [],
     "summary": "The Pulse Oximeter(HBO-Smart) is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics.",
     "description": [
@@ -2042,7 +2042,7 @@ export const catalogue: Product[] = [
     "slug": "pulse-oximetre-tomorrow",
     "name": "PULSE OXIMETRE- (TOMORROW)",
     "brand": "TOMORROW",
-    "category": "critical-care",
+    "category": "medical-equipment",
     "types": [],
     "summary": "The PULSE OXIMETRE- (TOMORROW) is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics.",
     "description": [
@@ -2092,7 +2092,7 @@ export const catalogue: Product[] = [
     "slug": "suction-machine",
     "name": "SUCTION MACHINE",
     "brand": "YUWELL",
-    "category": "hospital-equipment",
+    "category": "surgical-theatre",
     "types": [
       "Suction Machines"
     ],
@@ -2120,7 +2120,7 @@ export const catalogue: Product[] = [
     "slug": "theatre-bed",
     "name": "THEATRE BED",
     "brand": "Floke",
-    "category": "hospital-equipment",
+    "category": "surgical-theatre",
     "types": [
       "Patient Care & Hospital Beds"
     ],
@@ -2148,7 +2148,7 @@ export const catalogue: Product[] = [
     "slug": "theatre-light-halogen",
     "name": "Theatre Light Halogen",
     "brand": "Floke",
-    "category": "hospital-equipment",
+    "category": "surgical-theatre",
     "types": [
       "Hospital & Surgical Equipment"
     ],
@@ -2177,7 +2177,7 @@ export const catalogue: Product[] = [
     "slug": "ultra-violet-uv-light",
     "name": "Ultra Violet (UV) Light",
     "brand": "Floke",
-    "category": "laboratory",
+    "category": "in-vitro-diagnostics",
     "types": [
       "Microbiology Equipment & Reagents"
     ],
@@ -2205,7 +2205,7 @@ export const catalogue: Product[] = [
     "slug": "ultrasound-machine-4pro",
     "name": "ULTRASOUND MACHINE 4PRO",
     "brand": "Flokefama",
-    "category": "critical-care",
+    "category": "medical-equipment",
     "types": [],
     "summary": "The ULTRASOUND MACHINE 4PRO is a high-quality medical device designed for efficiency and reliability. Ideal for hospitals, clinics, and healthcare facilities, it ensures optimal performance in patient care and medical diagnostics.",
     "description": [
@@ -2230,7 +2230,7 @@ export const catalogue: Product[] = [
     "slug": "urine-analyzer-ua-66",
     "name": "Urine Analyzer UA-66",
     "brand": "Mindray",
-    "category": "in-vitro-diagnostics",
+    "category": "rapid-diagnostics",
     "types": [
       "Point-of-Care Testing (POCT)"
     ],
@@ -2257,7 +2257,7 @@ export const catalogue: Product[] = [
     "slug": "vital-monitor",
     "name": "VITAL MONITOR",
     "brand": "Floke",
-    "category": "critical-care",
+    "category": "medical-equipment",
     "types": [
       "Patient Monitors"
     ],
@@ -2284,7 +2284,7 @@ export const catalogue: Product[] = [
     "slug": "wardscreen-4fold",
     "name": "WARDSCREEN – 4FOLD",
     "brand": "Floke",
-    "category": "hospital-equipment",
+    "category": "medical-equipment",
     "types": [
       "Hospital Furniture"
     ],
@@ -2312,7 +2312,7 @@ export const catalogue: Product[] = [
     "slug": "wardscreen-5fold",
     "name": "WARDSCREEN – 5FOLD",
     "brand": "Floke",
-    "category": "hospital-equipment",
+    "category": "medical-equipment",
     "types": [
       "Hospital Furniture"
     ],
@@ -2339,7 +2339,7 @@ export const catalogue: Product[] = [
     "slug": "water-bath",
     "name": "WATER BATH",
     "brand": "Floke",
-    "category": "laboratory",
+    "category": "in-vitro-diagnostics",
     "types": [
       "Laboratory Accessories"
     ],
@@ -2366,7 +2366,7 @@ export const catalogue: Product[] = [
     "slug": "wheel-chair-comode",
     "name": "WHEEL CHAIR COMODE",
     "brand": "Floke",
-    "category": "hospital-equipment",
+    "category": "medical-equipment",
     "types": [
       "Patient Care & Hospital Beds"
     ],
@@ -2394,7 +2394,7 @@ export const catalogue: Product[] = [
     "slug": "wheel-chair-normal",
     "name": "WHEEL CHAIR – NORMAL",
     "brand": "Floke",
-    "category": "hospital-equipment",
+    "category": "medical-equipment",
     "types": [
       "Patient Care & Hospital Beds"
     ],
@@ -2420,7 +2420,7 @@ export const catalogue: Product[] = [
     "slug": "zima-frame-with-wheels",
     "name": "ZIMA FRAME WITH WHEELS",
     "brand": "Floke",
-    "category": "hospital-equipment",
+    "category": "medical-equipment",
     "types": [
       "Patient Care & Hospital Beds"
     ],
