@@ -9,6 +9,7 @@ import { departmentLabel, timelineLabel, timelines } from '@/lib/order-needs';
 import { needsInstallation } from '@/lib/installation';
 import type { SavedOrder } from '@/lib/orders';
 import { registerPurchase } from '@/lib/service/server';
+import { CONSUMABLES } from '@/lib/categories';
 
 /**
  * A hospital's orders (Appwrite table `orders`, one row per order, keyed by its reference). GET lists the
@@ -109,7 +110,7 @@ export async function POST(req: NextRequest) {
   // A hospital's purchase becomes its equipment; consumables are skipped
   if (s.role === 'client') {
     const equipment = items
-      .filter(({ p }) => p.category !== 'consumables')
+      .filter(({ p }) => p.category !== CONSUMABLES)
       .map(({ p, qty }) => ({ slug: p.slug, name: tidyName(p.name), brand: p.brand, image: p.image, qty, install: needsInstallation(p) }));
     await registerPurchase(s, order.reference, equipment);
   }

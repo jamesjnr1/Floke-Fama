@@ -18,7 +18,15 @@ export async function SitePageHero({ page, flip, kicker, vars = {} }: { page: Pa
       kicker={kicker}
       title={
         <>
-          {h.title} {h.highlight && <em>{h.highlight}</em>}
+          {h.emphasisFirst ? (
+            <>
+              {h.highlight && <em>{h.highlight}</em>} {h.title}
+            </>
+          ) : (
+            <>
+              {h.title} {h.highlight && <em>{h.highlight}</em>}
+            </>
+          )}
         </>
       }
       lead={lead}

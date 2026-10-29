@@ -17,13 +17,21 @@ export interface Contact {
   sales: string;
   support: string;
 }
-export interface Logo { name: string; logo: string | null; w: number; h: number; role?: string }
+export interface Logo { name: string; logo: string | null; w: number; h: number; role?: string; /** Clients: shown instead of the name and logo (the CEO: hospitals are represented by codes) */ code?: string; /** Clients: kind of facility shown with the code, e.g. Teaching hospital */ kind?: string }
+/** A photo for a gallery (engineering department, event albums). */
+export interface Photo { src: string; alt: string; caption?: string }
+/** One of the home page's “Our solutions” pillars. No `image`: a placeholder shows until a photo is set in the Studio. */
+export interface Solution { title: string; body: string; points: string[]; href: string; image?: string; alt?: string; /** 'contain': a product photo on white; 'cover': a photo filling the frame */ fit: 'contain' | 'cover' }
+/** A photo or video for the home hero (installations by the engineering department). */
+export interface HeroMedia { kind: 'image' | 'video'; src: string; poster?: string; caption: string; label?: string }
+/** An album of event photos on the Events page. */
+export interface EventAlbum { title: string; date?: string; photos: Photo[] }
 /** A branch; `phone` as written locally, e.g. 020 025 0127. */
 export interface Branch { name: string; detail: string; phone?: string }
 export interface Award { id: string; title: string; body: string; year: string; image: string; alt: string }
 export interface Faq { q: string; a: string; link?: { href: string; label: string } }
 export interface EsgPillar { label: string; icon: string; title: string; body: string; image: string; alt: string }
-export interface PageHeader { title: string; highlight: string; lead: string; image?: string; position?: string; /** 'strong': a darker veil, for bright photos */ veil?: 'strong'; /** Keep this built-in photo even when a photo is set in the Studio */ lockImage?: boolean }
+export interface PageHeader { title: string; highlight: string; lead: string; image?: string; position?: string; /** 'strong': a darker veil, for bright photos */ veil?: 'strong'; /** Keep this built-in photo even when a photo is set in the Studio */ lockImage?: boolean; /** Show the italic words first, e.g. “*Saving Lives* since 2008” */ emphasisFirst?: boolean }
 export type PageKey = 'about' | 'services' | 'shop' | 'events' | 'awards' | 'esg' | 'contact';
 
 export interface SiteContent {
@@ -33,12 +41,23 @@ export interface SiteContent {
   technologyPartners: Logo[];
   clients: Logo[];
   hero: { title: string; highlight: string; lead: string };
+  /** Installation photos and videos shown after the first hero slide; `heroMediaOnly` hides the stock equipment photos. */
+  heroMedia: HeroMedia[];
+  heroMediaOnly: boolean;
+  solutions: { kicker: string; title: string; highlight: string; lead: string; items: Solution[] };
+  engineering: { title: string; lead: string; photos: Photo[] };
+  eventAlbums: EventAlbum[];
+  /** Extra numbers hospitals can call, shown on the hospital sign-in page (added by the team in the Studio). */
+  signInPhones: { label: string; phone: string }[];
   testimonials: { quote: string; name: string; role: string }[];
   purpose: { label: string; icon: string; text: string }[];
   coreValues: { title: string; icon: string; text: string }[];
   servicesInBrief: { icon: string; title: string; text: string }[];
   whyChoose: { icon: string; title: string; body: string }[];
+  /** Photos used around the site (Studio: Site content → Photos). */
+  photos: { whatWeDo: string; office: string };
   ceo: {
+    photo: string;
     name: string;
     role: string;
     bio: string[];
@@ -135,8 +154,32 @@ export const defaultEsgPillars: EsgPillar[] = [
   },
 ];
 
+/** The six pillars (the CEO's list), as built in; the Studio's “Our solutions” replaces them once filled in. */
+export const defaultSolutions: SiteContent['solutions'] = {
+  kicker: 'Our solutions',
+  title: 'Six pillars of',
+  highlight: 'medical infrastructure.',
+  lead: 'From diagnostics to delivery: one partner for the equipment, the engineers and the supplies that keep it running.',
+  items: [
+    { title: 'In-Vitro Diagnostics', body: 'Analysers with matched reagents and controls, from the official distributor of Mindray.', points: ['Biochemistry & haematology analysers', 'Point-of-care testing', 'Microbiology equipment'], href: '/products?category=in-vitro-diagnostics', image: '/images/products/auto-heamatology-analyzer-bc5150.webp', alt: 'Mindray BC-5150 haematology analyser', fit: 'contain' },
+    { title: 'Patient Monitoring & Lifecare Systems', body: 'Monitors, defibrillators, CTG and life support for wards, theatres and intensive care.', points: ['Patient monitors', 'Defibrillators & ECG', 'Ventilators, CPAP & oxygen therapy'], href: '/products?category=medical-equipment', image: '/images/products/patient-monitor-comen.webp', alt: 'Comen patient monitor', fit: 'contain' },
+    { title: 'Imaging', body: 'Diagnostic imaging from portable ultrasound to CT, MRI and digital X-ray.', points: ['Ultrasound', 'CT, MRI & digital X-ray', 'Mammography'], href: '/services#departments', image: '/images/equipment/ct.webp', alt: 'A CT scanner in a hospital imaging room', fit: 'cover' },
+    { title: 'Orthopaedics', body: 'Implants and instruments for joint replacement, fracture fixation and spinal surgery.', points: ['Arthroplasty (hip & knee)', 'Trauma plates & nails', 'Spine systems'], href: '/services#departments', image: '/images/solutions/arthroplasty.webp', alt: 'Orthopaedic joint replacement implants', fit: 'cover' },
+    { title: 'Biomedical Engineering & Spare Parts', body: 'Our engineers install, calibrate and maintain every system we supply, with genuine spare parts.', points: ['Installation & commissioning', 'Calibration & repairs', 'Genuine spare parts'], href: '/services', image: '/images/pillars/biomedical-lab.webp', alt: 'A laboratory scientist in gloves working with laboratory equipment', fit: 'cover' },
+    // The CEO (Oct 2026): the earlier photo (an analyser lamp) is not a reagent; a placeholder shows until a real photo is set in the Studio
+    { title: 'Reagents & Consumables', body: 'A continuous, reliable supply of reagents, cuvettes, lamps and disposables.', points: ['Chemistry reagents', 'Spare lamps & cuvettes', 'Six branches nationwide'], href: '/products?category=medical-consumables', fit: 'cover' },
+  ],
+};
+
+export const defaultEngineering: SiteContent['engineering'] = {
+  title: 'Our engineering department',
+  lead: 'Flokefama’s own biomedical engineers install, commission, calibrate and maintain the equipment we supply, across all six branches.',
+  photos: [],
+};
+
 export const defaultPageHeaders: Record<PageKey, PageHeader> = {
-  about: { title: 'Purveyor of excellence', highlight: 'in healthcare', lead: 'FLOKEFAMA is a multiple award-winning company and one of the most trusted medical equipment suppliers in Ghana.', image: '/images/headers/about-microscopes.webp', position: '40% 50%', veil: 'strong', lockImage: true },
+  // The CEO (Oct 2026): “Saving Lives since 2008”, with Saving Lives emphasised
+  about: { title: 'since 2008', highlight: 'Saving Lives', emphasisFirst: true, lead: 'FLOKEFAMA is a multiple award-winning company and one of the most trusted medical equipment suppliers in Ghana.', image: '/images/headers/about-microscopes.webp', position: '40% 50%', veil: 'strong', lockImage: true },
   services: { title: 'We go beyond just supplying', highlight: 'medical equipment', lead: 'End-to-end solutions, from procurement and installation to training and maintenance.', image: '/images/headers/services-technician.webp', position: '50% 40%', veil: 'strong', lockImage: true },
   shop: { title: 'Clinical-grade equipment.', highlight: 'Instantly searchable.', lead: '{count} products for hospitals and laboratories, with installation, training and after-sales support on everything we supply.', image: '/images/headers/shop.webp', position: '50% 35%' },
   events: { title: 'Moments that', highlight: 'bring us together', lead: 'Celebrations, community programmes and industry events from across the Flokefama family.', image: '/images/headers/team-lab.webp', position: '40% 30%', veil: 'strong', lockImage: true },
@@ -151,6 +194,12 @@ export const defaultSite: SiteContent = {
   technologyPartners: seed.technologyPartners.map((x) => ({ ...x })),
   clients: seed.clients.map((x) => ({ ...x })),
   hero: { title: 'Ghana’s No.1', highlight: 'Healthcare Company', lead: 'Total healthcare solutions for hospitals and laboratories across Ghana and West Africa. Saving lives since 2008.' },
+  heroMedia: [],
+  heroMediaOnly: false,
+  solutions: defaultSolutions,
+  engineering: defaultEngineering,
+  eventAlbums: [],
+  signInPhones: [],
   testimonials: [...seed.testimonials],
   purpose: seed.purpose.map((x) => ({ ...x })),
   coreValues: seed.coreValues.map((x) => ({ ...x })),
@@ -158,7 +207,9 @@ export const defaultSite: SiteContent = {
   // The original list repeated "High-quality, globally recognized medical brands"; keep each point once.
   whyChoose: seed.whyChoose.filter((x, i, all) => all.findIndex((y) => y.title === x.title) === i).map((x) => ({ ...x })),
   // The CEO profile as written by the CEO (Website Redesign Review, Oct 2026)
+  photos: { whatWeDo: '/images/home-equipment.webp', office: '/images/office-team.webp' },
   ceo: {
+    photo: '/images/ceo-emmanuel-kenney.jpg',
     name: 'Emmanuel Teye Kwabena Kenney',
     role: 'Founder & Chief Executive Officer, Flokefama Company Limited',
     bio: [

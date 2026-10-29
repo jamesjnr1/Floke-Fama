@@ -22,7 +22,7 @@ export function CeoFeature({ ceo }: { ceo: Ceo }) {
           </Reveal>
           <Reveal delay={0.08} className="lg:col-span-5">
             <figure className="relative mx-auto aspect-[4/5] max-w-md bg-[#e9e6e3] lg:-mb-40 lg:max-w-none">
-              <Image src="/images/ceo-emmanuel-kenney.jpg" alt={`${ceo.name}, Founder and Chief Executive Officer of Flokefama`} fill sizes="(min-width: 1024px) 40vw, 100vw" className="object-cover object-top" />
+              <Image src={ceo.photo} alt={`${ceo.name}, Founder and Chief Executive Officer of Flokefama`} fill sizes="(min-width: 1024px) 40vw, 100vw" className="object-cover object-top" />
             </figure>
           </Reveal>
         </div>

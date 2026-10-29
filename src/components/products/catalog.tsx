@@ -10,6 +10,7 @@ import { AddToQuote } from '@/components/sales/add-to-quote';
 import { Icon } from '@/components/ui/icon';
 import { localSearch, searchProducts, searchProvider } from '@/lib/search';
 import type { Category, Product } from '@/lib/types';
+import { legacyCategoryLink } from '@/lib/categories';
 import { cn } from '@/lib/utils';
 
 /**
@@ -46,7 +47,7 @@ export function Catalog({ products, categories, typeList }: {
   // Starting filters from the address (?category, ?q, ?type)
   useEffect(() => {
     const sp = new URLSearchParams(window.location.search);
-    const c = sp.get('category');
+    const c = legacyCategoryLink(sp.get('category') ?? '');
     const t = sp.get('type');
     if (c && catBySlug.has(c)) setCategory(c);
     if (sp.get('q')) setQuery(sp.get('q')!);
@@ -86,7 +87,8 @@ export function Catalog({ products, categories, typeList }: {
     return () => window.removeEventListener('keydown', onKey);
   }, []);
 
-  const tabs = [{ slug: null, title: 'All equipment' }, ...categories.map((c) => ({ slug: c.slug, title: c.short }))];
+  // The categories' full names (the CEO's five), as the tabs scroll sideways when they don't fit
+  const tabs = [{ slug: null, title: 'All equipment' }, ...categories.map((c) => ({ slug: c.slug, title: c.title }))];
 
   return (
     <LayoutGroup>

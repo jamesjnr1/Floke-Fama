@@ -78,6 +78,9 @@ export function SolutionsInAction({ layout = 'wide', plain = false }: { layout?:
       poster={poster}
       muted={!watching}
       controls={watching}
+      // No download button or picture-in-picture (the CEO: protect our media)
+      controlsList="nodownload noremoteplayback"
+      disablePictureInPicture
       playsInline
       preload="none"
       onEnded={() => setCurrent((i) => (i + 1) % films.length)}

@@ -68,20 +68,13 @@ export async function Partners({ heading = true, logos = true }: { heading?: boo
             <p className="min-w-0 text-right text-xs text-ink-3">700+ hospitals &amp; laboratories, including</p>
           </div>
           <ul className="mt-5 grid grid-cols-3 gap-2 sm:gap-3 lg:grid-cols-6">
-            {clients.filter((c): c is typeof c & { logo: string } => Boolean(c.logo)).map((c) => {
-              const box = logoBox(c.w, c.h, 4200, 150);
-              return (
-                <li
-                  key={c.name}
-                  className="group flex flex-col items-center justify-between gap-2 rounded-2xl border border-line bg-paper px-2 pb-3 pt-4 text-center transition sm:gap-4 sm:rounded-3xl sm:px-4 sm:pb-5 sm:pt-7 duration-500 ease-out-expo hover:-translate-y-1 hover:shadow-[0_24px_48px_-28px_rgb(11_21_16/0.4)]"
-                >
-                  <span className="flex h-12 items-center justify-center sm:h-20">
-                    <Image src={c.logo} alt="" width={box.width} height={box.height} style={{ width: box.width, height: box.height }} className="max-h-11 max-w-full object-contain sm:max-h-none" />
-                  </span>
-                  <span className="text-[0.9375rem] leading-tight text-ink-2 sm:text-[1rem]">{c.name}</span>
-                </li>
-              );
-            })}
+            {/* Hospitals by code, not name or logo (the CEO, Oct 2026) */}
+            {clients.map((c) => (
+              <li key={c.code ?? c.name} className="flex flex-col items-center justify-center gap-1 rounded-2xl border border-line bg-paper px-2 py-5 text-center sm:rounded-3xl">
+                <span className="font-mono text-lg font-bold tracking-[0.04em] text-brand-800">{c.code}</span>
+                {c.kind && <span className="text-[0.9375rem] leading-tight text-ink-3">{c.kind}</span>}
+              </li>
+            ))}
           </ul>
         </Reveal>
 
