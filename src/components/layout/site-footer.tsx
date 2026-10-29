@@ -3,7 +3,6 @@ import { SocialLinks } from '@/components/ui/social-links';
 import { ArrowUpRight, Mail, MapPin, Phone } from 'lucide-react';
 import { Logo } from '@/components/layout/logo';
 import { getSite } from '@/lib/site';
-import { telHref } from '@/lib/utils';
 
 /** Footer: one plain dark colour with white and grey text only, the Flokefama logo and links to the real pages. */
 const columns = [
@@ -11,10 +10,9 @@ const columns = [
     title: 'Solutions',
     links: [
       { label: 'In-Vitro Diagnostics', href: '/products?category=in-vitro-diagnostics' },
-      { label: 'Surgical & Theatre', href: '/products?category=surgical-theatre' },
-      { label: 'Medical Equipment', href: '/products?category=medical-equipment' },
-      { label: 'Medical Consumables', href: '/products?category=medical-consumables' },
-      { label: 'Rapid Diagnostics', href: '/products?category=rapid-diagnostics' },
+      { label: 'Critical Care', href: '/products?category=critical-care' },
+      { label: 'Laboratory', href: '/products?category=laboratory' },
+      { label: 'Consumables', href: '/products?category=consumables' },
     ],
   },
   {
@@ -39,14 +37,14 @@ const columns = [
 ];
 
 export async function SiteFooter() {
-  const { contact, maps, branches } = await getSite();
+  const { contact, maps } = await getSite();
   return (
     <footer className="border-t border-white/10 bg-[#10191e] text-white/70">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <div className="grid grid-cols-2 gap-x-6 gap-y-8 py-8 md:grid-cols-3 lg:grid-cols-12 lg:gap-8 lg:py-10">
           <div className="col-span-2 flex flex-col gap-4 md:col-span-3 lg:col-span-3">
             <Logo tone="dark" />
-            <p className="text-sm text-white/75">Ghana’s No.1 healthcare company. <span className="font-semibold text-white">Saving lives since 2008.</span></p>
+            <p className="text-sm text-white/75">Ghana’s No.1 healthcare company.</p>
             <ul className="flex flex-col gap-1.5 text-sm">
               <li>
                 <a href={maps.directions} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 transition-colors hover:text-white">
@@ -55,17 +53,7 @@ export async function SiteFooter() {
               </li>
               <li>
                 <a href={contact.phoneHref} className="flex items-center gap-3 transition-colors hover:text-white">
-                  <Phone className="size-4 shrink-0 text-white/50" aria-hidden /> {contact.phone} <span className="text-white/50">(24/7)</span>
-                </a>
-              </li>
-              <li>
-                <a href={`mailto:${contact.support}`} className="flex items-center gap-3 transition-colors hover:text-white">
-                  <Mail className="size-4 shrink-0 text-white/50" aria-hidden /> {contact.support} <span className="text-white/50">(support)</span>
-                </a>
-              </li>
-              <li>
-                <a href={`mailto:${contact.sales}`} className="flex items-center gap-3 transition-colors hover:text-white">
-                  <Mail className="size-4 shrink-0 text-white/50" aria-hidden /> {contact.sales} <span className="text-white/50">(sales)</span>
+                  <Phone className="size-4 shrink-0 text-white/50" aria-hidden /> {contact.phone}
                 </a>
               </li>
               <li>
@@ -101,23 +89,6 @@ export async function SiteFooter() {
             <SocialLinks className="mt-2" buttonClassName="text-white/75 hover:text-white" />
           </div>
         </div>
-
-        {/* Every branch and its number, on every page, so a hospital can always reach the nearest one */}
-        <nav aria-label="Branches" className="border-t border-white/10 py-6">
-          <h2 className="text-sm font-semibold text-white">Our branches</h2>
-          <ul className="mt-3 grid grid-cols-2 gap-x-6 gap-y-3 text-sm sm:grid-cols-3 lg:grid-cols-6">
-            {branches.map((b) => (
-              <li key={b.name}>
-                <span className="block text-white/85">{b.name}</span>
-                {b.phone ? (
-                  <a href={telHref(b.phone)} className="transition-colors hover:text-white">{b.phone}</a>
-                ) : (
-                  <span className="text-white/50">{b.detail}</span>
-                )}
-              </li>
-            ))}
-          </ul>
-        </nav>
 
         {/* The company name across the full width, in the hero's Inter Black capitals */}
         <div aria-hidden className="@container mb-8 mt-4">
