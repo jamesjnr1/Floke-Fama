@@ -9,7 +9,6 @@
 .fi-rr-arrow-trend-up::before{content:"\f1a9"}
 .fi-rr-arrow-up-right::before{content:"\f1b4"}
 .fi-rr-award::before{content:"\f1df"}
-.fi-rr-baby::before{content:"\f1e4"}
 .fi-rr-badge-check::before{content:"\f1eb"}
 .fi-rr-balance-scale-left::before{content:"\f1fb"}
 .fi-rr-bell::before{content:"\f239"}
@@ -25,6 +24,7 @@
 .fi-rr-clipboard-list::before{content:"\f43b"}
 .fi-rr-clock::before{content:"\f45a"}
 .fi-rr-comment::before{content:"\f4b8"}
+.fi-rr-comment-dots::before{content:"\f4a8"}
 .fi-rr-copy::before{content:"\f4dd"}
 .fi-rr-cross-small::before{content:"\f4f6"}
 .fi-rr-database::before{content:"\f525"}
@@ -34,7 +34,6 @@
 .fi-rr-eye::before{content:"\f5f8"}
 .fi-rr-eye-crossed::before{content:"\f5f5"}
 .fi-rr-file-pdf::before{content:"\f66a"}
-.fi-rr-flask-gear::before{content:"\f698"}
 .fi-rr-globe::before{content:"\f705"}
 .fi-rr-graduation-cap::before{content:"\f70f"}
 .fi-rr-hand-holding-heart::before{content:"\f75a"}
@@ -58,6 +57,7 @@
 .fi-rr-plus::before{content:"\faac"}
 .fi-rr-refresh::before{content:"\fb34"}
 .fi-rr-rotate-right::before{content:"\fb6a"}
+.fi-rr-scalpel::before{content:"\fb99"}
 .fi-rr-search::before{content:"\fbba"}
 .fi-rr-search-alt::before{content:"\fbb6"}
 .fi-rr-settings::before{content:"\fbd2"}
@@ -65,9 +65,9 @@
 .fi-rr-shopping-cart::before{content:"\fbfc"}
 .fi-rr-sign-out-alt::before{content:"\fc0c"}
 .fi-rr-star::before{content:"\fce9"}
-.fi-rr-stethoscope::before{content:"\fcf4"}
 .fi-rr-sun::before{content:"\fd17"}
 .fi-rr-syringe::before{content:"\fd36"}
+.fi-rr-test-tube::before{content:"\fd7a"}
 .fi-rr-time-fast::before{content:"\fda4"}
 .fi-rr-tool-box::before{content:"\fdc8"}
 .fi-rr-tools::before{content:"\fdcb"}

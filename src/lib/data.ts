@@ -4,6 +4,7 @@ import { articles as seedArticles, type Article } from '@/data/articles';
 import * as seed from '@/data/seed';
 import { queries, sanity } from '@/lib/sanity';
 import type { Category, EventItem, Metric, Milestone, Product } from '@/lib/types';
+import { categoryOf, newCategorySlugs, retiredCategorySlugs } from '@/lib/categories';
 
 /**
  * Content access layer. Reads from Sanity when configured, otherwise from the seed.
@@ -23,8 +24,14 @@ async function fromCms<T>(query: string, fallback: T, params: Record<string, str
   }
 }
 
-export const getCategories = cache(() => fromCms<Category[]>(queries.categories, seed.categories));
-export const getProducts = cache(() => fromCms<Product[]>(queries.products, seed.products));
+/** The CEO's five categories; the Studio's list until it has been updated to them. */
+export const getCategories = cache(async () => {
+  const cms = await fromCms<Category[]>(queries.categories, seed.categories);
+  // The earlier categories may still be in the Studio after the import; their products now sit in the new ones
+  return newCategorySlugs.every((s) => cms.some((c) => c.slug === s)) ? cms.filter((c) => !retiredCategorySlugs.includes(c.slug)) : seed.categories;
+});
+const recategorise = (p: Product): Product => ({ ...p, category: categoryOf(p.slug, p.category) });
+export const getProducts = cache(async () => (await fromCms<Product[]>(queries.products, seed.products)).map(recategorise));
 export const getMetrics = cache(() => fromCms<Metric[]>(queries.metrics, seed.metrics));
 /** News, Blog & Press, newest first. */
 export const getArticles = cache(() => fromCms<Article[]>(queries.articles, seedArticles));
@@ -35,5 +42,6 @@ export const getMilestones = cache(() => fromCms<Milestone[]>(queries.milestones
 
 export const getProduct = cache(async (slug: string) => {
   const fallback = seed.products.find((p) => p.slug === slug) ?? null;
-  return fromCms<Product | null>(queries.product, fallback, { slug });
+  const p = await fromCms<Product | null>(queries.product, fallback, { slug });
+  return p && recategorise(p);
 });

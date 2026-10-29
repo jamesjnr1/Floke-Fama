@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { PortalShell } from '@/components/engineer/PortalShell';
 import { catalogue } from '@/data/catalogue';
 import { requireSession } from '@/lib/auth/server';
+import { CONSUMABLES } from '@/lib/categories';
 
 export const metadata: Metadata = {
   title: 'Biomedical Engineer Service Portal',
@@ -14,6 +15,6 @@ export const metadata: Metadata = {
 export default async function EngineerPortalPage() {
   const session = await requireSession('engineer', '/engineer');
   // For registering existing equipment: catalogue items take their photo and documents along
-  const products = catalogue.filter((p) => p.category !== 'consumables').map(({ slug, name, brand, image }) => ({ slug, name, brand, image }));
+  const products = catalogue.filter((p) => p.category !== CONSUMABLES).map(({ slug, name, brand, image }) => ({ slug, name, brand, image }));
   return <PortalShell user={{ name: session.name, email: session.email }} products={products} />;
 }

@@ -322,3 +322,11 @@ select:not([multiple]):not([size]) {
 [data-patterns='off'] :is(.pattern-grid, .pattern-dots, .pattern-cross)::after {
   display: none;
 }
+
+/* Photos and videos on the public site can't be dragged out or long-pressed to save (see ImageGuard) */
+main img,
+main video {
+  -webkit-user-drag: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}

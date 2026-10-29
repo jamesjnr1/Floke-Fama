@@ -14,7 +14,10 @@ export type ConversionEvent =
   | 'call_click'
   | 'brochure_download'
   | 'datasheet_request'
-  | 'checkout_pay';
+  | 'checkout_pay'
+  | 'chat_open'
+  | 'chat_request_start'
+  | 'chat_request_sent';
 
 export function track(event: ConversionEvent, props?: Record<string, string | number | boolean>) {
   try {

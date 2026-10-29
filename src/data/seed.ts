@@ -17,41 +17,40 @@ export const categories: Category[] = [
     slug: 'in-vitro-diagnostics',
     title: 'In-Vitro Diagnostics',
     short: 'IVD',
-    description: 'Biochemistry and haematology analysers with matched reagents and controls.',
+    description: 'Biochemistry and haematology analysers, microscopes and laboratory equipment, with matched reagents and controls.',
     icon: 'fi-rr-microscope',
     image: '/images/products/auto-haematology-analyzer-bc3000plus.webp',
   },
   {
-    slug: 'critical-care',
-    title: 'Patient Monitoring & Critical Care',
-    short: 'Critical care',
-    description: 'Monitors, defibrillators, CTG and respiratory support for wards and theatres.',
+    slug: 'surgical-theatre',
+    title: 'Surgical & Theatre Equipment',
+    short: 'Surgical',
+    description: 'Theatre beds and lights, diathermy, suction and sterilisation for operating theatres.',
+    icon: 'fi-rr-scalpel',
+    image: '/images/products/theatre-bed-3.webp',
+  },
+  {
+    slug: 'medical-equipment',
+    title: 'Medical Equipment',
+    short: 'Medical',
+    description: 'Patient monitors, defibrillators, ultrasound, respiratory care, beds and clinical furniture.',
     icon: 'fi-rr-heart-rate',
     image: '/images/products/patient-monitor-comen.webp',
   },
   {
-    slug: 'laboratory',
-    title: 'Laboratory Equipment',
-    short: 'Laboratory',
-    description: 'Microscopy, centrifugation and the everyday instruments of a modern lab.',
-    icon: 'fi-rr-flask-gear',
-    image: '/images/products/microscope-olympus-cx23.webp',
-  },
-  {
-    slug: 'hospital-equipment',
-    title: 'Hospital Equipment & Furniture',
-    short: 'Hospital',
-    description: 'Sterilisation, suction, beds and clinical furniture built for daily use.',
-    icon: 'fi-rr-hospital',
-    image: '/images/products/examination-bed.webp',
-  },
-  {
-    slug: 'consumables',
-    title: 'Consumables & Reagents',
+    slug: 'medical-consumables',
+    title: 'Medical Consumables',
     short: 'Consumables',
-    description: 'A continuous, reliable supply of reagents, cuvettes and disposables.',
+    description: 'A continuous, reliable supply of reagents, cuvettes, lamps and disposables.',
     icon: 'fi-rr-syringe',
-    image: '/images/products/ba-88a-bulb.webp',
+  },
+  {
+    slug: 'rapid-diagnostics',
+    title: 'Rapid Diagnostics',
+    short: 'Rapid tests',
+    description: 'Point-of-care meters, urine analysers and rapid diagnostic tests for fast answers at the bedside.',
+    icon: 'fi-rr-test-tube',
+    image: '/images/products/onetouch-select-plus-metre.webp',
   },
 ];
 
@@ -123,14 +122,19 @@ export const technologyPartners = [
 
 /** Clientele shown on the current flokefama.com "Our Partners & Clientele" strip. */
 export const clients = [
-  { name: 'The Trust Hospital', logo: '/images/partners/trust-hospital.webp', w: 320, h: 134 },
-  { name: 'Korle Bu Teaching Hospital', logo: '/images/partners/korle-bu.webp', w: 800, h: 763 },
-  { name: 'Komfo Anokye Teaching Hospital', logo: '/images/partners/kath.webp', w: 512, h: 512 },
-  { name: 'University of Ghana Medical Centre', logo: '/images/partners/ugmc.webp', w: 800, h: 468 },
-  { name: 'Christian Health Association of Ghana', logo: '/images/partners/chag.webp', w: 650, h: 800 },
-  { name: 'Euracare', logo: '/images/partners/euracare.webp', w: 218, h: 50 },
-  { name: 'LEKMA Hospital', logo: '/images/partners/lekma.webp', w: 267, h: 335 },
+  // The CEO (Oct 2026): the website shows a code for each hospital, not its name or logo. The names stay here so the
+  // client portal can still show a signed-in hospital its own logo.
+  { name: 'The Trust Hospital', logo: '/images/partners/trust-hospital.webp', w: 320, h: 134, code: 'FF-H01', kind: 'Hospital' },
+  { name: 'Korle Bu Teaching Hospital', logo: '/images/partners/korle-bu.webp', w: 800, h: 763, code: 'FF-H02', kind: 'Teaching hospital' },
+  { name: 'Komfo Anokye Teaching Hospital', logo: '/images/partners/kath.webp', w: 512, h: 512, code: 'FF-H03', kind: 'Teaching hospital' },
+  { name: 'University of Ghana Medical Centre', logo: '/images/partners/ugmc.webp', w: 800, h: 468, code: 'FF-H04', kind: 'Medical centre' },
+  { name: 'Christian Health Association of Ghana', logo: '/images/partners/chag.webp', w: 650, h: 800, code: 'FF-N01', kind: 'Health network' },
+  { name: 'Euracare', logo: '/images/partners/euracare.webp', w: 218, h: 50, code: 'FF-H05', kind: 'Specialist hospital' },
+  { name: 'LEKMA Hospital', logo: '/images/partners/lekma.webp', w: 267, h: 335, code: 'FF-H06', kind: 'Municipal hospital' },
 ];
+
+/** Hospitals named in older text (e.g. testimonials in the Studio), shown by code instead (the CEO, Oct 2026). */
+export const namedHospitals: [RegExp, string][] = [[/Lifecare Hospital/gi, 'client hospital FF-H07']];
 
 export const branches = [
   // Phone numbers from the Flokefama support centre (Oct 2026)
@@ -166,7 +170,8 @@ export const testimonials = [
   {
     quote: 'Flokefama has been our go-to supplier for medical equipment, and they never disappoint. Their products are top-notch, and their customer service is exceptional. Highly recommended!',
     name: 'Dr. Kwame Asante',
-    role: 'Medical Director, Lifecare Hospital',
+    // Hospitals are represented by codes (the CEO, Oct 2026)
+    role: 'Medical Director, client hospital FF-H07',
   },
   {
     quote: 'We urgently needed diagnostic tools for our clinic, and Flokefama delivered right on time. Their team provided excellent after-sales support, ensuring everything was set up correctly.',

@@ -220,9 +220,25 @@ const logo = (name: string) =>
       defineField({ name: 'name', type: 'string', validation: (r) => r.required() }),
       defineField({ name: 'logo', type: 'image', description: 'Transparent PNG or a logo on white' }),
       defineField({ name: 'role', type: 'string', description: 'Optional, e.g. Official distributor' }),
+      ...(name === 'client'
+        ? [
+            defineField({ name: 'code', title: 'Code shown on the website', type: 'string', description: 'Hospitals are shown by a code, not their name or logo, e.g. FF-H08', validation: (r) => r.required() }),
+            defineField({ name: 'kind', title: 'Kind of facility', type: 'string', description: 'Shown with the code, e.g. Teaching hospital, Private clinic' }),
+          ]
+        : []),
     ],
-    preview: { select: { title: 'name', subtitle: 'role', media: 'logo' } },
+    preview: { select: { title: 'name', subtitle: 'code', media: 'logo' } },
   });
+/** A photo with its description and an optional caption, for galleries. */
+const photo = defineArrayMember({
+  type: 'image',
+  name: 'photo',
+  options: { hotspot: true },
+  fields: [
+    defineField({ name: 'alt', title: 'Describe the photo', type: 'string', description: 'Read aloud to visitors who use a screen reader' }),
+    defineField({ name: 'caption', type: 'string', description: 'Optional, shown under the photo' }),
+  ],
+});
 const header = (name: string, title: string) =>
   defineField({
     name,
@@ -231,7 +247,8 @@ const header = (name: string, title: string) =>
     options: { collapsible: true, collapsed: true },
     fields: [
       defineField({ name: 'title', type: 'string', description: 'First part of the heading' }),
-      defineField({ name: 'highlight', type: 'string', description: 'Words shown in italic after the heading' }),
+      defineField({ name: 'highlight', type: 'string', description: 'Words shown in italic (emphasised)' }),
+      defineField({ name: 'emphasisFirst', title: 'Italic words first', type: 'boolean', description: 'e.g. “Saving Lives since 2008”: the italic words come before the heading' }),
       defineField({ name: 'lead', title: 'Intro line', type: 'text', rows: 2 }),
       defineField({ name: 'image', title: 'Header photo', type: 'image', options: { hotspot: true }, description: 'Wide photo; shown on the right, fading into the dark background' }),
     ],
@@ -250,6 +267,8 @@ export const siteContent = defineType({
     { name: 'awards', title: 'Awards' },
     { name: 'faq', title: 'Buying FAQ' },
     { name: 'esg', title: 'ESG' },
+    { name: 'events', title: 'Events photos' },
+    { name: 'photos', title: 'Photos' },
     { name: 'headers', title: 'Page headers' },
   ],
   fields: [
@@ -267,6 +286,14 @@ export const siteContent = defineType({
         defineField({ name: 'lng', title: 'Head office longitude', type: 'number' }),
         defineField({ name: 'mapEmbed', title: 'Google Maps embed link', type: 'url', description: 'Google Maps → Share → Embed a map → copy the src link' }),
       ],
+    }),
+    defineField({
+      name: 'signInPhones',
+      title: 'Numbers on the hospital sign-in page',
+      type: 'array',
+      group: 'contact',
+      description: 'Extra numbers hospitals can call, shown under the sign-in form (the main phone number is always shown)',
+      of: [defineArrayMember({ type: 'object', name: 'signInPhone', fields: [defineField({ name: 'label', type: 'string', description: 'e.g. Client service, Engineering desk', validation: (r) => r.required() }), defineField({ name: 'phone', type: 'string', description: 'e.g. 024 423 7783', validation: (r) => r.required() })], preview: { select: { title: 'phone', subtitle: 'label' } } })],
     }),
     defineField({
       name: 'branches',
@@ -288,6 +315,62 @@ export const siteContent = defineType({
       ],
     }),
     defineField({
+      name: 'heroMedia',
+      title: 'Hero: installation photos and videos',
+      type: 'array',
+      group: 'home',
+      description: 'Shown as slides after the first hero slide. Videos: MP4, short (under 30 seconds) and under 20 MB; they play muted.',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'heroSlide',
+          fields: [
+            defineField({ name: 'image', title: 'Photo', type: 'image', options: { hotspot: true }, description: 'A wide photo (landscape). For a video, the still shown while it loads.' }),
+            defineField({ name: 'video', title: 'Video (optional)', type: 'file', options: { accept: 'video/mp4' } }),
+            defineField({ name: 'caption', type: 'string', description: 'e.g. Installing a CT scanner', validation: (r) => r.required() }),
+            defineField({ name: 'label', type: 'string', description: 'Small line above the caption, e.g. Installation · Accra' }),
+          ],
+          validation: (r) => r.custom((v: { image?: unknown; video?: unknown } | undefined) => (v?.image || v?.video ? true : 'Add a photo or a video')),
+          preview: { select: { title: 'caption', subtitle: 'label', media: 'image' } },
+        }),
+      ],
+    }),
+    defineField({ name: 'heroMediaOnly', title: 'Hero: show only these photos and videos', type: 'boolean', group: 'home', initialValue: false, description: 'On: the stock equipment photos are no longer shown in the hero' }),
+    defineField({
+      name: 'solutions',
+      title: 'Our solutions (six pillars)',
+      type: 'object',
+      group: 'home',
+      fields: [
+        defineField({ name: 'kicker', title: 'Small label', type: 'string', description: 'e.g. Our solutions' }),
+        defineField({ name: 'title', type: 'string', description: 'e.g. Six pillars of' }),
+        defineField({ name: 'highlight', type: 'string', description: 'Second line, in green, e.g. medical infrastructure.' }),
+        defineField({ name: 'lead', title: 'Intro line', type: 'text', rows: 2 }),
+        defineField({
+          name: 'items',
+          title: 'Pillars',
+          type: 'array',
+          description: 'Drag to reorder. A pillar without a photo shows a placeholder.',
+          of: [
+            defineArrayMember({
+              type: 'object',
+              name: 'pillar',
+              fields: [
+                defineField({ name: 'title', type: 'string', validation: (r) => r.required() }),
+                defineField({ name: 'body', title: 'Text', type: 'text', rows: 2 }),
+                defineField({ name: 'points', title: 'Three points', type: 'array', of: [{ type: 'string' }], validation: (r) => r.max(4) }),
+                defineField({ name: 'href', title: 'Opens', type: 'string', description: 'e.g. /products?category=medical-consumables or /services' }),
+                defineField({ name: 'image', title: 'Photo', type: 'image', options: { hotspot: true } }),
+                defineField({ name: 'alt', title: 'Describe the photo', type: 'string' }),
+                defineField({ name: 'fit', title: 'Photo style', type: 'string', initialValue: 'cover', options: { list: [{ title: 'Photo filling the frame', value: 'cover' }, { title: 'Product on white (whole product shown)', value: 'contain' }], layout: 'radio' } }),
+              ],
+              preview: { select: { title: 'title', subtitle: 'body', media: 'image' } },
+            }),
+          ],
+        }),
+      ],
+    }),
+    defineField({
       name: 'testimonials',
       type: 'array',
       group: 'home',
@@ -303,6 +386,18 @@ export const siteContent = defineType({
     defineField({ name: 'coreValues', title: 'Core values', type: 'array', group: 'about', of: [textItem('value', 'Value')] }),
     defineField({ name: 'servicesInBrief', title: 'Our services (About page)', type: 'array', group: 'about', of: [textItem('service', 'Service')] }),
     defineField({ name: 'ceo', title: 'CEO', type: 'object', group: 'about', fields: [defineField({ name: 'name', type: 'string' }), defineField({ name: 'role', type: 'string' }), defineField({ name: 'bio', title: 'Biography paragraphs', type: 'array', of: [{ type: 'text' }] })] }),
+    defineField({
+      name: 'engineering',
+      title: 'Engineering department',
+      type: 'object',
+      group: 'services',
+      description: 'A photo section on the Services page; it appears once there is at least one photo',
+      fields: [
+        defineField({ name: 'title', type: 'string', description: 'e.g. Our engineering department' }),
+        defineField({ name: 'lead', title: 'Intro line', type: 'text', rows: 2 }),
+        defineField({ name: 'photos', type: 'array', of: [photo], options: { layout: 'grid' } }),
+      ],
+    }),
     defineField({ name: 'whyChoose', title: 'Why choose Flokefama', type: 'array', group: 'services', of: [textItem('reason', 'Reason', 'body')] }),
     defineField({
       name: 'awards',
@@ -348,6 +443,28 @@ export const siteContent = defineType({
             defineField({ name: 'alt', title: 'Photo description', type: 'string' }),
           ],
           preview: { select: { title: 'title', subtitle: 'label', media: 'image' } },
+        }),
+      ],
+    }),
+    defineField({ name: 'photoWhatWeDo', title: 'Home: “What we do” photo', type: 'image', group: 'photos', options: { hotspot: true }, description: 'Landscape (4:3)' }),
+    defineField({ name: 'photoOffice', title: 'About: head office photo', type: 'image', group: 'photos', options: { hotspot: true }, description: 'Landscape (4:3); also behind the Leadership heading' }),
+    defineField({ name: 'photoCeo', title: 'About: CEO portrait', type: 'image', group: 'photos', options: { hotspot: true }, description: 'Portrait (4:5)' }),
+    defineField({
+      name: 'eventAlbums',
+      title: 'Event photo albums',
+      type: 'array',
+      group: 'events',
+      description: 'Shown as “Event photos” on the Events page, newest album first as listed here',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'album',
+          fields: [
+            defineField({ name: 'title', type: 'string', description: 'e.g. Floke Praise 2026', validation: (r) => r.required() }),
+            defineField({ name: 'date', type: 'date' }),
+            defineField({ name: 'photos', type: 'array', of: [photo], options: { layout: 'grid' } }),
+          ],
+          preview: { select: { title: 'title', subtitle: 'date', media: 'photos.0' } },
         }),
       ],
     }),

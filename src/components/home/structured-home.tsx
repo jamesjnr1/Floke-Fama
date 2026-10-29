@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { getSite } from '@/lib/site';
 import Link from 'next/link';
 import { PurposeBlocks } from '@/components/about/purpose-blocks';
 import { CountUp } from '@/components/motion/count-up';
@@ -59,13 +60,14 @@ export function StatsBand() {
 }
 
 /** What we do: the photo on a soft green panel, the text on the right. */
-export function WhatWeDo() {
+export async function WhatWeDo() {
+  const { photos } = await getSite();
   return (
     <section aria-labelledby="what-we-do" className="pattern-dots pattern-soft pattern-r bg-paper pt-16 md:pt-32">
       <div className="mx-auto grid max-w-[1280px] items-center gap-12 px-5 md:px-10 lg:grid-cols-2 lg:gap-20">
         <Reveal className="relative bg-brand-50 p-8 md:p-12">
           <div className="relative aspect-[4/3] overflow-hidden bg-white">
-            <Image src="/images/home-equipment.webp" alt="Hospital equipment: an oxygen concentrator, a hospital bed, a patient monitor and a wheelchair" fill sizes="(min-width: 1024px) 520px, 100vw" className="object-cover" />
+            <Image src={photos.whatWeDo} alt="Hospital equipment: an oxygen concentrator, a hospital bed, a patient monitor and a wheelchair" fill sizes="(min-width: 1024px) 520px, 100vw" className="object-cover" />
           </div>
         </Reveal>
         <Reveal delay={0.08}>

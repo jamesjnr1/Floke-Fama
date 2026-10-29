@@ -3,8 +3,32 @@ import { cookieFor, isConsoleRole, roleAreas, roleHome, roleLogin, sessionCookie
 
 const within = (pathname: string, prefix: string) => pathname === prefix || pathname.startsWith(`${prefix}/`);
 
+/** Paths that only scanners and attackers ask for (WordPress logins, secret files): refused at once. */
+const probes = /^\/(wp-admin|wp-login\.php|wp-content\/plugins|xmlrpc\.php|phpmyadmin|\.env|\.git|\.aws|\.DS_Store|server-status|cgi-bin)(\/|$)/i;
+
+/**
+ * Photos and videos are served only to Flokefama's own pages (the CEO: protect our images): another website that
+ * embeds them gets nothing. Opening a file directly, search engines and link previews (no referrer) still work.
+ */
+function hotlinked(request: NextRequest) {
+  const referer = request.headers.get('referer');
+  if (!referer) return false;
+  let host: string;
+  try {
+    host = new URL(referer).hostname;
+  } catch {
+    return true;
+  }
+  const own = request.nextUrl.hostname;
+  return !(host === own || host.endsWith('.flokefama.com') || host === 'flokefama.com' || host.endsWith('.vercel.app') || host === 'localhost' || host.endsWith('.sanity.studio'));
+}
+
 export async function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
+  if (probes.test(pathname)) return new NextResponse(null, { status: 404 });
+  if (pathname.startsWith('/images/') || pathname.startsWith('/videos/') || pathname === '/_next/image') {
+    return hotlinked(request) ? new NextResponse(null, { status: 403 }) : NextResponse.next();
+  }
   // Each area reads only its own session: the admin console its cookie, the engineer portal its own, and the rest of
   // the site the hospitals' (an engineer or admin is never signed in on the site)
   const areaRole: Role = within(pathname, '/admin') ? 'admin' : within(pathname, '/engineer') ? 'engineer' : 'client';
@@ -49,4 +73,11 @@ export async function middleware(request: NextRequest) {
   return res;
 }
 
-export const config = { matcher: ['/login', '/admin/:path*', '/portal/:path*', '/engineer/:path*', '/checkout/:path*'] };
+export const config = {
+  matcher: [
+    '/login', '/admin/:path*', '/portal/:path*', '/engineer/:path*', '/checkout/:path*',
+    // Photos and videos (hotlinking), and the paths scanners probe
+    '/images/:path*', '/videos/:path*', '/_next/image',
+    '/wp-admin/:path*', '/wp-login.php', '/wp-content/plugins/:path*', '/xmlrpc.php', '/phpmyadmin/:path*', '/.env', '/.git/:path*', '/.aws/:path*', '/.DS_Store', '/server-status', '/cgi-bin/:path*',
+  ],
+};
