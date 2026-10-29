@@ -49,7 +49,8 @@ export interface SiteContent {
   eventAlbums: EventAlbum[];
   /** Extra numbers hospitals can call, shown on the hospital sign-in page (added by the team in the Studio). */
   signInPhones: { label: string; phone: string }[];
-  testimonials: { quote: string; name: string; role: string }[];
+  /** `photo`: the person who gave the review; a placeholder shows until one is set in the Studio. */
+  testimonials: { quote: string; name: string; role: string; photo?: string }[];
   purpose: { label: string; icon: string; text: string }[];
   coreValues: { title: string; icon: string; text: string }[];
   servicesInBrief: { icon: string; title: string; text: string }[];

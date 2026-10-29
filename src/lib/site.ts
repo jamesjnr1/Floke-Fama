@@ -11,7 +11,7 @@ const query = `*[_id == "siteContent"][0]{
   contact, branches[]{ name, detail, phone },
   technologyPartners[]{ name, role, ${img('logo')} },
   clients[]{ name, role, code, kind, ${img('logo')} },
-  hero, testimonials[]{ quote, name, role },
+  hero, testimonials[]{ quote, name, role, "photo": photo.asset->url },
   signInPhones[]{ label, phone },
   heroMedia[]{ caption, label, "image": image.asset->url, "video": video.asset->url }, heroMediaOnly,
   solutions{ kicker, title, highlight, lead, items[]{ title, body, points, href, alt, fit, "image": image.asset->url } },

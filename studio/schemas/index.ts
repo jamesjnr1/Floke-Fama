@@ -374,7 +374,7 @@ export const siteContent = defineType({
       name: 'testimonials',
       type: 'array',
       group: 'home',
-      of: [defineArrayMember({ type: 'object', name: 'testimonial', fields: [defineField({ name: 'quote', type: 'text', rows: 3 }), defineField({ name: 'name', type: 'string' }), defineField({ name: 'role', type: 'string' })], preview: { select: { title: 'name', subtitle: 'role' } } })],
+      of: [defineArrayMember({ type: 'object', name: 'testimonial', fields: [defineField({ name: 'quote', type: 'text', rows: 3 }), defineField({ name: 'name', type: 'string' }), defineField({ name: 'role', type: 'string', description: 'Hospitals are shown by code, e.g. Medical Director, client hospital FF-H07' }), defineField({ name: 'photo', title: 'Photo of the person', type: 'image', options: { hotspot: true }, description: 'Portrait (head and shoulders), with their permission. A placeholder shows until a photo is added.' })], preview: { select: { title: 'name', subtitle: 'role', media: 'photo' } } })],
     }),
     defineField({
       name: 'purpose',
