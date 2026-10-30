@@ -100,7 +100,7 @@ export function PurposeCards() {
           <h2 id="purpose-title" className="display mt-4 text-[clamp(2rem,1.2rem+2.2vw,2.75rem)] text-ink">
             Why we do what we do
           </h2>
-          <p className="mt-4 text-lg text-ink-3"><span className="font-display block text-brand-700">Saving Lives Since 2008</span>and building healthcare capacity in Ghana for the decades ahead.</p>
+          <p className="mt-4 text-lg text-ink-3">Saving lives since 2008, and building healthcare capacity in Ghana for the decades ahead.</p>
         </Reveal>
         <PurposeBlocks className="mt-12" />
       </div>
