@@ -63,9 +63,6 @@ export function HeroSlides({ intro, media = [], mediaOnly = false }: { intro: Re
   useEffect(() => {
     const kind = slides[index].kind;
     window.dispatchEvent(new CustomEvent('flokefama:hero-slide', { detail: { kind } }));
-    return () => {
-      window.dispatchEvent(new CustomEvent('flokefama:hero-slide', { detail: { kind: 'intro' } }));
-    };
   }, [index, slides]);
 
   // Dark on the white product slides, white over the photos
