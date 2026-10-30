@@ -22,12 +22,12 @@ const featured = [
 const layouts = ['row', 'list', 'spotlight', 'feature'] as const;
 export type NewsLayout = (typeof layouts)[number];
 const env = process.env.NEXT_PUBLIC_NEWS_LAYOUT as NewsLayout | undefined;
-const chosen: NewsLayout = env && layouts.includes(env) ? env : 'row';
+const chosen: NewsLayout = env && layouts.includes(env) ? env : 'feature';
 
-const Chip = () => <p className="inline-block w-fit bg-brand-50 px-2.5 py-1 text-[0.75rem] font-semibold uppercase tracking-[0.08em] text-brand-700">In the news</p>;
+const Chip = () => <p className="inline-block w-fit bg-brand-50 px-2.5 py-1 text-[0.75rem] font-semibold uppercase tracking-[0.08em] text-brand-700">Flokefama newsroom</p>;
 const AllNews = ({ className = '' }: { className?: string }) => (
   <Link href="/events#news" className={`group inline-flex items-center gap-1.5 font-semibold text-brand-700 hover:text-brand-800 ${className}`}>
-    All news <Icon name="fi-rr-arrow-small-right" className="transition-transform group-hover:translate-x-0.5" />
+    Visit newsroom <Icon name="fi-rr-arrow-small-right" className="transition-transform group-hover:translate-x-0.5" />
   </Link>
 );
 const ReadMore = () => (
@@ -42,7 +42,7 @@ const Photo = ({ a, ratio, sizes }: { a: Article; ratio: string; sizes: string }
 );
 const Heading = () => (
   <h2 id="featured-news" className="display mt-4 text-[clamp(2rem,1.2rem+2.2vw,2.75rem)] text-ink">
-    Featured news
+    Newsroom
   </h2>
 );
 
@@ -56,9 +56,10 @@ export async function FeaturedNews({ layout = chosen }: { layout?: NewsLayout })
 
   const header = (
     <Reveal className="flex flex-wrap items-end justify-between gap-4">
-      <div>
+      <div className="max-w-2xl">
         <Chip />
         <Heading />
+        <p className="no-justify mt-3 max-w-xl text-base leading-relaxed text-ink-3 md:text-lg">The latest stories, company milestones, partnerships and updates from across Flokefama.</p>
       </div>
       <AllNews />
     </Reveal>
@@ -67,12 +68,12 @@ export async function FeaturedNews({ layout = chosen }: { layout?: NewsLayout })
   let body: React.ReactNode;
   if (layout === 'list') {
     return (
-      <section aria-labelledby="featured-news" className="bg-paper pb-16 md:pb-28">
+      <section aria-labelledby="featured-news" className="bg-[linear-gradient(180deg,#f5faf6_0%,#ffffff_100%)] pb-16 pt-16 md:pb-28 md:pt-24">
         <div className="mx-auto grid max-w-[1280px] gap-10 px-5 md:px-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
           <Reveal className="lg:sticky lg:top-28 lg:self-start">
             <Chip />
             <Heading />
-            <p className="no-justify mt-4 text-lg leading-relaxed text-ink-3">Recognition, partnerships and milestones from across Flokefama.</p>
+            <p className="no-justify mt-4 text-lg leading-relaxed text-ink-3">The latest stories, company milestones, partnerships and updates from across Flokefama.</p>
             <AllNews className="mt-6" />
           </Reveal>
           <ul className="grid gap-4">
