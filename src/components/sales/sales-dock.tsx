@@ -5,24 +5,20 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
-import { SupportChat } from '@/components/chat/support-chat';
 import { Icon } from '@/components/ui/icon';
 import { useSite } from '@/components/site-provider';
 import { track } from '@/lib/analytics';
 import { quoteList, useQuoteList } from '@/lib/quote-list';
 import { cn } from '@/lib/utils';
 
-/**
- * Bottom-right on every public page: the visitor's quote list (once it has something in it)
- * and a WhatsApp button that opens a chat with sales, mentioning the product being viewed.
- */
+/** Bottom-right on every public page: the visitor's quote list (once it has something in it) and WhatsApp contact. */
 /** Whether the page behind a point is dark: the first opaque background up the tree, or a gradient/photo (dark here). */
 function darkBehind(x: number, y: number, skip: Element | null) {
   for (const el of document.elementsFromPoint(x, y)) {
     if (skip?.contains(el)) continue;
     for (let n: Element | null = el; n; n = n.parentElement) {
       const cs = getComputedStyle(n);
-      const m = cs.backgroundColor.match(/[\d.]+/g);
+      const m = cs.backgroundColor.match(/[\\d.]+/g);
       if (m && (m[3] === undefined || Number(m[3]) > 0.5)) {
         const [r, g, b] = m.map(Number);
         return 0.2126 * r + 0.7152 * g + 0.0722 * b < 140;
@@ -41,8 +37,6 @@ export function SalesDock() {
   const pathname = usePathname();
   const items = useQuoteList();
   const [open, setOpen] = useState(false);
-  const [chat, setChat] = useState(false);
-  // "Contact us" under the WhatsApp icon switches to white over dark sections
   const label = useRef<HTMLSpanElement>(null);
   const [onDark, setOnDark] = useState(false);
   useEffect(() => {
@@ -66,7 +60,6 @@ export function SalesDock() {
     };
   }, [pathname]);
   useEffect(() => setOpen(false), [pathname]);
-  // The chat stays open across pages (its conversation is kept), but the cart closes
   // Count calls, WhatsApp links and brochure downloads anywhere on the site
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
@@ -83,7 +76,7 @@ export function SalesDock() {
   }, []);
 
   const onQuotePage = pathname.startsWith('/checkout');
-  const onProduct = /^\/products\/[^/]+/.test(pathname);
+  const onProduct = /^\\/products\\/[^/]+/.test(pathname);
 
   const whatsapp = () => {
     const product = onProduct ? document.querySelector('h1')?.textContent?.trim() : undefined;
@@ -95,11 +88,9 @@ export function SalesDock() {
   };
 
   return (
-    // On phones, product pages have their own sticky bar, so the dock sits above it
     <div data-dock className={cn('fixed right-4 z-40 flex flex-col items-end gap-3 md:bottom-6 md:right-6', onProduct ? 'bottom-24' : 'bottom-4')}>
-      <SupportChat open={chat} onClose={() => setChat(false)} />
       <AnimatePresence>
-        {open && !chat && items.length > 0 && (
+        {open && items.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 12, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -150,10 +141,7 @@ export function SalesDock() {
         {items.length > 0 && !onQuotePage && (
           <button
             type="button"
-            onClick={() => {
-              setChat(false);
-              setOpen((o) => !o);
-            }}
+            onClick={() => setOpen((o) => !o)}
             aria-expanded={open}
             className="flex h-12 items-center gap-2 rounded-lg bg-midnight pl-4 pr-5 text-sm font-medium text-white shadow-[0_14px_30px_-12px_rgb(11_21_16/0.7)] transition hover:bg-black"
           >
@@ -162,29 +150,10 @@ export function SalesDock() {
             <span className="grid min-w-6 place-items-center rounded-[4px] bg-brand-500 px-1.5 text-xs">{items.length}</span>
           </button>
         )}
-        {/* The chat assistant (support desk), then WhatsApp with "Contact us" under the icon */}
-        <button
-          type="button"
-          onClick={() => {
-            setOpen(false);
-            setChat((c) => !c);
-            track('chat_open', { page: pathname });
-          }}
-          aria-expanded={chat}
-          aria-label={chat ? 'Close the chat' : 'Chat with us'}
-          className="group flex flex-col items-center gap-1"
-        >
-          <span className="grid size-12 place-items-center rounded-full bg-brand-700 text-xl text-white shadow-[0_8px_20px_-8px_rgb(11_21_16/0.35)] transition group-hover:scale-105">
-            <Icon name={chat ? 'fi-rr-cross-small' : 'fi-rr-comment-dots'} />
-          </span>
-          <span className={cn('whitespace-nowrap text-xs font-semibold transition-colors', onDark ? 'text-white' : 'text-ink')}>Chat</span>
-        </button>
-        {/* WhatsApp, with "Contact us" under the icon */}
         <button type="button" onClick={whatsapp} aria-label="Contact Flokefama on WhatsApp" title="Chat on WhatsApp" className="group flex flex-col items-center gap-1">
           <span className="grid size-12 place-items-center rounded-full bg-[#25D366] text-2xl text-white shadow-[0_8px_20px_-8px_rgb(11_21_16/0.35)] transition group-hover:scale-105">
             <Icon name="fi-brands-whatsapp" />
           </span>
-          {/* Plain text: dark over light sections, white over dark ones */}
           <span ref={label} className={cn('whitespace-nowrap text-xs font-semibold transition-colors', onDark ? 'text-white' : 'text-ink')}>Contact us</span>
         </button>
       </div>
