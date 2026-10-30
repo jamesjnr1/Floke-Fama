@@ -6,7 +6,6 @@ import { Reveal } from '@/components/motion/reveal';
 import { useSite } from '@/components/site-provider';
 import Image from 'next/image';
 import { UserRound } from 'lucide-react';
-import { cn } from '@/lib/utils';
 
 /**
  * The reviewer's photo (Studio: Site content → Home → Testimonials → Photo), or a placeholder until one is added.
@@ -25,15 +24,14 @@ function Portrait({ photo, name, sizes, small }: { photo?: string; name: string;
 export function Testimonials() {
   const { testimonials } = useSite();
   const [active, setActive] = useState(0);
-  const [paused, setPaused] = useState(false);
   const reduce = useReducedMotion();
   const t = testimonials[active];
 
   useEffect(() => {
-    if (paused || reduce) return;
+    if (reduce) return;
     const id = setTimeout(() => setActive((i) => (i + 1) % testimonials.length), 8000);
     return () => clearTimeout(id);
-  }, [active, paused, reduce, testimonials.length]);
+  }, [active, reduce, testimonials.length]);
 
   return (
     <section id="testimonials" className="pattern-dots pattern-soft pattern-l scroll-mt-28 bg-paper section-y">
@@ -44,13 +42,7 @@ export function Testimonials() {
         </Reveal>
 
         <Reveal delay={0.08}>
-          <div
-            onMouseEnter={() => setPaused(true)}
-            onMouseLeave={() => setPaused(false)}
-            onFocusCapture={() => setPaused(true)}
-            onBlurCapture={() => setPaused(false)}
-            className="mx-auto mt-14 max-w-5xl"
-          >
+          <div className="mx-auto mt-14 max-w-5xl">
             {/* The person who gave the review, large beside their words */}
             <figure className="grid overflow-hidden border border-line bg-paper shadow-[0_40px_80px_-50px_rgb(11_21_16/0.4)] md:grid-cols-[0.85fr_1.4fr]">
               <AnimatePresence mode="wait" initial={false}>
@@ -87,37 +79,6 @@ export function Testimonials() {
               </div>
             </figure>
 
-            {/* Everyone who gave a review, by their photo: choose one */}
-            <ul className="mt-5 grid gap-3 sm:grid-cols-3" aria-label="Choose a testimonial">
-              {testimonials.map((x, i) => (
-                <li key={x.name}>
-                  <button
-                    type="button"
-                    onClick={() => setActive(i)}
-                    aria-pressed={i === active}
-                    className={cn('relative flex w-full items-center gap-3 overflow-hidden border p-3 text-left transition', i === active ? 'border-brand-600 bg-paper shadow-sm' : 'border-line bg-canvas/60 hover:bg-paper')}
-                  >
-                    <span className="relative size-14 shrink-0 overflow-hidden rounded-full bg-mist">
-                      <Portrait photo={x.photo} name={x.name} sizes="56px" small />
-                    </span>
-                    <span className="min-w-0">
-                      <span className="block truncate text-sm font-semibold text-ink">{x.name}</span>
-                      <span className="block truncate text-xs text-ink-3">{x.role}</span>
-                    </span>
-                    {i === active && !paused && !reduce && (
-                      <motion.span
-                        key={`bar-${active}`}
-                        aria-hidden
-                        initial={{ scaleX: 0 }}
-                        animate={{ scaleX: 1 }}
-                        transition={{ duration: 8, ease: 'linear' }}
-                        className="absolute inset-x-3 bottom-1 h-0.5 origin-left rounded-full bg-brand-500"
-                      />
-                    )}
-                  </button>
-                </li>
-              ))}
-            </ul>
           </div>
         </Reveal>
       </div>
