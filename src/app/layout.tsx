@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Boldonse, Instrument_Serif, Inter, Mona_Sans, Plus_Jakarta_Sans, Space_Grotesk } from 'next/font/google';
+import { Instrument_Serif, Inter, Mona_Sans, Plus_Jakarta_Sans, Space_Grotesk } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Toaster } from 'sonner';
@@ -15,7 +15,6 @@ import '@/styles/uicons/uicons.css';
 import './globals.css';
 
 /** Plus Jakarta Sans: the main typeface (headings, body, navigation, the hero). Space Grotesk: small labels and figures. */
-const boldonse = Boldonse({ subsets: ['latin'], weight: '400', variable: '--font-boldonse', display: 'swap' });
 const jakarta = Plus_Jakarta_Sans({ subsets: ['latin'], weight: ['400', '500', '600', '700', '800'], variable: '--font-jakarta', display: 'swap' });
 const grotesk = Space_Grotesk({ subsets: ['latin'], weight: ['400', '500', '600', '700'], variable: '--font-grotesk', display: 'swap' });
 // Italic serif for the accent words in page headers
@@ -54,7 +53,7 @@ const organizationLd = (contact: Contact) => ({
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const site = await getSite();
   return (
-    <html lang="en-GH" data-patterns={process.env.NEXT_PUBLIC_PATTERNS === 'off' ? 'off' : undefined} className={`${boldonse.variable} ${jakarta.variable} ${grotesk.variable} ${serif.variable} ${mona.variable} ${inter.variable}`} suppressHydrationWarning>
+    <html lang="en-GH" data-patterns={process.env.NEXT_PUBLIC_PATTERNS === 'off' ? 'off' : undefined} className={`${jakarta.variable} ${grotesk.variable} ${serif.variable} ${mona.variable} ${inter.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: bootScript }} />
       </head>
