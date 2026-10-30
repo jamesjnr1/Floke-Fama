@@ -38,6 +38,9 @@ const anchors: NavItem[] = [
 /** Flat list for the mobile menu. */
 const flat = anchors.flatMap((a) => a.children?.map(({ href, label }) => ({ href, label })) ?? [{ href: a.href, label: a.label }]);
 
+// Pages that open on a dark hero: the bar stays see-through there. Elsewhere it is solid from the start.
+const darkTop = ['/portal'];
+
 /** A tab stays active on its sub-pages too (e.g. /products/...). Home only matches exactly. */
 const matches = (pathname: string, href: string) => (href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(`${href}/`));
 const isActive = (pathname: string, item: NavItem) => (item.children ? item.children.some((c) => matches(pathname, c.href)) : matches(pathname, item.href));
@@ -82,28 +85,28 @@ export function Navbar() {
     document.body.style.overflow = open ? 'hidden' : '';
   }, [open]);
 
-  // Keep the dark glass navigation translucent on every route, including while scrolling.
+  // The header is always the dark glass bar; on pages that open light it is solid from the start.
   const dark = true;
-  const solid = false;
+  const solid = open || scrolled || !darkTop.includes(pathname);
 
   return (
     <header className={cn('sticky inset-x-0 top-10 z-[120] mt-10 font-nav', !bar && 'px-3 pt-3 md:px-6 md:pt-4')}>
       <div
         className={cn(
           // No shadow at the top, where the bar sits on the dark hero; a light one once the page scrolls under it
-          bar && cn('relative isolate flex h-[72px] w-full items-center justify-between gap-6 px-4 backdrop-blur-xl transition-shadow duration-300 md:px-8 xl:px-10', scrolled && 'shadow-[0_8px_24px_-16px_rgb(11_21_16/0.45)]'),
-          !bar && 'mx-auto flex h-[72px] max-w-[1280px] items-center 2xl:max-w-[1400px] justify-between gap-6 rounded-2xl border px-4 backdrop-blur-xl transition-[background-color,border-color,box-shadow] duration-500 md:px-6',
+          bar && cn('relative isolate flex h-[72px] w-full items-center justify-between gap-6 px-4 transition-shadow duration-300 md:px-8 xl:px-10', scrolled && 'shadow-[0_8px_24px_-16px_rgb(11_21_16/0.45)]'),
+          !bar && 'mx-auto flex h-[72px] max-w-[1280px] items-center 2xl:max-w-[1400px] justify-between gap-6 rounded-2xl border px-4 transition-[background-color,border-color,box-shadow] duration-500 md:px-6',
           !bar && (dark
-            ? cn('border-white/10', solid ? 'bg-midnight/85 shadow-[0_20px_50px_-20px_rgb(0_0_0/0.6)]' : 'bg-white/[0.04]')
-            : cn('border-line', scrolled ? 'bg-paper/90 shadow-[0_20px_50px_-30px_rgb(15_23_42/0.35)]' : 'bg-paper/70')),
+            ? cn('border-white/10', solid ? 'bg-midnight/[0.97] shadow-[0_20px_50px_-20px_rgb(0_0_0/0.6)]' : 'bg-midnight/40')
+            : cn('border-line', scrolled ? 'bg-paper/[0.97] shadow-[0_20px_50px_-30px_rgb(11_21_16/0.35)]' : 'bg-paper/90')),
         )}
       >
-        {/* Translucent forest-green glass keeps the navigation readable over every page background. */}
+        {/* The bar's colour: a consistent deep forest-green gradient beneath the maintenance strip */}
         {bar && (
           <span
             aria-hidden
             className={cn(
-              'pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(100deg,rgb(11_61_42/0.76)_0%,rgb(13_74_51/0.72)_45%,rgb(10_58_40/0.76)_75%,rgb(7_46_32/0.80)_100%)] transition-opacity duration-300',
+              'pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(100deg,#0b3d2a_0%,#0d4a33_45%,#0a3a28_75%,#072e20_100%)] transition-opacity duration-300',
               'opacity-100',
             )}
           />
