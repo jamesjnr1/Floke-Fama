@@ -3,7 +3,7 @@ export function MaintenanceBanner() {
     <div
       role="status"
       aria-live="polite"
-      className="fixed inset-x-0 top-0 z-[60] flex h-10 w-full items-center justify-center gap-2 overflow-hidden bg-[#087A48] px-3 text-center font-sans text-[10px] leading-none text-white sm:gap-2.5 sm:px-4 sm:text-xs md:text-[13px]"
+      className="fixed inset-x-0 top-0 z-[130] flex h-10 w-full items-center justify-center gap-2 overflow-hidden bg-[#087A48] px-3 text-center font-sans text-[10px] leading-none text-white sm:gap-2.5 sm:px-4 sm:text-xs md:text-[13px]"
     >
       <svg
         aria-hidden="true"
