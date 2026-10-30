@@ -94,8 +94,8 @@ export function Navbar() {
           bar && cn('relative isolate flex h-[72px] w-full items-center justify-between gap-6 px-4 backdrop-blur-xl transition-shadow duration-300 md:px-8 xl:px-10', scrolled && 'shadow-[0_8px_24px_-16px_rgb(11_21_16/0.45)]'),
           !bar && 'mx-auto flex h-[72px] max-w-[1280px] items-center 2xl:max-w-[1400px] justify-between gap-6 rounded-2xl border px-4 backdrop-blur-xl transition-[background-color,border-color,box-shadow] duration-500 md:px-6',
           !bar && (dark
-            ? cn('border-white/10', solid ? 'bg-midnight/[0.97] shadow-[0_20px_50px_-20px_rgb(0_0_0/0.6)]' : 'bg-midnight/40')
-            : cn('border-line', scrolled ? 'bg-paper/[0.97] shadow-[0_20px_50px_-30px_rgb(11_21_16/0.35)]' : 'bg-paper/90')),
+            ? cn('border-white/10', solid ? 'bg-midnight/85 shadow-[0_20px_50px_-20px_rgb(0_0_0/0.6)]' : 'bg-white/[0.04]')
+            : cn('border-line', scrolled ? 'bg-paper/90 shadow-[0_20px_50px_-30px_rgb(15_23_42/0.35)]' : 'bg-paper/70')),
         )}
       >
         {/* Translucent forest-green glass keeps the navigation readable over every page background. */}
