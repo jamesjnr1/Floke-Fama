@@ -16,6 +16,7 @@ export async function SitePageHero({ page, flip, kicker, vars = {} }: { page: Pa
       veil={h.veil}
       flip={flip}
       kicker={kicker}
+      badge={page === 'about' ? '# Saving Lives since 2008' : undefined}
       title={
         <>
           {h.emphasisFirst ? (
