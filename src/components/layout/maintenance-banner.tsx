@@ -17,10 +17,8 @@ export function MaintenanceBanner() {
       >
         <path d="M14.7 6.3a5 5 0 0 0-6.4 6.4L3 18l3 3 5.3-5.3a5 5 0 0 0 6.4-6.4l-3.1 3.1-3-3 3.1-3.1Z" />
       </svg>
-      <span className="shrink-0 font-semibold">Website Under Maintenance</span>
       <span className="truncate text-white/90">
-        <span className="hidden sm:inline">We are making improvements to serve you better. Thank you for your patience.</span>
-        <span className="sm:hidden">We are improving our website. Thank you for your patience.</span>
+        We’re making improvements to serve you better and will be back shortly after the weekend. Thank you for your patience!
       </span>
     </div>
   );
