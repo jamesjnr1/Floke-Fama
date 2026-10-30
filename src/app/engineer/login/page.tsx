@@ -32,7 +32,7 @@ export default async function EngineerLoginPage({ searchParams }: { searchParams
   return (
     <main id="main" className="grid min-h-[100svh] grid-cols-1 bg-[#eef2f0] lg:grid-cols-[1.05fr_1fr]">
       <section className="relative isolate flex flex-col overflow-hidden bg-brand-900 px-6 py-8 text-white md:px-12 md:py-12 lg:min-h-[100svh]">
-        <Image src="/my_image.png" alt="Flokefama sign-in page background" fill priority sizes="(min-width: 1024px) 52vw, 100vw" className="-z-20 object-cover" />
+        <Image src="/my_image2.png" alt="Flokefama sign-in page background" fill priority sizes="(min-width: 1024px) 52vw, 100vw" className="-z-20 object-cover" />
         <div aria-hidden className="absolute inset-0 -z-10 bg-[linear-gradient(160deg,rgb(3_42_25/0.82)_0%,rgb(6_72_42/0.72)_55%,rgb(3_42_25/0.9)_100%)]" />
         <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(60%_50%_at_15%_10%,rgb(127_209_165/0.18),transparent_70%)]" />
         <div className="flex items-center gap-3">
