@@ -21,8 +21,8 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
     <main id="main" className="grid min-h-[100svh] bg-paper lg:grid-cols-2">
       <section className="relative isolate flex min-h-[300px] flex-col justify-between overflow-hidden bg-brand-800 p-6 text-white h-[40svh] md:p-10 lg:sticky lg:top-0 lg:h-[100svh] lg:p-12 lg:pb-28">
         <Image
-          src="/images/headers/team-lab.webp"
-          alt="Flokefama’s engineering and quality control team in a hospital laboratory"
+          src="/my_image.png"
+          alt="Flokefama sign-in page background"
           fill
           priority
           sizes="(min-width: 1024px) 50vw, 100vw"
