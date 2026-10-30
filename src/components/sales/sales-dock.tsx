@@ -18,7 +18,7 @@ function darkBehind(x: number, y: number, skip: Element | null) {
     if (skip?.contains(el)) continue;
     for (let n: Element | null = el; n; n = n.parentElement) {
       const cs = getComputedStyle(n);
-      const m = cs.backgroundColor.match(/[\\d.]+/g);
+      const m = cs.backgroundColor.match(/[\d.]+/g);
       if (m && (m[3] === undefined || Number(m[3]) > 0.5)) {
         const [r, g, b] = m.map(Number);
         return 0.2126 * r + 0.7152 * g + 0.0722 * b < 140;
@@ -76,7 +76,7 @@ export function SalesDock() {
   }, []);
 
   const onQuotePage = pathname.startsWith('/checkout');
-  const onProduct = /^\\/products\\/[^/]+/.test(pathname);
+  const onProduct = /^\/products\/[^/]+/.test(pathname);
 
   const whatsapp = () => {
     const product = onProduct ? document.querySelector('h1')?.textContent?.trim() : undefined;
