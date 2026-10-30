@@ -5,7 +5,6 @@ import { AccessPanel } from '@/components/auth/access-panel';
 import { Logo } from '@/components/layout/logo';
 import { Icon } from '@/components/ui/icon';
 import { safeNext } from '@/lib/auth/session';
-import { getSite } from '@/lib/site';
 
 export const metadata: Metadata = { title: 'Portal access', robots: { index: false } };
 
@@ -17,7 +16,6 @@ export const metadata: Metadata = { title: 'Portal access', robots: { index: fal
  */
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ next?: string; signedout?: string; mode?: string }> }) {
   const { next, signedout, mode } = await searchParams;
-  const { contact, signInPhones } = await getSite();
 
   return (
     <main id="main" className="grid min-h-[100svh] bg-paper lg:grid-cols-2">
@@ -60,18 +58,6 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
             engineer={false}
             initialMode={mode === 'register' ? 'register' : 'signin'}
           />
-          {/* Numbers hospitals can call (the main number, then any the team adds in the Studio: Site content → Contact) */}
-          <div className="mt-10 border-t border-line pt-5">
-            <p className="text-sm font-semibold text-ink">Need help? Call us</p>
-            <ul className="mt-2 grid gap-1.5 text-sm text-ink-3">
-              {[{ label: 'Flokefama (24/7)', phone: contact.phone }, ...signInPhones].map((p) => (
-                <li key={p.phone} className="flex items-center justify-between gap-3">
-                  <span>{p.label}</span>
-                  <a href={`tel:${telOf(p.phone)}`} className="whitespace-nowrap font-medium text-brand-700 underline-offset-4 hover:underline">{p.phone}</a>
-                </li>
-              ))}
-            </ul>
-          </div>
           <p className="mt-5 border-t border-line pt-5 text-sm text-ink-3">
             Flokefama engineer? <Link href="/engineer/login" className="font-semibold text-brand-700 hover:underline">Sign in to the engineer portal</Link>
           </p>
@@ -81,8 +67,3 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   );
 }
 
-/** A local number (024 423 7783) or an international one (+233 …) as a tel: address. */
-function telOf(phone: string) {
-  const d = phone.replace(/[^\d+]/g, '');
-  return d.startsWith('+') ? d : d.startsWith('0') ? `+233${d.slice(1)}` : d;
-}
