@@ -22,12 +22,12 @@ const featured = [
 const layouts = ['row', 'list', 'spotlight', 'feature'] as const;
 export type NewsLayout = (typeof layouts)[number];
 const env = process.env.NEXT_PUBLIC_NEWS_LAYOUT as NewsLayout | undefined;
-const chosen: NewsLayout = env && layouts.includes(env) ? env : 'feature';
+const chosen: NewsLayout = env && layouts.includes(env) ? env : 'row';
 
-const Chip = () => <p className="inline-block w-fit bg-brand-50 px-2.5 py-1 text-[0.75rem] font-semibold uppercase tracking-[0.08em] text-brand-700">Flokefama newsroom</p>;
+const Chip = () => <p className="inline-block w-fit bg-brand-50 px-2.5 py-1 text-[0.75rem] font-semibold uppercase tracking-[0.08em] text-brand-700">In the news</p>;
 const AllNews = ({ className = '' }: { className?: string }) => (
   <Link href="/events#news" className={`group inline-flex items-center gap-1.5 font-semibold text-brand-700 hover:text-brand-800 ${className}`}>
-    Visit newsroom <Icon name="fi-rr-arrow-small-right" className="transition-transform group-hover:translate-x-0.5" />
+    All news <Icon name="fi-rr-arrow-small-right" className="transition-transform group-hover:translate-x-0.5" />
   </Link>
 );
 const ReadMore = () => (
@@ -42,7 +42,7 @@ const Photo = ({ a, ratio, sizes }: { a: Article; ratio: string; sizes: string }
 );
 const Heading = () => (
   <h2 id="featured-news" className="display mt-4 text-[clamp(2rem,1.2rem+2.2vw,2.75rem)] text-ink">
-    Newsroom
+    Featured news
   </h2>
 );
 
@@ -56,10 +56,9 @@ export async function FeaturedNews({ layout = chosen }: { layout?: NewsLayout })
 
   const header = (
     <Reveal className="flex flex-wrap items-end justify-between gap-4">
-      <div className="max-w-2xl">
+      <div>
         <Chip />
         <Heading />
-        <p className="no-justify mt-3 max-w-xl text-base leading-relaxed text-ink-3 md:text-lg">The latest stories, company milestones, partnerships and updates from across Flokefama.</p>
       </div>
       <AllNews />
     </Reveal>
@@ -68,12 +67,12 @@ export async function FeaturedNews({ layout = chosen }: { layout?: NewsLayout })
   let body: React.ReactNode;
   if (layout === 'list') {
     return (
-      <section aria-labelledby="featured-news" className="bg-[linear-gradient(180deg,#f5faf6_0%,#ffffff_100%)] pb-16 pt-16 md:pb-28 md:pt-24">
+      <section aria-labelledby="featured-news" className="bg-paper pb-16 md:pb-28">
         <div className="mx-auto grid max-w-[1280px] gap-10 px-5 md:px-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
           <Reveal className="lg:sticky lg:top-28 lg:self-start">
             <Chip />
             <Heading />
-            <p className="no-justify mt-4 text-lg leading-relaxed text-ink-3">The latest stories, company milestones, partnerships and updates from across Flokefama.</p>
+            <p className="no-justify mt-4 text-lg leading-relaxed text-ink-3">Recognition, partnerships and milestones from across Flokefama.</p>
             <AllNews className="mt-6" />
           </Reveal>
           <ul className="grid gap-4">
@@ -126,38 +125,29 @@ export async function FeaturedNews({ layout = chosen }: { layout?: NewsLayout })
     );
   } else if (layout === 'feature') {
     body = (
-      <div className="mt-9 grid items-stretch gap-6 md:mt-12 lg:grid-cols-[1.2fr_0.8fr] lg:gap-8">
-        <Reveal className="h-full">
-          <Link href={`/news/${lead.slug}`} className="group flex h-full flex-col overflow-hidden bg-white shadow-[0_12px_40px_rgba(10,58,40,0.07)] ring-1 ring-brand-900/5 transition-shadow hover:shadow-[0_18px_48px_rgba(10,58,40,0.12)]">
-            <Photo a={lead} ratio="aspect-[16/9]" sizes="(min-width: 1024px) 700px, 100vw" />
-            <span className="flex flex-1 flex-col p-6 md:p-8">
-              <span className="text-xs font-semibold uppercase tracking-[0.12em] text-brand-700">Featured story</span>
-              <span className="mt-3 block text-sm text-ink-3">{formatDate(lead.date)}</span>
-              <span className="mt-2 block text-2xl font-bold leading-snug tracking-[-0.025em] text-ink group-hover:text-brand-700 md:text-[1.8rem]">{lead.title.trim()}</span>
-              <span className="no-justify mt-3 block leading-relaxed text-ink-3">{lead.excerpt}</span>
-              <span className="mt-auto pt-5"><ReadMore /></span>
-            </span>
+      <div className="mt-10 grid gap-8 md:mt-12 lg:grid-cols-[1.35fr_1fr] lg:gap-10">
+        <Reveal>
+          <Link href={`/news/${lead.slug}`} className="group block">
+            <Photo a={lead} ratio="aspect-[16/10]" sizes="(min-width: 1024px) 680px, 100vw" />
+            <span className="mt-5 block text-sm text-ink-3">{formatDate(lead.date)}</span>
+            <span className="mt-2 block text-2xl font-bold leading-snug tracking-[-0.02em] text-ink group-hover:text-brand-700 md:text-[1.75rem]">{lead.title.trim()}</span>
+            <span className="no-justify mt-3 block leading-relaxed text-ink-3">{lead.excerpt}</span>
+            <ReadMore />
           </Link>
         </Reveal>
-        <div className="flex flex-col gap-5">
-          <p className="border-b border-brand-900/10 pb-3 text-xs font-semibold uppercase tracking-[0.14em] text-brand-800">Latest stories</p>
-          <ul className="grid flex-1 gap-5">
-            {rest.map((a, i) => (
-              <li key={a.slug} className="min-h-0">
-                <Reveal delay={(i + 1) * 0.06} className="h-full">
-                  <Link href={`/news/${a.slug}`} className="group grid h-full grid-cols-[116px_1fr] gap-4 border-b border-brand-900/10 pb-5 sm:grid-cols-[140px_1fr] lg:grid-cols-[124px_1fr]">
-                    <Photo a={a} ratio="aspect-[4/3]" sizes="(min-width: 1024px) 124px, 140px" />
-                    <span className="flex min-w-0 flex-col py-1">
-                      <span className="text-xs text-ink-3">{formatDate(a.date)}</span>
-                      <span className="mt-2 line-clamp-3 text-base font-bold leading-snug tracking-[-0.015em] text-ink group-hover:text-brand-700 md:text-lg">{a.title.trim()}</span>
-                      <span className="mt-auto pt-3 text-sm font-semibold text-brand-700">Read story <Icon name="fi-rr-arrow-small-right" className="inline transition-transform group-hover:translate-x-0.5" /></span>
-                    </span>
-                  </Link>
-                </Reveal>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <ul className="grid content-start gap-8">
+          {rest.map((a, i) => (
+            <li key={a.slug}>
+              <Reveal delay={(i + 1) * 0.06}>
+                <Link href={`/news/${a.slug}`} className="group block">
+                  <Photo a={a} ratio="aspect-[16/9]" sizes="(min-width: 1024px) 480px, 100vw" />
+                  <span className="mt-4 block text-sm text-ink-3">{formatDate(a.date)}</span>
+                  <span className="mt-1.5 block text-lg font-bold leading-snug tracking-[-0.015em] text-ink group-hover:text-brand-700">{a.title.trim()}</span>
+                </Link>
+              </Reveal>
+            </li>
+          ))}
+        </ul>
       </div>
     );
   } else {
@@ -183,7 +173,7 @@ export async function FeaturedNews({ layout = chosen }: { layout?: NewsLayout })
   }
 
   return (
-    <section aria-labelledby="featured-news" className="bg-[linear-gradient(180deg,#f5faf6_0%,#ffffff_100%)] pb-16 pt-16 md:pb-28 md:pt-24">
+    <section aria-labelledby="featured-news" className="bg-paper pb-16 md:pb-28">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         {header}
         {body}
