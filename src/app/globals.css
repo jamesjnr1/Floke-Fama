@@ -11,6 +11,7 @@
 @theme {
   /* Plus Jakarta Sans is the main typeface; Space Grotesk (the `font-mono` utility) sets small labels and figures. */
   --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-boldonse), var(--font-jakarta), ui-sans-serif, sans-serif;
   --font-mono: var(--font-grotesk), ui-sans-serif, system-ui, sans-serif;
   --font-serif: var(--font-instrument), ui-serif, Georgia, serif;
   /* Mona Sans: the menu bar only (the typeface of the menu in the Dribbble reference) */
@@ -128,6 +129,14 @@
   /* Section label: Geist Sans, 12px, medium, +15% tracking, uppercase, in medical blue (red is kept for alerts and the logo dot) */
   .label {
     @apply font-mono text-[0.875rem] font-medium uppercase tracking-[0.1em] text-blue-700;
+  }
+  /* UT Boldonse: reserved for public-site hero headlines, section titles and short campaign phrases. */
+  .public-site h1,
+  .public-site h2,
+  .public-site .font-display {
+    font-family: var(--font-boldonse), var(--font-jakarta), ui-sans-serif, sans-serif;
+    font-weight: 400;
+    letter-spacing: -0.025em;
   }
   /* Display: Plus Jakarta Sans bold, tight tracking */
   .display {
