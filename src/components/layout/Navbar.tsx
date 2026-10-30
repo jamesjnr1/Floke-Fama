@@ -57,7 +57,6 @@ export function Navbar() {
   const pathname = usePathname();
   const { scrollY } = useScroll();
   const [scrolled, setScrolled] = useState(false);
-  const [productHeroSlide, setProductHeroSlide] = useState(false);
   const [open, setOpen] = useState(false);
   const [hovered, setHovered] = useState<string | null>(null);
   const [menu, setMenu] = useState<string | null>(null);
@@ -71,15 +70,7 @@ export function Navbar() {
     setOpen(false);
     setMenu(null);
     setAccount(false);
-    setProductHeroSlide(false);
   }, [pathname]);
-  useEffect(() => {
-    const syncHeroSlide = (event: Event) => {
-      setProductHeroSlide((event as CustomEvent<{ kind: string }>).detail.kind === 'products');
-    };
-    window.addEventListener('flokefama:hero-slide', syncHeroSlide);
-    return () => window.removeEventListener('flokefama:hero-slide', syncHeroSlide);
-  }, []);
   useEffect(() => {
     if (!account) return;
     const close = () => setAccount(false);
@@ -102,7 +93,7 @@ export function Navbar() {
   // The header is always the dark glass bar; on pages that open light it is solid from the start.
   const dark = true;
   const solid = open || scrolled || !darkTop.includes(pathname);
-  const overHero = bar && !scrolled && !open && !productHeroSlide && ((greenHero && pathname === '/') || photoHeaders.includes(pathname));
+  const overHero = bar && !scrolled && !open && ((greenHero && pathname === '/') || photoHeaders.includes(pathname));
 
   return (
     <header className={cn(bar ? 'fixed inset-x-0 top-10 z-[120] font-nav' : 'sticky inset-x-0 top-10 z-[120] mt-10 font-nav px-3 pt-3 md:px-6 md:pt-4')}>
