@@ -59,6 +59,15 @@ export function HeroSlides({ intro, media = [], mediaOnly = false }: { intro: Re
   const touch = useRef<number | null>(null);
   const go = useCallback((i: number) => setIndex((i + slides.length) % slides.length), [slides.length]);
 
+  // Keep the fixed navbar's original forest-green gradient over the white product slides.
+  useEffect(() => {
+    const kind = slides[index].kind;
+    window.dispatchEvent(new CustomEvent('flokefama:hero-slide', { detail: { kind } }));
+    return () => {
+      window.dispatchEvent(new CustomEvent('flokefama:hero-slide', { detail: { kind: 'intro' } }));
+    };
+  }, [index, slides]);
+
   // Dark on the white product slides, white over the photos
   const arrow = cn(
     // On phones they sit in the bottom corners, clear of the text
