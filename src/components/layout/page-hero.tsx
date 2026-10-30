@@ -17,6 +17,7 @@ export function PageHero({
   flip = false,
   veil,
   kicker,
+  badge,
 }: {
   /** Kept for the callers; the small label above the title is no longer shown. */
   label?: string;
@@ -32,6 +33,8 @@ export function PageHero({
   veil?: 'strong';
   /** A line under the logo, above the title (e.g. "Corporate Social Responsibility"). */
   kicker?: string;
+  /** Optional highlighted message displayed beneath the company wordmark. */
+  badge?: string;
 }) {
   return (
     <section className="relative isolate grid min-h-[34rem] place-items-center overflow-hidden bg-[#10191e] text-center text-white md:min-h-[min(47.5rem,92svh)]">
@@ -58,6 +61,7 @@ export function PageHero({
             <span className="sr-only">Flokefama</span>
           </p>
           {kicker && <p className="mt-3 text-[0.9375rem] font-semibold uppercase tracking-[0.18em] text-white/90 [text-shadow:0_1px_12px_rgb(0_0_0/0.4)] md:text-base">{kicker}</p>}
+          {badge && <p className="mx-auto mt-5 inline-flex items-center rounded-lg bg-[#E5252A] px-[18px] py-[10px] text-sm font-semibold text-white shadow-lg md:text-base">{badge}</p>}
         </Reveal>
         <Reveal delay={0.06} className="mt-6">
           <h1 className="mx-auto max-w-5xl text-balance text-[clamp(2.5rem,1.1rem+4.6vw,5.25rem)] font-medium leading-[1.02] tracking-[-0.03em] text-white [text-shadow:0_2px_24px_rgb(0_0_0/0.35)] [&_em]:font-serif [&_em]:font-normal [&_em]:tracking-[-0.01em]">
