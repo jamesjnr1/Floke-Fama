@@ -11,6 +11,7 @@ import { Icon } from '@/components/ui/icon';
 import { useSite } from '@/components/site-provider';
 import { logout } from '@/lib/auth/actions';
 import { roleHome } from '@/lib/auth/session';
+import { heroStyle } from '@/lib/hero-style';
 import { navStyle } from '@/lib/nav-style';
 import { useSession } from '@/lib/auth/use-session';
 import { cn } from '@/lib/utils';
@@ -46,6 +47,10 @@ const matches = (pathname: string, href: string) => (href === '/' ? pathname ===
 const isActive = (pathname: string, item: NavItem) => (item.children ? item.children.some((c) => matches(pathname, c.href)) : matches(pathname, item.href));
 
 const bar = navStyle === 'bar';
+/** The green home hero runs up behind the menu bar, so the bar is see-through there until the page scrolls. */
+const greenHero = heroStyle === 'modern' || heroStyle === 'feature' || heroStyle === 'collage' || heroStyle === 'spotlight' || heroStyle === 'simple' || heroStyle === 'moving';
+/** Pages that open on a full photo header (PageHero): the bar is see-through over it too, so it takes the photo's colours. */
+const photoHeaders = ['/about', '/awards', '/services', '/events', '/products', '/esg', '/support'];
 /** Global Header, 72px tall: a full-width dark bar, or the floating glass bar (see navStyle). */
 export function Navbar() {
   const { contact } = useSite();
@@ -88,6 +93,7 @@ export function Navbar() {
   // The header is always the dark glass bar; on pages that open light it is solid from the start.
   const dark = true;
   const solid = open || scrolled || !darkTop.includes(pathname);
+  const overHero = bar && !scrolled && !open && ((greenHero && pathname === '/') || photoHeaders.includes(pathname));
 
   return (
     <header className={cn('sticky inset-x-0 top-10 z-[120] mt-10 font-nav', !bar && 'px-3 pt-3 md:px-6 md:pt-4')}>
@@ -107,7 +113,7 @@ export function Navbar() {
             aria-hidden
             className={cn(
               'pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(100deg,#0b3d2a_0%,#0d4a33_45%,#0a3a28_75%,#072e20_100%)] transition-opacity duration-300',
-              'opacity-100',
+              overHero ? 'opacity-0' : 'opacity-100',
             )}
           />
         )}
