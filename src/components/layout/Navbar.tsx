@@ -97,7 +97,7 @@ export function Navbar() {
   const overHero = bar && !scrolled && !open && ((greenHero && pathname === '/') || photoHeaders.includes(pathname));
 
   return (
-    <header className={cn('fixed inset-x-0 top-0 z-50 font-nav', !bar && 'px-3 pt-3 md:px-6 md:pt-4')}>
+    <header className={cn('fixed inset-x-0 top-10 z-50 font-nav', !bar && 'px-3 pt-3 md:px-6 md:pt-4')}>
       <div
         className={cn(
           // No shadow at the top, where the bar sits on the dark hero; a light one once the page scrolls under it
@@ -288,7 +288,7 @@ export function Navbar() {
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
             className={cn(
               'fixed flex flex-col overflow-y-auto bg-midnight/95 p-5 backdrop-blur-xl xl:hidden',
-              bar ? 'inset-x-0 bottom-0 top-[72px] border-t border-white/10' : 'inset-x-3 bottom-3 top-[92px] rounded-2xl border border-white/10',
+              bar ? 'inset-x-0 bottom-0 top-[112px] border-t border-white/10' : 'inset-x-3 bottom-3 top-[132px] rounded-2xl border border-white/10',
             )}
           >
             <ul className="divide-y divide-white/10">
