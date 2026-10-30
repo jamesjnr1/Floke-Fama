@@ -38,9 +38,6 @@ const anchors: NavItem[] = [
 /** Flat list for the mobile menu. */
 const flat = anchors.flatMap((a) => a.children?.map(({ href, label }) => ({ href, label })) ?? [{ href: a.href, label: a.label }]);
 
-// Pages that open on a dark hero: the bar stays see-through there. Elsewhere it is solid from the start.
-const darkTop = ['/portal'];
-
 /** A tab stays active on its sub-pages too (e.g. /products/...). Home only matches exactly. */
 const matches = (pathname: string, href: string) => (href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(`${href}/`));
 const isActive = (pathname: string, item: NavItem) => (item.children ? item.children.some((c) => matches(pathname, c.href)) : matches(pathname, item.href));
@@ -85,9 +82,9 @@ export function Navbar() {
     document.body.style.overflow = open ? 'hidden' : '';
   }, [open]);
 
-  // The header is always the dark glass bar; on pages that open light it is solid from the start.
+  // Keep the navigation opaque on every route so its contrast never depends on the page background.
   const dark = true;
-  const solid = open || scrolled || !darkTop.includes(pathname);
+  const solid = true;
 
   return (
     <header className={cn('sticky inset-x-0 top-10 z-[120] mt-10 font-nav', !bar && 'px-3 pt-3 md:px-6 md:pt-4')}>
