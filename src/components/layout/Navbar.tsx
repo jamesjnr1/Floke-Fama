@@ -71,6 +71,7 @@ export function Navbar() {
     setOpen(false);
     setMenu(null);
     setAccount(false);
+    setProductHeroSlide(false);
   }, [pathname]);
   useEffect(() => {
     const syncHeroSlide = (event: Event) => {
