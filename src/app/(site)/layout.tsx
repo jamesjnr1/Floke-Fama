@@ -9,7 +9,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
   return (
     <>
       <Navbar />
-      <main id="main" lang="en" className="public-site">{children}</main>
+      <main id="main" lang="en">{children}</main>
       <SiteFooter />
       <SalesDock />
       <HeaderPreload />
