@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Instrument_Serif, Inter, Mona_Sans, Plus_Jakarta_Sans, Space_Grotesk } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Toaster } from 'sonner';
 import { MotionProvider } from '@/components/layout/motion-provider';
 import { ServiceWorkerRegister } from '@/components/layout/sw-register';
@@ -75,6 +76,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <ServiceWorkerRegister />
         {/* Vercel Web Analytics: only on Vercel, where its script is served */}
         {process.env.VERCEL && <Analytics />}
+        {/* Vercel Speed Insights: track Core Web Vitals */}
+        {process.env.VERCEL && <SpeedInsights />}
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdHtml(organizationLd(site.contact)) }} />
         <script dangerouslySetInnerHTML={{ __html: revealNowScript }} />
       </body>
