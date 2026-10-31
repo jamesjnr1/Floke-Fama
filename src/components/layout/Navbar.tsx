@@ -113,7 +113,7 @@ export function Navbar() {
             aria-hidden
             className={cn(
               'pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(100deg,#0b3d2a_0%,#0d4a33_45%,#0a3a28_75%,#072e20_100%)] transition-opacity duration-300',
-              overHero ? 'opacity-95' : 'opacity-100',
+              overHero ? 'opacity-0' : 'opacity-100',
             )}
           />
         )}
