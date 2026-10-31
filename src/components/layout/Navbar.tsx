@@ -96,7 +96,7 @@ export function Navbar() {
   const overHero = bar && !scrolled && !open && ((greenHero && pathname === '/') || photoHeaders.includes(pathname));
 
   return (
-    <header className={cn(bar ? 'fixed inset-x-0 top-10 z-[120] font-nav' : 'sticky inset-x-0 top-10 z-[120] mt-10 font-nav', !bar && 'px-3 pt-3 md:px-6 md:pt-4')}>
+    <header className={cn('sticky inset-x-0 top-10 z-[120] mt-10 font-nav', !bar && 'px-3 pt-3 md:px-6 md:pt-4')}>
       <div
         className={cn(
           // No shadow at the top, where the bar sits on the dark hero; a light one once the page scrolls under it
