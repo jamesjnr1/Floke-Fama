@@ -4,7 +4,6 @@ import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Toaster } from 'sonner';
 import { MotionProvider } from '@/components/layout/motion-provider';
-import { MaintenanceBanner } from '@/components/layout/maintenance-banner';
 import { ServiceWorkerRegister } from '@/components/layout/sw-register';
 import { bootScript, revealNowScript } from '@/lib/a11y';
 import { SiteProvider } from '@/components/site-provider';
@@ -61,7 +60,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-brand-600 focus:px-4 focus:py-2 focus:text-white">
           Skip to content
         </a>
-        <MaintenanceBanner />
         <SiteProvider value={site}>
           <MotionProvider>{children}</MotionProvider>
         </SiteProvider>
