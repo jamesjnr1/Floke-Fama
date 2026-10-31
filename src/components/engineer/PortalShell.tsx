@@ -201,7 +201,7 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
   );
 
   return (
-    <div className="eng-page flex min-h-svh text-ink">
+    <div className="eng-page flex min-h-svh pt-10 text-ink">
       {/* Sidebar */}
       <aside className="eng-rail sticky top-0 hidden h-svh w-[264px] shrink-0 flex-col text-white lg:flex">
         <Link href="/" aria-label="Flokefama home" className="flex h-[76px] items-center gap-1.5 border-b border-white/15 px-6">
