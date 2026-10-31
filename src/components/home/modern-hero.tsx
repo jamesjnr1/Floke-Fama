@@ -23,7 +23,7 @@ const featured = [
  */
 export function ModernHero() {
   return (
-    <section className="relative isolate flex flex-col overflow-hidden bg-[linear-gradient(180deg,#083825_0%,#042217_60%,#021810_100%)] pt-4 text-white lg:h-[calc(100svh-19rem)] lg:min-h-[440px]">
+    <section className="relative isolate flex flex-col overflow-hidden bg-[linear-gradient(180deg,#083825_0%,#042217_60%,#021810_100%)] pt-3 text-white lg:min-h-0 lg:flex-1">
       {/* Soft green light behind the headline */}
       <div aria-hidden className="absolute left-1/2 top-[22%] -z-10 h-[500px] w-[900px] max-w-[160vw] -translate-x-1/2 -translate-y-1/2 bg-[radial-gradient(closest-side,rgb(16_185_129/0.2),transparent)]" />
       {/* A faint ECG line pulsing across the middle */}
@@ -55,7 +55,7 @@ export function ModernHero() {
         </div>
       </Reveal>
 
-      <div className="flex min-h-0 flex-1 flex-col justify-end pb-4">
+      <div className="flex min-h-0 flex-1 flex-col justify-end pb-2">
         <h2 className="mx-auto mb-3 w-full max-w-[1280px] shrink-0 px-5 text-xs font-bold uppercase tracking-[0.12em] text-emerald-300 md:px-10">Featured medical solutions</h2>
         {/* The cards move slowly from right to left; the ends fade out */}
         <div className="min-h-0 overflow-hidden py-1 [mask-image:linear-gradient(to_right,transparent,#000_8%,#000_92%,transparent)]">
@@ -68,7 +68,7 @@ export function ModernHero() {
                     tabIndex={hidden ? -1 : undefined}
                     className="group flex h-[190px] flex-col rounded-lg border border-white/12 bg-white/[0.05] p-3 shadow-[0_8px_32px_rgb(0_0_0/0.2)] backdrop-blur-md transition-[background-color,border-color,transform] duration-300 hover:-translate-y-1 hover:border-white/25 hover:bg-white/[0.09] sm:p-3.5"
                   >
-                    <span className="relative block h-20 shrink-0 overflow-hidden rounded-md bg-[linear-gradient(180deg,rgb(255_255_255/0.1),transparent)]">
+                    <span className="relative block h-16 shrink-0 overflow-hidden rounded-md bg-[linear-gradient(180deg,rgb(255_255_255/0.1),transparent)]">
                       <span className="absolute left-2 top-2 z-10 rounded-sm border border-emerald-500/30 bg-emerald-500/20 px-2 py-0.5 text-[0.625rem] font-bold uppercase tracking-wider text-emerald-300">{p.tag}</span>
                       <Image
                         src={`/images/hero-cutouts/${p.slug}.webp`}
