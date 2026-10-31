@@ -20,7 +20,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   const { contact, signInPhones } = await getSite();
 
   return (
-    <main id="main" className="grid min-h-[100svh] bg-paper lg:grid-cols-2">
+    <main id="main" className="grid min-h-[calc(100svh-2.5rem)] bg-paper pt-10 lg:grid-cols-2">
       <section className="relative isolate flex min-h-[300px] flex-col justify-between overflow-hidden bg-brand-800 p-6 text-white h-[40svh] md:p-10 lg:sticky lg:top-0 lg:h-[100svh] lg:p-12 lg:pb-28">
         <Image
           src="/images/headers/team-lab.webp"
