@@ -60,7 +60,7 @@ function HeroDesignLayer({ design }: { design: HeroDesign }) {
 export async function SimpleHero({ design = heroDesign }: { design?: HeroDesign }) {
   const { hero, heroMedia, heroMediaOnly } = await getSite();
   return (
-    <section className="relative isolate flex flex-col overflow-hidden bg-[linear-gradient(180deg,#0a5a33_0%,#06482a_60%,#043822_100%)] pt-[72px] text-white lg:min-h-0 lg:flex-1">
+    <section className="relative isolate -mt-28 flex flex-col overflow-hidden bg-[linear-gradient(180deg,#0a5a33_0%,#06482a_60%,#043822_100%)] pt-28 text-white lg:min-h-0 lg:flex-1">
       <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(55%_50%_at_50%_20%,rgb(127_209_165/0.14),transparent_70%)]" />
       <HeroDesignLayer design={design} />
       {/* Slides: the company first, then the large equipment, one at a time */}
