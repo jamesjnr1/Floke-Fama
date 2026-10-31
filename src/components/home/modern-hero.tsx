@@ -23,7 +23,7 @@ const featured = [
  */
 export function ModernHero() {
   return (
-    <section className="relative isolate overflow-hidden bg-[linear-gradient(180deg,#083825_0%,#042217_60%,#021810_100%)] pt-[72px] text-white">
+    <section className="relative isolate flex flex-col overflow-hidden bg-[linear-gradient(180deg,#083825_0%,#042217_60%,#021810_100%)] pt-4 text-white lg:h-[calc(100svh-19rem)] lg:min-h-[440px]">
       {/* Soft green light behind the headline */}
       <div aria-hidden className="absolute left-1/2 top-[22%] -z-10 h-[500px] w-[900px] max-w-[160vw] -translate-x-1/2 -translate-y-1/2 bg-[radial-gradient(closest-side,rgb(16_185_129/0.2),transparent)]" />
       {/* A faint ECG line pulsing across the middle */}
@@ -31,21 +31,21 @@ export function ModernHero() {
         <path d="M0 75H350L365 40L380 110L400 20L420 130L435 60L450 75H1200" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
       </svg>
 
-      <Reveal className="mx-auto flex max-w-[1100px] flex-col items-center px-5 pb-12 pt-12 text-center md:pt-16">
+      <Reveal className="mx-auto flex w-full shrink-0 max-w-[1100px] flex-col items-center px-5 pb-5 pt-5 text-center md:pb-6 md:pt-6">
         <h1 className="flex flex-col items-center">
           <span className="flex items-center text-[clamp(3rem,1.6rem+4.4vw,5.5rem)]">
             <LogoWordmark className="h-[0.75em] text-white" />
             <span className="sr-only">Flokefama,</span>
           </span>
-          <span className="mt-4 text-[clamp(1.75rem,1.1rem+1.9vw,3rem)] font-extrabold leading-[1.08] tracking-[-0.035em] text-emerald-50">
+          <span className="mt-3 text-[clamp(1.5rem,1rem+1.5vw,2.5rem)] font-extrabold leading-[1.08] tracking-[-0.035em] text-emerald-50">
             Ghana’s No.1 Healthcare Company<span className="text-signal">.</span>
           </span>
         </h1>
-        <p className="no-justify mt-6 max-w-3xl text-[clamp(1rem,0.9rem+0.4vw,1.25rem)] leading-relaxed text-emerald-100/80">
+        <p className="no-justify mt-3 max-w-3xl text-[clamp(0.9375rem,0.85rem+0.3vw,1.125rem)] leading-snug text-emerald-100/80">
           Sterilisation, laboratory, respiratory, imaging, monitoring and emergency equipment: <span className="font-medium text-white">supplied, installed and supported</span> for hospitals and
           laboratories across Ghana and West Africa.
         </p>
-        <div className="mt-9 flex flex-wrap justify-center gap-3">
+        <div className="mt-4 flex flex-wrap justify-center gap-3">
           <Button asChild size="lg" arrow="up-right" className="bg-white text-[#00703A] hover:bg-white/90">
             <Link href="/products">Explore Solutions</Link>
           </Button>
@@ -55,10 +55,10 @@ export function ModernHero() {
         </div>
       </Reveal>
 
-      <div className="pb-12">
-        <h2 className="mx-auto mb-5 max-w-[1280px] px-5 text-sm font-bold uppercase tracking-[0.12em] text-emerald-300 md:px-10">Featured medical solutions</h2>
+      <div className="flex min-h-0 flex-1 flex-col justify-end pb-4">
+        <h2 className="mx-auto mb-3 w-full max-w-[1280px] shrink-0 px-5 text-xs font-bold uppercase tracking-[0.12em] text-emerald-300 md:px-10">Featured medical solutions</h2>
         {/* The cards move slowly from right to left; the ends fade out */}
-        <div className="overflow-hidden py-2 [mask-image:linear-gradient(to_right,transparent,#000_8%,#000_92%,transparent)]">
+        <div className="min-h-0 overflow-hidden py-1 [mask-image:linear-gradient(to_right,transparent,#000_8%,#000_92%,transparent)]">
           <ul className="flex w-max animate-marquee [animation-duration:50s] motion-reduce:animate-none">
             {[false, true].flatMap((hidden) =>
               featured.map((p) => (
@@ -66,21 +66,21 @@ export function ModernHero() {
                   <Link
                     href={`/products/${p.slug}`}
                     tabIndex={hidden ? -1 : undefined}
-                    className="group flex h-full flex-col rounded-lg border border-white/12 bg-white/[0.05] p-4 shadow-[0_8px_32px_rgb(0_0_0/0.2)] backdrop-blur-md transition-[background-color,border-color,transform] duration-300 hover:-translate-y-1 hover:border-white/25 hover:bg-white/[0.09] sm:p-5"
+                    className="group flex h-[190px] flex-col rounded-lg border border-white/12 bg-white/[0.05] p-3 shadow-[0_8px_32px_rgb(0_0_0/0.2)] backdrop-blur-md transition-[background-color,border-color,transform] duration-300 hover:-translate-y-1 hover:border-white/25 hover:bg-white/[0.09] sm:p-3.5"
                   >
-                    <span className="relative block h-44 overflow-hidden rounded-md bg-[linear-gradient(180deg,rgb(255_255_255/0.1),transparent)] sm:h-48">
+                    <span className="relative block h-20 shrink-0 overflow-hidden rounded-md bg-[linear-gradient(180deg,rgb(255_255_255/0.1),transparent)]">
                       <span className="absolute left-2 top-2 z-10 rounded-sm border border-emerald-500/30 bg-emerald-500/20 px-2 py-0.5 text-[0.625rem] font-bold uppercase tracking-wider text-emerald-300">{p.tag}</span>
                       <Image
                         src={`/images/hero-cutouts/${p.slug}.webp`}
                         alt={hidden ? '' : p.title}
                         fill
                         sizes="290px"
-                        className="object-contain p-5 pt-8 drop-shadow-[0_10px_15px_rgb(0_0_0/0.5)] transition-transform duration-500 group-hover:scale-105"
+                        className="object-contain p-2 drop-shadow-[0_10px_15px_rgb(0_0_0/0.5)] transition-transform duration-500 group-hover:scale-105"
                       />
                     </span>
-                    <span className="mt-4 block text-base font-bold text-white transition-colors group-hover:text-emerald-300">{p.title}</span>
-                    <span className="mt-1 block text-[0.8125rem] leading-snug text-white/60">{p.body}</span>
-                    <span className="mt-auto flex items-center justify-between border-t border-white/10 pt-3 text-xs font-semibold">
+                    <span className="mt-2 block truncate text-sm font-bold text-white transition-colors group-hover:text-emerald-300">{p.title}</span>
+                    <span className="mt-1 line-clamp-2 block text-xs leading-snug text-white/60">{p.body}</span>
+                    <span className="mt-auto flex items-center justify-between border-t border-white/10 pt-2 text-[0.6875rem] font-semibold">
                       <span className="text-emerald-400">{p.type}</span>
                       <span className="flex items-center gap-1 text-white group-hover:text-emerald-300">
                         Explore <Icon name="fi-rr-arrow-small-right" />
