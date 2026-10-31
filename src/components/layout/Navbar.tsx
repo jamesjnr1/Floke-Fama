@@ -57,6 +57,7 @@ export function Navbar() {
   const pathname = usePathname();
   const { scrollY } = useScroll();
   const [scrolled, setScrolled] = useState(false);
+  const [lightHeroSlide, setLightHeroSlide] = useState(false);
   const [open, setOpen] = useState(false);
   const [hovered, setHovered] = useState<string | null>(null);
   const [menu, setMenu] = useState<string | null>(null);
@@ -66,6 +67,13 @@ export function Navbar() {
   const home = user ? roleHome[user.role] : '/login';
   const homeLabel = user?.role === 'engineer' ? 'Engineer portal' : user?.role === 'admin' ? 'Admin console' : 'Hospital dashboard';
   useMotionValueEvent(scrollY, 'change', (y) => setScrolled(y > 24));
+  useEffect(() => {
+    const onHeroSlide = (event: Event) => {
+      setLightHeroSlide((event as CustomEvent<{ light: boolean }>).detail.light);
+    };
+    window.addEventListener('flokefama:hero-slide', onHeroSlide);
+    return () => window.removeEventListener('flokefama:hero-slide', onHeroSlide);
+  }, []);
   useEffect(() => {
     setOpen(false);
     setMenu(null);
@@ -93,7 +101,7 @@ export function Navbar() {
   // The header is always the dark glass bar; on pages that open light it is solid from the start.
   const dark = true;
   const solid = open || scrolled || !darkTop.includes(pathname);
-  const overHero = bar && !scrolled && !open && ((greenHero && pathname === '/') || photoHeaders.includes(pathname));
+  const overHero = bar && !scrolled && !open && (((greenHero && pathname === '/') && !lightHeroSlide) || photoHeaders.includes(pathname));
 
   return (
     <header className={cn('sticky inset-x-0 top-10 z-[120] mt-10 font-nav', !bar && 'px-3 pt-3 md:px-6 md:pt-4')}>
