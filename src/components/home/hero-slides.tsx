@@ -59,12 +59,6 @@ export function HeroSlides({ intro, media = [], mediaOnly = false }: { intro: Re
   const touch = useRef<number | null>(null);
   const go = useCallback((i: number) => setIndex((i + slides.length) % slides.length), [slides.length]);
 
-  // Keep the fixed navbar transparent over dark photo slides and restore its forest-green gradient on white product slides.
-  useEffect(() => {
-    const kind = slides[index].kind;
-    window.dispatchEvent(new CustomEvent('flokefama:hero-slide', { detail: { kind } }));
-  }, [index, slides]);
-
   // Dark on the white product slides, white over the photos
   const arrow = cn(
     // On phones they sit in the bottom corners, clear of the text
