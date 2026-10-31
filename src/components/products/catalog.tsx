@@ -92,9 +92,9 @@ export function Catalog({ products, categories, typeList }: {
 
   return (
     <LayoutGroup>
-      <div className="sticky top-20 z-30 -mx-5 border-b border-line bg-canvas px-5 py-4 md:-mx-10 md:px-10">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div role="tablist" aria-label="Categories" className="-mx-1 flex gap-1 overflow-x-auto px-1 pb-1 [scrollbar-width:none]">
+      <div className="-mx-5 border-b border-line bg-canvas px-5 py-3 md:-mx-10 md:px-10">
+        <div className="flex flex-col gap-2.5 lg:flex-row lg:items-center lg:justify-between">
+          <div role="tablist" aria-label="Categories" className="flex flex-wrap items-center gap-1">
             {tabs.map((t) => {
               const active = category === t.slug;
               return (
@@ -103,7 +103,7 @@ export function Catalog({ products, categories, typeList }: {
                   role="tab"
                   aria-selected={active}
                   onClick={() => setCategory(t.slug)}
-                  className={cn('relative shrink-0 rounded-md px-4 py-2 text-sm font-medium transition-colors', active ? 'text-white' : 'text-ink-3 hover:text-ink')}
+                  className={cn('relative rounded-md px-3 py-1.5 text-sm font-medium transition-colors', active ? 'text-white' : 'text-ink-3 hover:text-ink')}
                 >
                   {active && <motion.span layoutId="cat-pill" className="absolute inset-0 rounded-md bg-midnight" transition={{ type: 'spring', bounce: 0.15, duration: 0.5 }} />}
                   <span className="relative">{t.title}</span>
@@ -111,7 +111,7 @@ export function Catalog({ products, categories, typeList }: {
               );
             })}
           </div>
-          <label className="group relative flex h-12 w-full items-center rounded-lg border border-line bg-paper pl-12 pr-4 transition focus-within:border-brand-500 focus-within:ring-4 focus-within:ring-brand-100 lg:w-96">
+          <label className="group relative flex h-10 w-full items-center rounded-lg border border-line bg-paper pl-12 pr-4 transition focus-within:border-brand-500 focus-within:ring-4 focus-within:ring-brand-100 lg:w-96">
             <Icon name="fi-rr-search" className="absolute left-5 text-ink-3" />
             <span className="sr-only">Search products</span>
             <input
@@ -127,7 +127,7 @@ export function Catalog({ products, categories, typeList }: {
         </div>
       </div>
 
-      <div className="flex items-center justify-between py-6 text-sm text-ink-3" aria-live="polite">
+      <div className="flex items-center justify-between py-4 text-sm text-ink-3" aria-live="polite">
         <p className="flex flex-wrap items-center gap-2">
           <span><span className="font-medium text-ink">{visible.length}</span> {visible.length === 1 ? 'product' : 'products'}{category ? ` in ${catBySlug.get(category)?.title}` : ''}</span>
           {type && (
