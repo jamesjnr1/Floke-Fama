@@ -25,12 +25,12 @@ import { cn } from '@/lib/utils';
  */
 export async function Hero({ bg = heroBackground }: { bg?: HeroBackground } = {}) {
   if (heroStyle === 'modern') {
-    // Taller than one screen with its showcase, so it isn't squeezed to share the first screen with the logos
+    // Keep the hero and the full client/partner band inside the visible area below the fixed navigation.
     return (
-      <>
+      <div className="flex flex-col lg:h-[calc(100svh-7rem)] lg:min-h-0 lg:overflow-hidden">
         <ModernHero />
         <HeroLogos />
-      </>
+      </div>
     );
   }
   if (heroStyle === 'collage' || heroStyle === 'feature' || heroStyle === 'spotlight' || heroStyle === 'simple' || heroStyle === 'moving') {
