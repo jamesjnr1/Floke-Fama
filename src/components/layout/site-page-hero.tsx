@@ -17,10 +17,8 @@ export async function SitePageHero({ page, flip, kicker, vars = {} }: { page: Pa
       flip={flip}
       kicker={kicker}
       title={
-        <span className={page === 'about' ? 'inline-block rounded-lg bg-[#E5252A] px-5 py-3 text-white shadow-lg [&_em]:font-sans [&_em]:font-bold [&_em]:italic' : ''}>
-          {page === 'about' ? (
-            <em>{h.emphasisFirst ? `${h.highlight} ${h.title}` : `${h.title} ${h.highlight}`}</em>
-          ) : h.emphasisFirst ? (
+        <>
+          {h.emphasisFirst ? (
             <>
               {h.highlight && <em>{h.highlight}</em>} {h.title}
             </>
@@ -29,7 +27,7 @@ export async function SitePageHero({ page, flip, kicker, vars = {} }: { page: Pa
               {h.title} {h.highlight && <em>{h.highlight}</em>}
             </>
           )}
-        </span>
+        </>
       }
       lead={lead}
     />
