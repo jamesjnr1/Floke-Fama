@@ -36,7 +36,7 @@ export async function Hero({ bg = heroBackground }: { bg?: HeroBackground } = {}
   if (heroStyle === 'collage' || heroStyle === 'feature' || heroStyle === 'spotlight' || heroStyle === 'simple' || heroStyle === 'moving') {
     return (
       // Hero and the Clients & Partners band share the first screen, so the logos show without scrolling
-      <div className="flex flex-col lg:h-[100svh] lg:min-h-[860px]">
+      <div className="flex min-h-0 flex-col lg:h-[100svh]">
         {heroStyle === 'moving' ? <MovingHero /> : heroStyle === 'simple' ? <SimpleHero /> : heroStyle === 'spotlight' ? <SpotlightHero /> : <CollageHero feature={heroStyle === 'feature'} />}
         <HeroLogos />
       </div>
