@@ -88,7 +88,10 @@ export function Catalog({ products, categories, typeList }: {
   }, []);
 
   // The categories' full names (the CEO's five), as the tabs scroll sideways when they don't fit
-  const tabs = [{ slug: null, title: 'All equipment' }, ...categories.map((c) => ({ slug: c.slug, title: c.title }))];
+  const tabs: { slug: string | null; title: string; short: string }[] = [
+    { slug: null, title: 'All equipment', short: 'All' },
+    ...categories.map((c) => ({ slug: c.slug, title: c.title, short: c.short })),
+  ];
 
   return (
     <LayoutGroup>
