@@ -56,6 +56,11 @@ export function HeroSlides({ intro, media = [], mediaOnly = false }: { intro: Re
   const [slides] = useState(() => buildSlides(media, mediaOnly));
   const [index, setIndex] = useState(0);
   const [held, setHeld] = useState(false);
+
+  // Let the global navigation know when the carousel is showing white-background shop products.
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent('flokefama:hero-slide', { detail: { light: slides[index].kind === 'products' } }));
+  }, [index, slides]);
   const touch = useRef<number | null>(null);
   const go = useCallback((i: number) => setIndex((i + slides.length) % slides.length), [slides.length]);
 
