@@ -92,9 +92,9 @@ export function Catalog({ products, categories, typeList }: {
 
   return (
     <LayoutGroup>
-      <div className="-mx-5 border-b border-line bg-canvas px-5 py-3 md:-mx-10 md:px-10">
-        <div className="flex flex-col gap-2.5 lg:flex-row lg:items-center lg:justify-between">
-          <div role="tablist" aria-label="Categories" className="flex flex-wrap items-center gap-1">
+      <div className="sticky top-20 z-30 -mx-5 border-b border-line bg-canvas px-5 py-2 md:-mx-10 md:px-10">
+        <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
+          <div role="tablist" aria-label="Categories" className="flex flex-nowrap items-center gap-0.5">
             {tabs.map((t) => {
               const active = category === t.slug;
               return (
@@ -103,10 +103,10 @@ export function Catalog({ products, categories, typeList }: {
                   role="tab"
                   aria-selected={active}
                   onClick={() => setCategory(t.slug)}
-                  className={cn('relative rounded-md px-3 py-1.5 text-sm font-medium transition-colors', active ? 'text-white' : 'text-ink-3 hover:text-ink')}
+                  className={cn('relative whitespace-nowrap rounded-md px-2 py-1.5 text-xs font-medium transition-colors sm:px-2.5 sm:text-sm', active ? 'text-white' : 'text-ink-3 hover:text-ink')}
                 >
                   {active && <motion.span layoutId="cat-pill" className="absolute inset-0 rounded-md bg-midnight" transition={{ type: 'spring', bounce: 0.15, duration: 0.5 }} />}
-                  <span className="relative">{t.title}</span>
+                  <span className="relative"><span className="sm:hidden">{t.short}</span><span className="hidden sm:inline">{t.title}</span></span>
                 </button>
               );
             })}
