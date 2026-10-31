@@ -8,7 +8,7 @@ const pin = ['text-brand-600', 'text-[#087d88]', 'text-[#0068a8]', 'text-signal-
 
 /** About: the six Flokefama branches as a grid of boxes, each with directions in Google Maps and its phone number. */
 export async function Branches() {
-  const { branches } = await getSite();
+  const { branches, maps } = await getSite();
   return (
     <section id="branches" className="pattern-dots pattern-br scroll-mt-28 bg-paper section-y">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
@@ -43,6 +43,10 @@ export async function Branches() {
             </li>
           ))}
         </ul>
+        {/* The head office on the map */}
+        <div className="mt-8 h-[280px] overflow-hidden border border-line bg-mist md:h-auto md:aspect-[16/7]">
+          <iframe src={maps.embed} title="Map: Flokefama head office, Santa Maria, Accra" loading="lazy" referrerPolicy="no-referrer-when-downgrade" className="h-full w-full border-0" />
+        </div>
       </div>
     </section>
   );
