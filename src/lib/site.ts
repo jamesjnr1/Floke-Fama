@@ -92,9 +92,13 @@ function merge(raw: Raw | null): SiteContent {
     clients: logos(raw.clients, d.clients),
     hero: { ...d.hero, ...clean(raw.hero) },
     signInPhones: (raw.signInPhones ?? []).filter((p) => p.label && p.phone).map((p) => ({ label: p.label!, phone: p.phone! })),
-    heroMedia: (raw.heroMedia ?? [])
-      .filter((m) => m.caption && (m.image || m.video))
-      .map((m): HeroMedia => (m.video ? { kind: 'video', src: m.video, poster: m.image, caption: m.caption!, label: m.label } : { kind: 'image', src: m.image!, caption: m.caption!, label: m.label })),
+    // Photos and videos from the Studio; until there are some, the engineering department's own photos
+    heroMedia: (() => {
+      const own = (raw.heroMedia ?? [])
+        .filter((m) => m.caption && (m.image || m.video))
+        .map((m): HeroMedia => (m.video ? { kind: 'video', src: m.video, poster: m.image, caption: m.caption!, label: m.label } : { kind: 'image', src: m.image!, caption: m.caption!, label: m.label }));
+      return own.length ? own : d.heroMedia;
+    })(),
     heroMediaOnly: Boolean(raw.heroMediaOnly && raw.heroMedia?.length),
     solutions: {
       ...d.solutions,
