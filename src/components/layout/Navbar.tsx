@@ -327,7 +327,6 @@ export function Navbar() {
         )}
       </AnimatePresence>
     </header>
-    {bar && <div aria-hidden className="h-28" />}
     </>
   );
 }

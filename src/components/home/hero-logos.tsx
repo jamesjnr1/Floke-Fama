@@ -15,13 +15,13 @@ function box(w: number, h: number, area: number, maxW: number, maxH: number) {
 
 /**
  * Our Clients & Partners, under the hero: a white band with the real logos in one still row (no boxes). Hospitals
- * show only their logo: no name is written on the page (their alt text is their code, e.g. "Client hospital FF-H02").
+ * show only their logo: no name is written on the page (their name is the alt text).
  */
 export async function HeroLogos() {
   const { technologyPartners, clients } = await getSite();
   const logos = [
     ...technologyPartners.map((l) => ({ name: l.name, logo: l.logo, w: l.w, h: l.h })),
-    ...clients.filter((c) => c.logo).map((c) => ({ name: c.code ? `Client hospital ${c.code}` : 'Client hospital', logo: c.logo, w: c.w, h: c.h })),
+    ...clients.filter((c) => c.logo).map((c) => ({ name: c.name, logo: c.logo, w: c.w, h: c.h })),
   ];
   const row = (hidden: boolean) =>
     logos.map((l) => {

@@ -158,6 +158,23 @@ export const event = defineType({
       type: 'image',
       fields: [defineField({ name: 'alt', title: 'Describe the flyer', type: 'string', description: 'Read aloud to visitors who use a screen reader' })],
     }),
+    defineField({
+      name: 'photos',
+      title: 'Event photos',
+      type: 'array',
+      description: 'Pictures taken at the event. They show under the event on Events & News; placeholders show until the first one is added.',
+      options: { layout: 'grid' },
+      of: [
+        defineArrayMember({
+          type: 'image',
+          options: { hotspot: true },
+          fields: [
+            defineField({ name: 'caption', type: 'string', description: 'Optional, shown on the event page' }),
+            defineField({ name: 'alt', title: 'Describe the photo', type: 'string', description: 'Read aloud to visitors who use a screen reader' }),
+          ],
+        }),
+      ],
+    }),
   ],
   orderings: [{ title: 'Date, newest first', name: 'dateDesc', by: [{ field: 'date', direction: 'desc' }] }],
   preview: { select: { title: 'title', subtitle: 'date', media: 'image' } },
@@ -222,8 +239,8 @@ const logo = (name: string) =>
       defineField({ name: 'role', type: 'string', description: 'Optional, e.g. Official distributor' }),
       ...(name === 'client'
         ? [
-            defineField({ name: 'code', title: 'Code shown on the website', type: 'string', description: 'Hospitals are shown by a code, not their name or logo, e.g. FF-H08', validation: (r) => r.required() }),
-            defineField({ name: 'kind', title: 'Kind of facility', type: 'string', description: 'Shown with the code, e.g. Teaching hospital, Private clinic' }),
+            defineField({ name: 'code', title: 'Code (optional)', type: 'string', description: 'Optional, not shown on the website for now, e.g. FF-H08' }),
+            defineField({ name: 'kind', title: 'Kind of facility', type: 'string', description: 'Optional, e.g. Teaching hospital, Private clinic' }),
           ]
         : []),
     ],
@@ -374,7 +391,7 @@ export const siteContent = defineType({
       name: 'testimonials',
       type: 'array',
       group: 'home',
-      of: [defineArrayMember({ type: 'object', name: 'testimonial', fields: [defineField({ name: 'quote', type: 'text', rows: 3 }), defineField({ name: 'name', type: 'string' }), defineField({ name: 'role', type: 'string', description: 'Hospitals are shown by code, e.g. Medical Director, client hospital FF-H07' }), defineField({ name: 'photo', title: 'Photo of the person', type: 'image', options: { hotspot: true }, description: 'Portrait (head and shoulders), with their permission. A placeholder shows until a photo is added.' })], preview: { select: { title: 'name', subtitle: 'role', media: 'photo' } } })],
+      of: [defineArrayMember({ type: 'object', name: 'testimonial', fields: [defineField({ name: 'quote', type: 'text', rows: 3 }), defineField({ name: 'name', type: 'string' }), defineField({ name: 'role', type: 'string', description: 'e.g. Medical Director, Lifecare Hospital' }), defineField({ name: 'photo', title: 'Photo of the person', type: 'image', options: { hotspot: true }, description: 'Portrait (head and shoulders), with their permission. A placeholder shows until a photo is added.' })], preview: { select: { title: 'name', subtitle: 'role', media: 'photo' } } })],
     }),
     defineField({
       name: 'purpose',

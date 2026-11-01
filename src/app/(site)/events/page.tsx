@@ -9,6 +9,7 @@ import { longDate } from '@/lib/events';
 import type { EventItem } from '@/lib/types';
 import { cn, siteUrl, jsonLdHtml } from '@/lib/utils';
 import { PhotoGallery } from '@/components/media/photo-gallery';
+import { EventPhotos } from '@/components/events/event-photos';
 import { getSite } from '@/lib/site';
 
 // Re-render daily so events move from Upcoming to Past, and the countdown stays right.
@@ -139,6 +140,10 @@ function EventGrid({ events, past = false }: { events: EventItem[]; past?: boole
                 </span>
               </Link>
             </Reveal>
+            {/* Photos from this event (uploaded in the Studio), or placeholders until they arrive */}
+            <div className="mt-2">
+              <EventPhotos photos={e.photos} title={e.title} />
+            </div>
           </li>
         );
       })}

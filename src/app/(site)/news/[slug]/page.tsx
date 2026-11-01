@@ -103,7 +103,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
       <article className="bg-canvas pb-20 pt-14 md:pb-28 md:pt-20">
         <div className="mx-auto grid max-w-[1200px] gap-12 px-5 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-14">
           <aside className="hidden lg:block">
-            <div className="sticky top-32 space-y-8">
+            <div className="sticky top-36 space-y-8">
               {toc.length > 1 && (
                 <nav aria-label="In this article">
                   <p className="label">In this article</p>

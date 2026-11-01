@@ -96,4 +96,12 @@ export interface EventItem {
   imageWidth?: number;
   imageHeight?: number;
   alt?: string;
+  /** Photos from the event (Studio: Events → Event photos); placeholders show until they are uploaded. */
+  photos?: EventPhoto[] | null;
+}
+
+export interface EventPhoto {
+  src: string;
+  alt?: string;
+  caption?: string;
 }
