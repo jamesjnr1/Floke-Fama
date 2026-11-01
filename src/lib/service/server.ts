@@ -8,6 +8,8 @@ import { escalateStale, smsNew } from '@/lib/sms';
 import { canonicalFacility } from '@/lib/service/facilities';
 import { supportDetails, type SupportInput } from '@/lib/support-schema';
 import { categoryOf } from '@/lib/categories';
+import { listTeam } from '@/lib/engineer-team';
+import { regionInText } from '@/lib/regions';
 import { createSeed, facilityKey, looksIvd, reducer, serviceInterval, type Action, type Actor, type Asset, type Notification, type ServiceState, type Ticket } from '@/lib/service/desk';
 
 /**
@@ -109,6 +111,10 @@ function allowed(s: SessionUser, a: Action, state: ServiceState): string | null 
   switch (a.type) {
     case 'assign': return a.engineer === s.name && ownTicket(a.id) ? null : 'You can only assign requests to yourself.';
     case 'travel': case 'arrive': case 'note': case 'part': case 'resolve': return ownTicket(a.id) ? null : 'Unknown request.';
+    case 'decline': {
+      const t = state.tickets.find((x) => x.id === a.id);
+      return t && t.engineer === s.name && (t.status === 'assigned' || t.status === 'travelling') ? null : 'You can only hand back a job of yours you haven’t started on site.';
+    }
     case 'create':
       if (a.newAsset) return a.newAsset.id === a.ticket.assetId && !state.assets.some((x) => x.id === a.newAsset!.id) ? null : 'Invalid equipment.';
       return ownAsset(a.ticket.assetId) ? null : 'Unknown equipment.';
@@ -205,6 +211,8 @@ export async function applyAction(s: SessionUser, action: Action): Promise<Servi
       await saveChanges(before, after);
       // Alerts on phones and computers for the new notifications, and texts for what engineers must act on
       await Promise.all([pushNew(before, after), smsNew(before, after, actorFor(s)), escalateStale(after)]);
+      // Urgent jobs left waiting (a job just handed back, say) go to an engineer automatically
+      if (await autoAssignStale(action.type === 'decline' ? undefined : after, action.type === 'decline')) return visibleTo(s, await loadDesk());
       return visibleTo(s, after);
     } catch (e) {
       if ((e as { code?: number }).code === 409 && attempt < 2) continue;
@@ -212,6 +220,62 @@ export async function applyAction(s: SessionUser, action: Action): Promise<Servi
     }
   }
 }
+
+/** Minutes an urgent job may wait for an engineer to take it before the system gives it to one (0 = never). */
+export const autoAssignMinutes = Math.max(0, Number(process.env.AUTO_ASSIGN_MINUTES ?? 15) || 0);
+let lastAutoAssign = 0;
+
+/**
+ * Urgent jobs (critical or high) nobody has taken after AUTO_ASSIGN_MINUTES are given to an engineer automatically:
+ * one in the hospital's region if there is one, otherwise anyone, and of those the one with the fewest open jobs.
+ * Engineers who handed the job back are skipped. It is the same as the engineer pressing Assign to me: they get a
+ * text, and the hospital gets their name and number. Runs whenever a portal loads the desk or a change is saved
+ * (at most once a minute per server), and from the scheduled checks. Returns how many jobs it assigned.
+ */
+export async function autoAssignStale(desk?: ServiceState, force = false): Promise<number> {
+  if (!appwrite || !autoAssignMinutes) return 0;
+  const now = Date.now();
+  if (!force && now - lastAutoAssign < 60_000) return 0;
+  lastAutoAssign = now;
+  const due = (d: ServiceState) => d.tickets.filter((t) => t.status === 'new' && (t.priority === 'critical' || t.priority === 'high') && now - new Date(t.openedAt).getTime() >= autoAssignMinutes * 60_000);
+  if (desk && !due(desk).length) return 0;
+  try {
+    const team = (await listTeam()).filter((m) => !m.pending && m.phone.trim());
+    if (!team.length) return 0;
+    for (let attempt = 0; ; attempt++) {
+      const before = await loadDesk();
+      const jobs = due(before);
+      if (!jobs.length) return 0;
+      const load = new Map<string, number>();
+      for (const t of before.tickets) if (t.engineer && t.status !== 'resolved') load.set(t.engineer, (load.get(t.engineer) ?? 0) + 1);
+      let after = before;
+      for (const t of jobs) {
+        const a = before.assets.find((x) => x.id === t.assetId);
+        const region = regionInText(a?.facility, a?.location);
+        const free = team.filter((m) => !t.declined?.includes(m.name));
+        if (!free.length) continue;
+        const local = region ? free.filter((m) => m.region === region) : [];
+        const pick = (local.length ? local : free).sort((x, y) => (load.get(x.name) ?? 0) - (load.get(y.name) ?? 0))[0];
+        load.set(pick.name, (load.get(pick.name) ?? 0) + 1);
+        const why = `nobody took it in ${autoAssignMinutes} minutes${local.length ? ` (engineer in ${region})` : ''}`;
+        after = reducer(autoActor)(after, { type: 'assign', id: t.id, engineer: pick.name, phone: pick.phone.trim(), auto: why });
+      }
+      if (after === before) return 0;
+      try {
+        await saveChanges(before, after);
+        await Promise.all([pushNew(before, after), smsNew(before, after, autoActor)]);
+        return after.tickets.filter((t, i) => t.status === 'assigned' && before.tickets[i]?.status === 'new').length;
+      } catch (e) {
+        if ((e as { code?: number }).code === 409 && attempt < 2) continue;
+        throw e;
+      }
+    }
+  } catch (e) {
+    console.error('service desk: auto-assign failed', e);
+    return 0;
+  }
+}
+const autoActor: Actor = { name: 'Flokefama auto-assign', role: 'engineer' };
 
 /**
  * The daily check: opens a preventive maintenance job for every machine due within two weeks (no more than one open

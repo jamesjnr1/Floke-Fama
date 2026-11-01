@@ -39,6 +39,8 @@ export interface Ticket {
   kind?: 'installation' | 'pm' | 'repair';
   /** Distance the engineer travelled for the job, in km (entered when resolving): for the performance report. */
   km?: number;
+  /** Engineers who handed the job back (“I can't take this”): it is not given to them again automatically. */
+  declined?: string[];
   /** Who raised it: a facility contact (client portal), an engineer, or the system (scheduled PM). */
   requestedBy?: string;
   contactPhone?: string;
@@ -218,7 +220,9 @@ export const nextTicketId = (s: ServiceState) => `TK-${Math.max(1000, ...s.ticke
 /* ---------- actions ---------- */
 export type Action =
   | { type: 'load'; state: ServiceState }
-  | { type: 'assign'; id: string; engineer: string; /** Filled in by the server from the engineer's account. */ phone?: string }
+  | { type: 'assign'; id: string; engineer: string; /** Filled in by the server from the engineer's account. */ phone?: string; /** Assigned by the system: why (shown in the job's log). */ auto?: string }
+  /** The assigned engineer can't go: the job goes back to the queue (and to another engineer, automatically, if urgent). */
+  | { type: 'decline'; id: string; reason?: string }
   | { type: 'travel'; id: string; eta: string }
   | { type: 'arrive'; id: string }
   | { type: 'note'; id: string; text: string }
@@ -255,9 +259,25 @@ export function reducer(actor: Actor) {
     switch (action.type) {
       case 'load':
         return action.state;
-      case 'assign':
-        return notify(patch(action.id, (t) => ({ ...t, status: 'assigned', engineer: action.engineer, engineerPhone: action.phone, log: [...t.log, entry(`Assigned to ${action.engineer}`)] })),
-          `${action.engineer} has been assigned to ${label}.`, { ticketId: action.id });
+      case 'assign': {
+        const next = notify(
+          patch(action.id, (t) => ({ ...t, status: 'assigned', engineer: action.engineer, engineerPhone: action.phone, log: [...t.log, { ...entry(`Assigned to ${action.engineer}${action.auto ? ` automatically: ${action.auto}` : ''}`), ...(action.auto ? { by: 'Flokefama (automatic)' } : {}) }] })),
+          `${action.engineer} has been assigned to ${label}.`, { ticketId: action.id },
+        );
+        // An automatic assignment tells the engineer in their portal too (they also get a text)
+        return action.auto
+          ? { ...next, notifications: [{ id: uid('N'), at: now, text: `${label} was assigned to ${action.engineer} automatically (nobody had taken it).`, audience: 'engineer', ticketId: action.id, read: false }, ...next.notifications] }
+          : next;
+      }
+      case 'decline': {
+        if (!ticket || ticket.engineer !== me || ticket.status === 'resolved' || ticket.status === 'onsite') return state;
+        const next = patch(action.id, (t) => ({
+          ...t, status: 'new', engineer: undefined, engineerPhone: undefined, eta: undefined, declined: [...new Set([...(t.declined ?? []), me])],
+          log: [...t.log, entry(`${me} can’t take this job${action.reason ? `: ${action.reason}` : ''}. Back in the queue for another engineer.`)],
+        }));
+        const withClient = notify(next, `We’re sending another engineer for ${label}. You’ll get their name and number shortly.`, { ticketId: action.id });
+        return { ...withClient, notifications: [{ id: uid('N'), at: now, text: `${me} handed back ${label}. It needs an engineer.`, audience: 'engineer', ticketId: action.id, read: false }, ...withClient.notifications] };
+      }
       case 'travel':
         return notify(patch(action.id, (t) => ({ ...t, status: 'travelling', eta: action.eta, log: [...t.log, entry(`En route · ETA ${action.eta}`)] })),
           `${me} is on the way for ${label}. ETA ${action.eta}.`, { ticketId: action.id });

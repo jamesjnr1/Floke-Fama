@@ -161,7 +161,20 @@ async function staff(): Promise<Person[]> {
     if (page.rows.length < 500) break;
     cursor = page.rows[page.rows.length - 1].$id;
   }
-  return rows.map((r) => ({ name: r.name, phone: r.phone ?? '', role: roleFor(r.email ?? '', r.$id) })).filter((p) => p.role !== 'client' && p.phone);
+  // Engineers waiting for approval (engp-) get no job texts yet
+  return rows.filter((r) => !r.$id.startsWith('engp-')).map((r) => ({ name: r.name, phone: r.phone ?? '', role: roleFor(r.email ?? '', r.$id) })).filter((p) => p.role !== 'client' && p.phone);
+}
+
+/** One text to every admin (with a phone on their account) and SMS_ESCALATION_NUMBERS, e.g. a new engineer to approve. */
+export async function textAdmins(kind: string, ref: string, text: string) {
+  if (!smsEnabled || !appwrite) return;
+  const to = [...(await staff()).filter((p) => p.role === 'admin').map((p) => p.phone), ...(process.env.SMS_ESCALATION_NUMBERS ?? '').split(',')];
+  await send(kind, ref, to, text);
+}
+/** One text to one person (e.g. an engineer whose registration was approved). */
+export async function textPerson(kind: string, ref: string, phone: string, text: string) {
+  if (!smsEnabled) return;
+  await send(kind, ref, [phone], text);
 }
 
 /* ---------- what ---------- */

@@ -7,6 +7,11 @@ import { Hint } from '@/components/ui/hint';
 import { Icon } from '@/components/ui/icon';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { removeEngineer, saveOrderNote, setOrderStatus } from '@/lib/admin/actions';
+import { approveEngineer, declineEngineer } from '@/lib/engineer-actions';
+import { newInviteCode } from '@/lib/engineer-team';
+import { regionOfOrganisation, regions } from '@/lib/regions';
+import { InviteLink } from '@/components/admin/invite-link';
+import { siteUrl } from '@/lib/utils';
 import { AddEngineerForm } from '@/components/admin/add-engineer-form';
 import { ConfirmButton } from '@/components/admin/confirm-button';
 import { configChecks, loadAdminData, type AdminData } from '@/lib/admin/data';
@@ -35,11 +40,12 @@ import type { TicketStatus as TicketStatusId } from '@/lib/service/store';
  */
 export const dynamic = 'force-dynamic';
 
-type Tab = 'overview' | 'orders' | 'accounts' | 'products' | 'service' | 'texts' | 'system';
+type Tab = 'overview' | 'orders' | 'accounts' | 'team' | 'products' | 'service' | 'texts' | 'system';
 const tabs: { id: Tab; label: string; icon: string }[] = [
   { id: 'overview', label: 'Overview', icon: 'fi-rr-apps' },
   { id: 'orders', label: 'Orders', icon: 'fi-rr-box-open' },
   { id: 'accounts', label: 'Accounts', icon: 'fi-rr-users' },
+  { id: 'team', label: 'Engineers', icon: 'fi-rr-user-gear' },
   { id: 'products', label: 'Product demand', icon: 'fi-rr-shopping-cart' },
   { id: 'service', label: 'Service desk', icon: 'fi-rr-tools' },
   { id: 'texts', label: 'Text messages', icon: 'fi-rr-comment' },
@@ -96,6 +102,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
     orders: { n: data.orders.filter((o) => o.status === 'awaiting-payment').length, tone: 'red', title: 'new orders to call' },
     service: { n: data.supportRequests.filter((r) => r.status === 'new' && !r.ticketId).length + data.desk.tickets.filter((t) => t.status === 'new').length, tone: 'red', title: 'new Support page requests and jobs no engineer has taken' },
     accounts: { n: data.accounts.filter((a) => now - Date.parse(a.createdAt) < DAY).length, tone: 'green', title: 'registered in the last 24 hours' },
+    team: { n: data.accounts.filter((a) => a.id.startsWith('engp-')).length, tone: 'red', title: 'engineers waiting for your approval' },
     texts: { n: data.sms.filter((m) => m.status === 'failed' && now - Date.parse(m.at) < DAY).length, tone: 'red', title: 'texts not sent in the last 24 hours' },
   };
   const badge = (id: Tab, phone?: boolean) => {
@@ -215,6 +222,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             {params.add !== 'engineer' && <LiveRefresh seconds={30} />}
             {tab === 'orders' && <Orders data={data} q={params.q} open={params.order} stage={params.stage} now={now} />}
             {tab === 'accounts' && (params.account ? <AccountDetail data={data} id={params.account} now={now} /> : <Accounts data={data} q={params.q} role={roles.some((r) => r.id && r.id === params.role) ? params.role : undefined} adding={params.add === 'engineer'} />)}
+            {tab === 'team' && <Team data={data} now={now} />}
             {tab === 'products' && <Products data={data} />}
             {tab === 'service' && <Service data={data} now={now} />}
             {tab === 'texts' && <Texts data={data} now={now} />}
@@ -773,6 +781,90 @@ function Accounts({ data, q, role, adding }: { data: AdminData; q?: string; role
         })}
       </Table>
       {role === 'engineer' && <p className="mt-4 text-[0.875rem] text-ink-3">Add engineers with the button above. Emails listed in ENGINEER_EMAILS (Vercel) are engineers too.</p>}
+    </>
+  );
+}
+
+/**
+ * Engineers across the country: the invite link to send them, registrations waiting for approval, and everyone by
+ * region with their open jobs, jobs done (90 days) and rating.
+ */
+async function Team({ data, now }: { data: AdminData; now: number }) {
+  const code = await newInviteCode();
+  const url = `${siteUrl}/engineer/join?code=${encodeURIComponent(code)}`;
+  const until = fmt(new Date(now + 30 * DAY).toISOString());
+  const pending = data.accounts.filter((a) => a.id.startsWith('engp-'));
+  const engineers = data.accounts.filter((a) => a.role === 'engineer' && !a.id.startsWith('engp-'));
+  const from = new Date(now - 90 * DAY).toISOString();
+  const row = (a: (typeof engineers)[number]) => {
+    const jobs = data.desk.tickets.filter((t) => t.engineer === a.name);
+    const open = jobs.filter((t) => t.status !== 'resolved').length;
+    const done = jobs.filter((t) => t.status === 'resolved' && t.openedAt >= from);
+    const rated = done.filter((t) => t.rating);
+    const rating = rated.length ? (rated.reduce((n, t) => n + t.rating!, 0) / rated.length).toFixed(1) : null;
+    return { a, region: regionOfOrganisation(a.organisation), open, done: done.length, rating, ratings: rated.length };
+  };
+  const rows = engineers.map(row).sort((x, y) => (x.region ?? 'zz').localeCompare(y.region ?? 'zz') || x.a.name.localeCompare(y.a.name));
+  const covered = new Set(rows.map((r) => r.region).filter(Boolean));
+  const missing = regions.filter((r) => !covered.has(r));
+  return (
+    <>
+      <Heading
+        hint={<>Send the invite link to engineers anywhere in the country (WhatsApp is easiest). They register themselves with their name, phone, email, region and a password. Each registration waits here until you approve it, so a forwarded link can’t let a stranger in. Approved engineers get a text and sign in at /engineer/login.</>}
+        title="Engineers"
+        lead={`${engineers.length} engineer${engineers.length === 1 ? '' : 's'} on the system${pending.length ? `, ${pending.length} waiting for your approval` : ''}. The region is used to send urgent jobs to the nearest engineer.`}
+        action={<Csv table="accounts" />}
+      />
+      <Panel title="Invite engineers" className="mb-6">
+        <p className="-mt-3 mb-4 text-[0.9375rem] text-ink-3">Send this link to your engineers. It opens a short registration form on their phone.</p>
+        <InviteLink url={url} until={until} />
+      </Panel>
+
+      {pending.length > 0 && (
+        <Panel title={`Waiting for your approval (${pending.length})`} className="mb-6 border-[#e4b4ae]">
+          <ul className="-mt-2 divide-y divide-line">
+            {pending.map((a) => (
+              <li key={a.id} className="flex flex-wrap items-center gap-x-6 gap-y-3 py-4">
+                <span className="min-w-0 flex-1 basis-60">
+                  <span className="block text-[1.0625rem] font-semibold">{a.name}</span>
+                  <span className="block text-[0.9375rem] text-ink-3">{regionOfOrganisation(a.organisation) ?? 'Region not given'} · {a.phone} · {a.email}</span>
+                  <span className="block text-[0.8125rem] text-ink-3">Registered {fmt(a.createdAt)}</span>
+                </span>
+                <span className="flex gap-2">
+                  <form action={approveEngineer}>
+                    <input type="hidden" name="id" value={a.id} />
+                    <button className="inline-flex h-11 items-center gap-2 rounded-xl bg-brand-700 px-5 text-[0.9375rem] font-semibold text-white hover:bg-brand-800"><Icon name="fi-rr-check" /> Approve</button>
+                  </form>
+                  <form action={declineEngineer}>
+                    <input type="hidden" name="id" value={a.id} />
+                    <ConfirmButton message={`Decline ${a.name}'s registration? It will be deleted.`} className="inline-flex h-11 items-center rounded-xl border border-line px-4 text-[0.9375rem] font-medium hover:border-ink/40">Decline</ConfirmButton>
+                  </form>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </Panel>
+      )}
+
+      <Table head={['Engineer', 'Region', 'Phone', 'Open jobs', 'Done (90 days)', 'Rating']} empty={!rows.length}>
+        {rows.map((r) => (
+          <tr key={r.a.id}>
+            <td>
+              <Link href={`/admin?tab=accounts&account=${encodeURIComponent(r.a.id)}`} className="flex items-center gap-3 font-medium hover:text-brand-700">
+                <UserAvatar src={data.pictures[r.a.id]} className="size-9 bg-[#eaf5ef] text-sm text-brand-800" />
+                <span>{r.a.name}<span className="block text-[0.8125rem] font-normal text-ink-3">{r.a.email}</span></span>
+              </Link>
+            </td>
+            <td>{r.region ?? <span className="text-ink-3">Not set</span>}</td>
+            <td className="whitespace-nowrap">{r.a.phone ? <a href={`tel:${r.a.phone.replace(/[^\d+]/g, '')}`} className="hover:text-brand-700">{r.a.phone}</a> : '—'}</td>
+            <td className="tabular-nums">{r.open}</td>
+            <td className="tabular-nums">{r.done}</td>
+            <td className="whitespace-nowrap tabular-nums">{r.rating ? `${r.rating} / 5 (${r.ratings})` : '—'}</td>
+          </tr>
+        ))}
+      </Table>
+      {missing.length > 0 && rows.length > 0 && <p className="mt-4 text-[0.875rem] text-ink-3">No engineer yet in: {missing.join(', ')}. Urgent jobs there go to the least busy engineer.</p>}
+      {rows.some((r) => !r.region) && <p className="mt-2 text-[0.875rem] text-ink-3">Engineers without a region can set it in the engineer portal (My profile).</p>}
     </>
   );
 }
