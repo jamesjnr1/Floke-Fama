@@ -15,6 +15,8 @@ import { cn } from '@/lib/utils';
 
 /** The Chat button: live chat with staff (Tawk.to) by default; see src/lib/live-chat.ts for the switches. */
 const chatOn = chatMode !== 'off';
+/** The WhatsApp "Contact us" button: hidden while the live chat is on (Nov 2026); NEXT_PUBLIC_WHATSAPP_BUTTON=on shows it again. */
+const whatsappButton = !chatOn || process.env.NEXT_PUBLIC_WHATSAPP_BUTTON === 'on';
 
 /**
  * Bottom-right on every public page: the visitor's quote list (once it has something in it)
@@ -191,17 +193,19 @@ export function SalesDock() {
           <span className="grid size-12 place-items-center rounded-full bg-brand-700 text-xl text-white shadow-[0_8px_20px_-8px_rgb(11_21_16/0.35)] transition group-hover:scale-105">
             <Icon name={chat ? 'fi-rr-cross-small' : 'fi-rr-comment-dots'} />
           </span>
-          <span className={cn('whitespace-nowrap text-xs font-semibold transition-colors', onDark ? 'text-white' : 'text-ink')}>Chat</span>
+          <span ref={label} className={cn('whitespace-nowrap text-xs font-semibold transition-colors', onDark ? 'text-white' : 'text-ink')}>Chat</span>
         </button>
         )}
-        {/* WhatsApp, with "Contact us" under the icon */}
+        {/* WhatsApp, with "Contact us" under the icon (when switched on) */}
+        {whatsappButton && (
         <button type="button" onClick={whatsapp} aria-label="Contact Flokefama on WhatsApp" title="Chat on WhatsApp" className="group flex flex-col items-center gap-1">
           <span className="grid size-12 place-items-center rounded-full bg-[#25D366] text-2xl text-white shadow-[0_8px_20px_-8px_rgb(11_21_16/0.35)] transition group-hover:scale-105">
             <Icon name="fi-brands-whatsapp" />
           </span>
           {/* Plain text: dark over light sections, white over dark ones */}
-          <span ref={label} className={cn('whitespace-nowrap text-xs font-semibold transition-colors', onDark ? 'text-white' : 'text-ink')}>Contact us</span>
+          <span ref={chatOn ? undefined : label} className={cn('whitespace-nowrap text-xs font-semibold transition-colors', onDark ? 'text-white' : 'text-ink')}>Contact us</span>
         </button>
+        )}
       </div>
     </div>
   );
