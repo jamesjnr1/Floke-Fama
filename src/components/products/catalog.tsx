@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { helpHref } from '@/lib/links';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, LayoutGroup, motion } from 'motion/react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ProductVisual } from '@/components/products/product-visual';
 import { AddToQuote } from '@/components/sales/add-to-quote';
 import { Icon } from '@/components/ui/icon';
@@ -29,7 +29,6 @@ export function Catalog({ products, categories, typeList }: {
   const [type, setType] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
   const [remote, setRemote] = useState<string[] | null>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
   const bySlug = useMemo(() => new Map(products.map((p) => [p.slug, p])), [products]);
   const catBySlug = useMemo(() => new Map(categories.map((c) => [c.slug, c])), [categories]);
 
@@ -80,21 +79,52 @@ export function Catalog({ products, categories, typeList }: {
     const onKey = (e: KeyboardEvent) => {
       if ((e.key === 'k' && (e.metaKey || e.ctrlKey)) || (e.key === '/' && document.activeElement?.tagName !== 'INPUT')) {
         e.preventDefault();
-        inputRef.current?.focus();
+        [...document.querySelectorAll<HTMLInputElement>('[data-search]')].find((el) => el.offsetParent)?.focus();
       }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, []);
 
-  // The categories' full names (the CEO's five), as the tabs scroll sideways when they don't fit
+  // The categories' full names (the CEO's five), all on one line on wide screens; a dropdown on smaller ones (no scrolling)
   const tabs = [{ slug: null, title: 'All equipment' }, ...categories.map((c) => ({ slug: c.slug, title: c.title }))];
+
+  const searchBox = (className: string) => (
+    <label className={cn('group relative flex h-12 w-full items-center rounded-lg border border-line bg-paper pl-12 pr-4 transition focus-within:border-brand-500 focus-within:ring-4 focus-within:ring-brand-100', className)}>
+      <Icon name="fi-rr-search" className="absolute left-5 text-ink-3" />
+      <span className="sr-only">Search products</span>
+      <input
+        data-search=""
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Search analysers, reagents, brands…"
+        className="h-full w-full bg-transparent text-sm text-ink outline-none placeholder:text-ink-3"
+        type="search"
+      />
+      <kbd className="hidden rounded-md border border-line px-1.5 py-0.5 text-[0.875rem] text-ink-3 sm:block">⌘K</kbd>
+    </label>
+  );
 
   return (
     <LayoutGroup>
       <div className="sticky top-28 z-30 -mx-5 border-b border-line bg-canvas px-5 py-4 md:-mx-10 md:px-10">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div role="tablist" aria-label="Categories" className="-mx-1 flex gap-1 overflow-x-auto px-1 pb-1 [scrollbar-width:none]">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center xl:block">
+          <label className="relative block sm:w-72 sm:shrink-0 xl:hidden">
+            <span className="sr-only">Category</span>
+            <select
+              value={category ?? ''}
+              onChange={(e) => setCategory(e.target.value || null)}
+              className="h-12 w-full appearance-none rounded-lg border border-line bg-paper pl-4 pr-10 text-sm font-medium text-ink outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-100"
+            >
+              {tabs.map((t) => (
+                <option key={t.title} value={t.slug ?? ''}>
+                  {t.title}
+                </option>
+              ))}
+            </select>
+            <Icon name="fi-rr-angle-small-down" className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-lg text-ink-3" />
+          </label>
+          <div role="tablist" aria-label="Categories" className="hidden flex-nowrap justify-between gap-1 xl:flex">
             {tabs.map((t) => {
               const active = category === t.slug;
               return (
@@ -103,7 +133,7 @@ export function Catalog({ products, categories, typeList }: {
                   role="tab"
                   aria-selected={active}
                   onClick={() => setCategory(t.slug)}
-                  className={cn('relative shrink-0 rounded-md px-4 py-2 text-sm font-medium transition-colors', active ? 'text-white' : 'text-ink-3 hover:text-ink')}
+                  className={cn('relative shrink-0 whitespace-nowrap rounded-md px-3 py-2 text-sm font-medium transition-colors', active ? 'text-white' : 'text-ink-3 hover:text-ink')}
                 >
                   {active && <motion.span layoutId="cat-pill" className="absolute inset-0 rounded-md bg-midnight" transition={{ type: 'spring', bounce: 0.15, duration: 0.5 }} />}
                   <span className="relative">{t.title}</span>
@@ -111,19 +141,7 @@ export function Catalog({ products, categories, typeList }: {
               );
             })}
           </div>
-          <label className="group relative flex h-12 w-full items-center rounded-lg border border-line bg-paper pl-12 pr-4 transition focus-within:border-brand-500 focus-within:ring-4 focus-within:ring-brand-100 lg:w-96">
-            <Icon name="fi-rr-search" className="absolute left-5 text-ink-3" />
-            <span className="sr-only">Search products</span>
-            <input
-              ref={inputRef}
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search analysers, reagents, brands…"
-              className="h-full w-full bg-transparent text-sm text-ink outline-none placeholder:text-ink-3"
-              type="search"
-            />
-            <kbd className="hidden rounded-md border border-line px-1.5 py-0.5 text-[0.875rem] text-ink-3 sm:block">⌘K</kbd>
-          </label>
+          {searchBox('sm:flex-1 xl:hidden')}
         </div>
       </div>
 
@@ -136,7 +154,10 @@ export function Catalog({ products, categories, typeList }: {
             </button>
           )}
         </p>
-        <p className="hidden text-xs sm:block">{searchProvider === 'algolia' ? 'Search by Algolia' : 'Instant search'}</p>
+        <div className="flex items-center gap-4">
+          <p className="hidden text-xs sm:block">{searchProvider === 'algolia' ? 'Search by Algolia' : 'Instant search'}</p>
+          {searchBox('hidden w-80 xl:flex')}
+        </div>
       </div>
 
       <motion.ul layout className="grid grid-cols-2 gap-3 pb-16 sm:gap-4 sm:pb-24 lg:grid-cols-3">
