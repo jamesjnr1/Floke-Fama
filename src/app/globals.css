@@ -90,6 +90,12 @@
     0%, 100% { opacity: 0.15; transform: scaleY(1); }
     50% { opacity: 0.5; transform: scaleY(1.1); }
   }
+  /* The Chat button's glow: a soft green halo that slowly breathes */
+  --animate-chat-glow: chat-glow 2.8s ease-in-out infinite;
+  @keyframes chat-glow {
+    0%, 100% { box-shadow: 0 0 0 0 rgb(0 112 58 / 0.35), 0 0 18px 4px rgb(46 204 113 / 0.45); }
+    50% { box-shadow: 0 0 0 8px rgb(0 112 58 / 0), 0 0 30px 10px rgb(46 204 113 / 0.6); }
+  }
   --animate-status-pulse: status-pulse 2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
   @keyframes status-pulse {
     0% { box-shadow: 0 0 0 0 rgb(76 201 110 / 0.55); }
