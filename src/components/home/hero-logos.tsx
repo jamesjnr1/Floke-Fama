@@ -43,7 +43,7 @@ export async function HeroLogos() {
         Our Clients &amp; Partners
       </h2>
       {/* Still: every logo once, in one even row that wraps on smaller screens */}
-      <ul className="mx-auto mt-2 flex max-w-[1440px] flex-wrap items-center justify-center px-5 py-2 md:px-10 lg:flex-nowrap lg:justify-between lg:pr-40">
+      <ul className="mx-auto mt-2 flex max-w-[1440px] flex-wrap items-center justify-center px-5 py-2 md:px-10 lg:flex-nowrap">
         {row(false)}
       </ul>
     </div>
