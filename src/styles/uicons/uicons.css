@@ -47,6 +47,7 @@
 .fi-rr-info::before{content:"\f80b"}
 .fi-rr-interrogation::before{content:"\f81e"}
 .fi-rr-lightbulb-on::before{content:"\f8ac"}
+.fi-rr-link::before{content:"\f8ba"}
 .fi-rr-link-alt::before{content:"\f8b5"}
 .fi-rr-lock::before{content:"\f8d5"}
 .fi-rr-marker::before{content:"\f8fd"}
@@ -77,8 +78,10 @@
 .fi-rr-tools::before{content:"\fdcb"}
 .fi-rr-trophy::before{content:"\fe39"}
 .fi-rr-truck-side::before{content:"\fe4d"}
+.fi-rr-undo::before{content:"\fe6b"}
 .fi-rr-user::before{content:"\fea0"}
 .fi-rr-user-add::before{content:"\fe7a"}
+.fi-rr-user-gear::before{content:"\fe82"}
 .fi-rr-user-minus::before{content:"\fe8c"}
 .fi-rr-users::before{content:"\fea6"}
 .fi-rr-wifi::before{content:"\ff08"}

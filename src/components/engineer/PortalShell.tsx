@@ -394,7 +394,7 @@ function Portal({ user, products, practice }: { user: { name: string; email: str
                   <span className="text-sm font-semibold text-[#b42318]">View</span>
                 </button>
               )}
-              {view === 'overview' && <Overview state={state} me={me} onOpenTicket={openTicket} onOpenAsset={openAsset} onGo={setView} onLogFault={logFault} />}
+              {view === 'overview' && <Overview state={state} me={me} dispatch={dispatch} onResolve={setResolving} onOpenTicket={openTicket} onOpenAsset={openAsset} onGo={setView} onLogFault={logFault} />}
               {view === 'tickets' && (
                 <TicketsView state={state} me={me} selectedId={ticketId} onSelect={setTicketId} dispatch={dispatch} onResolve={setResolving} onOpenAsset={openAsset} onLogFault={logFault} />
               )}

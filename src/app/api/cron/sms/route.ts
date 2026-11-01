@@ -1,11 +1,11 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { timingSafeEqual } from 'node:crypto';
-import { loadDesk } from '@/lib/service/server';
+import { autoAssignStale, loadDesk } from '@/lib/service/server';
 import { escalateStale, smsEnabled } from '@/lib/sms';
 
 /**
- * The scheduled check for urgent requests nobody has taken (see escalateStale in lib/sms.ts), so escalations go
- * out even when no portal is open. Call it every 5 to 10 minutes with `Authorization: Bearer <CRON_SECRET>`:
+ * The scheduled check for urgent requests nobody has taken: gives them to an engineer (autoAssignStale) and texts
+ * the admins about any still waiting (escalateStale), even when no portal is open. Call it every 5 to 10 minutes with `Authorization: Bearer <CRON_SECRET>`:
  * from Vercel Cron (Pro plan) or a free scheduler such as cron-job.org.
  */
 export const dynamic = 'force-dynamic';
@@ -19,7 +19,8 @@ const authorised = (req: NextRequest) => {
 
 export async function GET(req: NextRequest) {
   if (!authorised(req)) return NextResponse.json({ error: 'Not allowed.' }, { status: 401 });
-  if (!smsEnabled) return NextResponse.json({ enabled: false });
+  const assigned = await autoAssignStale(undefined, true);
+  if (!smsEnabled) return NextResponse.json({ enabled: false, assigned });
   const escalated = await escalateStale(await loadDesk(), true);
-  return NextResponse.json({ enabled: true, escalated });
+  return NextResponse.json({ enabled: true, assigned, escalated });
 }

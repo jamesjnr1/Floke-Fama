@@ -46,6 +46,8 @@ export async function middleware(request: NextRequest) {
   if (pathname === '/admin/login') {
     return session ? NextResponse.redirect(new URL(roleHome[session.role], request.url)) : NextResponse.next();
   }
+  // Engineers register with the invite link before they have an account
+  if (pathname === '/engineer/join') return NextResponse.next();
   if (pathname === '/engineer/login') {
     return session?.role === 'engineer' ? NextResponse.redirect(new URL('/engineer', request.url)) : NextResponse.next();
   }
