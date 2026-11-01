@@ -191,8 +191,8 @@ export function SalesDock() {
           aria-label={chat ? 'Close the chat' : 'Chat with us live'}
           className="group flex flex-col items-center gap-1"
         >
-          {/* The Flokefama symbol, with a soft green glow around it */}
-          <span className="grid size-14 place-items-center rounded-full bg-white p-0.5 text-xl text-ink shadow-[0_0_18px_4px_rgb(46_204_113/0.45)] transition animate-chat-glow group-hover:scale-105 motion-reduce:animate-none">
+          {/* The Flokefama symbol */}
+          <span className="grid size-14 place-items-center rounded-full bg-white p-0.5 text-xl text-ink shadow-[0_8px_20px_-8px_rgb(11_21_16/0.35)] transition group-hover:scale-105">
             {chat ? <Icon name="fi-rr-cross-small" /> : <LogoMark className="size-full" />}
           </span>
           <span ref={label} className={cn('whitespace-nowrap text-xs font-semibold transition-colors', onDark ? 'text-white' : 'text-ink')}>Chat</span>
