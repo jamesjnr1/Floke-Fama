@@ -12,6 +12,9 @@ import { track } from '@/lib/analytics';
 import { quoteList, useQuoteList } from '@/lib/quote-list';
 import { cn } from '@/lib/utils';
 
+/** The chat assistant button: off for now (Nov 2026); NEXT_PUBLIC_CHAT=on brings it back. */
+const chatOn = process.env.NEXT_PUBLIC_CHAT === 'on';
+
 /**
  * Bottom-right on every public page: the visitor's quote list (once it has something in it)
  * and a WhatsApp button that opens a chat with sales, mentioning the product being viewed.
@@ -97,7 +100,7 @@ export function SalesDock() {
   return (
     // On phones, product pages have their own sticky bar, so the dock sits above it
     <div data-dock className={cn('fixed right-4 z-40 flex flex-col items-end gap-3 md:bottom-6 md:right-6', onProduct ? 'bottom-24' : 'bottom-4')}>
-      <SupportChat open={chat} onClose={() => setChat(false)} />
+      {chatOn && <SupportChat open={chat} onClose={() => setChat(false)} />}
       <AnimatePresence>
         {open && !chat && items.length > 0 && (
           <motion.div
@@ -162,7 +165,8 @@ export function SalesDock() {
             <span className="grid min-w-6 place-items-center rounded-[4px] bg-brand-500 px-1.5 text-xs">{items.length}</span>
           </button>
         )}
-        {/* The chat assistant (support desk), then WhatsApp with "Contact us" under the icon */}
+        {/* The chat assistant (support desk), when switched on */}
+        {chatOn && (
         <button
           type="button"
           onClick={() => {
@@ -179,6 +183,7 @@ export function SalesDock() {
           </span>
           <span className={cn('whitespace-nowrap text-xs font-semibold transition-colors', onDark ? 'text-white' : 'text-ink')}>Chat</span>
         </button>
+        )}
         {/* WhatsApp, with "Contact us" under the icon */}
         <button type="button" onClick={whatsapp} aria-label="Contact Flokefama on WhatsApp" title="Chat on WhatsApp" className="group flex flex-col items-center gap-1">
           <span className="grid size-12 place-items-center rounded-full bg-[#25D366] text-2xl text-white shadow-[0_8px_20px_-8px_rgb(11_21_16/0.35)] transition group-hover:scale-105">

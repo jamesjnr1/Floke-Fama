@@ -37,9 +37,17 @@ type Slide = { key: string; label: string } & ({ kind: 'intro' } | { kind: 'medi
  * The company first, then the engineering department's installation photos and videos (from the Studio), then all
  * the large equipment (unless the Studio says to show only the installations), then the shop's products two to a slide.
  */
+/** Until the engineering department's photos and videos are uploaded, their slide shows our own engineers, marked "coming soon". */
+const engineeringPlaceholder: HeroMedia = {
+  kind: 'image',
+  src: '/images/headers/team-engineers.webp',
+  label: 'Flokefama engineering · Installation videos and photos coming soon',
+  caption: 'Our engineers install, maintain and repair every system we supply',
+};
+
 const buildSlides = (media: HeroMedia[], mediaOnly: boolean): Slide[] => [
   { key: 'intro', label: 'Flokefama', kind: 'intro' },
-  ...media.map((m, i): Slide => ({ key: `media-${i}`, label: m.caption, kind: 'media', m })),
+  ...(media.length ? media : [engineeringPlaceholder]).map((m, i): Slide => ({ key: `media-${i}`, label: m.caption, kind: 'media', m })),
   ...(mediaOnly ? [] : equipment.map((e): Slide => ({ key: e.slug, label: e.title, kind: 'equipment', e }))),
   ...pairs.map((pair): Slide => ({ key: `products-${pair[0].slug}`, label: `${pair[0].title} and ${pair[1].title}`, kind: 'products', pair })),
 ];
