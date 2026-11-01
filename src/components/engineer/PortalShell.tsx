@@ -15,6 +15,7 @@ import { SystemsView } from '@/components/engineer/SystemsView';
 import { TicketsView } from '@/components/engineer/TicketsView';
 import { useWebsiteRequests, WebsiteView, type WebsiteRequest } from '@/components/engineer/WebsiteView';
 import { PhotoDialog, useEngineerPhoto } from '@/components/engineer/photo';
+import { GuideView } from '@/components/engineer/GuideView';
 import { supportDetails } from '@/lib/support-schema';
 import { LogoMark, LogoWordmark } from '@/components/layout/logo';
 import { LiveStatus } from '@/components/service/live-status';
@@ -25,7 +26,7 @@ import { daysUntil, facilityKey, isOpen, suggestedPriority, nextTicketId, useEng
 import { cn } from '@/lib/utils';
 import { UserAvatar } from '@/components/ui/user-avatar';
 
-type View = 'overview' | 'tickets' | 'website' | 'systems' | 'calibration' | 'docs';
+type View = 'overview' | 'tickets' | 'website' | 'systems' | 'calibration' | 'docs' | 'guide';
 const nav: { id: View; label: string; icon: string }[] = [
   { id: 'overview', label: 'Overview', icon: 'fi-rr-apps' },
   { id: 'tickets', label: 'Service requests', icon: 'fi-rr-clipboard-list' },
@@ -33,6 +34,7 @@ const nav: { id: View; label: string; icon: string }[] = [
   { id: 'systems', label: 'Equipment', icon: 'fi-rr-microscope' },
   { id: 'calibration', label: 'Calibration', icon: 'fi-rr-badge-check' },
   { id: 'docs', label: 'Documents', icon: 'fi-rr-book-alt' },
+  { id: 'guide', label: 'How-to guide', icon: 'fi-rr-interrogation' },
 ];
 
 type Theme = 'light' | 'dark';
@@ -184,9 +186,10 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
     if (t) openTicket(t);
     else if (a) openAsset(a);
     else if (w) setView('website');
+    else if (q.get('guide')) setView('guide');
     // From My profile: Change photo
     if (q.get('photo')) setChangingPhoto(true);
-    if (t || a || w || q.get('photo')) history.replaceState(null, '', '/engineer');
+    if (t || a || w || q.get('photo') || q.get('guide')) history.replaceState(null, '', '/engineer');
   }, [ready, openTicket, openAsset]);
 
   const themeButton = (
@@ -339,6 +342,7 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
               )}
               {view === 'systems' && <SystemsView state={state} onOpenAsset={openAsset} onAdd={addEquipment} />}
               {view === 'calibration' && <CalibrationView state={state} onRecord={setCalibrating} onOpenAsset={openAsset} />}
+              {view === 'guide' && <GuideView onGo={setView} />}
               {view === 'docs' && <Inventory assets={state.assets} tickets={state.tickets} onSelect={(a) => openAsset(a.id)} onAdd={addEquipment} />}
             </>
           )}
