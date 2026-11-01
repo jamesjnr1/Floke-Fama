@@ -37,10 +37,13 @@ export const getMetrics = cache(() => fromCms<Metric[]>(queries.metrics, seed.me
 export const getArticles = cache(() => fromCms<Article[]>(queries.articles, seedArticles));
 
 /** Events, newest first. */
-/** Events from the Studio; an event with no photos there yet keeps the photos added with the site (by its ID). */
+/** Events from the Studio; an event with no cover or photos there yet keeps the ones added with the site (by its ID). */
 export const getEvents = cache(async () => {
   const events = await fromCms<EventItem[]>(queries.events, seed.events);
-  return events.map((e) => (e.photos?.length ? e : { ...e, photos: seed.events.find((x) => x.id === e.id)?.photos ?? e.photos }));
+  return events.map((e) => {
+    const own = seed.events.find((x) => x.id === e.id);
+    return { ...e, cover: e.cover || own?.cover || null, photos: e.photos?.length ? e.photos : (own?.photos ?? e.photos) };
+  });
 });
 export const getMilestones = cache(() => fromCms<Milestone[]>(queries.milestones, seed.milestones));
 

@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { SitePageHero } from '@/components/layout/site-page-hero';
@@ -118,12 +119,18 @@ function EventGrid({ events, past = false }: { events: EventItem[]; past?: boole
                 aria-label={`${e.title}, ${longDate(e.date)}`}
                 className="group grid grid-cols-[minmax(0,1fr)_auto] gap-4 rounded-lg border border-line bg-paper p-4 transition hover:border-ink/25 hover:shadow-[0_20px_40px_-32px_rgb(11_21_16/0.4)] sm:grid-cols-[9rem_minmax(0,1fr)_auto] sm:gap-6 md:grid-cols-[13rem_minmax(0,1fr)_auto] md:gap-8 md:p-5"
               >
-                {/* Placeholder until the event photos arrive */}
-                <span aria-hidden className="col-span-2 grid aspect-[16/9] place-items-center bg-mist text-ink-3 sm:col-span-1 sm:aspect-[4/3.6]">
-                  <span className="flex flex-col items-center gap-2 text-xs font-medium uppercase tracking-[0.12em]">
-                    <Icon name="fi-rr-camera" className="text-2xl" /> Photo to come
+                {/* The event's cover photo, or a placeholder until one is added */}
+                {e.cover ? (
+                  <span className="relative col-span-2 block aspect-[16/9] overflow-hidden bg-mist sm:col-span-1 sm:aspect-[4/3.6]">
+                    <Image src={e.cover} alt="" fill sizes="(min-width: 768px) 13rem, (min-width: 640px) 9rem, 100vw" className="object-cover transition-transform duration-700 group-hover:scale-[1.04]" />
                   </span>
-                </span>
+                ) : (
+                  <span aria-hidden className="col-span-2 grid aspect-[16/9] place-items-center bg-mist text-ink-3 sm:col-span-1 sm:aspect-[4/3.6]">
+                    <span className="flex flex-col items-center gap-2 text-xs font-medium uppercase tracking-[0.12em]">
+                      <Icon name="fi-rr-camera" className="text-2xl" /> Photo to come
+                    </span>
+                  </span>
+                )}
                 <span className="flex min-w-0 flex-col justify-center py-1">
                   <span className="flex items-center gap-2 text-[0.9375rem] text-ink-2"><Icon name="fi-rr-clock" className="shrink-0 text-ink-3" /> {e.time}</span>
                   <span className="mt-2 text-[clamp(1.25rem,1.1rem+0.5vw,1.625rem)] font-bold leading-snug tracking-[-0.02em] text-ink">{e.title}</span>

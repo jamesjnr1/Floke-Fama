@@ -7,27 +7,28 @@ import type { EventPhoto } from '@/lib/types';
 import { cn } from '@/lib/utils';
 
 /**
- * Photos from an event as a mosaic: the first photo large, the next four around it (a sixth and beyond show as
- * "+N more"). Any photo opens a full-screen viewer: arrows, the keyboard (← → Esc) or a swipe move through them.
+ * Photos from an event as a mosaic: the first photo large, with four (or five) around it; any beyond show as "+N more". Any photo opens a full-screen viewer: arrows, the keyboard (← → Esc) or a swipe move through them.
  */
 export function EventGallery({ photos, title }: { photos: EventPhoto[]; title: string }) {
   const [open, setOpen] = useState<number | null>(null);
-  const shown = photos.slice(0, 5);
+  // Six photos: one large with two beside it and three below (three columns); five: one large with four around it
+  const six = photos.length >= 6;
+  const shown = photos.slice(0, six ? 6 : 5);
   const more = photos.length - shown.length;
   const alt = (p: EventPhoto, i: number) => p.alt || `${title}, photo ${i + 1}`;
 
   return (
     <>
-      <ul aria-label={`Photos from ${title}`} className="grid grid-cols-2 gap-2 md:grid-cols-4 md:grid-rows-2 md:gap-3">
+      <ul aria-label={`Photos from ${title}`} className={cn('grid grid-cols-2 gap-2 md:gap-3', six ? 'md:grid-cols-3' : 'md:grid-cols-4 md:grid-rows-2')}>
         {shown.map((p, i) => (
-          <li key={`${p.src}-${i}`} className={cn(i === 0 && 'col-span-2 md:row-span-2', shown.length === 2 && i === 1 && 'col-span-2')}>
+          <li key={`${p.src}-${i}`} className={cn(i === 0 && 'col-span-2 md:row-span-2', shown.length === 2 && i === 1 && 'col-span-2', i > 0 && i === shown.length - 1 && shown.length % 2 === 0 && 'col-span-2 md:col-span-1')}>
             <button
               type="button"
               onClick={() => setOpen(i)}
               aria-label={`Open photo ${i + 1} of ${photos.length}: ${alt(p, i)}`}
-              className={cn('group relative block w-full overflow-hidden bg-mist', i === 0 ? 'aspect-[4/3] md:aspect-auto md:h-full md:min-h-[420px]' : 'aspect-[4/3]')}
+              className={cn('group relative block w-full overflow-hidden bg-mist', i === 0 ? 'aspect-[4/3] md:aspect-auto md:h-full md:min-h-[420px]' : i === shown.length - 1 && shown.length % 2 === 0 ? 'aspect-[4/3] max-md:aspect-[16/9]' : 'aspect-[4/3]')}
             >
-              <Image src={p.src} alt={alt(p, i)} fill sizes={i === 0 ? '(min-width: 768px) 50vw, 100vw' : '(min-width: 768px) 25vw, 50vw'} className="object-cover transition-transform duration-700 ease-out-expo group-hover:scale-[1.04]" />
+              <Image src={p.src} alt={alt(p, i)} fill sizes={i === 0 ? '(min-width: 768px) 66vw, 100vw' : '(min-width: 768px) 33vw, 50vw'} className="object-cover transition-transform duration-700 ease-out-expo group-hover:scale-[1.04]" />
               <span aria-hidden className="absolute inset-0 bg-black/0 transition-colors group-hover:bg-black/10" />
               {i === shown.length - 1 && more > 0 && (
                 <span className="absolute inset-0 grid place-items-center bg-black/55 text-2xl font-bold text-white">+{more} more</span>
@@ -42,7 +43,7 @@ export function EventGallery({ photos, title }: { photos: EventPhoto[]; title: s
   );
 }
 
-/** The full-screen viewer: one photo at a time on black, with its number and caption. */
+/** The full-screen viewer: one photo at a time on black, with its number. */
 function Viewer({ photos, start, title, onClose }: { photos: EventPhoto[]; start: number; title: string; onClose: () => void }) {
   const [i, setI] = useState(start);
   const go = useCallback((d: number) => setI((x) => (x + d + photos.length) % photos.length), [photos.length]);
@@ -103,7 +104,7 @@ function Viewer({ photos, start, title, onClose }: { photos: EventPhoto[]; start
           </>
         )}
       </div>
-      <p className="min-h-12 px-5 py-3 text-center text-sm text-white/75">{p.caption || p.alt}</p>
+      <div className="h-6" />
     </div>
   );
 }

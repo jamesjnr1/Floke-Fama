@@ -96,6 +96,8 @@ export interface EventItem {
   imageWidth?: number;
   imageHeight?: number;
   alt?: string;
+  /** Photo shown for the event in the events list (Studio: Events → Cover photo); a placeholder until added. */
+  cover?: string | null;
   /** Photos from the event (Studio: Events → Event photos); placeholders show until they are uploaded. */
   photos?: EventPhoto[] | null;
 }
