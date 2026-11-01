@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { demoOn } from '@/lib/demo';
 import { cookieFor, isConsoleRole, roleAreas, roleHome, roleLogin, sessionCookie, signedInAreas, signSession, verifySession, type Role } from '@/lib/auth/session';
 
 const within = (pathname: string, prefix: string) => pathname === prefix || pathname.startsWith(`${prefix}/`);
@@ -33,7 +34,9 @@ export async function middleware(request: NextRequest) {
   // the site the hospitals' (an engineer or admin is never signed in on the site)
   const areaRole: Role = within(pathname, '/admin') ? 'admin' : within(pathname, '/engineer') ? 'engineer' : 'client';
   const cookie = cookieFor(areaRole);
-  const found = await verifySession(request.cookies.get(cookie)?.value);
+  const verified = await verifySession(request.cookies.get(cookie)?.value);
+  // A demo session ends when the demo is switched off (DEMO=off, or after DEMO_UNTIL)
+  const found = verified?.demo && !demoOn() ? null : verified;
   // The admin console lets in admins and the sales team (who see only the sales tabs)
   const session = found && (areaRole === 'admin' ? isConsoleRole(found.role) : found.role === areaRole) ? found : null;
 

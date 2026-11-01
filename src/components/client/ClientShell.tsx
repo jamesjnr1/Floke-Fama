@@ -18,6 +18,8 @@ import { Notifications } from '@/components/service/Notifications';
 import { EngineerPhotosProvider } from '@/components/service/engineer-photos';
 import { LiveStatus } from '@/components/service/live-status';
 import { Icon } from '@/components/ui/icon';
+import { useTour, type TourStep } from '@/components/service/tour';
+import { restartDemo } from '@/lib/demo';
 import { LogoChanger } from '@/components/client/logo-changer';
 import { useSite } from '@/components/site-provider';
 import { logout } from '@/lib/auth/actions';
@@ -40,12 +42,12 @@ const nav: { id: View; label: string; icon: string }[] = [
 ];
 
 /** Hospital dashboard (Flokefama Care): the facility's service desk, equipment, certificates and orders. */
-export function ClientShell({ user, products }: { user: { name: string; email: string; facility?: string; phone?: string }; products: CatalogueItem[] }) {
+export function ClientShell({ user, products, demo = false }: { user: { name: string; email: string; facility?: string; phone?: string }; products: CatalogueItem[]; /** The demo (lib/demo.ts): the sample desk in this browser. */ demo?: boolean }) {
   const { contact } = useSite();
   const facility = user.facility ?? user.name;
   const orders = useOrders(user.email);
   const actor = useMemo(() => ({ name: user.name, role: 'client' as const, facility }), [user.name, facility]);
-  const { state, dispatch: rawDispatch, ready, remote, syncedAt, queued, failing } = useServiceStore(actor);
+  const { state, dispatch: rawDispatch, ready, remote, syncedAt, queued, failing } = useServiceStore(actor, { demo });
   const [view, setView] = useState<View>('overview');
   // Deep links such as /portal?view=orders (from checkout)
   useEffect(() => {
@@ -90,6 +92,20 @@ export function ClientShell({ user, products }: { user: { name: string; email: s
   }, [ready, openTicket, openAsset]);
   const openCount = tickets.filter(isOpen).length;
   const installed = useMemo(() => assets.filter((a) => !a.installation), [assets]);
+  // First visit: a guided tour of the buttons (again from “Take the tour”)
+  const tourSteps = useMemo<TourStep[]>(() => [
+    { title: `Welcome to ${facility}’s dashboard`, text: 'This short tour shows the buttons you will use. It takes about a minute, and you can take it again any time from “Take the tour”.', before: () => setView('overview') },
+    { target: 'request', title: 'Request service', text: 'Something not working? Press here, choose the machine, describe the problem and say how urgent it is. An engineer is assigned, and you get a text with their name and phone number.' },
+    { target: 'nav', title: 'The menu', text: 'Overview, your Service requests, your Equipment, Certificates (calibration) and your Orders.' },
+    { target: 'stats', title: 'At a glance', text: 'Open requests, your equipment and what needs attention, services due and orders. Tap a box to see more.', before: () => setView('overview') },
+    { target: 'view-requests', title: 'Follow each request live', text: 'Every request shows where it stands: Logged → Engineer assigned → On the way → On site → Fixed. You can send the engineer a message, and rate the visit when it’s fixed.', before: () => setView('requests') },
+    { target: 'view-equipment', title: 'Your equipment', text: 'Every machine with its status and next service date. Tap one for its history, documents and to request service for it.', before: () => setView('equipment') },
+    { target: 'view-certificates', title: 'Certificates', text: 'Calibration certificates for each machine, ready to download and print for inspections.', before: () => setView('certificates') },
+    { target: 'bell', title: 'Alerts', text: 'Engineer assigned, on the way, fixed, services due. A red number means something new.', before: () => setView('overview') },
+    { title: 'You’re ready', text: demo ? 'Try it: press Request service on a machine, then open the engineer portal in another tab and see the request arrive.' : `Need help? Call us on ${contact.phone}. You can take this tour again from “Take the tour”.`, before: () => setView('overview') },
+  ], [facility, demo, contact.phone]);
+  const tour = useTour(demo ? 'hospital-demo' : 'hospital', tourSteps, { ready });
+
   const request = (assetId?: string) => {
     if (installed.length === 0)
       toast(assets.length ? 'Your equipment is being installed' : 'No equipment yet', {
@@ -127,12 +143,19 @@ export function ClientShell({ user, products }: { user: { name: string; email: s
           <span className="ml-auto text-[0.8125rem] font-semibold uppercase tracking-[0.18em] text-white/80">Care</span>
         </Link>
         <div className="flex items-center gap-3 px-6 py-6">
-          <LogoChanger facility={facility} className="size-10 rounded-full" fallbackClassName="bg-white text-lg text-[#006b42]">
-            <p className="text-sm font-semibold leading-snug">{facility}</p>
-            <p className="truncate text-xs text-white/75">{user.name}</p>
-          </LogoChanger>
+          {demo ? (
+            <div className="min-w-0">
+              <p className="text-sm font-semibold leading-snug">{facility}</p>
+              <p className="truncate text-xs text-white/75">{user.name}</p>
+            </div>
+          ) : (
+            <LogoChanger facility={facility} className="size-10 rounded-full" fallbackClassName="bg-white text-lg text-[#006b42]">
+              <p className="text-sm font-semibold leading-snug">{facility}</p>
+              <p className="truncate text-xs text-white/75">{user.name}</p>
+            </LogoChanger>
+          )}
         </div>
-        <nav aria-label="Client portal" className="px-3">
+        <nav aria-label="Client portal" data-tour="nav" className="px-3">
           <p className="px-3 pb-2 text-[0.8125rem] font-semibold uppercase tracking-[0.14em] text-white/60">Menu</p>
           <ul className="space-y-0.5">
             {nav.map((n) => {
@@ -156,22 +179,25 @@ export function ClientShell({ user, products }: { user: { name: string; email: s
           </ul>
         </nav>
         <div className="px-6 pt-6">
-          <button onClick={() => request()} className="flex h-11 w-full items-center justify-center gap-2 rounded-md bg-white text-sm font-semibold text-[#006b42] shadow-[0_10px_24px_-14px_rgb(0_0_0/0.5)] transition hover:bg-[#eefaf3]">
+          <button data-tour="request" onClick={() => request()} className="flex h-11 w-full items-center justify-center gap-2 rounded-md bg-white text-sm font-semibold text-[#006b42] shadow-[0_10px_24px_-14px_rgb(0_0_0/0.5)] transition hover:bg-[#eefaf3]">
             <Icon name="fi-rr-wrench-simple" /> Request service
           </button>
         </div>
         <div className="mt-auto border-t border-white/15 px-6 py-5 text-[0.8125rem]">
           <div className="space-y-2.5">
             <a href={contact.phoneHref} className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-phone-call" /> {contact.phone}</a>
-            <AlertsSwitch className="text-white/80 hover:text-white" />
-            <span className="flex items-center gap-2">
-              <TextsSwitch className="text-white/80 hover:text-white" />
-              <Hint onDark>
-                Our check-ins after a repair, calibration reminders and a few greetings a year. Texts about your own service requests (engineer assigned, fixed) always come, to the number you give with each request.
-              </Hint>
-            </span>
+            {!demo && <AlertsSwitch className="text-white/80 hover:text-white" />}
+            {!demo && (
+              <span className="flex items-center gap-2">
+                <TextsSwitch className="text-white/80 hover:text-white" />
+                <Hint onDark>
+                  Our check-ins after a repair, calibration reminders and a few greetings a year. Texts about your own service requests (engineer assigned, fixed) always come, to the number you give with each request.
+                </Hint>
+              </span>
+            )}
+            <button type="button" onClick={tour.start} className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-map-marker" /> Take the tour</button>
             <Link href="/" className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-arrow-small-left" /> Flokefama website</Link>
-            <Link href="/portal/password" className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-lock" /> Change password</Link>
+            {!demo && <Link href="/portal/password" className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-lock" /> Change password</Link>}
             <form action={logout}>
               <button type="submit" className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-sign-out-alt" /> Sign out</button>
             </form>
@@ -180,6 +206,13 @@ export function ClientShell({ user, products }: { user: { name: string; email: s
       </aside>
 
       <main id="main" className="min-w-0 flex-1">
+        {/* The demo: always visible, so the samples are never mistaken for real requests */}
+        {demo && (
+          <div role="status" className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 bg-[#7c4a00] px-4 py-2 text-center text-sm text-white">
+            <span><b className="font-semibold">Demo.</b> A made-up hospital, kept in this browser only: nothing is saved to the real system and no one is texted.</span>
+            <button type="button" onClick={restartDemo} className="rounded-md bg-white/15 px-3 py-1 font-semibold hover:bg-white/25">Start again</button>
+          </div>
+        )}
         {/* Header */}
         <header className="sticky top-10 z-30 flex h-[76px] items-center gap-3 border-b border-line bg-paper px-4 md:px-10">
           <Link href="/" className="flex items-center gap-2 lg:hidden" aria-label="Flokefama home"><LogoMark /></Link>
@@ -187,13 +220,14 @@ export function ClientShell({ user, products }: { user: { name: string; email: s
             <p className="hidden truncate text-xs text-ink-3 sm:block">{facility} <span className="text-ink-3/50">/</span> Dashboard</p>
             <h1 className="truncate text-lg font-semibold tracking-[-0.01em] text-ink">{nav.find((n) => n.id === view)?.label}</h1>
           </div>
-          <button onClick={() => request()} className="hidden h-10 items-center gap-2 rounded-md bg-brand-600 px-4 text-sm font-medium text-white hover:bg-[#006b42] sm:inline-flex lg:hidden">
+          <button data-tour="request" onClick={() => request()} className="hidden h-10 items-center gap-2 rounded-md bg-brand-600 px-4 text-sm font-medium text-white hover:bg-[#006b42] sm:inline-flex lg:hidden">
             <Icon name="fi-rr-wrench-simple" /> Request service
           </button>
           {queued > 0 || failing ? <LiveStatus at={syncedAt} queued={queued} failing={failing && !queued} /> : <LiveStatus at={syncedAt} className="hidden md:inline-flex" />}
-          <Notifications tone="light" items={notifications} onRead={(id) => rawDispatch({ type: 'read', id })} onReadAll={() => rawDispatch({ type: 'readAll', audience: 'client' })} onOpen={onNotification} />
+          <button type="button" onClick={tour.start} aria-label="Take the tour" title="Take the tour" className="grid size-10 shrink-0 place-items-center rounded-md text-lg text-ink transition hover:bg-mist lg:hidden"><Icon name="fi-rr-interrogation" /></button>
+          <span data-tour="bell" className="inline-flex"><Notifications tone="light" items={notifications} onRead={(id) => rawDispatch({ type: 'read', id })} onReadAll={() => rawDispatch({ type: 'readAll', audience: 'client' })} onOpen={onNotification} /></span>
           <span className="hidden items-center gap-3 border-l border-line pl-4 md:flex">
-            <LogoChanger facility={facility} className="size-9 rounded-full" fallbackClassName="bg-brand-50 text-base text-[#006b42]" />
+            {!demo && <LogoChanger facility={facility} className="size-9 rounded-full" fallbackClassName="bg-brand-50 text-base text-[#006b42]" />}
             <span className="leading-tight">
               <span className="block text-sm font-medium text-ink">{user.name}</span>
               <span className="block text-xs text-ink-3">{user.email}</span>
@@ -205,7 +239,7 @@ export function ClientShell({ user, products }: { user: { name: string; email: s
         </header>
 
         {/* Mobile nav */}
-        <nav aria-label="Client portal sections" className="flex gap-5 overflow-x-auto border-b border-line bg-paper px-4 lg:hidden">
+        <nav aria-label="Client portal sections" data-tour="nav" className="flex gap-5 overflow-x-auto border-b border-line bg-paper px-4 lg:hidden">
           {nav.map((n) => (
             <button key={n.id} onClick={() => setView(n.id)} aria-current={view === n.id ? 'page' : undefined} className={cn('-mb-px shrink-0 border-b-2 py-3 text-sm', view === n.id ? 'border-ink font-semibold text-ink' : 'border-transparent text-ink-3')}>
               {n.label}
@@ -218,17 +252,17 @@ export function ClientShell({ user, products }: { user: { name: string; email: s
             <div className="grid grid-cols-2 gap-3 xl:grid-cols-4" aria-busy="true">{[0, 1, 2, 3].map((i) => <div key={i} className="h-32 animate-pulse rounded-xl bg-mist" />)}</div>
           ) : (
             <>
-              {view === 'overview' && <AlertsBanner what="your engineer’s visits and updates" />}
+              {view === 'overview' && !demo && <AlertsBanner what="your engineer’s visits and updates" />}
               {view === 'overview' && <Overview name={user.name} facility={facility} orders={orders.length} assets={assets} tickets={tickets} onOpenTicket={openTicket} onOpenAsset={openAsset} onRequest={() => request()} onGo={setView} />}
-              {view === 'requests' && <RequestsView assets={assets} tickets={tickets} selectedId={ticketId} onSelect={setTicketId} onRequest={() => request()} dispatch={dispatch} />}
-              {view === 'equipment' && <EquipmentView assets={assets} tickets={tickets} onOpenAsset={openAsset} />}
-              {view === 'certificates' && <CertificatesView assets={assets} onOpenAsset={openAsset} />}
+              {view === 'requests' && <div data-tour="view-requests"><RequestsView assets={assets} tickets={tickets} selectedId={ticketId} onSelect={setTicketId} onRequest={() => request()} dispatch={dispatch} /></div>}
+              {view === 'equipment' && <div data-tour="view-equipment"><EquipmentView assets={assets} tickets={tickets} onOpenAsset={openAsset} /></div>}
+              {view === 'certificates' && <div data-tour="view-certificates"><CertificatesView assets={assets} onOpenAsset={openAsset} /></div>}
               {view === 'orders' && <OrdersView orders={orders} />}
             </>
           )}
         </div>
         {/* Mobile: floating request button */}
-        <button onClick={() => request()} className="fixed bottom-4 right-4 z-30 inline-flex h-12 items-center gap-2 rounded-md bg-brand-600 px-5 text-sm font-semibold text-white shadow-[0_8px_20px_-8px_rgb(11_21_16/0.35)] sm:hidden">
+        <button data-tour="request" onClick={() => request()} className="fixed bottom-4 right-4 z-30 inline-flex h-12 items-center gap-2 rounded-md bg-brand-600 px-5 text-sm font-semibold text-white shadow-[0_8px_20px_-8px_rgb(11_21_16/0.35)] sm:hidden">
           <Icon name="fi-rr-wrench-simple" /> Request service
         </button>
       </main>
@@ -258,6 +292,7 @@ export function ClientShell({ user, products }: { user: { name: string; email: s
         }}
       />
     </div>
+      {tour.node}
     </EngineerPhotosProvider>
   );
 }

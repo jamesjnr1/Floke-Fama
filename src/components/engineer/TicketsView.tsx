@@ -197,7 +197,7 @@ function TicketDetail({ ticket: t, state, me, team, dispatch, onResolve, onOpenA
 
         {/* Next action */}
         {t.status !== 'resolved' && (
-          <div className="mt-6 flex flex-wrap items-center gap-2 rounded-lg border border-line bg-canvas p-3">
+          <div data-tour="next-step" className="mt-6 flex flex-wrap items-center gap-2 rounded-lg border border-line bg-canvas p-3">
             <span className="mr-auto flex items-center gap-2 pl-1 text-[0.8125rem] font-semibold uppercase tracking-[0.08em] text-ink-3">
               Next step
               <Hint>

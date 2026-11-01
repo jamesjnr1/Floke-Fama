@@ -1,31 +1,38 @@
 import 'server-only';
 import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { demoOn } from '@/lib/demo';
 import { ADMIN_COOKIE, cookieFor, ENGINEER_COOKIE, isConsoleRole, roleLogin, SESSION_COOKIE, sessionCookie, signSession, verifySession, type Role, type SessionUser } from '@/lib/auth/session';
 
 /**
  * Three separate sessions, one cookie each: hospitals on the site (ff_session), engineers in the engineer portal
  * (ff_engineer) and admins in the admin console (ff_admin). Signing in to one never signs you in to another.
  */
-async function sessionFrom(cookie: string, role: Role) {
+/**
+ * A demo session (lib/demo.ts) counts as signed out everywhere (every API and every action), so a demo can never
+ * read or change the real database. Only the pages that show the sample data ask for it with `demo`.
+ */
+const allow = (s: SessionUser | null, demo: boolean) => (s && (!s.demo || (demo && demoOn())) ? s : null);
+
+async function sessionFrom(cookie: string, role: Role, demo = false) {
   const s = await verifySession((await cookies()).get(cookie)?.value);
-  return s?.role === role ? s : null;
+  return s?.role === role ? allow(s, demo) : null;
 }
 
 /** The signed-in hospital on the site. */
-export const getClientSession = () => sessionFrom(SESSION_COOKIE, 'client');
+export const getClientSession = (demo = false) => sessionFrom(SESSION_COOKIE, 'client', demo);
 /** The signed-in engineer, from the engineer portal's own cookie. */
-export const getEngineerSession = () => sessionFrom(ENGINEER_COOKIE, 'engineer');
+export const getEngineerSession = (demo = false) => sessionFrom(ENGINEER_COOKIE, 'engineer', demo);
 /** The signed-in admin, from the admin console's own cookie. */
-export const getAdminSession = () => sessionFrom(ADMIN_COOKIE, 'admin');
+export const getAdminSession = (demo = false) => sessionFrom(ADMIN_COOKIE, 'admin', demo);
 /** Whoever is signed in to the admin console: an admin, or the sales team (limited to the sales tabs). */
-export async function getConsoleSession() {
+export async function getConsoleSession(demo = false) {
   const s = await verifySession((await cookies()).get(ADMIN_COOKIE)?.value);
-  return s && isConsoleRole(s.role) ? s : null;
+  return s && isConsoleRole(s.role) ? allow(s, demo) : null;
 }
 /** The admin console's pages: an admin or the sales team, else to the console's sign-in. */
-export async function requireConsole(path: string) {
-  const session = await getConsoleSession();
+export async function requireConsole(path: string, { demo = false } = {}) {
+  const session = await getConsoleSession(demo);
   if (!session) redirect(`${roleLogin.admin}?next=${encodeURIComponent(path)}`);
   return session;
 }
@@ -63,8 +70,8 @@ export async function renewSession(s: SessionUser) {
 }
 
 /** Defence in depth: pages re-check the session even though middleware already guards the route. */
-export async function requireSession(role: Role, path: string) {
-  const session = role === 'admin' ? await getAdminSession() : role === 'engineer' ? await getEngineerSession() : await getClientSession();
+export async function requireSession(role: Role, path: string, { demo = false } = {}) {
+  const session = role === 'admin' ? await getAdminSession(demo) : role === 'engineer' ? await getEngineerSession(demo) : await getClientSession(demo);
   if (!session) redirect(`${roleLogin[role]}?next=${encodeURIComponent(path)}`);
   return session;
 }
