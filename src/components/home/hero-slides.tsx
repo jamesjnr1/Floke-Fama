@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { equipment } from '@/data/equipment';
 import type { HeroMedia } from '@/lib/site-content';
+import { Icon } from '@/components/ui/icon';
 import { cn } from '@/lib/utils';
 
 /** How long each slide shows before the next, in seconds. */
@@ -31,7 +32,7 @@ const pairs: [Product, Product][] = [
   ],
 ];
 
-type Slide = { key: string; label: string } & ({ kind: 'intro' } | { kind: 'media'; m: HeroMedia } | { kind: 'equipment'; e: (typeof equipment)[number] } | { kind: 'products'; pair: [Product, Product] });
+type Slide = { key: string; label: string } & ({ kind: 'intro' } | { kind: 'media'; m: HeroMedia } | { kind: 'placeholder'; video: boolean } | { kind: 'equipment'; e: (typeof equipment)[number] } | { kind: 'products'; pair: [Product, Product] });
 
 /**
  * The company first, then the engineering department's installation photos and videos (from the Studio), then all
@@ -48,6 +49,13 @@ const engineeringPlaceholder: HeroMedia = {
 const buildSlides = (media: HeroMedia[], mediaOnly: boolean): Slide[] => [
   { key: 'intro', label: 'Flokefama', kind: 'intro' },
   ...(media.length ? media : [engineeringPlaceholder]).map((m, i): Slide => ({ key: `media-${i}`, label: m.caption, kind: 'media', m })),
+  // Placeholders for the installation video and photos until the first ones are uploaded in the Studio
+  ...(media.length
+    ? []
+    : [
+        { key: 'soon-video', label: 'Installation video coming soon', kind: 'placeholder', video: true } as Slide,
+        { key: 'soon-photos', label: 'Installation photos coming soon', kind: 'placeholder', video: false } as Slide,
+      ]),
   ...(mediaOnly ? [] : equipment.map((e): Slide => ({ key: e.slug, label: e.title, kind: 'equipment', e }))),
   ...pairs.map((pair): Slide => ({ key: `products-${pair[0].slug}`, label: `${pair[0].title} and ${pair[1].title}`, kind: 'products', pair })),
 ];
@@ -122,7 +130,7 @@ export function HeroSlides({ intro, media = [], mediaOnly = false }: { intro: Re
                 on ? 'opacity-100' : 'pointer-events-none opacity-0',
               )}
             >
-              {s.kind === 'intro' ? intro : s.kind === 'media' ? <MediaSlide m={s.m} n={i + 1} total={slides.length} on={on} onEnd={() => !held && go(i + 1)} /> : s.kind === 'equipment' ? <EquipmentSlide e={s.e} n={i + 1} total={slides.length} priority={i === 1} /> : <ProductsSlide pair={s.pair} />}
+              {s.kind === 'intro' ? intro : s.kind === 'media' ? <MediaSlide m={s.m} n={i + 1} total={slides.length} on={on} onEnd={() => !held && go(i + 1)} /> : s.kind === 'placeholder' ? <PlaceholderSlide video={s.video} n={i + 1} total={slides.length} /> : s.kind === 'equipment' ? <EquipmentSlide e={s.e} n={i + 1} total={slides.length} priority={i === 1} /> : <ProductsSlide pair={s.pair} />}
             </div>
           );
         })}
@@ -203,6 +211,33 @@ function MediaSlide({ m, n, total, on, onEnd }: { m: HeroMedia; n: number; total
         </span>
         <span className="mt-1 block text-[clamp(1.5rem,1.1rem+1.2vw,2.25rem)] font-bold tracking-[-0.02em] text-white [text-shadow:0_2px_14px_rgb(0_0_0/0.35)]">{m.caption}</span>
       </figcaption>
+    </figure>
+  );
+}
+
+/** Where an installation video or photo set will go: a frame with a play or camera icon, marked "coming soon". */
+function PlaceholderSlide({ video, n, total }: { video: boolean; n: number; total: number }) {
+  return (
+    <figure className="flex w-full self-stretch">
+      <div aria-hidden className="absolute inset-x-0 bottom-0 -top-28 -z-10 bg-[linear-gradient(160deg,#0a5a33_0%,#06482a_55%,#043822_100%)]" />
+      <div className="mx-auto flex w-full max-w-[1280px] flex-col items-center justify-center px-5 pb-6 pt-10 text-center md:px-10 lg:pb-8">
+        <div className="grid aspect-video w-full max-w-[720px] place-items-center border-2 border-dashed border-white/30 bg-white/[0.06]">
+          <span className="flex flex-col items-center gap-3 text-white/80">
+            <span className="grid size-20 place-items-center rounded-full bg-white/15 text-3xl text-white md:size-24 md:text-4xl">
+              <Icon name={video ? 'fi-rr-play-circle' : 'fi-rr-camera'} />
+            </span>
+            <span className="text-sm font-semibold uppercase tracking-[0.14em]">{video ? 'Installation video' : 'Installation photos'} · Coming soon</span>
+          </span>
+        </div>
+        <figcaption className="mt-6">
+          <span className="block text-sm font-medium text-white/75">
+            {String(n).padStart(2, '0')} / {String(total).padStart(2, '0')} · Flokefama engineering
+          </span>
+          <span className="mt-1 block text-[clamp(1.5rem,1.1rem+1.2vw,2.25rem)] font-bold tracking-[-0.02em] text-white">
+            {video ? 'Watch our engineers install equipment' : 'Our installations across Ghana'}
+          </span>
+        </figcaption>
+      </div>
     </figure>
   );
 }
