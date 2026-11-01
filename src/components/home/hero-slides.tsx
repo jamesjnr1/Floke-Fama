@@ -49,13 +49,9 @@ const engineeringPlaceholder: HeroMedia = {
 const buildSlides = (media: HeroMedia[], mediaOnly: boolean): Slide[] => [
   { key: 'intro', label: 'Flokefama', kind: 'intro' },
   ...(media.length ? media : [engineeringPlaceholder]).map((m, i): Slide => ({ key: `media-${i}`, label: m.caption, kind: 'media', m })),
-  // Placeholders for the installation video and photos until the first ones are uploaded in the Studio
-  ...(media.length
-    ? []
-    : [
-        { key: 'soon-video', label: 'Installation video coming soon', kind: 'placeholder', video: true } as Slide,
-        { key: 'soon-photos', label: 'Installation photos coming soon', kind: 'placeholder', video: false } as Slide,
-      ]),
+  // Placeholders for an installation video, and for photos, until the first ones are uploaded
+  ...(media.some((m) => m.kind === 'video') ? [] : [{ key: 'soon-video', label: 'Installation video coming soon', kind: 'placeholder', video: true } as Slide]),
+  ...(media.length ? [] : [{ key: 'soon-photos', label: 'Installation photos coming soon', kind: 'placeholder', video: false } as Slide]),
   ...(mediaOnly ? [] : equipment.map((e): Slide => ({ key: e.slug, label: e.title, kind: 'equipment', e }))),
   ...pairs.map((pair): Slide => ({ key: `products-${pair[0].slug}`, label: `${pair[0].title} and ${pair[1].title}`, kind: 'products', pair })),
 ];
