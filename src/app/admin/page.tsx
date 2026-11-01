@@ -18,6 +18,7 @@ import { ConfirmButton } from '@/components/admin/confirm-button';
 import { configChecks, loadAdminData, type AdminData } from '@/lib/admin/data';
 import { sampleData } from '@/lib/admin/sample';
 import { demoLink } from '@/lib/demo-server';
+import { DemoGuide } from '@/components/demo-guide';
 import { brevoStatus } from '@/lib/support-email';
 import { normalisePhone, smsProvider, smsStatus as smsGatewayStatus } from '@/lib/sms';
 import { TestSmsForm } from '@/components/admin/test-sms-form';
@@ -227,6 +228,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             {/* The overview and the accounts read again every 30 s, so who is on which job stays current */}
             {/* Every tab reads the latest every 30 seconds (not while an engineer is being added, so the form is left alone) */}
             {params.add !== 'engineer' && <LiveRefresh seconds={30} />}
+            {demo && <DemoGuide area="admin" />}
             {tab === 'orders' && <Orders data={data} q={params.q} open={params.order} stage={params.stage} now={now} />}
             {tab === 'accounts' && (params.account ? <AccountDetail data={data} id={params.account} now={now} /> : <Accounts data={data} q={params.q} role={roles.some((r) => r.id && r.id === params.role) ? params.role : undefined} adding={params.add === 'engineer'} />)}
             {tab === 'team' && <Team data={data} now={now} demo={demo} />}

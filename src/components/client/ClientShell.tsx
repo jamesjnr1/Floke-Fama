@@ -20,6 +20,7 @@ import { LiveStatus } from '@/components/service/live-status';
 import { Icon } from '@/components/ui/icon';
 import { useTour, type TourStep } from '@/components/service/tour';
 import { restartDemo } from '@/lib/demo';
+import { DemoGuide } from '@/components/demo-guide';
 import { LogoChanger } from '@/components/client/logo-changer';
 import { useSite } from '@/components/site-provider';
 import { logout } from '@/lib/auth/actions';
@@ -292,6 +293,7 @@ export function ClientShell({ user, products, demo = false }: { user: { name: st
         }}
       />
     </div>
+      {demo && <DemoGuide area="client" />}
       {tour.node}
     </EngineerPhotosProvider>
   );
