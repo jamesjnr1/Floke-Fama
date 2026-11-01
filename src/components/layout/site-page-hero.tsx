@@ -20,8 +20,10 @@ export async function SitePageHero({ page, flip, kicker, vars = {} }: { page: Pa
         <>
           {h.emphasisFirst ? (
             <>
-              {/* The motto first, white on a red block (About: "Saving Lives" since 2008) */}
-              {h.highlight && <em className="mr-[0.12em] inline-block bg-signal px-[0.24em] pb-[0.08em] pt-[0.02em] text-white [text-shadow:none] shadow-[0_18px_40px_-18px_rgb(0_0_0/0.6)]">{h.highlight}</em>} {h.title}
+              {/* The motto: the whole line in white italic on a red block (About: "Saving Lives since 2008") */}
+              <em className="inline-block rounded-[0.14em] bg-[#d23b36] px-[0.3em] pb-[0.12em] pt-[0.04em] text-white [text-shadow:none] shadow-[0_18px_40px_-18px_rgb(0_0_0/0.6)]">
+                {h.highlight ? `${h.highlight} ${h.title}` : h.title}
+              </em>
             </>
           ) : (
             <>
