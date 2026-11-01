@@ -35,8 +35,8 @@ const pairs: [Product, Product][] = [
 type Slide = { key: string; label: string } & ({ kind: 'intro' } | { kind: 'media'; m: HeroMedia } | { kind: 'placeholder'; video: boolean } | { kind: 'equipment'; e: (typeof equipment)[number] } | { kind: 'products'; pair: [Product, Product] });
 
 /**
- * The company first, then the engineering department's installation photos and videos (from the Studio), then all
- * the large equipment (unless the Studio says to show only the installations), then the shop's products two to a slide.
+ * The company first, then all the large equipment (unless the Studio says to show only the installations), then the
+ * shop's products two to a slide, then the engineering department's installation photos and videos.
  */
 /** Until the engineering department's photos and videos are uploaded, their slide shows our own engineers, marked "coming soon". */
 const engineeringPlaceholder: HeroMedia = {
@@ -48,12 +48,12 @@ const engineeringPlaceholder: HeroMedia = {
 
 const buildSlides = (media: HeroMedia[], mediaOnly: boolean): Slide[] => [
   { key: 'intro', label: 'Flokefama', kind: 'intro' },
-  ...(media.length ? media : [engineeringPlaceholder]).map((m, i): Slide => ({ key: `media-${i}`, label: m.caption, kind: 'media', m })),
-  // Placeholders for an installation video, and for photos, until the first ones are uploaded
-  ...(media.some((m) => m.kind === 'video') ? [] : [{ key: 'soon-video', label: 'Installation video coming soon', kind: 'placeholder', video: true } as Slide]),
-  ...(media.length ? [] : [{ key: 'soon-photos', label: 'Installation photos coming soon', kind: 'placeholder', video: false } as Slide]),
+  // The equipment and the shop's products first, then the engineering department's installation photos and videos
   ...(mediaOnly ? [] : equipment.map((e): Slide => ({ key: e.slug, label: e.title, kind: 'equipment', e }))),
   ...pairs.map((pair): Slide => ({ key: `products-${pair[0].slug}`, label: `${pair[0].title} and ${pair[1].title}`, kind: 'products', pair })),
+  ...(media.length ? media : [engineeringPlaceholder]).map((m, i): Slide => ({ key: `media-${i}`, label: m.caption, kind: 'media', m })),
+  // A placeholder for installation photos until the first ones are uploaded
+  ...(media.length ? [] : [{ key: 'soon-photos', label: 'Installation photos coming soon', kind: 'placeholder', video: false } as Slide]),
 ];
 
 /**
