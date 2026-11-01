@@ -39,7 +39,10 @@ const writeOutbox = (list: Action[]) => {
 class Offline extends Error {}
 const POLL_MS = 15_000;
 
-type Remote = { enabled: false } | { enabled: true; state: ServiceState };
+/** `error`: the server is set up but couldn't answer just now (no connection, or the database didn't respond). */
+/** The team as the head of engineering sees it, to give jobs to engineers. */
+export type TeamEntry = { name: string; region: string | null; open: number };
+type Remote = { enabled: false; error?: boolean } | { enabled: true; state: ServiceState; team?: TeamEntry[] | null };
 
 async function fetchDesk(): Promise<Remote> {
   try {
@@ -50,10 +53,10 @@ async function fetchDesk(): Promise<Remote> {
       location.assign(`${area}?next=${encodeURIComponent(location.pathname + location.search)}`);
       return new Promise<Remote>(() => {});
     }
-    if (!r.ok) return r.status === 503 ? { enabled: false } : Promise.reject(new Error(String(r.status)));
+    if (!r.ok) return r.status === 503 ? { enabled: false } : { enabled: false, error: true };
     return (await r.json()) as Remote;
   } catch {
-    return { enabled: false };
+    return { enabled: false, error: true };
   }
 }
 
@@ -63,6 +66,10 @@ export function useServiceStore(actor: Actor, { practice = false }: { practice?:
   const [remote, setRemote] = useState(false);
   /** When the desk was last read from the server (shown as "Live · updated …"). */
   const [syncedAt, setSyncedAt] = useState<Date | null>(null);
+  /** The last tries to read the desk failed: what's on screen may be out of date. */
+  const [failing, setFailing] = useState(false);
+  /** Only for the head of engineering: the engineers they can give jobs to. */
+  const [team, setTeam] = useState<TeamEntry[] | null>(null);
   const pending = useRef(0);
   const [queued, setQueued] = useState(0);
   const flushing = useRef(false);
@@ -96,8 +103,16 @@ export function useServiceStore(actor: Actor, { practice = false }: { practice?:
       if (r.enabled) {
         setRemote(true);
         setSyncedAt(new Date());
+        setTeam(r.team ?? null);
         dispatchLocal({ type: 'load', state: r.state });
         // Changes made offline last time, not sent yet: shown again, and sent below
+        const waiting = readOutbox();
+        waiting.forEach((a) => dispatchLocal(a));
+        setQueued(waiting.length);
+      } else if (r.error) {
+        // The server's desk couldn't be read: say so and keep trying (never fall back to this browser's own copy)
+        setRemote(true);
+        setFailing(true);
         const waiting = readOutbox();
         waiting.forEach((a) => dispatchLocal(a));
         setQueued(waiting.length);
@@ -127,8 +142,10 @@ export function useServiceStore(actor: Actor, { practice = false }: { practice?:
   // Server mode: pick up other people's changes (not while one of ours is on its way).
   const refresh = useCallback(async () => {
     const r = await fetchDesk();
+    setFailing(!r.enabled && !!r.error);
     if (!r.enabled) return;
     setSyncedAt(new Date());
+    setTeam(r.team ?? null);
     if (pending.current === 0 && readOutbox().length === 0) dispatchLocal({ type: 'load', state: r.state });
   }, []);
 
@@ -227,7 +244,7 @@ export function useServiceStore(actor: Actor, { practice = false }: { practice?:
   );
 
   const reset = useCallback(() => dispatchLocal({ type: 'load', state: practice ? practiceDesk(actor.name) : createSeed() }), [practice, actor.name]);
-  return { state, dispatch, ready, remote, reset, syncedAt, queued };
+  return { state, dispatch, ready, remote, reset, syncedAt, queued, failing, team };
 }
 
 /** Engineer portal entry point. */

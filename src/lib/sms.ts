@@ -2,7 +2,8 @@ import 'server-only';
 import { ID, Query, type Models } from 'node-appwrite';
 import { appwrite, DATABASE_ID, isNotFound, TABLES } from '@/lib/appwrite';
 import { isTableMissing, withTable } from '@/lib/appwrite-tables';
-import { roleFor } from '@/lib/auth/users';
+import { headByEmail, roleFor } from '@/lib/auth/users';
+import { isHeadOrganisation } from '@/lib/regions';
 import type { Actor, Priority, ServiceState, Ticket } from '@/lib/service/desk';
 import { getSite } from '@/lib/site';
 import { registeredFacilities } from '@/lib/service/facilities';
@@ -147,22 +148,23 @@ export async function smsStatus(): Promise<{ ok: boolean; detail: string } | nul
 
 /* ---------- who ---------- */
 
-interface Person { name: string; phone: string; role: string }
+/** `head`: the head of engineering, who also gets the escalations (jobs nobody has taken). */
+interface Person { name: string; phone: string; role: string; head?: boolean }
 async function staff(): Promise<Person[]> {
-  const rows: (Models.Row & { name: string; email: string; phone: string })[] = [];
+  const rows: (Models.Row & { name: string; email: string; phone: string; organisation?: string })[] = [];
   let cursor: string | undefined;
   for (let i = 0; i < 20; i++) {
-    const page = await appwrite!.tables.listRows<Models.Row & { name: string; email: string; phone: string }>({
+    const page = await appwrite!.tables.listRows<Models.Row & { name: string; email: string; phone: string; organisation?: string }>({
       databaseId: DATABASE_ID,
       tableId: TABLES.accounts,
-      queries: [Query.select(['$id', 'name', 'email', 'phone']), Query.limit(500), ...(cursor ? [Query.cursorAfter(cursor)] : [])],
+      queries: [Query.select(['$id', 'name', 'email', 'phone', 'organisation']), Query.limit(500), ...(cursor ? [Query.cursorAfter(cursor)] : [])],
     });
     rows.push(...page.rows);
     if (page.rows.length < 500) break;
     cursor = page.rows[page.rows.length - 1].$id;
   }
   // Engineers waiting for approval (engp-) get no job texts yet
-  return rows.filter((r) => !r.$id.startsWith('engp-')).map((r) => ({ name: r.name, phone: r.phone ?? '', role: roleFor(r.email ?? '', r.$id) })).filter((p) => p.role !== 'client' && p.phone);
+  return rows.filter((r) => !r.$id.startsWith('engp-')).map((r) => ({ name: r.name, phone: r.phone ?? '', role: roleFor(r.email ?? '', r.$id), head: isHeadOrganisation(r.organisation) || headByEmail(r.email ?? '') })).filter((p) => p.role !== 'client' && p.phone);
 }
 
 /** One text to every admin (with a phone on their account) and SMS_ESCALATION_NUMBERS, e.g. a new engineer to approve. */
@@ -292,7 +294,8 @@ export async function escalateStale(desk: ServiceState, force = false) {
     const todo = due.filter((t) => !done.has(rowId(t)));
     if (!todo.length) return calls;
     const extra = (process.env.SMS_ESCALATION_NUMBERS ?? '').split(',');
-    const admins = (await staff()).filter((p) => p.role === 'admin').map((p) => p.phone);
+    // The admins and the head of engineering
+    const admins = (await staff()).filter((p) => p.role === 'admin' || (p.role === 'engineer' && p.head)).map((p) => p.phone);
     await Promise.all(
       todo.map((t) => {
         const { facility, equipment } = where(t, desk);

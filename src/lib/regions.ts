@@ -14,7 +14,10 @@ export const regionOfOrganisation = (org: string | undefined): Region | undefine
   const r = org?.split('·')[1]?.trim();
   return regions.find((x) => x.toLowerCase() === r?.toLowerCase());
 };
-export const engineerOrganisation = (region: string) => `Flokefama · ${region}`;
+/** Marks the head of engineering on their account (“Flokefama · Ashanti · Head of engineering”). */
+export const HEAD_MARK = 'Head of engineering';
+export const isHeadOrganisation = (org: string | undefined) => Boolean(org?.split('·').some((p) => p.trim().toLowerCase() === HEAD_MARK.toLowerCase()));
+export const engineerOrganisation = (region: string | undefined, head = false) => ['Flokefama', region, head && HEAD_MARK].filter(Boolean).join(' · ');
 
 /** Towns and cities to the region they are in (lower case). */
 const towns: [RegExp, Region][] = [
