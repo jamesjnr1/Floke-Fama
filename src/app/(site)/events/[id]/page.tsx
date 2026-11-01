@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
-import { EventPhotos } from '@/components/events/event-photos';
 import { EventGallery } from '@/components/events/event-gallery';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -38,24 +37,42 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
     <article className="bg-canvas pb-20 pt-32 md:pb-28 md:pt-40">
       <div className="mx-auto grid max-w-[1280px] gap-10 px-5 md:px-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] lg:gap-16">
         <div>
-          <p className="text-sm text-ink-3">
-            <Link href="/events" className="hover:text-ink">Events</Link> / {upcoming ? 'Upcoming' : 'Past event'}
-          </p>
-          <h1 className="mt-4 text-[clamp(2rem,1.3rem+2.4vw,3.25rem)] font-medium leading-[1.08] tracking-[-0.03em]">{e.title}</h1>
-          {e.theme && <p className="mt-3 text-lg text-ink-2">Theme: {e.theme}</p>}
+          {/* Back to the list, and whether it is still to come */}
+          <div className="flex flex-wrap items-center gap-3 text-sm">
+            <Link href="/events" className="inline-flex items-center gap-1.5 font-medium text-ink-3 hover:text-ink">
+              <Icon name="fi-rr-arrow-small-right" className="rotate-180 text-lg" /> Events &amp; News
+            </Link>
+            <span className={upcoming ? 'bg-brand-600 px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.08em] text-white' : 'bg-mist px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.08em] text-ink-2'}>
+              {upcoming ? (days === 0 ? 'Today' : days === 1 ? 'Tomorrow' : `Upcoming · in ${days} days`) : 'Past event'}
+            </span>
+          </div>
+          <h1 className="mt-5 text-[clamp(2.25rem,1.4rem+2.8vw,3.75rem)] font-bold leading-[1.04] tracking-[-0.035em] text-ink">{e.title}</h1>
+          {e.theme && (
+            <figure className="mt-6 border-l-4 border-signal bg-brand-50/70 py-4 pl-5 pr-4">
+              <figcaption className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-700">Theme</figcaption>
+              <blockquote className="mt-1 font-serif text-[clamp(1.375rem,1.1rem+0.9vw,1.875rem)] italic leading-snug text-ink">{e.theme}</blockquote>
+            </figure>
+          )}
 
-          <dl className="mt-8 grid gap-px border border-line bg-line sm:grid-cols-2">
-            {[
-              ['Date', longDate(e.date)],
-              ['Time', e.time],
-              ['Venue', e.venue],
-              ...(e.guests ? [['Guests', e.guests]] : []),
-              ...(e.price ? [['Entry', e.price]] : []),
-              ...(upcoming ? [['When', days === 0 ? 'Today' : days === 1 ? 'Tomorrow' : `In ${days} days`]] : []),
-            ].map(([k, v], i, all) => (
-              <div key={k} className={`bg-paper p-5${all.length % 2 && i === all.length - 1 ? ' sm:col-span-2' : ''}`}>
-                <dt className="text-sm text-ink-3">{k}</dt>
-                <dd className="mt-1 text-base font-medium text-ink">{v}</dd>
+          {/* The details, each with its icon */}
+          <dl className="mt-8 grid border border-line bg-paper sm:grid-cols-2">
+            {(
+              [
+                ['fi-rr-calendar', 'Date', longDate(e.date)],
+                ['fi-rr-clock', 'Time', e.time],
+                ['fi-rr-marker', 'Venue', e.venue],
+                ...(e.guests ? [['fi-rr-users', 'Guests', e.guests]] : []),
+                ...(e.price ? [['fi-rr-info', 'Entry', e.price]] : []),
+              ] as [string, string, string][]
+            ).map(([icon, k, v], i, all) => (
+              <div key={k} className={`flex gap-4 border-line p-5 md:p-6 ${i > 0 ? 'border-t' : ''} ${i === 1 ? 'sm:border-t-0' : ''} ${i % 2 === 1 ? 'sm:border-l' : ''}${all.length % 2 && i === all.length - 1 ? ' sm:col-span-2' : ''}`}>
+                <span className="grid size-11 shrink-0 place-items-center bg-brand-50 text-xl text-brand-700">
+                  <Icon name={icon} />
+                </span>
+                <div className="min-w-0">
+                  <dt className="text-xs font-semibold uppercase tracking-[0.12em] text-ink-3">{k}</dt>
+                  <dd className="mt-1 text-[1.0625rem] font-semibold leading-snug text-ink">{v}</dd>
+                </div>
               </div>
             ))}
           </dl>
@@ -65,25 +82,32 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
             {e.more?.map((m) => <p key={m}>{m}</p>)}
           </div>
 
-          {upcoming && (
-            <div className="mt-8 flex flex-wrap gap-2">
-              <a href={googleCalendarUrl(e)} target="_blank" rel="noopener noreferrer" className="inline-flex h-12 items-center gap-2 bg-brand-600 px-5 text-base font-medium text-white hover:bg-brand-700">
-                <Icon name="fi-rr-calendar-plus" /> Add to calendar
+          <div className="mt-8 flex flex-wrap gap-2">
+            {upcoming && (
+              <>
+                <a href={googleCalendarUrl(e)} target="_blank" rel="noopener noreferrer" className="inline-flex h-12 items-center gap-2 bg-brand-600 px-5 text-base font-medium text-white hover:bg-brand-700">
+                  <Icon name="fi-rr-calendar-plus" /> Add to calendar
+                </a>
+                <a href={`/events/${e.id}/calendar`} download className="inline-flex h-12 items-center border border-line bg-paper px-5 text-base font-medium text-ink hover:border-ink/30">
+                  Apple / Outlook
+                </a>
+                <a href={invite} target="_blank" rel="noopener noreferrer" className="inline-flex h-12 items-center gap-2 border border-line bg-paper px-5 text-base font-medium text-ink hover:border-ink/30">
+                  <Icon name="fi-brands-whatsapp" /> Invite a friend
+                </a>
+                <a href={directions} target="_blank" rel="noopener noreferrer" className="inline-flex h-12 items-center px-3 text-base font-medium text-brand-700 hover:underline">
+                  Directions
+                </a>
+              </>
+            )}
+            {!upcoming && e.photos?.length ? (
+              <a href="#event-photos" className="inline-flex h-12 items-center gap-2 bg-brand-600 px-5 text-base font-medium text-white hover:bg-brand-700">
+                <Icon name="fi-rr-camera" /> See the photos ({e.photos.length})
               </a>
-              <a href={`/events/${e.id}/calendar`} download className="inline-flex h-12 items-center border border-line bg-paper px-5 text-base font-medium text-ink hover:border-ink/30">
-                Apple / Outlook
-              </a>
-              <a href={invite} target="_blank" rel="noopener noreferrer" className="inline-flex h-12 items-center gap-2 border border-line bg-paper px-5 text-base font-medium text-ink hover:border-ink/30">
-                <Icon name="fi-brands-whatsapp" /> Invite a friend
-              </a>
-              <a href={directions} target="_blank" rel="noopener noreferrer" className="inline-flex h-12 items-center px-3 text-base font-medium text-brand-700 hover:underline">
-                Directions
-              </a>
-            </div>
-          )}
-          <Link href="/events" className="mt-10 inline-block text-base font-medium text-ink underline-offset-4 hover:underline">
-            All events
-          </Link>
+            ) : null}
+            <Link href="/events" className="inline-flex h-12 items-center gap-2 border border-line bg-paper px-5 text-base font-medium text-ink hover:border-ink/30">
+              All events
+            </Link>
+          </div>
         </div>
 
         {e.image && (
@@ -93,10 +117,13 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
         )}
       </div>
 
-      <section aria-labelledby="event-photos-title" className="mx-auto mt-14 max-w-[1280px] px-5 md:mt-20 md:px-10">
-        <h2 id="event-photos-title" className="mb-5 text-2xl font-semibold tracking-[-0.01em] text-ink">Photos from the event</h2>
-        {e.photos?.length ? <EventGallery photos={e.photos} title={e.title} /> : <EventPhotos photos={e.photos} title={e.title} large />}
-      </section>
+      {/* Photos from the event, once there are some */}
+      {e.photos?.length ? (
+        <section id="event-photos" aria-labelledby="event-photos-title" className="mx-auto mt-14 max-w-[1280px] scroll-mt-32 px-5 md:mt-20 md:px-10">
+          <h2 id="event-photos-title" className="mb-5 text-2xl font-semibold tracking-[-0.01em] text-ink">Photos from the event</h2>
+          <EventGallery photos={e.photos} title={e.title} />
+        </section>
+      ) : null}
     </article>
   );
 }
