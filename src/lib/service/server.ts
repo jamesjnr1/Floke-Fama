@@ -7,7 +7,8 @@ import { pushNew } from '@/lib/push';
 import { escalateStale, smsNew } from '@/lib/sms';
 import { canonicalFacility } from '@/lib/service/facilities';
 import { supportDetails, type SupportInput } from '@/lib/support-schema';
-import { createSeed, facilityKey, reducer, type Action, type Actor, type Asset, type Notification, type ServiceState, type Ticket } from '@/lib/service/desk';
+import { categoryOf } from '@/lib/categories';
+import { createSeed, facilityKey, looksIvd, reducer, serviceInterval, type Action, type Actor, type Asset, type Notification, type ServiceState, type Ticket } from '@/lib/service/desk';
 
 /**
  * The service desk kept in Appwrite: one row per piece of equipment, request and notification, each holding
@@ -138,9 +139,13 @@ function cleanAsset(raw: Asset): Asset {
   if (!/^AS-[A-Z0-9]{2,20}$/.test(raw.id ?? '')) throw new DeskError('Invalid equipment.');
   const now = new Date().toISOString();
   const interval = Math.min(36, Math.max(1, Math.round(Number(raw.intervalMonths) || 12)));
+  const ivd = typeof raw.ivd === 'boolean' ? raw.ivd : looksIvd(name, p ? categoryOf(p.slug, p.category) : undefined);
+  const suppliedByUs = raw.suppliedByUs !== false;
+  const warrantyUntil = date(raw.warrantyUntil, date(raw.installed, now));
   const last = date(raw.lastCalibration, date(raw.installed, now));
+  // The next service from the last one, on the department's schedule (twice a year under warranty, quarterly for IVD after)
   const next = new Date(last);
-  next.setMonth(next.getMonth() + interval);
+  next.setMonth(next.getMonth() + serviceInterval({ warrantyUntil, intervalMonths: interval, ivd }, new Date(last)));
   return {
     id: raw.id,
     name,
@@ -152,11 +157,13 @@ function cleanAsset(raw: Asset): Asset {
     location: text(raw.location, 80) || 'Location not set',
     readings: [],
     installed: date(raw.installed, now),
-    warrantyUntil: date(raw.warrantyUntil, date(raw.installed, now)),
+    warrantyUntil,
     lastCalibration: last,
     nextCalibration: next.toISOString(),
     intervalMonths: interval,
     certificates: [],
+    ivd,
+    ...(suppliedByUs ? {} : { suppliedByUs: false }),
   };
 }
 
@@ -199,6 +206,27 @@ export async function applyAction(s: SessionUser, action: Action): Promise<Servi
       // Alerts on phones and computers for the new notifications, and texts for what engineers must act on
       await Promise.all([pushNew(before, after), smsNew(before, after, actorFor(s)), escalateStale(after)]);
       return visibleTo(s, after);
+    } catch (e) {
+      if ((e as { code?: number }).code === 409 && attempt < 2) continue;
+      throw e;
+    }
+  }
+}
+
+/**
+ * The daily check: opens a preventive maintenance job for every machine due within two weeks (no more than one open
+ * job per machine), telling the engineers and the hospital. Returns how many were opened.
+ */
+export async function scheduleMaintenance(): Promise<number> {
+  for (let attempt = 0; ; attempt++) {
+    const before = await loadDesk();
+    const after = reducer({ name: 'Service schedule', role: 'engineer' })(before, { type: 'schedule' });
+    const opened = after.tickets.length - before.tickets.length;
+    if (!opened) return 0;
+    try {
+      await saveChanges(before, after);
+      await pushNew(before, after);
+      return opened;
     } catch (e) {
       if ((e as { code?: number }).code === 409 && attempt < 2) continue;
       throw e;
@@ -297,7 +325,12 @@ export async function registerPurchase(s: SessionUser, order: string, items: Ext
   if (!items.length) return;
   for (let attempt = 0; ; attempt++) {
     const before = await loadDesk();
-    const after = reducer(actorFor(s))({ ...before, purchases: [] }, { type: 'purchase', order, facility: facilityOf(s), items });
+    // Analysers and other IVD equipment, from the catalogue's category (serviced quarterly after the warranty)
+    const withIvd = items.map((i) => {
+      const c = catalogue.find((x) => x.slug === i.slug);
+      return { ...i, ivd: looksIvd(i.name, c ? categoryOf(c.slug, c.category) : undefined) };
+    });
+    const after = reducer(actorFor(s))({ ...before, purchases: [] }, { type: 'purchase', order, facility: facilityOf(s), items: withIvd });
     try {
       await saveChanges(before, after);
       await Promise.all([pushNew(before, after), smsNew(before, after, actorFor(s))]);

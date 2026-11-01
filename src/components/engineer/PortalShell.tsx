@@ -78,7 +78,7 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
   const { contact } = useSite();
   const me = user.name;
   const { theme, toggle } = useTheme();
-  const { state, dispatch: rawDispatch, ready, syncedAt } = useEngineerStore(me);
+  const { state, dispatch: rawDispatch, ready, syncedAt, queued } = useEngineerStore(me);
   const [view, setView] = useState<View>('overview');
   const [ticketId, setTicketId] = useState<string | null>(null);
   const [sheetId, setSheetId] = useState<string | null>(null);
@@ -274,7 +274,7 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
             <kbd className="rounded-[4px] border border-line px-1.5 font-mono text-xs">Ctrl K</kbd>
           </button>
           <button onClick={() => setPalette(true)} aria-label="Search" className="grid size-10 shrink-0 place-items-center rounded-md text-lg text-ink transition hover:bg-mist xl:hidden"><Icon name="fi-rr-search" /></button>
-          <LiveStatus at={syncedAt} className="hidden md:inline-flex" />
+          {queued > 0 ? <LiveStatus at={syncedAt} queued={queued} /> : <LiveStatus at={syncedAt} className="hidden md:inline-flex" />}
           {themeButton}
           <Notifications tone="light" items={mine} onRead={(id) => rawDispatch({ type: 'read', id })} onReadAll={() => rawDispatch({ type: 'readAll', audience: 'engineer' })} onOpen={onNotification} />
           <span className="hidden items-center gap-3 border-l border-line pl-4 md:flex">
@@ -395,9 +395,9 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
       <ResolveDialog
         ticket={resolving}
         onOpenChange={(v) => !v && setResolving(null)}
-        onSubmit={({ summary, calibrated }) => {
+        onSubmit={({ summary, calibrated, km }) => {
           if (!resolving) return;
-          rawDispatch({ type: 'resolve', id: resolving.id, summary, calibrated });
+          rawDispatch({ type: 'resolve', id: resolving.id, summary, calibrated, km });
           toast.success(`${resolving.id} resolved`, { description: calibrated ? 'Service report sent and calibration certificate issued.' : 'Service report sent to the facility.' });
           setResolving(null);
         }}

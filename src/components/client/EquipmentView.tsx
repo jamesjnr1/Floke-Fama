@@ -48,9 +48,15 @@ export function EquipmentView({ assets, tickets, onOpenAsset }: { assets: Asset[
                 <div className="flex flex-1 flex-col p-3">
                   <p className="text-xs text-ink-3">{a.brand} · {a.location}</p>
                   <p className="mt-0.5 font-semibold text-ink">{a.name}</p>
+                  {(a.suppliedByUs === false || a.ivd) && (
+                    <p className="mt-1.5 flex flex-wrap gap-1.5 text-[0.6875rem] font-semibold">
+                      {a.suppliedByUs === false && <span className="rounded bg-[#fdecec] px-1.5 py-0.5 text-signal-700">Not supplied by Flokefama</span>}
+                      {a.ivd && <span className="rounded bg-brand-50 px-1.5 py-0.5 text-brand-700">IVD</span>}
+                    </p>
+                  )}
                   <dl className="mt-3 grid grid-cols-3 gap-2 text-xs">
-                    <div><dt className="text-ink-3">Calibration</dt><dd className={cn('mt-0.5 font-medium', !a.installation && cal < 0 ? 'text-signal-700' : 'text-ink')}>{a.installation ? 'After install' : dueLabel(a.nextCalibration).replace('Due in ', 'In ')}</dd></div>
-                    <div><dt className="text-ink-3">Warranty</dt><dd className="mt-0.5 font-medium text-ink">{a.installation ? 'Starts at install' : warranty ? 'Active' : 'Ended'}</dd></div>
+                    <div><dt className="text-ink-3">Next service</dt><dd className={cn('mt-0.5 font-medium', !a.installation && a.suppliedByUs !== false && cal < 0 ? 'text-signal-700' : 'text-ink')}>{a.installation ? 'After install' : a.suppliedByUs === false ? 'On request' : dueLabel(a.nextCalibration).replace('Due in ', 'In ')}</dd></div>
+                    <div><dt className="text-ink-3">Warranty</dt><dd className="mt-0.5 font-medium text-ink">{a.suppliedByUs === false ? 'Not ours' : a.installation ? 'Starts at install' : warranty ? 'Active' : 'Ended'}</dd></div>
                     <div><dt className="text-ink-3">Open requests</dt><dd className="mt-0.5 font-medium text-ink">{open}</dd></div>
                   </dl>
                 </div>

@@ -45,7 +45,7 @@ export function ClientShell({ user, products }: { user: { name: string; email: s
   const facility = user.facility ?? user.name;
   const orders = useOrders(user.email);
   const actor = useMemo(() => ({ name: user.name, role: 'client' as const, facility }), [user.name, facility]);
-  const { state, dispatch: rawDispatch, ready, remote, syncedAt } = useServiceStore(actor);
+  const { state, dispatch: rawDispatch, ready, remote, syncedAt, queued } = useServiceStore(actor);
   const [view, setView] = useState<View>('overview');
   // Deep links such as /portal?view=orders (from checkout)
   useEffect(() => {
@@ -190,7 +190,7 @@ export function ClientShell({ user, products }: { user: { name: string; email: s
           <button onClick={() => request()} className="hidden h-10 items-center gap-2 rounded-md bg-brand-600 px-4 text-sm font-medium text-white hover:bg-[#006b42] sm:inline-flex lg:hidden">
             <Icon name="fi-rr-wrench-simple" /> Request service
           </button>
-          <LiveStatus at={syncedAt} className="hidden md:inline-flex" />
+          {queued > 0 ? <LiveStatus at={syncedAt} queued={queued} /> : <LiveStatus at={syncedAt} className="hidden md:inline-flex" />}
           <Notifications tone="light" items={notifications} onRead={(id) => rawDispatch({ type: 'read', id })} onReadAll={() => rawDispatch({ type: 'readAll', audience: 'client' })} onOpen={onNotification} />
           <span className="hidden items-center gap-3 border-l border-line pl-4 md:flex">
             <LogoChanger facility={facility} className="size-9 rounded-full" fallbackClassName="bg-brand-50 text-base text-[#006b42]" />
