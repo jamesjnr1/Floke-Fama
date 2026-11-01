@@ -41,18 +41,13 @@ export function Overview({ state, me, onOpenTicket, onOpenAsset, onGo, onLogFaul
       ? 'No open service requests. New requests from hospitals appear here.'
       : `${open.length} open request${open.length === 1 ? '' : 's'}${unassigned.length ? `, ${unassigned.length} waiting for an engineer` : ''}${mine.length ? `; ${mine.length} assigned to you` : ''}.`;
 
-  /** Each figure has its own colour (bar, icon and number), so they read apart at a glance; tints work in dark mode too. */
-  const look = {
-    blue: { bar: 'bg-[#2f6fa8]', tile: 'bg-[rgb(47_111_168/0.12)] text-[#2f6fa8]', num: 'text-[#2f6fa8]' },
-    green: { bar: 'bg-brand-600', tile: 'bg-[rgb(0_122_77/0.12)] text-brand-700', num: 'text-brand-700' },
-    amber: { bar: 'bg-[#d39a1c]', tile: 'bg-[rgb(211_154_28/0.14)] text-[#a87300]', num: 'text-[#a87300]' },
-    violet: { bar: 'bg-[#7c6bc4]', tile: 'bg-[rgb(124_107_196/0.14)] text-[#6a58b8]', num: 'text-[#6a58b8]' },
-  } as const;
+  /** Each figure is a card filled with its own colour (white text), so they read apart at a glance, in light and dark mode. */
+  const fill = { blue: 'bg-[#2c6aa3]', green: 'bg-[#0b7a4b]', amber: 'bg-[#9a6400]', violet: 'bg-[#5f4fb0]' } as const;
   const stats = [
-    { label: 'Open requests', value: open.length, note: unassigned.length ? `${unassigned.length} unassigned` : open.length ? 'All assigned' : 'Nothing outstanding', tone: unassigned.length ? 'text-bad' : 'text-ink-3', go: 'tickets' as const, icon: 'fi-rr-clipboard-list', color: 'blue' as const },
-    { label: 'Assigned to me', value: mine.length, note: mine[0] ? `Next: ${mine[0].title.split(':')[0]}` : 'Your queue is clear', tone: 'text-ink-3', go: 'tickets' as const, icon: 'fi-rr-user', color: 'green' as const },
-    { label: 'Need attention', value: attention, suffix: ` of ${state.assets.length}`, note: installing ? `${installing} to install` : state.assets.length ? (attention ? 'Systems with open faults' : 'All systems running') : 'No equipment yet', tone: attention ? 'text-warn' : installing ? 'text-violet' : 'text-ink-3', go: 'systems' as const, icon: 'fi-rr-exclamation', color: 'amber' as const },
-    { label: 'Calibrations due', value: due.length, suffix: ' in 30 days', note: overdue ? `${overdue} overdue` : schedule[0] ? `Next: ${schedule[0].name.split(' ').slice(0, 3).join(' ')}` : 'None scheduled', tone: overdue ? 'text-bad' : 'text-ink-3', go: 'calibration' as const, icon: 'fi-rr-calendar', color: 'violet' as const },
+    { label: 'Open requests', value: open.length, note: unassigned.length ? `${unassigned.length} unassigned` : open.length ? 'All assigned' : 'Nothing outstanding', tone: unassigned.length ? 'text-bad' : 'text-ink-3', go: 'tickets' as const, color: 'blue' as const },
+    { label: 'Assigned to me', value: mine.length, note: mine[0] ? `Next: ${mine[0].title.split(':')[0]}` : 'Your queue is clear', tone: 'text-ink-3', go: 'tickets' as const, color: 'green' as const },
+    { label: 'Need attention', value: attention, suffix: ` of ${state.assets.length}`, note: installing ? `${installing} to install` : state.assets.length ? (attention ? 'Systems with open faults' : 'All systems running') : 'No equipment yet', tone: attention ? 'text-warn' : installing ? 'text-violet' : 'text-ink-3', go: 'systems' as const, color: 'amber' as const },
+    { label: 'Calibrations due', value: due.length, suffix: ' in 30 days', note: overdue ? `${overdue} overdue` : schedule[0] ? `Next: ${schedule[0].name.split(' ').slice(0, 3).join(' ')}` : 'None scheduled', tone: overdue ? 'text-bad' : 'text-ink-3', go: 'calibration' as const, color: 'violet' as const },
   ];
 
   return (
@@ -68,27 +63,21 @@ export function Overview({ state, me, onOpenTicket, onOpenAsset, onGo, onLogFaul
         </PrimaryButton>
       </div>
 
-      {/* Key figures: four cards, each in its own colour */}
+      {/* Key figures: four cards, each filled with its own colour */}
       <ul className="grid grid-cols-2 gap-3 md:gap-4 xl:grid-cols-4">
-        {stats.map((s) => {
-          const c = look[s.color];
-          return (
-            <li key={s.label} className="min-w-0">
-              <button onClick={() => onGo(s.go)} className="relative flex h-full w-full flex-col overflow-hidden rounded-xl border border-line bg-paper p-4 pt-5 text-left transition hover:-translate-y-0.5 hover:shadow-[0_18px_36px_-24px_rgb(11_21_16/0.45)] md:p-6 md:pt-7">
-                <span aria-hidden className={cn('absolute inset-x-0 top-0 h-1.5', c.bar)} />
-                <span className="flex items-start justify-between gap-2">
-                  <span className="min-w-0 text-[0.75rem] font-semibold uppercase tracking-[0.09em] text-ink-3 md:text-[0.8125rem]">{s.label}</span>
-                  <span className={cn('grid size-8 shrink-0 place-items-center rounded-lg text-base md:size-10 md:text-lg', c.tile)}><Icon name={s.icon} /></span>
-                </span>
-                <span className="mt-3 flex items-baseline gap-1">
-                  <span className={cn('text-[2.5rem] font-semibold leading-none tracking-[-0.04em] tabular-nums', c.num)}>{s.value}</span>
-                  {s.suffix && <span className="text-sm text-ink-3">{s.suffix}</span>}
-                </span>
-                <span className={cn('mt-3 truncate text-sm', s.tone)}>{s.note}</span>
-              </button>
-            </li>
-          );
-        })}
+        {stats.map((s) => (
+          <li key={s.label} className="min-w-0">
+            <button onClick={() => onGo(s.go)} className={cn('flex h-full w-full flex-col rounded-xl p-4 text-left text-white shadow-[0_14px_30px_-22px_rgb(11_21_16/0.7)] transition hover:-translate-y-0.5 hover:brightness-110 md:p-6', fill[s.color])}>
+              <span className="text-[0.75rem] font-semibold uppercase tracking-[0.09em] text-white/85 md:text-[0.8125rem]">{s.label}</span>
+              <span className="mt-3 flex items-baseline gap-1 md:mt-4">
+                <span className="text-[2.5rem] font-semibold leading-none tracking-[-0.04em] tabular-nums">{s.value}</span>
+                {s.suffix && <span className="text-sm text-white/85">{s.suffix}</span>}
+              </span>
+              {/* A warning (unassigned jobs, overdue services) stands out in bold */}
+              <span className={cn('mt-3 truncate text-sm', s.tone === 'text-ink-3' ? 'text-white/85' : 'font-semibold text-white')}>{s.note}</span>
+            </button>
+          </li>
+        ))}
       </ul>
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1.65fr)_minmax(0,1fr)]">
