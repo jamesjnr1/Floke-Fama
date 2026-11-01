@@ -31,8 +31,9 @@ export default async function ProductsPage() {
     <div className="bg-canvas">
       <SitePageHero page="shop" vars={{ count: products.length }} />
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
-        <NewArrivals products={products} categories={categories} />
-        <div id="catalog" className="scroll-mt-24">
+        {/* New arrivals: cleared for now (Nov 2026) until the newer products are added; NEXT_PUBLIC_SHOW_NEW_ARRIVALS=true brings it back */}
+        {process.env.NEXT_PUBLIC_SHOW_NEW_ARRIVALS === 'true' && <NewArrivals products={products} categories={categories} />}
+        <div id="catalog" className="scroll-mt-28">
           <Catalog products={products} categories={categories} typeList={typeList} />
         </div>
         <BuyingFaq />
