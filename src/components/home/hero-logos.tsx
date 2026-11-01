@@ -25,11 +25,11 @@ export async function HeroLogos() {
   ];
   const row = (hidden: boolean) =>
     logos.map((l) => {
-      const b = l.logo ? box(l.w, l.h, 5000, 150, 60) : null;
+      const b = l.logo ? box(l.w, l.h, 7000, 170, 72) : null;
       return (
-        <li key={`${l.name}${hidden ? '-2' : ''}`} aria-hidden={hidden || undefined} className="flex h-20 shrink-0 items-center px-3">
+        <li key={`${l.name}${hidden ? '-2' : ''}`} aria-hidden={hidden || undefined} className="flex h-24 min-w-0 shrink-0 items-center justify-center px-4 lg:shrink xl:px-6">
           {l.logo && b ? (
-            <Image src={l.logo} alt={hidden ? '' : l.name} width={b.width} height={b.height} style={{ width: b.width, height: b.height }} className="object-contain transition-transform duration-300 hover:scale-105" />
+            <Image src={l.logo} alt={hidden ? '' : l.name} width={b.width} height={b.height} style={{ width: b.width, height: 'auto', maxWidth: '100%', maxHeight: b.height }} className="object-contain transition-transform duration-300 hover:scale-105" />
           ) : (
             <span className="whitespace-nowrap text-4xl font-extrabold tracking-[-0.03em] text-ink">{l.name}</span>
           )}
@@ -38,12 +38,12 @@ export async function HeroLogos() {
     });
 
   return (
-    <div className="shrink-0 border-t border-line bg-white py-3 text-ink">
+    <div className="shrink-0 border-t border-line bg-white py-5 text-ink md:py-6">
       <h2 className="mx-auto max-w-[1280px] px-5 text-[clamp(1.375rem,1.1rem+0.8vw,1.875rem)] font-bold tracking-[-0.03em] md:px-10">
         Our Clients &amp; Partners
       </h2>
       {/* Still: every logo once, in one even row that wraps on smaller screens */}
-      <ul className="mx-auto mt-1 flex max-w-[1440px] flex-wrap items-center justify-center px-3 py-1 md:px-6">
+      <ul className="mx-auto mt-2 flex max-w-[1440px] flex-wrap items-center justify-center px-5 py-2 md:px-10 lg:flex-nowrap lg:justify-between lg:pr-40">
         {row(false)}
       </ul>
     </div>
