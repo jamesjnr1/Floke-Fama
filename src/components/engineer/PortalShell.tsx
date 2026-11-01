@@ -19,6 +19,7 @@ import { GuideView } from '@/components/engineer/GuideView';
 import { useTour, type TourStep } from '@/components/service/tour';
 import { PRACTICE_FLAG, PRACTICE_KEY, practiceComments } from '@/lib/service/practice';
 import { restartDemo } from '@/lib/demo';
+import { DemoGuide } from '@/components/demo-guide';
 import { reducer } from '@/lib/service/desk';
 import { supportDetails } from '@/lib/support-schema';
 import { LogoMark, LogoWordmark } from '@/components/layout/logo';
@@ -538,6 +539,7 @@ function Portal({ user, products, practice, demo = false }: { user: { name: stri
           setView('systems');
         }}
       />
+      {demo && <DemoGuide area="engineer" />}
       {tour.node}
       <PhotoDialog open={photo.required || changingPhoto} required={photo.required} current={photo.url} onSave={photo.save} onClose={() => setChangingPhoto(false)} />
       <CommandPalette open={palette} onOpenChange={setPalette} state={state} actions={actions} onOpenTicket={openTicket} onOpenAsset={openAsset} />
