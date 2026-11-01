@@ -140,12 +140,23 @@ const sections: Section[] = [
   },
 ];
 
-export function GuideView({ onGo, practice, onPractice }: { onGo: (view: Go) => void; practice?: boolean; onPractice?: () => void }) {
+export function GuideView({ onGo, practice, onPractice, onTour }: { onGo: (view: Go) => void; practice?: boolean; onPractice?: () => void; onTour?: () => void }) {
   const [open, setOpen] = useState(sections[0].id);
   const s = sections.find((x) => x.id === open) ?? sections[0];
   const n = sections.indexOf(s);
   return (
     <div className="space-y-5">
+      {/* The guided tour of the buttons, again */}
+      {onTour && (
+        <Panel className="flex flex-wrap items-center gap-4 p-5">
+          <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-brand-600 text-xl text-white"><Icon name="fi-rr-map-marker" /></span>
+          <div className="min-w-0 flex-1">
+            <p className="font-semibold text-ink">Take the tour</p>
+            <p className="text-sm text-ink-2">A one-minute walk through the buttons: the menu, the work queue, logging a fault, alerts and the next-step button on a job.</p>
+          </div>
+          <button type="button" onClick={onTour} className="inline-flex h-11 shrink-0 items-center gap-2 rounded-lg bg-brand-700 px-4 text-sm font-semibold text-white hover:bg-brand-800">Start the tour</button>
+        </Panel>
+      )}
       {/* Try it safely: sample hospitals and jobs, on this device only */}
       {onPractice && (
         <Panel className="flex flex-wrap items-center gap-4 border-[#e7c98f] bg-[#fff8ea] p-5">

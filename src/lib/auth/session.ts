@@ -21,6 +21,8 @@ export interface SessionUser {
   phone?: string;
   /** "Keep me signed in on this device": the session lasts 30 days instead of an hour. */
   keep?: boolean;
+  /** A demo user (lib/demo.ts): sample data only, never the real database. */
+  demo?: boolean;
   /** Expiry, seconds since epoch. */
   exp: number;
 }

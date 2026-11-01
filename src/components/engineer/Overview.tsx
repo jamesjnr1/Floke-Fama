@@ -64,7 +64,7 @@ export function Overview({ state, me, onOpenTicket, onOpenAsset, onGo, onLogFaul
       </div>
 
       {/* Key figures: four cards, each filled with its own colour */}
-      <ul className="grid grid-cols-2 gap-3 md:gap-4 xl:grid-cols-4">
+      <ul data-tour="stats" className="grid grid-cols-2 gap-3 md:gap-4 xl:grid-cols-4">
         {stats.map((s) => (
           <li key={s.label} className="min-w-0">
             <button onClick={() => onGo(s.go)} className={cn('flex h-full w-full flex-col rounded-xl p-4 text-left text-white shadow-[0_14px_30px_-22px_rgb(11_21_16/0.7)] transition hover:-translate-y-0.5 hover:brightness-110 md:p-6', fill[s.color])}>
@@ -83,7 +83,7 @@ export function Overview({ state, me, onOpenTicket, onOpenAsset, onGo, onLogFaul
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1.65fr)_minmax(0,1fr)]">
         <div className="min-w-0 space-y-6">
           {/* Work queue */}
-          <Panel>
+          <Panel tour="queue">
             <PanelHead title="Work queue" action={<button onClick={() => onGo('tickets')} className={linkButton}>All requests →</button>} />
             {queue.length === 0 ? (
               <p className="px-6 py-10 text-center text-sm text-ink-3">Nothing waiting. Requests from hospitals appear here.</p>

@@ -16,6 +16,8 @@ import { siteUrl } from '@/lib/utils';
 import { AddEngineerForm } from '@/components/admin/add-engineer-form';
 import { ConfirmButton } from '@/components/admin/confirm-button';
 import { configChecks, loadAdminData, type AdminData } from '@/lib/admin/data';
+import { sampleData } from '@/lib/admin/sample';
+import { demoLink } from '@/lib/demo-server';
 import { brevoStatus } from '@/lib/support-email';
 import { normalisePhone, smsProvider, smsStatus as smsGatewayStatus } from '@/lib/sms';
 import { TestSmsForm } from '@/components/admin/test-sms-form';
@@ -88,13 +90,15 @@ function weekly(dates: string[], weeks: number, now: number) {
 }
 
 export default async function AdminPage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
-  const session = await requireConsole('/admin');
+  const session = await requireConsole('/admin', { demo: true });
   const params = await searchParams;
+  // The demo (lib/demo.ts): sample data, and nothing that reads or sends real things (texts, settings)
+  const demo = Boolean(session.demo);
   // The sales team sees only the sales board and product demand; any other tab opens the sales board
   const sales = session.role === 'sales';
-  const allowed = (id: Tab) => !sales || id === 'orders' || id === 'products';
+  const allowed = (id: Tab) => (!sales || id === 'orders' || id === 'products') && !(demo && (id === 'texts' || id === 'system'));
   const tab: Tab = tabs.some((t) => t.id === params.tab) && allowed(params.tab as Tab) ? (params.tab as Tab) : sales ? 'orders' : 'overview';
-  const data = await loadAdminData();
+  const data = demo ? sampleData() : await loadAdminData();
   const now = data.source === 'sample' ? Date.UTC(2026, 9, 19, 12) : Date.now();
 
   const menu = tabs.filter((t) => t.id !== 'system' && allowed(t.id));
@@ -140,7 +144,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
           </nav>
           <p className="mt-8 px-3.5 text-[0.8125rem] font-semibold tracking-[0.08em] text-ink-3">GENERAL</p>
           <div className="mt-2 space-y-1">
-            {!sales && (
+            {!sales && !demo && (
               <Link href={href('system')} aria-current={tab === 'system' ? 'page' : undefined} className={item(tab === 'system')}>
                 <Icon name="fi-rr-database" className={tab === 'system' ? 'text-brand-600' : ''} /> Database &amp; settings
               </Link>
@@ -210,7 +214,8 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
                 The database (Appwrite) isn’t connected, so there is nothing to show yet. Add APPWRITE_ENDPOINT, APPWRITE_PROJECT_ID and APPWRITE_API_KEY in Vercel, then run <code>npm run appwrite:setup</code>. See <Link href="/admin?tab=system" className="font-semibold underline">Database &amp; settings</Link>.
               </Notice>
             )}
-            {data.source === 'sample' && <Notice tone="info">Sample data for a local preview: the database isn’t connected on this computer. The live site shows the real figures.</Notice>}
+            {demo && <Notice tone="info">Demo: made-up hospitals, orders and engineers to show how the console works. Buttons that change things don’t save anything here.</Notice>}
+            {data.source === 'sample' && !demo && <Notice tone="info">Sample data for a local preview: the database isn’t connected on this computer. The live site shows the real figures.</Notice>}
             {data.tables.some((t) => !t.ok) && (
               <Notice tone="warn">
                 Some data couldn’t be read from the database, so parts of this page may look empty:{' '}
@@ -224,7 +229,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             {params.add !== 'engineer' && <LiveRefresh seconds={30} />}
             {tab === 'orders' && <Orders data={data} q={params.q} open={params.order} stage={params.stage} now={now} />}
             {tab === 'accounts' && (params.account ? <AccountDetail data={data} id={params.account} now={now} /> : <Accounts data={data} q={params.q} role={roles.some((r) => r.id && r.id === params.role) ? params.role : undefined} adding={params.add === 'engineer'} />)}
-            {tab === 'team' && <Team data={data} now={now} />}
+            {tab === 'team' && <Team data={data} now={now} demo={demo} />}
             {tab === 'products' && <Products data={data} />}
             {tab === 'service' && <Service data={data} now={now} />}
             {tab === 'texts' && <Texts data={data} now={now} />}
@@ -791,9 +796,9 @@ function Accounts({ data, q, role, adding }: { data: AdminData; q?: string; role
  * Engineers across the country: the invite link to send them, registrations waiting for approval, and everyone by
  * region with their open jobs, jobs done (90 days) and rating.
  */
-async function Team({ data, now }: { data: AdminData; now: number }) {
-  const code = await newInviteCode();
-  const url = `${siteUrl}/engineer/join?code=${encodeURIComponent(code)}`;
+async function Team({ data, now, demo }: { data: AdminData; now: number; demo?: boolean }) {
+  // The demo shows the panel with a link that registers no one
+  const url = demo ? `${siteUrl}/engineer/join?code=demo` : `${siteUrl}/engineer/join?code=${encodeURIComponent(await newInviteCode())}`;
   const until = fmt(new Date(now + 30 * DAY).toISOString());
   const pending = data.accounts.filter((a) => a.id.startsWith('engp-'));
   const engineers = data.accounts.filter((a) => a.role === 'engineer' && !a.id.startsWith('engp-'));
@@ -1534,6 +1539,19 @@ async function System({ data, phone }: { data: AdminData; phone?: string }) {
   return (
     <>
       <Heading title="Database & settings" lead="Whether each table answers and how many rows it holds, and the settings the site depends on (set in Vercel → Settings → Environment Variables)." />
+      <Panel title="Demo link (to show the system)" className="mb-4">
+        {demoLink() ? (
+          <>
+            <p className="-mt-3 mb-4 text-[0.9375rem] text-ink-3">
+              Opens the admin console, the hospital dashboard and the engineer portal as sample users, on made-up hospitals and jobs. Nothing in the demo reads or changes the real system, and no one is texted. Share it only with people you want to show the system to.
+            </p>
+            <InviteLink url={demoLink()!} until="the demo is switched off" share="Here is a private demo of the Flokefama system. Nothing in it is real, so try anything:" />
+            <p className="mt-3 text-[0.875rem] text-ink-3">Switch off with DEMO=off in Vercel, end it on a date with DEMO_UNTIL (e.g. 2026-12-31), or set a new DEMO_CODE for a new link (the old one stops working).</p>
+          </>
+        ) : (
+          <p className="-mt-3 text-[0.9375rem] text-ink-3">The demo is off (DEMO=off or past DEMO_UNTIL), or it needs SESSION_SECRET or a DEMO_CODE of 12+ characters in Vercel.</p>
+        )}
+      </Panel>
       <div className="grid gap-4 lg:grid-cols-2">
         <Panel title="Database tables (Appwrite)">
           {data.tables.length ? (

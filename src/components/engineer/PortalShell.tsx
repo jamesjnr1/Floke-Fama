@@ -16,7 +16,9 @@ import { TicketsView } from '@/components/engineer/TicketsView';
 import { useWebsiteRequests, WebsiteView, type WebsiteRequest } from '@/components/engineer/WebsiteView';
 import { PhotoDialog, useEngineerPhoto } from '@/components/engineer/photo';
 import { GuideView } from '@/components/engineer/GuideView';
+import { useTour, type TourStep } from '@/components/service/tour';
 import { PRACTICE_FLAG, PRACTICE_KEY, practiceComments } from '@/lib/service/practice';
+import { restartDemo } from '@/lib/demo';
 import { reducer } from '@/lib/service/desk';
 import { supportDetails } from '@/lib/support-schema';
 import { LogoMark, LogoWordmark } from '@/components/layout/logo';
@@ -93,7 +95,7 @@ export function setPractice(on: boolean, fresh = false) {
  * Biomedical Engineer Service Portal. Decides first whether this browser is in practice mode (sample jobs kept in the
  * browser only: /engineer?practice=1, or from the How-to guide), then opens the portal in that mode.
  */
-export function PortalShell(props: { user: { name: string; email: string }; products: CatalogueOption[] }) {
+export function PortalShell(props: { user: { name: string; email: string }; products: CatalogueOption[]; demo?: boolean }) {
   const [practice, setMode] = useState<boolean | null>(null);
   useEffect(() => {
     const q = new URLSearchParams(location.search);
@@ -107,16 +109,18 @@ export function PortalShell(props: { user: { name: string; email: string }; prod
     if (q.get('practice')) history.replaceState(null, '', '/engineer');
     setMode(on);
   }, []);
+  // The demo always runs on its sample desk
+  if (props.demo) return <Portal {...props} practice demo />;
   if (practice === null) return <div className="eng-page min-h-svh pt-10" aria-busy="true" />;
   return <Portal {...props} practice={practice} />;
 }
 
 /** The portal: the same layout as the hospital dashboard, backed by the shared service desk (or the practice desk). */
-function Portal({ user, products, practice }: { user: { name: string; email: string }; products: CatalogueOption[]; practice: boolean }) {
+function Portal({ user, products, practice, demo = false }: { user: { name: string; email: string }; products: CatalogueOption[]; practice: boolean; demo?: boolean }) {
   const { contact } = useSite();
   const me = user.name;
   const { theme, toggle } = useTheme();
-  const { state, dispatch: rawDispatch, ready, syncedAt, queued, failing, team } = useEngineerStore(me, practice);
+  const { state, dispatch: rawDispatch, ready, syncedAt, queued, failing, team } = useEngineerStore(me, practice, demo);
   const stateRef = useRef(state);
   stateRef.current = state;
   // Practice: the made-up hospital rates each visit a few seconds after it is resolved, as a real one would
@@ -228,6 +232,26 @@ function Portal({ user, products, practice }: { user: { name: string; email: str
     else if (n.assetId) openAsset(n.assetId);
   }, [openTicket, openAsset]);
   const mine = useMemo(() => state.notifications.filter((n) => n.audience === 'engineer'), [state.notifications]);
+
+  // First visit: a guided tour of the buttons (again from “Take the tour”)
+  const firstOpen = useMemo(() => state.tickets.find((t) => t.status !== 'resolved')?.id ?? null, [state.tickets]);
+  const tourSteps = useMemo<TourStep[]>(() => [
+    { title: `Welcome, ${me.split(' ')[0]}`, text: 'This short tour shows the buttons you will use every day. It takes about a minute, and you can take it again any time from “Take the tour”.', before: () => setView('overview') },
+    { target: 'nav', title: 'The menu', text: 'Overview, Service requests (the jobs), From the website (people to call back), Equipment, Calibration, Documents and the How-to guide.' },
+    { target: 'stats', title: 'Today at a glance', text: 'Open requests, jobs assigned to you, equipment that needs attention and services due. Tap a box to go straight there.', before: () => setView('overview') },
+    { target: 'queue', title: 'Work queue', text: 'Open jobs, the most urgent first. Red “Unassigned” means nobody has taken it yet. Tap a job to open it.', before: () => setView('overview') },
+    { target: 'log-fault', title: 'Log equipment fault', text: 'A hospital called you? Log the fault here: choose the hospital and machine, describe the problem and how urgent it is.' },
+    { target: 'bell', title: 'Alerts', text: 'New requests, services due and ratings from hospitals. A red number means something new. Turn on alerts on your phone so new jobs reach you even when the portal is closed.' },
+    {
+      target: 'next-step', title: 'One button for the next step',
+      text: 'Inside a job, the green button always shows what to do next: Assign to me → Start travel → Arrived on site → Resolve. The hospital sees every step live, and gets a text with your name and number when you take the job.',
+      before: () => { setView('tickets'); if (firstOpen) setTicketId(firstOpen); },
+    },
+    { target: 'guide', title: 'Help any time', text: 'The How-to guide explains every step. Practice mode lets you try everything on sample jobs without anything being saved.', before: () => setView('overview') },
+    { title: 'You’re ready', text: demo ? 'Try it: take the urgent job, start travel, arrive and resolve it. Open the hospital dashboard in another tab to see it from the hospital’s side.' : 'Keep your phone number and region right in My profile: urgent jobs in your region come to you first, by text.', before: () => setView('overview') },
+  ], [me, demo, firstOpen]);
+  const tour = useTour(demo ? 'engineer-demo' : 'engineer', tourSteps, { ready: ready && !photo.required });
+  const startTour = tour.start;
   useNotificationPopups(mine, ready, onNotification);
 
   // Opened from an alert: /engineer?ticket=TK-1043 or ?asset=AS-…
@@ -275,7 +299,7 @@ function Portal({ user, products, practice }: { user: { name: string; email: str
             <span className="block truncate text-xs text-white/75">Biomedical engineer</span>
           </span>
         </div>
-        <nav aria-label="Engineer portal" className="px-3">
+        <nav aria-label="Engineer portal" data-tour="nav" className="px-3">
           <p className="px-3 pb-2 text-[0.8125rem] font-semibold uppercase tracking-[0.14em] text-white/60">Menu</p>
           <ul className="space-y-0.5">
             {nav.map((n) => {
@@ -284,6 +308,7 @@ function Portal({ user, products, practice }: { user: { name: string; email: str
               return (
                 <li key={n.id}>
                   <button
+                    data-tour={n.id === 'guide' ? 'guide' : undefined}
                     onClick={() => setView(n.id)}
                     aria-current={on ? 'page' : undefined}
                     className={cn('relative flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm transition', on ? 'bg-white/[0.16] font-semibold text-white' : 'text-white/80 hover:bg-white/[0.08] hover:text-white')}
@@ -299,21 +324,24 @@ function Portal({ user, products, practice }: { user: { name: string; email: str
           </ul>
         </nav>
         <div className="px-6 pt-6">
-          <button onClick={logFault} className="flex h-11 w-full items-center justify-center gap-2 rounded-md bg-white text-sm font-semibold text-[#006b42] shadow-[0_10px_24px_-14px_rgb(0_0_0/0.5)] transition hover:bg-[#eefaf3]">
+          <button data-tour="log-fault" onClick={logFault} className="flex h-11 w-full items-center justify-center gap-2 rounded-md bg-white text-sm font-semibold text-[#006b42] shadow-[0_10px_24px_-14px_rgb(0_0_0/0.5)] transition hover:bg-[#eefaf3]">
             <Icon name="fi-rr-plus" /> Log equipment fault
           </button>
         </div>
         <div className="mt-auto border-t border-white/15 px-6 py-5 text-[0.8125rem]">
           <div className="space-y-2.5">
             <a href={contact.phoneHref} className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-phone-call" /> {contact.phone}</a>
-            <AlertsSwitch className="text-white/80 hover:text-white" />
+            {!demo && <AlertsSwitch className="text-white/80 hover:text-white" />}
             {/* Practice with sample jobs (kept on this device), or back to the real ones */}
-            <button type="button" onClick={() => setPractice(!practice)} className="flex items-center gap-2.5 text-white/80 hover:text-white">
-              <Icon name="fi-rr-graduation-cap" /> {practice ? 'Leave practice mode' : 'Practice mode'}
-            </button>
+            {!demo && (
+              <button type="button" onClick={() => setPractice(!practice)} className="flex items-center gap-2.5 text-white/80 hover:text-white">
+                <Icon name="fi-rr-graduation-cap" /> {practice ? 'Leave practice mode' : 'Practice mode'}
+              </button>
+            )}
+            <button type="button" onClick={startTour} className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-map-marker" /> Take the tour</button>
             <Link href="/" className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-arrow-small-left" /> Flokefama website</Link>
-            <Link href="/engineer/profile" className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-user" /> My profile</Link>
-            <Link href="/engineer/password" className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-lock" /> Change password</Link>
+            {!demo && <Link href="/engineer/profile" className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-user" /> My profile</Link>}
+            {!demo && <Link href="/engineer/password" className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-lock" /> Change password</Link>}
             <form action={engineerLogout}>
               <button type="submit" className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-sign-out-alt" /> Sign out</button>
             </form>
@@ -323,7 +351,13 @@ function Portal({ user, products, practice }: { user: { name: string; email: str
 
       <main id="main" className="min-w-0 flex-1">
       {/* Practice mode: always visible, so sample jobs are never mistaken for real ones */}
-      {practice && (
+      {demo && (
+        <div role="status" className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 bg-[#7c4a00] px-4 py-2 text-center text-sm text-white">
+          <span><b className="font-semibold">Demo.</b> Made-up hospitals and jobs, kept in this browser only: nothing is saved to the real system and no one is texted.</span>
+          <button type="button" onClick={restartDemo} className="rounded-md bg-white/15 px-3 py-1 font-semibold hover:bg-white/25">Start again</button>
+        </div>
+      )}
+      {practice && !demo && (
         <div role="status" className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 bg-[#7c4a00] px-4 py-2 text-center text-sm text-white">
           <span><b className="font-semibold">Practice mode.</b> Sample hospitals and jobs, kept on this device only: nothing is saved or sent, and no one is texted.</span>
           <span className="flex gap-2">
@@ -348,7 +382,8 @@ function Portal({ user, products, practice }: { user: { name: string; email: str
           <button onClick={() => setPalette(true)} aria-label="Search" className="grid size-10 shrink-0 place-items-center rounded-md text-lg text-ink transition hover:bg-mist xl:hidden"><Icon name="fi-rr-search" /></button>
           {queued > 0 || failing ? <LiveStatus at={syncedAt} queued={queued} failing={failing && !queued} /> : <LiveStatus at={syncedAt} className="hidden md:inline-flex" />}
           {themeButton}
-          <Notifications tone="light" items={mine} onRead={(id) => rawDispatch({ type: 'read', id })} onReadAll={() => rawDispatch({ type: 'readAll', audience: 'engineer' })} onOpen={onNotification} />
+          <button type="button" onClick={startTour} aria-label="Take the tour" title="Take the tour" className="grid size-10 shrink-0 place-items-center rounded-md text-lg text-ink transition hover:bg-mist lg:hidden"><Icon name="fi-rr-interrogation" /></button>
+          <span data-tour="bell" className="inline-flex"><Notifications tone="light" items={mine} onRead={(id) => rawDispatch({ type: 'read', id })} onReadAll={() => rawDispatch({ type: 'readAll', audience: 'engineer' })} onOpen={onNotification} /></span>
           <span className="hidden items-center gap-3 border-l border-line pl-4 md:flex">
             <UserAvatar src={photo.url} className="size-9 bg-brand-600 text-base text-white" />
             <span className="leading-tight">
@@ -356,16 +391,16 @@ function Portal({ user, products, practice }: { user: { name: string; email: str
               <span className="block text-xs text-ink-3">{user.email}</span>
             </span>
           </span>
-          <Link href="/engineer/profile" aria-label="My profile" className="grid size-10 shrink-0 place-items-center rounded-md text-lg text-ink transition hover:bg-mist lg:hidden"><Icon name="fi-rr-user" /></Link>
+          {!demo && <Link href="/engineer/profile" aria-label="My profile" className="grid size-10 shrink-0 place-items-center rounded-md text-lg text-ink transition hover:bg-mist lg:hidden"><Icon name="fi-rr-user" /></Link>}
           <form action={engineerLogout} className="lg:hidden">
             <button type="submit" aria-label="Sign out" className="grid size-10 shrink-0 place-items-center rounded-md text-lg text-ink transition hover:bg-mist"><Icon name="fi-rr-sign-out-alt" /></button>
           </form>
         </header>
 
         {/* Mobile nav */}
-        <nav aria-label="Engineer portal sections" className="flex gap-5 overflow-x-auto border-b border-line bg-paper px-4 lg:hidden">
+        <nav aria-label="Engineer portal sections" data-tour="nav" className="flex gap-5 overflow-x-auto border-b border-line bg-paper px-4 lg:hidden">
           {nav.map((n) => (
-            <button key={n.id} onClick={() => setView(n.id)} aria-current={view === n.id ? 'page' : undefined} className={cn('-mb-px shrink-0 border-b-2 py-3 text-sm', view === n.id ? 'border-ink font-semibold text-ink' : 'border-transparent text-ink-3')}>
+            <button key={n.id} data-tour={n.id === 'guide' ? 'guide' : undefined} onClick={() => setView(n.id)} aria-current={view === n.id ? 'page' : undefined} className={cn('-mb-px shrink-0 border-b-2 py-3 text-sm', view === n.id ? 'border-ink font-semibold text-ink' : 'border-transparent text-ink-3')}>
               {n.label}
             </button>
           ))}
@@ -376,7 +411,7 @@ function Portal({ user, products, practice }: { user: { name: string; email: str
             <div className="grid grid-cols-2 gap-3 xl:grid-cols-4" aria-busy="true">{[0, 1, 2, 3].map((i) => <div key={i} className="h-32 animate-pulse rounded-xl bg-mist" />)}</div>
           ) : (
             <>
-              {view === 'overview' && <AlertsBanner what="new service requests" />}
+              {view === 'overview' && !demo && <AlertsBanner what="new service requests" />}
               {view === 'overview' && !practice && (
                 <button type="button" onClick={() => setPractice(true)} className="mb-6 flex w-full items-center gap-3 rounded-xl border border-[#e7c98f] bg-[#fff8ea] px-5 py-3 text-left text-sm text-ink-2 transition hover:border-[#c99a3a] lg:hidden">
                   <Icon name="fi-rr-graduation-cap" className="text-lg text-[#7c4a00]" />
@@ -418,13 +453,13 @@ function Portal({ user, products, practice }: { user: { name: string; email: str
               )}
               {view === 'systems' && <SystemsView state={state} onOpenAsset={openAsset} onAdd={addEquipment} />}
               {view === 'calibration' && <CalibrationView state={state} onRecord={setCalibrating} onOpenAsset={openAsset} />}
-              {view === 'guide' && <GuideView onGo={setView} practice={practice} onPractice={() => setPractice(!practice)} />}
+              {view === 'guide' && <GuideView onGo={setView} practice={practice} onPractice={demo ? undefined : () => setPractice(!practice)} onTour={startTour} />}
               {view === 'docs' && <Inventory assets={state.assets} tickets={state.tickets} onSelect={(a) => openAsset(a.id)} onAdd={addEquipment} />}
             </>
           )}
         </div>
         {/* Mobile: floating log-fault button */}
-        <button onClick={logFault} className="fixed bottom-4 right-4 z-30 inline-flex h-12 items-center gap-2 rounded-md bg-brand-600 px-5 text-sm font-semibold text-white shadow-[0_8px_20px_-8px_rgb(11_21_16/0.35)] sm:hidden">
+        <button data-tour="log-fault" onClick={logFault} className="fixed bottom-4 right-4 z-30 inline-flex h-12 items-center gap-2 rounded-md bg-brand-600 px-5 text-sm font-semibold text-white shadow-[0_8px_20px_-8px_rgb(11_21_16/0.35)] sm:hidden">
           <Icon name="fi-rr-plus" /> Log fault
         </button>
       </main>
@@ -503,6 +538,7 @@ function Portal({ user, products, practice }: { user: { name: string; email: str
           setView('systems');
         }}
       />
+      {tour.node}
       <PhotoDialog open={photo.required || changingPhoto} required={photo.required} current={photo.url} onSave={photo.save} onClose={() => setChangingPhoto(false)} />
       <CommandPalette open={palette} onOpenChange={setPalette} state={state} actions={actions} onOpenTicket={openTicket} onOpenAsset={openAsset} />
     </div>
