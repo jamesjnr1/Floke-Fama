@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { loadAdminData } from '@/lib/admin/data';
 import { getConsoleSession } from '@/lib/auth/server';
+import { jobKind, scheduleLabel } from '@/lib/service/desk';
 
 /** CSV downloads for the admin console (orders, accounts, service requests, equipment). Admins; the sales team only orders. */
 export const dynamic = 'force-dynamic';
@@ -21,8 +22,8 @@ export async function GET(req: NextRequest) {
   let body: string;
   if (table === 'orders') body = csv(['Reference', 'Placed', 'Account', 'Items', 'Units', 'Payment', 'Region', 'Address', 'Status'], d.orders.map((o) => [o.reference, o.placedAt, o.account, o.items.map((i) => `${i.qty} x ${i.name}`).join('; '), o.items.reduce((n, i) => n + i.qty, 0), o.method, o.region, o.address, o.status]));
   else if (table === 'accounts') body = csv(['Name', 'Organisation', 'Email', 'Phone', 'Role', 'Registered'], d.accounts.map((a) => [a.name, a.organisation, a.email, a.phone, a.role, a.createdAt]));
-  else if (table === 'tickets') body = csv(['Request', 'Opened', 'Title', 'Equipment', 'Facility', 'Priority', 'Status', 'Engineer', 'Rating'], d.desk.tickets.map((t) => { const a = d.desk.assets.find((x) => x.id === t.assetId); return [t.id, t.openedAt, t.title, a?.name, a?.facility, t.priority, t.status, t.engineer, t.rating]; }));
-  else if (table === 'equipment') body = csv(['Asset', 'Name', 'Brand', 'Serial', 'Facility', 'Location', 'Installed', 'Next calibration'], d.desk.assets.map((a) => [a.id, a.name, a.brand, a.serial, a.facility, a.location, a.installed, a.nextCalibration]));
+  else if (table === 'tickets') body = csv(['Request', 'Type', 'Opened', 'Resolved', 'Title', 'Equipment', 'Serial', 'Facility', 'Priority', 'Status', 'Engineer', 'Distance (km)', 'Work carried out', 'Rating', 'Feedback'], d.desk.tickets.map((t) => { const a = d.desk.assets.find((x) => x.id === t.assetId); return [t.id, jobKind(t), t.openedAt, t.resolvedAt, t.title, a?.name, a?.serial, a?.facility, t.priority, t.status, t.engineer, t.km, t.resolution, t.rating, t.feedback]; }));
+  else if (table === 'equipment') body = csv(['Asset', 'Name', 'Brand', 'Serial', 'Facility', 'Location', 'Installed', 'Warranty until', 'IVD', 'Supplied by Flokefama', 'Schedule', 'Last service', 'Next service'], d.desk.assets.map((a) => [a.id, a.name, a.brand, a.serial, a.facility, a.location, a.installed, a.warrantyUntil, a.ivd ? 'Yes' : 'No', a.suppliedByUs === false ? 'No' : 'Yes', scheduleLabel(a), a.lastCalibration, a.suppliedByUs === false ? '' : a.nextCalibration]));
   else return NextResponse.json({ error: 'Unknown table.' }, { status: 400 });
   return new NextResponse(body, { headers: { 'Content-Type': 'text/csv; charset=utf-8', 'Content-Disposition': `attachment; filename="flokefama-${table}-${new Date().toISOString().slice(0, 10)}.csv"`, 'Cache-Control': 'private, no-store' } });
 }

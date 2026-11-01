@@ -1106,10 +1106,62 @@ function Products({ data }: { data: AdminData }) {
   );
 }
 
+/** Hours between two times, for the performance table ("2.5 h", "3 d"). */
+const span = (h: number) => (h < 48 ? `${h < 10 ? h.toFixed(1) : Math.round(h)} h` : `${Math.round(h / 24)} d`);
+const avg = (xs: number[]) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null);
+
+/**
+ * Field work per engineer over the last 90 days, for appraisals: jobs finished (by kind), how fast they took jobs and
+ * fixed them, the distance travelled (entered when resolving) and what hospitals rated the visits.
+ */
+function Performance({ data, now }: { data: AdminData; now: number }) {
+  const from = new Date(now - 90 * DAY).toISOString();
+  const jobs = data.desk.tickets.filter((t) => t.engineer && t.openedAt >= from);
+  const names = [...new Set(jobs.map((t) => t.engineer!))].sort();
+  const rows = names.map((name) => {
+    const mine = jobs.filter((t) => t.engineer === name);
+    const done = mine.filter((t) => t.status === 'resolved' && t.resolvedAt);
+    const taken = mine.flatMap((t) => {
+      const e = t.log.find((l) => l.text.startsWith(`Assigned to ${name}`));
+      return e ? [(Date.parse(e.at) - Date.parse(t.openedAt)) / 36e5] : [];
+    });
+    const fixed = done.map((t) => (Date.parse(t.resolvedAt!) - Date.parse(t.openedAt)) / 36e5);
+    const rated = done.filter((t) => t.rating);
+    const kind = (k: string | undefined) => done.filter((t) => (t.kind ?? 'fault') === k).length;
+    return {
+      name, open: mine.length - done.length, done: done.length, pm: kind('pm'), fault: kind('fault'), install: kind('installation'), repair: kind('repair'),
+      response: avg(taken), fix: avg(fixed), km: done.reduce((n, t) => n + (t.km ?? 0), 0), rating: avg(rated.map((t) => t.rating!)), ratings: rated.length,
+    };
+  });
+  return (
+    <>
+      <h2 className="mb-1 mt-8 text-lg font-semibold">Engineer performance · last 90 days</h2>
+      <p className="mb-3 text-[0.9375rem] text-ink-3">Response: from the request to the engineer taking it. Time to fix: from the request to resolved. Distance: what engineers enter when they resolve a job.</p>
+      <Table head={['Engineer', 'Jobs done', 'Preventive', 'Faults', 'Installations', 'Repairs', 'Open', 'Avg response', 'Avg time to fix', 'Distance', 'Rating']} empty={!rows.length}>
+        {rows.map((r) => (
+          <tr key={r.name}>
+            <td className="font-medium">{r.name}</td>
+            <td className="font-semibold tabular-nums">{r.done}</td>
+            <td className="tabular-nums">{r.pm}</td>
+            <td className="tabular-nums">{r.fault}</td>
+            <td className="tabular-nums">{r.install}</td>
+            <td className="tabular-nums">{r.repair}</td>
+            <td className="tabular-nums">{r.open}</td>
+            <td className="whitespace-nowrap tabular-nums">{r.response === null ? '—' : span(r.response)}</td>
+            <td className="whitespace-nowrap tabular-nums">{r.fix === null ? '—' : span(r.fix)}</td>
+            <td className="whitespace-nowrap tabular-nums">{r.km ? `${r.km} km` : '—'}</td>
+            <td className="whitespace-nowrap tabular-nums">{r.rating === null ? '—' : `${r.rating.toFixed(1)} / 5 (${r.ratings})`}</td>
+          </tr>
+        ))}
+      </Table>
+    </>
+  );
+}
+
 function Service({ data, now }: { data: AdminData; now: number }) {
   const assetOf = (id: string) => data.desk.assets.find((a) => a.id === id);
   const soon = new Date(now + 30 * DAY).toISOString();
-  const due = data.desk.assets.filter((a) => a.nextCalibration && a.nextCalibration < soon).sort((a, b) => a.nextCalibration.localeCompare(b.nextCalibration));
+  const due = data.desk.assets.filter((a) => a.suppliedByUs !== false && a.nextCalibration && a.nextCalibration < soon).sort((a, b) => a.nextCalibration.localeCompare(b.nextCalibration));
   return (
     <>
       <Heading hint={<><b>Service requests</b> are jobs on equipment, followed by the engineers in their portal. <b>Requests from the Support page</b> come from anyone; engineers call back, then mark them Called back, book a visit (it becomes a service request) or close them. “Visit booked · waiting for an engineer” means nobody has taken the job yet.</>}
@@ -1128,11 +1180,13 @@ function Service({ data, now }: { data: AdminData; now: number }) {
         </Panel>
       </div>
 
+      <Performance data={data} now={now} />
+
       <h2 className="mb-3 mt-8 text-lg font-semibold">Service requests</h2>
       <TicketTable tickets={data.desk.tickets} assetOf={assetOf} />
 
-      <h2 className="mb-3 mt-8 text-lg font-semibold">Calibration due within 30 days ({due.length})</h2>
-      <Table head={['Equipment', 'Serial', 'Hospital', 'Location', 'Last calibration', 'Due']} empty={!due.length}>
+      <h2 className="mb-3 mt-8 text-lg font-semibold">Service due within 30 days ({due.length})</h2>
+      <Table head={['Equipment', 'Serial', 'Hospital', 'Location', 'Last service', 'Due']} empty={!due.length}>
         {due.map((a) => (
           <tr key={a.id}>
             <td className="font-medium">{tidy(a.name)}</td>

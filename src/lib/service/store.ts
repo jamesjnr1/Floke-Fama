@@ -13,9 +13,29 @@ export * from '@/lib/service/desk';
  *   on one device reaches the engineers on theirs. The portal shows each change at once, then takes the
  *   server's answer, and checks for news every 15 seconds and whenever the tab comes back into view.
  * - Without it: kept in this browser (localStorage) and synced between tabs, as before.
+ * - Offline (no signal on a site visit): each change still shows at once and is kept on this device (an "outbox"),
+ *   then sent in order as soon as the connection is back. `queued` says how many are waiting.
  * `ready` is false until the first state has loaded (avoids a hydration mismatch); `remote` says which mode.
  */
 const KEY = 'ff-service-desk';
+const OUTBOX = 'ff-service-outbox';
+const readOutbox = (): Action[] => {
+  try {
+    return JSON.parse(localStorage.getItem(OUTBOX) ?? '[]') as Action[];
+  } catch {
+    return [];
+  }
+};
+const writeOutbox = (list: Action[]) => {
+  try {
+    if (list.length) localStorage.setItem(OUTBOX, JSON.stringify(list));
+    else localStorage.removeItem(OUTBOX);
+  } catch {
+    /* storage unavailable */
+  }
+};
+/** No connection at all (as opposed to the server refusing the change). */
+class Offline extends Error {}
 const POLL_MS = 15_000;
 
 type Remote = { enabled: false } | { enabled: true; state: ServiceState };
@@ -43,6 +63,8 @@ export function useServiceStore(actor: Actor) {
   /** When the desk was last read from the server (shown as "Live · updated …"). */
   const [syncedAt, setSyncedAt] = useState<Date | null>(null);
   const pending = useRef(0);
+  const [queued, setQueued] = useState(0);
+  const flushing = useRef(false);
 
   // First load: ask the server; fall back to this browser when Appwrite isn't set up.
   useEffect(() => {
@@ -61,6 +83,10 @@ export function useServiceStore(actor: Actor) {
         setRemote(true);
         setSyncedAt(new Date());
         dispatchLocal({ type: 'load', state: r.state });
+        // Changes made offline last time, not sent yet: shown again, and sent below
+        const waiting = readOutbox();
+        waiting.forEach((a) => dispatchLocal(a));
+        setQueued(waiting.length);
       } else readLocal();
       setReady(true);
     });
@@ -88,8 +114,61 @@ export function useServiceStore(actor: Actor) {
     const r = await fetchDesk();
     if (!r.enabled) return;
     setSyncedAt(new Date());
-    if (pending.current === 0) dispatchLocal({ type: 'load', state: r.state });
+    if (pending.current === 0 && readOutbox().length === 0) dispatchLocal({ type: 'load', state: r.state });
   }, []);
+
+  /** Sends one change to the server; returns its answer. */
+  const send = useCallback(async (action: Action) => {
+    let r: Response;
+    try {
+      r = await fetch('/api/service', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action }) });
+    } catch {
+      throw new Offline('No connection');
+    }
+    const out = (await r.json().catch(() => ({}))) as { state?: ServiceState; error?: string };
+    if (r.status >= 500 && r.status !== 503) throw new Offline(out.error ?? 'Server unavailable');
+    if (!r.ok || !out.state) throw new Error(out.error ?? 'That change could not be saved. Please try again.');
+    return out.state;
+  }, []);
+
+  /** Sends what was kept offline, oldest first; stops at the first one that still can't get through. */
+  const flush = useCallback(async () => {
+    if (flushing.current || !navigator.onLine) return;
+    flushing.current = true;
+    let last: ServiceState | undefined;
+    let sent = 0;
+    try {
+      for (;;) {
+        const [next, ...rest] = readOutbox();
+        if (!next) break;
+        try {
+          last = await send(next);
+          sent += 1;
+        } catch (e) {
+          if (e instanceof Offline) break;
+          toast.error('A change made offline was not saved', { description: (e as Error).message });
+        }
+        writeOutbox(rest);
+        setQueued(rest.length);
+      }
+    } finally {
+      flushing.current = false;
+    }
+    if (sent) toast.success(`${sent} change${sent === 1 ? '' : 's'} made offline ${sent === 1 ? 'was' : 'were'} sent`);
+    if (last && readOutbox().length === 0 && pending.current === 0) dispatchLocal({ type: 'load', state: last });
+  }, [send]);
+
+  useEffect(() => {
+    if (!remote) return;
+    flush();
+    const onOnline = () => flush();
+    window.addEventListener('online', onOnline);
+    const id = window.setInterval(() => readOutbox().length && flush(), 20_000);
+    return () => {
+      window.removeEventListener('online', onOnline);
+      window.clearInterval(id);
+    };
+  }, [remote, flush]);
   useEffect(() => {
     if (!remote) return;
     const tick = () => document.visibilityState === 'visible' && refresh();
@@ -107,14 +186,21 @@ export function useServiceStore(actor: Actor) {
     (action: Action) => {
       dispatchLocal(action); // show it straight away
       if (!remote || action.type === 'load') return;
+      // Offline, or older offline changes still waiting: keep it in order behind them
+      const keep = () => {
+        const list = [...readOutbox(), action];
+        writeOutbox(list);
+        setQueued(list.length);
+        toast('Saved on this device', { description: 'No connection. It will be sent as soon as you are back online.' });
+      };
+      if (!navigator.onLine || readOutbox().length) return keep();
       pending.current += 1;
-      fetch('/api/service', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action }) })
-        .then(async (r) => {
-          const out = (await r.json().catch(() => ({}))) as { state?: ServiceState; error?: string };
-          if (!r.ok || !out.state) throw new Error(out.error ?? 'That change could not be saved. Please try again.');
-          if (pending.current === 1) dispatchLocal({ type: 'load', state: out.state });
+      send(action)
+        .then((next) => {
+          if (pending.current === 1 && readOutbox().length === 0) dispatchLocal({ type: 'load', state: next });
         })
         .catch((e: Error) => {
+          if (e instanceof Offline) return keep();
           toast.error('Not saved', { description: e.message });
           refresh();
         })
@@ -122,11 +208,11 @@ export function useServiceStore(actor: Actor) {
           pending.current -= 1;
         });
     },
-    [remote, refresh],
+    [remote, refresh, send],
   );
 
   const reset = useCallback(() => dispatchLocal({ type: 'load', state: createSeed() }), []);
-  return { state, dispatch, ready, remote, reset, syncedAt };
+  return { state, dispatch, ready, remote, reset, syncedAt, queued };
 }
 
 /** Engineer portal entry point. */
