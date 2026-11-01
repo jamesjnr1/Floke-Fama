@@ -195,7 +195,15 @@ export const defaultSite: SiteContent = {
   technologyPartners: seed.technologyPartners.map((x) => ({ ...x })),
   clients: seed.clients.map((x) => ({ ...x })),
   hero: { title: 'Ghana’s No.1', highlight: 'Healthcare Company', lead: 'Total healthcare solutions for hospitals and laboratories across Ghana and West Africa. Saving lives since 2008.' },
-  heroMedia: [],
+  // The engineering department's own photos (from their 2026 service report): shown until Studio photos are added
+  heroMedia: [
+    { kind: 'image', src: '/images/engineering/theatre-light-installation.webp', label: 'Flokefama engineering · Installation', caption: 'Installing an operating theatre light' },
+    { kind: 'image', src: '/images/engineering/analyser-service.webp', label: 'Flokefama engineering · Service', caption: 'Servicing an analyser on site' },
+    { kind: 'image', src: '/images/engineering/analyser-commissioning.webp', label: 'Flokefama engineering · Installation', caption: 'Commissioning a new laboratory analyser' },
+    { kind: 'image', src: '/images/engineering/lab-staff-training.webp', label: 'Flokefama engineering · Training', caption: 'Training laboratory staff on their new equipment' },
+    { kind: 'image', src: '/images/engineering/water-distiller-setup.webp', label: 'Flokefama engineering · Installation', caption: 'Setting up a water distiller for the laboratory' },
+    { kind: 'image', src: '/images/engineering/unpacking-new-equipment.webp', label: 'Flokefama engineering · Delivery', caption: 'Unpacking new equipment at a hospital' },
+  ],
   heroMediaOnly: false,
   solutions: defaultSolutions,
   engineering: defaultEngineering,

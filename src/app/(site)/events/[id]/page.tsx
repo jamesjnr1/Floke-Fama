@@ -37,42 +37,25 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
     <article className="bg-canvas pb-20 pt-32 md:pb-28 md:pt-40">
       <div className="mx-auto grid max-w-[1280px] gap-10 px-5 md:px-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] lg:gap-16">
         <div>
-          {/* Back to the list, and whether it is still to come */}
-          <div className="flex flex-wrap items-center gap-3 text-sm">
-            <Link href="/events" className="inline-flex items-center gap-1.5 font-medium text-ink-3 hover:text-ink">
-              <Icon name="fi-rr-arrow-small-right" className="rotate-180 text-lg" /> Events &amp; News
-            </Link>
-            <span className={upcoming ? 'bg-brand-600 px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.08em] text-white' : 'bg-mist px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.08em] text-ink-2'}>
-              {upcoming ? (days === 0 ? 'Today' : days === 1 ? 'Tomorrow' : `Upcoming · in ${days} days`) : 'Past event'}
-            </span>
-          </div>
-          <h1 className="mt-5 text-[clamp(2.25rem,1.4rem+2.8vw,3.75rem)] font-bold leading-[1.04] tracking-[-0.035em] text-ink">{e.title}</h1>
-          {e.theme && (
-            <figure className="mt-6 border-l-4 border-signal bg-brand-50/70 py-4 pl-5 pr-4">
-              <figcaption className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-700">Theme</figcaption>
-              <blockquote className="mt-1 font-serif text-[clamp(1.375rem,1.1rem+0.9vw,1.875rem)] italic leading-snug text-ink">{e.theme}</blockquote>
-            </figure>
-          )}
+          <p className="text-sm text-ink-3">
+            <Link href="/events" className="hover:text-ink">Events</Link> / {upcoming ? 'Upcoming' : 'Past event'}
+          </p>
+          <h1 className="mt-4 text-[clamp(2rem,1.3rem+2.4vw,3.25rem)] font-semibold leading-[1.08] tracking-[-0.03em] text-ink">{e.title}</h1>
+          {e.theme && <p className="mt-3 text-lg italic text-ink-2">{e.theme}</p>}
 
-          {/* The details, each with its icon */}
-          <dl className="mt-8 grid border border-line bg-paper sm:grid-cols-2">
-            {(
-              [
-                ['fi-rr-calendar', 'Date', longDate(e.date)],
-                ['fi-rr-clock', 'Time', e.time],
-                ['fi-rr-marker', 'Venue', e.venue],
-                ...(e.guests ? [['fi-rr-users', 'Guests', e.guests]] : []),
-                ...(e.price ? [['fi-rr-info', 'Entry', e.price]] : []),
-              ] as [string, string, string][]
-            ).map(([icon, k, v], i, all) => (
-              <div key={k} className={`flex gap-4 border-line p-5 md:p-6 ${i > 0 ? 'border-t' : ''} ${i === 1 ? 'sm:border-t-0' : ''} ${i % 2 === 1 ? 'sm:border-l' : ''}${all.length % 2 && i === all.length - 1 ? ' sm:col-span-2' : ''}`}>
-                <span className="grid size-11 shrink-0 place-items-center bg-brand-50 text-xl text-brand-700">
-                  <Icon name={icon} />
-                </span>
-                <div className="min-w-0">
-                  <dt className="text-xs font-semibold uppercase tracking-[0.12em] text-ink-3">{k}</dt>
-                  <dd className="mt-1 text-[1.0625rem] font-semibold leading-snug text-ink">{v}</dd>
-                </div>
+          {/* The details as a simple list: label on the left, the detail on the right */}
+          <dl className="mt-8 divide-y divide-line border-y border-line">
+            {[
+              ['Date', longDate(e.date)],
+              ['Time', e.time],
+              ['Venue', e.venue],
+              ...(e.guests ? [['Guests', e.guests]] : []),
+              ...(e.price ? [['Entry', e.price]] : []),
+              ...(upcoming ? [['When', days === 0 ? 'Today' : days === 1 ? 'Tomorrow' : `In ${days} days`]] : []),
+            ].map(([k, v]) => (
+              <div key={k} className="grid grid-cols-[6.5rem_minmax(0,1fr)] gap-4 py-3.5 sm:grid-cols-[8rem_minmax(0,1fr)]">
+                <dt className="text-base text-ink-3">{k}</dt>
+                <dd className="text-base font-medium text-ink">{v}</dd>
               </div>
             ))}
           </dl>
