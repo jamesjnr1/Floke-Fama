@@ -307,6 +307,10 @@ function Portal({ user, products, practice }: { user: { name: string; email: str
           <div className="space-y-2.5">
             <a href={contact.phoneHref} className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-phone-call" /> {contact.phone}</a>
             <AlertsSwitch className="text-white/80 hover:text-white" />
+            {/* Practice with sample jobs (kept on this device), or back to the real ones */}
+            <button type="button" onClick={() => setPractice(!practice)} className="flex items-center gap-2.5 text-white/80 hover:text-white">
+              <Icon name="fi-rr-graduation-cap" /> {practice ? 'Leave practice mode' : 'Practice mode'}
+            </button>
             <Link href="/" className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-arrow-small-left" /> Flokefama website</Link>
             <Link href="/engineer/profile" className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-user" /> My profile</Link>
             <Link href="/engineer/password" className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-lock" /> Change password</Link>
@@ -373,6 +377,13 @@ function Portal({ user, products, practice }: { user: { name: string; email: str
           ) : (
             <>
               {view === 'overview' && <AlertsBanner what="new service requests" />}
+              {view === 'overview' && !practice && (
+                <button type="button" onClick={() => setPractice(true)} className="mb-6 flex w-full items-center gap-3 rounded-xl border border-[#e7c98f] bg-[#fff8ea] px-5 py-3 text-left text-sm text-ink-2 transition hover:border-[#c99a3a] lg:hidden">
+                  <Icon name="fi-rr-graduation-cap" className="text-lg text-[#7c4a00]" />
+                  <span className="flex-1"><b className="font-semibold text-ink">Practice mode:</b> try the portal on sample jobs</span>
+                  <Icon name="fi-rr-arrow-small-right" className="text-ink-3" />
+                </button>
+              )}
               {view === 'overview' && freshWebsite.length > 0 && (
                 <button onClick={() => setView('website')} className="mb-6 flex w-full items-center gap-4 rounded-xl border border-[#e4b4ae] bg-[#fdf3f2] p-5 text-left transition hover:border-[#c9675b]">
                   <span className="grid size-10 shrink-0 place-items-center rounded-md bg-[#b42318] text-white"><Icon name="fi-rr-globe" /></span>
