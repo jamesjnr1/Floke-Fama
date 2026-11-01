@@ -14,10 +14,12 @@
 .fi-rr-bell::before{content:"\f239"}
 .fi-rr-book-alt::before{content:"\f274"}
 .fi-rr-box-open::before{content:"\f2b3"}
+.fi-rr-bulb::before{content:"\f304"}
 .fi-rr-bullseye-arrow::before{content:"\f307"}
 .fi-rr-calendar::before{content:"\f339"}
 .fi-rr-calendar-plus::before{content:"\f332"}
 .fi-rr-camera::before{content:"\f348"}
+.fi-rr-chart-histogram::before{content:"\f3a2"}
 .fi-rr-chart-line-up::before{content:"\f3a5"}
 .fi-rr-check::before{content:"\f3c8"}
 .fi-rr-check-circle::before{content:"\f3c4"}
@@ -43,6 +45,7 @@
 .fi-rr-heart-rate::before{content:"\f79d"}
 .fi-rr-hospital::before{content:"\f7c5"}
 .fi-rr-info::before{content:"\f80b"}
+.fi-rr-interrogation::before{content:"\f81e"}
 .fi-rr-lightbulb-on::before{content:"\f8ac"}
 .fi-rr-link-alt::before{content:"\f8b5"}
 .fi-rr-lock::before{content:"\f8d5"}
@@ -55,6 +58,7 @@
 .fi-rr-play-circle::before{content:"\fa9b"}
 .fi-rr-plus::before{content:"\faac"}
 .fi-rr-print::before{content:"\fad6"}
+.fi-rr-qrcode::before{content:"\faf1"}
 .fi-rr-refresh::before{content:"\fb34"}
 .fi-rr-rotate-right::before{content:"\fb6a"}
 .fi-rr-scalpel::before{content:"\fb99"}
@@ -77,6 +81,7 @@
 .fi-rr-user-add::before{content:"\fe7a"}
 .fi-rr-user-minus::before{content:"\fe8c"}
 .fi-rr-users::before{content:"\fea6"}
+.fi-rr-wifi::before{content:"\ff08"}
 .fi-rr-wrench-simple::before{content:"\ff25"}
 @font-face{font-family:"uicons-brands";src:url("uicons-brands.woff2") format("woff2");font-display:block}
 [class^="fi-brands-"]::before,[class*=" fi-brands-"]::before{font-family:"uicons-brands"!important;font-style:normal;font-weight:normal!important;line-height:1;display:inline-block;vertical-align:-.125em;-webkit-font-smoothing:antialiased}
