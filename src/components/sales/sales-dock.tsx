@@ -10,10 +10,11 @@ import { Icon } from '@/components/ui/icon';
 import { useSite } from '@/components/site-provider';
 import { track } from '@/lib/analytics';
 import { quoteList, useQuoteList } from '@/lib/quote-list';
+import { chatMode, loadLiveChat, openLiveChat } from '@/lib/live-chat';
 import { cn } from '@/lib/utils';
 
-/** The chat assistant button: off for now (Nov 2026); NEXT_PUBLIC_CHAT=on brings it back. */
-const chatOn = process.env.NEXT_PUBLIC_CHAT === 'on';
+/** The Chat button: live chat with staff (Tawk.to) by default; see src/lib/live-chat.ts for the switches. */
+const chatOn = chatMode !== 'off';
 
 /**
  * Bottom-right on every public page: the visitor's quote list (once it has something in it)
@@ -85,6 +86,13 @@ export function SalesDock() {
     return () => document.removeEventListener('click', onClick);
   }, []);
 
+  // Live chat loads once the page is idle, so a staff reply can reach a visitor who has chatted before
+  useEffect(() => {
+    if (chatMode !== 'tawk') return;
+    const id = setTimeout(loadLiveChat, 2500);
+    return () => clearTimeout(id);
+  }, []);
+
   const onQuotePage = pathname.startsWith('/checkout');
   const onProduct = /^\/products\/[^/]+/.test(pathname);
 
@@ -100,7 +108,7 @@ export function SalesDock() {
   return (
     // On phones, product pages have their own sticky bar, so the dock sits above it
     <div data-dock className={cn('fixed right-4 z-40 flex flex-col items-end gap-3 md:bottom-6 md:right-6', onProduct ? 'bottom-24' : 'bottom-4')}>
-      {chatOn && <SupportChat open={chat} onClose={() => setChat(false)} />}
+      {chatMode === 'assistant' && <SupportChat open={chat} onClose={() => setChat(false)} />}
       <AnimatePresence>
         {open && !chat && items.length > 0 && (
           <motion.div
@@ -165,17 +173,19 @@ export function SalesDock() {
             <span className="grid min-w-6 place-items-center rounded-[4px] bg-brand-500 px-1.5 text-xs">{items.length}</span>
           </button>
         )}
-        {/* The chat assistant (support desk), when switched on */}
+        {/* Chat: live chat with our staff (Tawk.to), or the built-in assistant */}
         {chatOn && (
         <button
           type="button"
           onClick={() => {
             setOpen(false);
-            setChat((c) => !c);
             track('chat_open', { page: pathname });
+            if (chatMode === 'assistant') return setChat((c) => !c);
+            // If the live chat cannot load (blocked or offline), WhatsApp instead
+            if (!openLiveChat()) whatsapp();
           }}
-          aria-expanded={chat}
-          aria-label={chat ? 'Close the chat' : 'Chat with us'}
+          aria-expanded={chatMode === 'assistant' ? chat : undefined}
+          aria-label={chat ? 'Close the chat' : 'Chat with us live'}
           className="group flex flex-col items-center gap-1"
         >
           <span className="grid size-12 place-items-center rounded-full bg-brand-700 text-xl text-white shadow-[0_8px_20px_-8px_rgb(11_21_16/0.35)] transition group-hover:scale-105">
