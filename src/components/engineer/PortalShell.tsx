@@ -116,7 +116,7 @@ function Portal({ user, products, practice }: { user: { name: string; email: str
   const { contact } = useSite();
   const me = user.name;
   const { theme, toggle } = useTheme();
-  const { state, dispatch: rawDispatch, ready, syncedAt, queued } = useEngineerStore(me, practice);
+  const { state, dispatch: rawDispatch, ready, syncedAt, queued, failing, team } = useEngineerStore(me, practice);
   const stateRef = useRef(state);
   stateRef.current = state;
   // Practice: the made-up hospital rates each visit a few seconds after it is resolved, as a real one would
@@ -346,7 +346,7 @@ function Portal({ user, products, practice }: { user: { name: string; email: str
             <kbd className="rounded-[4px] border border-line px-1.5 font-mono text-xs">Ctrl K</kbd>
           </button>
           <button onClick={() => setPalette(true)} aria-label="Search" className="grid size-10 shrink-0 place-items-center rounded-md text-lg text-ink transition hover:bg-mist xl:hidden"><Icon name="fi-rr-search" /></button>
-          {queued > 0 ? <LiveStatus at={syncedAt} queued={queued} /> : <LiveStatus at={syncedAt} className="hidden md:inline-flex" />}
+          {queued > 0 || failing ? <LiveStatus at={syncedAt} queued={queued} failing={failing && !queued} /> : <LiveStatus at={syncedAt} className="hidden md:inline-flex" />}
           {themeButton}
           <Notifications tone="light" items={mine} onRead={(id) => rawDispatch({ type: 'read', id })} onReadAll={() => rawDispatch({ type: 'readAll', audience: 'engineer' })} onOpen={onNotification} />
           <span className="hidden items-center gap-3 border-l border-line pl-4 md:flex">
@@ -394,9 +394,9 @@ function Portal({ user, products, practice }: { user: { name: string; email: str
                   <span className="text-sm font-semibold text-[#b42318]">View</span>
                 </button>
               )}
-              {view === 'overview' && <Overview state={state} me={me} dispatch={dispatch} onResolve={setResolving} onOpenTicket={openTicket} onOpenAsset={openAsset} onGo={setView} onLogFault={logFault} />}
+              {view === 'overview' && <Overview state={state} me={me} onOpenTicket={openTicket} onOpenAsset={openAsset} onGo={setView} onLogFault={logFault} />}
               {view === 'tickets' && (
-                <TicketsView state={state} me={me} selectedId={ticketId} onSelect={setTicketId} dispatch={dispatch} onResolve={setResolving} onOpenAsset={openAsset} onLogFault={logFault} />
+                <TicketsView state={state} me={me} team={team} selectedId={ticketId} onSelect={setTicketId} dispatch={dispatch} onResolve={setResolving} onOpenAsset={openAsset} onLogFault={logFault} />
               )}
               {view === 'website' && (
                 <WebsiteView

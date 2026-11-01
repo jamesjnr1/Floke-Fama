@@ -6,17 +6,13 @@ import { linkButton, Panel, PanelHead, PrimaryButton, PriorityBadge, tag } from 
 import { Icon } from '@/components/ui/icon';
 import { assetImage, assetStatus, daysUntil, dueLabel, fmtTime, isOpen, statusSteps, stepIndex, type EngineerState } from '@/lib/service/store';
 import { cn } from '@/lib/utils';
-import { MyJobs } from '@/components/engineer/MyJobs';
-import type { Action, Ticket } from '@/lib/service/store';
 
 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 /** Overview: today at a glance, laid out like the hospital dashboard. Every figure comes from the live service desk. */
-export function Overview({ state, me, dispatch, onResolve, onOpenTicket, onOpenAsset, onGo, onLogFault }: {
+export function Overview({ state, me, onOpenTicket, onOpenAsset, onGo, onLogFault }: {
   state: EngineerState;
   me: string;
-  dispatch: (a: Action) => void;
-  onResolve: (t: Ticket) => void;
   onOpenTicket: (id: string) => void;
   onOpenAsset: (id: string) => void;
   onGo: (view: 'tickets' | 'calibration' | 'systems') => void;
@@ -66,9 +62,6 @@ export function Overview({ state, me, dispatch, onResolve, onOpenTicket, onOpenA
           <Icon name="fi-rr-plus" /> Log equipment fault
         </PrimaryButton>
       </div>
-
-      {/* First what to do now: the engineer's own jobs (one big button each) and the jobs waiting for someone */}
-      <MyJobs state={state} me={me} dispatch={dispatch} onResolve={onResolve} onOpenTicket={onOpenTicket} />
 
       {/* Key figures: four cards, each filled with its own colour */}
       <ul className="grid grid-cols-2 gap-3 md:gap-4 xl:grid-cols-4">

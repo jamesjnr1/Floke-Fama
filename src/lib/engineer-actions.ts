@@ -6,7 +6,7 @@ import { z } from 'zod';
 import { appwrite } from '@/lib/appwrite';
 import { accountExists, hashPassword, saveAccount } from '@/lib/auth/accounts';
 import { getAdminSession } from '@/lib/auth/server';
-import { approve, checkInvite, decline, PENDING_PREFIX } from '@/lib/engineer-team';
+import { approve, checkInvite, decline, PENDING_PREFIX, setHead } from '@/lib/engineer-team';
 import { limited } from '@/lib/rate-limit';
 import { engineerOrganisation, regions } from '@/lib/regions';
 import { textAdmins, textPerson } from '@/lib/sms';
@@ -66,6 +66,14 @@ export async function approveEngineer(form: FormData) {
   if (s?.role !== 'admin') return;
   const who = await approve(String(form.get('id') ?? '')).catch((e) => (console.error('approve failed', e), null));
   if (who?.phone) await textPerson('engineer-approved', who.name, who.phone, `Hello ${who.name.split(' ')[0]}, your Flokefama engineer account is approved. Sign in: ${siteUrl}/engineer/login`).catch(() => {});
+  revalidatePath('/admin');
+}
+
+/** Admin console → Engineers: make an engineer the head of engineering, or not. */
+export async function setHeadEngineer(form: FormData) {
+  const s = await getAdminSession();
+  if (s?.role !== 'admin') return;
+  await setHead(String(form.get('id') ?? ''), form.get('on') === '1').catch((e) => console.error('set head failed', e));
   revalidatePath('/admin');
 }
 

@@ -3,7 +3,8 @@ import { Query, type Models } from 'node-appwrite';
 import { appwrite, DATABASE_ID, TABLES } from '@/lib/appwrite';
 import { signPayload, verifyPayload } from '@/lib/auth/session';
 import { ENGINEER_ID_PREFIX, roleFor } from '@/lib/auth/users';
-import { regionOfOrganisation, type Region } from '@/lib/regions';
+import { headByEmail } from '@/lib/auth/users';
+import { engineerOrganisation, isHeadOrganisation, regionOfOrganisation, type Region } from '@/lib/regions';
 
 /**
  * Bringing the engineers onto the system from anywhere in the country:
@@ -29,7 +30,8 @@ export async function checkInvite(code: string | undefined | null): Promise<Date
 }
 
 type Row = Models.Row & { name: string; email: string; organisation: string; phone?: string; salt: string; hash: string };
-export type TeamMember = { id: string; name: string; email: string; phone: string; region?: Region; pending: boolean; joined: string };
+/** `head`: the head of engineering, who can give any job to any engineer. */
+export type TeamMember = { id: string; name: string; email: string; phone: string; region?: Region; pending: boolean; head: boolean; joined: string };
 
 /** Every engineer account (approved, waiting, and those in ENGINEER_EMAILS), newest first. */
 export async function listTeam(): Promise<TeamMember[]> {
@@ -44,8 +46,27 @@ export async function listTeam(): Promise<TeamMember[]> {
   }
   return rows
     .filter((r) => r.$id.startsWith(PENDING_PREFIX) || roleFor(r.email ?? '', r.$id) === 'engineer')
-    .map((r) => ({ id: r.$id, name: r.name, email: r.email, phone: r.phone ?? '', region: regionOfOrganisation(r.organisation), pending: r.$id.startsWith(PENDING_PREFIX), joined: r.$createdAt }))
+    .map((r) => ({ id: r.$id, name: r.name, email: r.email, phone: r.phone ?? '', region: regionOfOrganisation(r.organisation), pending: r.$id.startsWith(PENDING_PREFIX), head: !r.$id.startsWith(PENDING_PREFIX) && (isHeadOrganisation(r.organisation) || headByEmail(r.email ?? '')), joined: r.$createdAt }))
     .sort((a, b) => b.joined.localeCompare(a.joined));
+}
+
+let teamCache: { at: number; team: Promise<TeamMember[]> } | null = null;
+/** The team, read at most once a minute (the portals ask on every refresh). */
+export function teamCached(): Promise<TeamMember[]> {
+  if (!teamCache || Date.now() - teamCache.at > 60_000) {
+    const team = listTeam().catch((e) => ((teamCache = null), Promise.reject(e)));
+    teamCache = { at: Date.now(), team };
+  }
+  return teamCache.team;
+}
+
+/** Makes an engineer the head of engineering (or not): kept on their account, next to their region. */
+export async function setHead(id: string, on: boolean) {
+  if (!appwrite || id.startsWith(PENDING_PREFIX)) return;
+  const row = await appwrite.tables.getRow<Row>({ databaseId: DATABASE_ID, tableId: TABLES.accounts, rowId: id });
+  if (roleFor(row.email ?? '', row.$id) !== 'engineer') return;
+  await appwrite.tables.updateRow({ databaseId: DATABASE_ID, tableId: TABLES.accounts, rowId: id, data: { organisation: engineerOrganisation(regionOfOrganisation(row.organisation), on) } });
+  teamCache = null;
 }
 
 /** Approves a waiting registration: the same details, under an engineer id. Returns the engineer, or null. */
@@ -56,6 +77,7 @@ export async function approve(id: string): Promise<{ name: string; phone: string
   const data = { name: row.name, email: row.email, organisation: row.organisation, phone: row.phone ?? '', salt: row.salt, hash: row.hash };
   // Remove the waiting one first (the email must stay unique), then create the engineer
   await appwrite.tables.deleteRow({ databaseId: DATABASE_ID, tableId: TABLES.accounts, rowId: id });
+  teamCache = null;
   try {
     await appwrite.tables.createRow({ databaseId: DATABASE_ID, tableId: TABLES.accounts, rowId: `${ENGINEER_ID_PREFIX}${crypto.randomUUID().slice(0, 8)}`, data });
   } catch (e) {

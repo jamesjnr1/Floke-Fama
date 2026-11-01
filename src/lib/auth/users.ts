@@ -17,6 +17,9 @@ const admins = list(process.env.ADMIN_EMAILS);
 const engineers = list(process.env.ENGINEER_EMAILS);
 /** The sales team: the admin console's sales board and product demand only (SALES_EMAILS in Vercel). */
 const sales = list(process.env.SALES_EMAILS);
+/** Heads of engineering by email (HEAD_ENGINEER_EMAILS); they can also be chosen in the admin console → Engineers. */
+const heads = list(process.env.HEAD_ENGINEER_EMAILS);
+export const headByEmail = (email: string) => heads.has(email.trim().toLowerCase());
 
 /**
  * Accounts the admin console creates for engineers carry this id prefix. Engineers who registered with the invite

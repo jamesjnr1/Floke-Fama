@@ -6,7 +6,7 @@ import { ticketStatusMeta } from '@/components/service/status';
 import { fieldClass, GhostButton, Panel, PrimaryButton, PriorityBadge, SectionLabel, tag } from '@/components/service/ui';
 import { Hint } from '@/components/ui/hint';
 import { Icon } from '@/components/ui/icon';
-import { fmtTime, isOpen, jobKind, statusSteps, stepIndex, type Action, type EngineerState, type Ticket } from '@/lib/service/store';
+import { fmtTime, isOpen, jobKind, statusSteps, stepIndex, type Action, type EngineerState, type TeamEntry, type Ticket } from '@/lib/service/store';
 import { cn } from '@/lib/utils';
 import { printServiceReport } from '@/lib/service/print';
 
@@ -20,13 +20,15 @@ const filters: { id: Filter; label: string }[] = [
 ];
 const rank = { critical: 0, high: 1, routine: 2 };
 
-export function TicketsView({ state, me, selectedId, onSelect, dispatch, onResolve, onOpenAsset, onLogFault }: {
+export function TicketsView({ state, me, team = null, selectedId, onSelect, dispatch, onResolve, onOpenAsset, onLogFault }: {
   state: EngineerState;
   me: string;
   selectedId: string | null;
   onSelect: (id: string) => void;
   dispatch: (a: Action) => void;
   onResolve: (t: Ticket) => void;
+  /** Set for the head of engineering: they can give any job to any engineer. */
+  team?: TeamEntry[] | null;
   onOpenAsset: (id: string) => void;
   onLogFault: () => void;
 }) {
@@ -115,7 +117,7 @@ export function TicketsView({ state, me, selectedId, onSelect, dispatch, onResol
         <AnimatePresence mode="wait">
           {selected ? (
             <motion.div key={selected.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}>
-              <TicketDetail ticket={selected} state={state} me={me} dispatch={dispatch} onResolve={onResolve} onOpenAsset={onOpenAsset} />
+              <TicketDetail ticket={selected} state={state} me={me} team={team} dispatch={dispatch} onResolve={onResolve} onOpenAsset={onOpenAsset} />
             </motion.div>
           ) : (
             <Panel className="p-10 text-center text-sm text-ink-3">Select a request.</Panel>
@@ -129,7 +131,8 @@ export function TicketsView({ state, me, selectedId, onSelect, dispatch, onResol
 const stepLabel: Record<string, string> = { new: 'Logged', assigned: 'Assigned', travelling: 'En route', onsite: 'On site', resolved: 'Resolved' };
 const etas = ['15 mins', '30 mins', '45 mins', '1 hour', '2 hours'];
 
-function TicketDetail({ ticket: t, state, me, dispatch, onResolve, onOpenAsset }: {
+function TicketDetail({ ticket: t, state, me, team, dispatch, onResolve, onOpenAsset }: {
+  team: TeamEntry[] | null;
   ticket: Ticket;
   state: EngineerState;
   me: string;
@@ -225,6 +228,7 @@ function TicketDetail({ ticket: t, state, me, dispatch, onResolve, onOpenAsset }
             )}
             {!mine && t.status === 'onsite' && <span className="text-sm text-ink-3">{t.engineer} is on site.</span>}
             {mine && (t.status === 'assigned' || t.status === 'travelling') && <HandBack ticket={t} dispatch={dispatch} />}
+            {team && (t.status === 'new' || t.status === 'assigned' || t.status === 'travelling') && <GiveTo ticket={t} team={team} dispatch={dispatch} />}
           </div>
         )}
 
@@ -315,6 +319,26 @@ function HandBack({ ticket: t, dispatch }: { ticket: Ticket; dispatch: (a: Actio
       <span className="mr-auto text-sm text-ink-2">Hand it back? Another engineer will get it{t.priority === 'critical' || t.priority === 'high' ? ' straight away' : ''}.</span>
       <GhostButton onClick={() => setAsking(false)}>Keep it</GhostButton>
       <PrimaryButton onClick={() => { setAsking(false); dispatch({ type: 'decline', id: t.id }); }}>Yes, hand it back</PrimaryButton>
+    </span>
+  );
+}
+
+/** The head of engineering gives the job to an engineer (they get a text; the hospital gets their name and number). */
+function GiveTo({ ticket: t, team, dispatch }: { ticket: Ticket; team: TeamEntry[]; dispatch: (a: Action) => void }) {
+  const others = team.filter((m) => m.name !== t.engineer);
+  const [to, setTo] = useState('');
+  if (!others.length) return null;
+  return (
+    <span className="flex basis-full flex-wrap items-center gap-2 border-t border-line pt-3">
+      <span className="mr-auto text-sm font-semibold text-ink-2">{t.engineer ? 'Give it to another engineer' : 'Give this job to'}</span>
+      <label className="sr-only" htmlFor={`give-${t.id}`}>Engineer</label>
+      <select id={`give-${t.id}`} value={to} onChange={(e) => setTo(e.target.value)} className={cn(fieldClass, 'h-10 w-64')}>
+        <option value="">Choose an engineer…</option>
+        {others.map((m) => (
+          <option key={m.name} value={m.name}>{m.name}{m.region ? ` · ${m.region}` : ''} · {m.open} open</option>
+        ))}
+      </select>
+      <PrimaryButton disabled={!to} onClick={() => { dispatch({ type: 'assign', id: t.id, engineer: to }); setTo(''); }}><Icon name="fi-rr-user-add" /> Assign</PrimaryButton>
     </span>
   );
 }

@@ -8,7 +8,7 @@ import { escalateStale, smsNew } from '@/lib/sms';
 import { canonicalFacility } from '@/lib/service/facilities';
 import { supportDetails, type SupportInput } from '@/lib/support-schema';
 import { categoryOf } from '@/lib/categories';
-import { listTeam } from '@/lib/engineer-team';
+import { listTeam, teamCached, type TeamMember } from '@/lib/engineer-team';
 import { regionInText } from '@/lib/regions';
 import { createSeed, facilityKey, looksIvd, reducer, serviceInterval, type Action, type Actor, type Asset, type Notification, type ServiceState, type Ticket } from '@/lib/service/desk';
 
@@ -35,15 +35,42 @@ async function listAll(tableId: string) {
 
 const parse = <T>(rows: Row[]) => rows.flatMap((r) => { try { return [JSON.parse(r.data) as T]; } catch { return []; } });
 
+/**
+ * What the desk looks like right now, read cheaply: each table's row count and its latest change (one row per table).
+ * The portals ask for the desk every 15 seconds; reading every row each time would use up the database's monthly
+ * reads, so the full desk is only read again when this changes.
+ */
+async function fingerprint() {
+  const parts = await Promise.all(
+    Object.values(tableOf).map(async (tableId) => {
+      const r = await appwrite!.tables.listRows<Row>({ databaseId: DATABASE_ID, tableId, queries: [Query.orderDesc('$updatedAt'), Query.limit(1)] });
+      return `${r.total}:${r.rows[0]?.$id ?? ''}:${r.rows[0]?.$updatedAt ?? ''}`;
+    }),
+  );
+  return parts.join('|');
+}
+let cached: { key: string; at: number; state: ServiceState } | null = null;
+/** How many alerts the desk keeps in view (older ones stay in the database but aren't read). */
+const NOTIFICATIONS_SHOWN = 200;
+
 /** The whole desk, newest requests and notifications first. */
 export async function loadDesk(): Promise<ServiceState> {
-  const [assets, tickets, notifications] = await Promise.all([listAll(tableOf.assets), listAll(tableOf.tickets), listAll(tableOf.notifications)]);
-  return {
+  const key = await fingerprint();
+  // The same as last time (and read in the last 10 minutes): no need to read it all again
+  if (cached && cached.key === key && Date.now() - cached.at < 10 * 60_000) return cached.state;
+  const [assets, tickets, notifications] = await Promise.all([
+    listAll(tableOf.assets),
+    listAll(tableOf.tickets),
+    appwrite!.tables.listRows<Row>({ databaseId: DATABASE_ID, tableId: tableOf.notifications, queries: [Query.orderDesc('$createdAt'), Query.limit(NOTIFICATIONS_SHOWN)] }).then((r) => r.rows),
+  ]);
+  const state = {
     ...createSeed(),
     assets: parse<Asset>(assets).sort((a, b) => a.id.localeCompare(b.id)),
     tickets: parse<Ticket>(tickets).sort((a, b) => b.openedAt.localeCompare(a.openedAt)),
-    notifications: parse<Notification>(notifications).sort((a, b) => b.at.localeCompare(a.at)).slice(0, 200),
+    notifications: parse<Notification>(notifications).sort((a, b) => b.at.localeCompare(a.at)).slice(0, NOTIFICATIONS_SHOWN),
   };
+  cached = { key, at: Date.now(), state };
+  return state;
 }
 
 /** Extra columns kept next to the JSON, so rows can be looked up without opening them. */
@@ -58,6 +85,7 @@ const columns = (kind: Kind, item: Asset | Ticket | Notification, state: Service
  * updated. Requests go first: if a new request's id was just taken, nothing else has been written yet.
  */
 async function saveChanges(before: ServiceState, after: ServiceState) {
+  cached = null;
   for (const kind of ['tickets', 'assets', 'notifications'] as const) {
     const writes: Promise<unknown>[] = [];
     const old = new Map((before[kind] as { id: string }[]).map((x) => [x.id, JSON.stringify(x)]));
@@ -94,7 +122,7 @@ export function visibleTo(s: SessionUser, state: ServiceState): ServiceState {
 }
 
 /** Which actions each role may send, and the checks that keep them to their own facility. */
-function allowed(s: SessionUser, a: Action, state: ServiceState): string | null {
+function allowed(s: SessionUser, a: Action, state: ServiceState, head: TeamMember[] | null): string | null {
   const mine = visibleTo(s, state);
   const ownTicket = (id: string) => mine.tickets.some((t) => t.id === id);
   const ownAsset = (id: string) => mine.assets.some((x) => x.id === id);
@@ -109,7 +137,14 @@ function allowed(s: SessionUser, a: Action, state: ServiceState): string | null 
     }
   }
   switch (a.type) {
-    case 'assign': return a.engineer === s.name && ownTicket(a.id) ? null : 'You can only assign requests to yourself.';
+    case 'assign': {
+      if (a.engineer === s.name && ownTicket(a.id)) return null;
+      // The head of engineering gives jobs to any approved engineer (before anyone is on site)
+      if (!head) return 'You can only assign requests to yourself.';
+      const t = state.tickets.find((x) => x.id === a.id);
+      if (!t || t.status === 'resolved' || t.status === 'onsite') return 'That job is already being worked on.';
+      return head.some((m) => !m.pending && m.name === a.engineer) ? null : 'That engineer isn’t on the team.';
+    }
     case 'travel': case 'arrive': case 'note': case 'part': case 'resolve': return ownTicket(a.id) ? null : 'Unknown request.';
     case 'decline': {
       const t = state.tickets.find((x) => x.id === a.id);
@@ -195,11 +230,16 @@ export class DeskError extends Error {
 export async function applyAction(s: SessionUser, action: Action): Promise<ServiceState> {
   for (let attempt = 0; ; attempt++) {
     const before = await loadDesk();
-    const why = allowed(s, action, before);
+    const team = s.role === 'engineer' && action.type === 'assign' && action.engineer !== s.name ? await teamCached() : null;
+    const why = allowed(s, action, before, team && isHead(s, team) ? team : null);
     if (why) throw new DeskError(why, 403);
     if (action.type === 'addAsset') action = { ...action, asset: cleanAsset(action.asset) };
     // The hospital gets the engineer's own number, from their account (not from the browser)
-    if (action.type === 'assign') action = { ...action, phone: s.phone?.trim() || undefined };
+    if (action.type === 'assign') {
+      const to = action.engineer;
+      const phone = to === s.name ? s.phone : team?.find((m) => m.name === to)?.phone;
+      action = { ...action, phone: phone?.trim() || undefined, auto: undefined };
+    }
     if (action.type === 'create') action = { ...action, phone: s.phone?.trim() || undefined, newAsset: action.newAsset && cleanAsset(action.newAsset), ticket: { ...action.ticket, contactPhone: action.ticket.contactPhone?.trim().slice(0, 30) || undefined } };
     // A Support page caller's machine goes under the hospital's own name when it is on record or registered
     if (action.type === 'create' && action.newAsset)
@@ -221,6 +261,21 @@ export async function applyAction(s: SessionUser, action: Action): Promise<Servi
   }
 }
 
+/** Whether the signed-in engineer is the head of engineering. */
+export const isHead = (s: SessionUser, team: TeamMember[]) => s.role === 'engineer' && team.some((m) => m.head && m.email.toLowerCase() === s.email.toLowerCase());
+
+/**
+ * For the head of engineering's portal: every approved engineer, their region and how many open jobs they have,
+ * to choose who gets a job. Null for everyone else.
+ */
+export async function teamFor(s: SessionUser, desk: ServiceState) {
+  if (s.role !== 'engineer') return null;
+  const team = await teamCached().catch(() => [] as TeamMember[]);
+  if (!isHead(s, team)) return null;
+  const open = (name: string) => desk.tickets.filter((t) => t.engineer === name && t.status !== 'resolved').length;
+  return team.filter((m) => !m.pending).map((m) => ({ name: m.name, region: m.region ?? null, open: open(m.name) })).sort((a, b) => a.name.localeCompare(b.name));
+}
+
 /** Minutes an urgent job may wait for an engineer to take it before the system gives it to one (0 = never). */
 export const autoAssignMinutes = Math.max(0, Number(process.env.AUTO_ASSIGN_MINUTES ?? 15) || 0);
 let lastAutoAssign = 0;
@@ -235,10 +290,11 @@ let lastAutoAssign = 0;
 export async function autoAssignStale(desk?: ServiceState, force = false): Promise<number> {
   if (!appwrite || !autoAssignMinutes) return 0;
   const now = Date.now();
-  if (!force && now - lastAutoAssign < 60_000) return 0;
-  lastAutoAssign = now;
   const due = (d: ServiceState) => d.tickets.filter((t) => t.status === 'new' && (t.priority === 'critical' || t.priority === 'high') && now - new Date(t.openedAt).getTime() >= autoAssignMinutes * 60_000);
   if (desk && !due(desk).length) return 0;
+  // At most once a minute (only counted when there is something to assign)
+  if (!force && now - lastAutoAssign < 60_000) return 0;
+  lastAutoAssign = now;
   try {
     const team = (await listTeam()).filter((m) => !m.pending && m.phone.trim());
     if (!team.length) return 0;

@@ -7,9 +7,10 @@ import { Hint } from '@/components/ui/hint';
 import { Icon } from '@/components/ui/icon';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { removeEngineer, saveOrderNote, setOrderStatus } from '@/lib/admin/actions';
-import { approveEngineer, declineEngineer } from '@/lib/engineer-actions';
+import { approveEngineer, declineEngineer, setHeadEngineer } from '@/lib/engineer-actions';
+import { headByEmail } from '@/lib/auth/users';
 import { newInviteCode } from '@/lib/engineer-team';
-import { regionOfOrganisation, regions } from '@/lib/regions';
+import { isHeadOrganisation, regionOfOrganisation, regions } from '@/lib/regions';
 import { InviteLink } from '@/components/admin/invite-link';
 import { siteUrl } from '@/lib/utils';
 import { AddEngineerForm } from '@/components/admin/add-engineer-form';
@@ -212,7 +213,8 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             {data.source === 'sample' && <Notice tone="info">Sample data for a local preview: the database isn’t connected on this computer. The live site shows the real figures.</Notice>}
             {data.tables.some((t) => !t.ok) && (
               <Notice tone="warn">
-                Some tables couldn’t be read. See <Link href="/admin?tab=system" className="font-semibold underline">Database &amp; settings</Link>.
+                Some data couldn’t be read from the database, so parts of this page may look empty:{' '}
+                {data.tables.filter((t) => !t.ok).map((t) => `${t.label} (${t.error ?? 'error'})`).join('; ')}. Nothing has been deleted. See <Link href="/admin?tab=system" className="font-semibold underline">Database &amp; settings</Link>.
               </Notice>
             )}
 
@@ -802,7 +804,7 @@ async function Team({ data, now }: { data: AdminData; now: number }) {
     const done = jobs.filter((t) => t.status === 'resolved' && t.openedAt >= from);
     const rated = done.filter((t) => t.rating);
     const rating = rated.length ? (rated.reduce((n, t) => n + t.rating!, 0) / rated.length).toFixed(1) : null;
-    return { a, region: regionOfOrganisation(a.organisation), open, done: done.length, rating, ratings: rated.length };
+    return { a, region: regionOfOrganisation(a.organisation), head: isHeadOrganisation(a.organisation) || headByEmail(a.email), open, done: done.length, rating, ratings: rated.length };
   };
   const rows = engineers.map(row).sort((x, y) => (x.region ?? 'zz').localeCompare(y.region ?? 'zz') || x.a.name.localeCompare(y.a.name));
   const covered = new Set(rows.map((r) => r.region).filter(Boolean));
@@ -810,7 +812,7 @@ async function Team({ data, now }: { data: AdminData; now: number }) {
   return (
     <>
       <Heading
-        hint={<>Send the invite link to engineers anywhere in the country (WhatsApp is easiest). They register themselves with their name, phone, email, region and a password. Each registration waits here until you approve it, so a forwarded link can’t let a stranger in. Approved engineers get a text and sign in at /engineer/login.</>}
+        hint={<>Send the invite link to engineers anywhere in the country (WhatsApp is easiest). They register themselves with their name, phone, email, region and a password. Each registration waits here until you approve it, so a forwarded link can’t let a stranger in. Approved engineers get a text and sign in at /engineer/login. Make head gives an engineer (the head of the engineering department) the power to give any job to any engineer from their portal; they also get the texts about urgent jobs nobody has taken.</>}
         title="Engineers"
         lead={`${engineers.length} engineer${engineers.length === 1 ? '' : 's'} on the system${pending.length ? `, ${pending.length} waiting for your approval` : ''}. The region is used to send urgent jobs to the nearest engineer.`}
         action={<Csv table="accounts" />}
@@ -846,7 +848,7 @@ async function Team({ data, now }: { data: AdminData; now: number }) {
         </Panel>
       )}
 
-      <Table head={['Engineer', 'Region', 'Phone', 'Open jobs', 'Done (90 days)', 'Rating']} empty={!rows.length}>
+      <Table head={['Engineer', 'Region', 'Phone', 'Open jobs', 'Done (90 days)', 'Rating', 'Head of engineering']} empty={!rows.length}>
         {rows.map((r) => (
           <tr key={r.a.id}>
             <td>
@@ -860,6 +862,18 @@ async function Team({ data, now }: { data: AdminData; now: number }) {
             <td className="tabular-nums">{r.open}</td>
             <td className="tabular-nums">{r.done}</td>
             <td className="whitespace-nowrap tabular-nums">{r.rating ? `${r.rating} / 5 (${r.ratings})` : '—'}</td>
+            <td className="whitespace-nowrap">
+              {headByEmail(r.a.email) ? (
+                <Badge tone="good">Head (HEAD_ENGINEER_EMAILS)</Badge>
+              ) : (
+                <form action={setHeadEngineer} className="flex items-center gap-2">
+                  <input type="hidden" name="id" value={r.a.id} />
+                  <input type="hidden" name="on" value={r.head ? '0' : '1'} />
+                  {r.head && <Badge tone="good">Head</Badge>}
+                  <button className={r.head ? 'text-[0.875rem] font-medium text-ink-3 hover:text-signal-700' : 'inline-flex h-9 items-center rounded-lg border border-line px-3 text-[0.875rem] font-medium hover:border-ink/40'}>{r.head ? 'Remove' : 'Make head'}</button>
+                </form>
+              )}
+            </td>
           </tr>
         ))}
       </Table>
