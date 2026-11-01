@@ -248,6 +248,10 @@ html[data-eng-theme='dark'] {
   --color-violet: #bbaef3;
 }
 html[data-eng-theme='dark'] .eng-page { background: #111b20; }
+/* Overview's coloured figures: lighter shades on the dark background */
+html[data-eng-theme='dark'] .eng-page .text-\[\#2f6fa8\] { color: #8fbde9; }
+html[data-eng-theme='dark'] .eng-page .text-\[\#a87300\] { color: #e8b94f; }
+html[data-eng-theme='dark'] .eng-page .text-\[\#6a58b8\] { color: #b3a7ec; }
 html[data-eng-theme='dark'] .eng-rail { background: linear-gradient(180deg, #0f3a2a 0%, #0c3022 55%, #0a281d 100%); }
 
 /* Drop-downs: the site's own chevron with room on the right (the browser's arrow hugs the edge). Outside the
