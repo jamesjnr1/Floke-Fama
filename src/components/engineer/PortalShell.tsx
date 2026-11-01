@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { motion } from 'motion/react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { CalibrationView } from '@/components/engineer/CalibrationView';
 import { CommandPalette, type Command } from '@/components/engineer/CommandPalette';
@@ -16,6 +16,8 @@ import { TicketsView } from '@/components/engineer/TicketsView';
 import { useWebsiteRequests, WebsiteView, type WebsiteRequest } from '@/components/engineer/WebsiteView';
 import { PhotoDialog, useEngineerPhoto } from '@/components/engineer/photo';
 import { GuideView } from '@/components/engineer/GuideView';
+import { PRACTICE_FLAG, PRACTICE_KEY, practiceComments } from '@/lib/service/practice';
+import { reducer } from '@/lib/service/desk';
 import { supportDetails } from '@/lib/support-schema';
 import { LogoMark, LogoWordmark } from '@/components/layout/logo';
 import { LiveStatus } from '@/components/service/live-status';
@@ -75,17 +77,67 @@ function useTheme() {
   return { theme, toggle };
 }
 
-/** Biomedical Engineer Service Portal: the same layout as the hospital dashboard, backed by the shared service desk. */
-export function PortalShell({ user, products }: { user: { name: string; email: string }; products: CatalogueOption[] }) {
+/** Switches practice mode on or off (kept in this browser) and reloads the portal in that mode; `fresh` starts the samples again. */
+export function setPractice(on: boolean, fresh = false) {
+  try {
+    if (on) localStorage.setItem(PRACTICE_FLAG, '1');
+    else localStorage.removeItem(PRACTICE_FLAG);
+    if (!on || fresh) localStorage.removeItem(PRACTICE_KEY);
+  } catch {
+    /* storage unavailable */
+  }
+  location.assign('/engineer');
+}
+
+/**
+ * Biomedical Engineer Service Portal. Decides first whether this browser is in practice mode (sample jobs kept in the
+ * browser only: /engineer?practice=1, or from the How-to guide), then opens the portal in that mode.
+ */
+export function PortalShell(props: { user: { name: string; email: string }; products: CatalogueOption[] }) {
+  const [practice, setMode] = useState<boolean | null>(null);
+  useEffect(() => {
+    const q = new URLSearchParams(location.search);
+    let on = false;
+    try {
+      if (q.get('practice') === '1') localStorage.setItem(PRACTICE_FLAG, '1');
+      on = localStorage.getItem(PRACTICE_FLAG) === '1';
+    } catch {
+      /* storage unavailable: the real portal */
+    }
+    if (q.get('practice')) history.replaceState(null, '', '/engineer');
+    setMode(on);
+  }, []);
+  if (practice === null) return <div className="eng-page min-h-svh pt-10" aria-busy="true" />;
+  return <Portal {...props} practice={practice} />;
+}
+
+/** The portal: the same layout as the hospital dashboard, backed by the shared service desk (or the practice desk). */
+function Portal({ user, products, practice }: { user: { name: string; email: string }; products: CatalogueOption[]; practice: boolean }) {
   const { contact } = useSite();
   const me = user.name;
   const { theme, toggle } = useTheme();
-  const { state, dispatch: rawDispatch, ready, syncedAt, queued } = useEngineerStore(me);
+  const { state, dispatch: rawDispatch, ready, syncedAt, queued } = useEngineerStore(me, practice);
+  const stateRef = useRef(state);
+  stateRef.current = state;
+  // Practice: the made-up hospital rates each visit a few seconds after it is resolved, as a real one would
+  useEffect(() => {
+    if (!practice) return;
+    const due = state.tickets.filter((t) => t.status === 'resolved' && !t.rating);
+    if (!due.length) return;
+    const id = window.setTimeout(() => {
+      for (const t of due) {
+        const hospital = reducer({ name: t.requestedBy && t.requestedBy !== 'Service schedule' && t.requestedBy !== 'Flokefama sales' ? t.requestedBy : 'Hospital staff', role: 'client' });
+        rawDispatch({ type: 'load', state: hospital(stateRef.current, { type: 'rate', id: t.id, rating: t.priority === 'critical' ? 5 : 4, feedback: practiceComments[Number(t.id.slice(-1)) % practiceComments.length] }) });
+      }
+      toast('The practice hospital rated your visit', { description: 'See the stars on the job, and on the hospital’s copy of the report.' });
+    }, 6000);
+    return () => window.clearTimeout(id);
+  }, [practice, state.tickets, rawDispatch]);
   const [view, setView] = useState<View>('overview');
   const [ticketId, setTicketId] = useState<string | null>(null);
   const [sheetId, setSheetId] = useState<string | null>(null);
   const [fault, setFault] = useState<{ open: boolean; assetId?: string; from?: WebsiteRequest }>({ open: false });
-  const website = useWebsiteRequests();
+  const website = useWebsiteRequests(practice);
   // The engineer's photo is required: the portal asks for it until one is saved
   const photo = useEngineerPhoto();
   const [changingPhoto, setChangingPhoto] = useState(false);
@@ -97,8 +149,10 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
   const [facilities, setFacilities] = useState<string[]>([]);
   const addEquipment = useCallback(() => {
     setAdding(true);
+    // Practice mode offers the sample hospitals; otherwise the real ones
+    if (practice) return setFacilities([...new Set(state.assets.map((a) => a.facility))]);
     fetch('/api/facilities').then((r) => (r.ok ? r.json() : { facilities: [] })).then((j: { facilities?: string[] }) => setFacilities(j.facilities ?? [])).catch(() => {});
-  }, []);
+  }, [practice, state.assets]);
 
   /** Every action confirms itself with a toast. */
   const dispatch = useCallback(
@@ -264,6 +318,17 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
       </aside>
 
       <main id="main" className="min-w-0 flex-1">
+      {/* Practice mode: always visible, so sample jobs are never mistaken for real ones */}
+      {practice && (
+        <div role="status" className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 bg-[#7c4a00] px-4 py-2 text-center text-sm text-white">
+          <span><b className="font-semibold">Practice mode.</b> Sample hospitals and jobs, kept on this device only: nothing is saved or sent, and no one is texted.</span>
+          <span className="flex gap-2">
+            <button type="button" onClick={() => setPractice(true, true)} className="rounded-md bg-white/15 px-3 py-1 font-semibold hover:bg-white/25">Start again</button>
+            <button type="button" onClick={() => setPractice(false)} className="rounded-md bg-white px-3 py-1 font-semibold text-[#7c4a00] hover:bg-white/90">Leave practice mode</button>
+          </span>
+        </div>
+      )}
+
         {/* Header */}
         <header className="sticky top-10 z-30 flex h-[76px] items-center gap-3 border-b border-line bg-paper px-4 md:px-10">
           <Link href="/" className="flex items-center gap-2 lg:hidden" aria-label="Flokefama home"><LogoMark /></Link>
@@ -342,7 +407,7 @@ export function PortalShell({ user, products }: { user: { name: string; email: s
               )}
               {view === 'systems' && <SystemsView state={state} onOpenAsset={openAsset} onAdd={addEquipment} />}
               {view === 'calibration' && <CalibrationView state={state} onRecord={setCalibrating} onOpenAsset={openAsset} />}
-              {view === 'guide' && <GuideView onGo={setView} />}
+              {view === 'guide' && <GuideView onGo={setView} practice={practice} onPractice={() => setPractice(!practice)} />}
               {view === 'docs' && <Inventory assets={state.assets} tickets={state.tickets} onSelect={(a) => openAsset(a.id)} onAdd={addEquipment} />}
             </>
           )}

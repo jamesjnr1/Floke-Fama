@@ -47,10 +47,18 @@ const typeLabel: Record<WebsiteRequest['type'], string> = { fault: 'Fault', main
 const statusLabel: Record<WebsiteRequest['status'], string> = { new: 'New', called: 'Called back', closed: 'Closed' };
 
 /** The requests, refreshed every 30 seconds while the portal is open (null until loaded; enabled false without the database). */
-export function useWebsiteRequests() {
-  const [requests, setRequests] = useState<WebsiteRequest[] | null>(null);
+/** Practice mode: two made-up callers from the Support page. */
+const practiceRequests = (): WebsiteRequest[] => [
+  { id: 'SR-PR1', at: new Date(Date.now() - 20 * 60e3).toISOString(), status: 'new', type: 'fault', name: 'Dr. Akua Mensah', facility: 'Kasoa Practice Clinic', phone: '024 000 9876', equipment: 'CPAP Machine', working: 'partly', message: 'The humidifier is not heating. It still runs.' },
+  { id: 'SR-PR2', at: new Date(Date.now() - 3 * 36e5).toISOString(), status: 'new', type: 'maintenance', name: 'Mr. Yaw Boateng', facility: 'Ridge Practice Hospital', phone: '055 000 2468', equipment: 'Patient monitors in the ICU', message: 'We would like all six ICU monitors serviced next week.' },
+];
+
+export function useWebsiteRequests(practice = false) {
+  const [requests, setRequests] = useState<WebsiteRequest[] | null>(practice ? practiceRequests() : null);
   const [enabled, setEnabled] = useState(true);
   const refresh = useCallback(async () => {
+    if (practice) return;
+    // (practice mode never reads or writes the real requests)
     try {
       const r = await fetch('/api/support-requests', { cache: 'no-store' });
       const j = (await r.json()) as { enabled?: boolean; requests?: WebsiteRequest[] };
@@ -59,7 +67,7 @@ export function useWebsiteRequests() {
     } catch {
       /* offline: keep what is shown */
     }
-  }, []);
+  }, [practice]);
   useEffect(() => {
     refresh();
     const tick = () => document.visibilityState === 'visible' && refresh();
@@ -75,13 +83,14 @@ export function useWebsiteRequests() {
   const update = useCallback(
     async (id: string, status: WebsiteRequest['status'], me: string, ticketId?: string) => {
       setRequests((rs) => rs?.map((r) => (r.id === id ? { ...r, status, handledBy: me, handledAt: new Date().toISOString(), ticketId: ticketId ?? r.ticketId } : r)) ?? rs);
+      if (practice) return;
       const res = await fetch('/api/support-requests', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, status, ticketId }) }).catch(() => null);
       if (!res?.ok) {
         toast.error('That change wasn’t saved', { description: 'Check your connection and try again.' });
         refresh();
       }
     },
-    [refresh],
+    [refresh, practice],
   );
   return { requests, enabled, update };
 }

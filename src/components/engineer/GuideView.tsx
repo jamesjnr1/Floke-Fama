@@ -137,11 +137,29 @@ const sections: Section[] = [
   },
 ];
 
-export function GuideView({ onGo }: { onGo: (view: Go) => void }) {
+export function GuideView({ onGo, practice, onPractice }: { onGo: (view: Go) => void; practice?: boolean; onPractice?: () => void }) {
   const [open, setOpen] = useState(sections[0].id);
   const s = sections.find((x) => x.id === open) ?? sections[0];
   const n = sections.indexOf(s);
   return (
+    <div className="space-y-5">
+      {/* Try it safely: sample hospitals and jobs, on this device only */}
+      {onPractice && (
+        <Panel className="flex flex-wrap items-center gap-4 border-[#e7c98f] bg-[#fff8ea] p-5">
+          <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-[#7c4a00] text-xl text-white"><Icon name="fi-rr-graduation-cap" /></span>
+          <div className="min-w-0 flex-1">
+            <p className="font-semibold text-ink">{practice ? 'You are in practice mode' : 'Practise with sample jobs'}</p>
+            <p className="text-sm text-ink-2">
+              {practice
+                ? 'The hospitals, machines and jobs are made up and kept on this device only. Work through them with this guide, then leave practice mode to see your real jobs.'
+                : 'Try every step on made-up hospitals and jobs: an urgent fault, a preventive maintenance, a repair, an installation. Nothing is saved or sent, and no one is texted.'}
+            </p>
+          </div>
+          <button type="button" onClick={onPractice} className={cn('inline-flex h-11 shrink-0 items-center gap-2 rounded-lg px-4 text-sm font-semibold', practice ? 'border border-[#7c4a00] text-[#7c4a00] hover:bg-[#7c4a00]/5' : 'bg-[#7c4a00] text-white hover:bg-[#663d00]')}>
+            {practice ? 'Leave practice mode' : 'Start practice mode'}
+          </button>
+        </Panel>
+      )}
     <div className="grid min-w-0 grid-cols-1 gap-5 lg:grid-cols-[17rem_minmax(0,1fr)]">
       {/* Contents */}
       <nav aria-label="Guide contents" className="min-w-0 lg:sticky lg:top-[132px] lg:self-start">
@@ -216,6 +234,7 @@ export function GuideView({ onGo }: { onGo: (view: Go) => void }) {
         </div>
         {s.note && <p className="mt-4 text-sm text-ink-3">{s.note}</p>}
       </Panel>
+    </div>
     </div>
   );
 }

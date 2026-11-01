@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { createSeed, reducer, VERSION, type Action, type Actor, type ServiceState } from '@/lib/service/desk';
+import { PRACTICE_KEY, practiceDesk } from '@/lib/service/practice';
 
 export * from '@/lib/service/desk';
 
@@ -56,7 +57,7 @@ async function fetchDesk(): Promise<Remote> {
   }
 }
 
-export function useServiceStore(actor: Actor) {
+export function useServiceStore(actor: Actor, { practice = false }: { practice?: boolean } = {}) {
   const [state, dispatchLocal] = useReducer(reducer(actor), undefined, () => createSeed());
   const [ready, setReady] = useState(false);
   const [remote, setRemote] = useState(false);
@@ -77,6 +78,19 @@ export function useServiceStore(actor: Actor) {
         /* storage unavailable: start empty */
       }
     };
+    // Practice mode: the sample desk, kept in this browser only (nothing goes to the server)
+    if (practice) {
+      try {
+        const saved = JSON.parse(localStorage.getItem(PRACTICE_KEY) ?? 'null') as ServiceState | null;
+        dispatchLocal({ type: 'load', state: saved?.version === VERSION ? saved : practiceDesk(actor.name) });
+      } catch {
+        dispatchLocal({ type: 'load', state: practiceDesk(actor.name) });
+      }
+      setReady(true);
+      return () => {
+        live = false;
+      };
+    }
     fetchDesk().then((r) => {
       if (!live) return;
       if (r.enabled) {
@@ -99,15 +113,16 @@ export function useServiceStore(actor: Actor) {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- mode is decided once, on the first load
   }, []);
 
-  // Browser mode: save every change.
+  // Browser mode (and practice mode, under its own key): save every change.
   useEffect(() => {
     if (!ready || remote) return;
+    const key = practice ? PRACTICE_KEY : KEY;
     try {
-      if (localStorage.getItem(KEY) !== JSON.stringify(state)) localStorage.setItem(KEY, JSON.stringify(state));
+      if (localStorage.getItem(key) !== JSON.stringify(state)) localStorage.setItem(key, JSON.stringify(state));
     } catch {
       /* ignore */
     }
-  }, [state, ready, remote]);
+  }, [state, ready, remote, practice]);
 
   // Server mode: pick up other people's changes (not while one of ours is on its way).
   const refresh = useCallback(async () => {
@@ -211,9 +226,9 @@ export function useServiceStore(actor: Actor) {
     [remote, refresh, send],
   );
 
-  const reset = useCallback(() => dispatchLocal({ type: 'load', state: createSeed() }), []);
+  const reset = useCallback(() => dispatchLocal({ type: 'load', state: practice ? practiceDesk(actor.name) : createSeed() }), [practice, actor.name]);
   return { state, dispatch, ready, remote, reset, syncedAt, queued };
 }
 
 /** Engineer portal entry point. */
-export const useEngineerStore = (me: string) => useServiceStore({ name: me, role: 'engineer' });
+export const useEngineerStore = (me: string, practice = false) => useServiceStore({ name: me, role: 'engineer' }, { practice });
