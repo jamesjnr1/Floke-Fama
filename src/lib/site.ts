@@ -1,7 +1,7 @@
 import 'server-only';
 import { cache } from 'react';
 import { sanity } from '@/lib/sanity';
-import { namedHospitals, visibleBrands } from '@/data/seed';
+import { visibleBrands } from '@/data/seed';
 import { defaultSite, withDerived, type Award, type EsgPillar, type EventAlbum, type Faq, type HeroMedia, type Logo, type PageHeader, type PageKey, type Photo, type SiteContent, type Solution } from '@/lib/site-content';
 
 const img = (f: string) => `"${f}": ${f}.asset->url, "${f}W": ${f}.asset->metadata.dimensions.width, "${f}H": ${f}.asset->metadata.dimensions.height`;
@@ -64,10 +64,6 @@ const logos = (v: RawLogo[] | undefined, fallback: Logo[]): Logo[] =>
 
 const photos = (v: RawPhoto[] | undefined): Photo[] => (v ?? []).filter((p) => p.src).map((p) => ({ src: p.src!, alt: p.alt || p.caption || 'Flokefama photo', caption: p.caption }));
 
-/** Hospitals are never named on the website (the CEO, Oct 2026): a client's name, or a known one, becomes its code. */
-const coded = (t: string, clients: Logo[]) =>
-  [...clients.filter((c) => c.code).map((c): [RegExp, string] => [new RegExp(c.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), `client hospital ${c.code}`]), ...namedHospitals].reduce((s, [re, code]) => s.replace(re, code), t);
-
 /** Studio text written before the CEO's review still names the other distributors; show Mindray alone. */
 const onlyMindray = (t: string) => t.replace(/Mindray,\s*Biozek Holland,?\s*and MR Global/g, 'Mindray');
 
@@ -93,7 +89,7 @@ function merge(raw: Raw | null): SiteContent {
     // Only the brands the CEO wants visible (Mindray), even if the Studio still lists others
     technologyPartners: logos(raw.technologyPartners, d.technologyPartners).filter((p) => visibleBrands.includes(p.name)),
     // A client from the Studio without a code keeps the built-in code for that hospital, else gets one by its place
-    clients: logos(raw.clients, d.clients).map((c, i) => ({ ...c, code: c.code || d.clients.find((x) => x.name === c.name)?.code || `FF-H${String(i + 1).padStart(2, '0')}`, kind: c.kind || d.clients.find((x) => x.name === c.name)?.kind })),
+    clients: logos(raw.clients, d.clients),
     hero: { ...d.hero, ...clean(raw.hero) },
     signInPhones: (raw.signInPhones ?? []).filter((p) => p.label && p.phone).map((p) => ({ label: p.label!, phone: p.phone! })),
     heroMedia: (raw.heroMedia ?? [])
@@ -112,7 +108,7 @@ function merge(raw: Raw | null): SiteContent {
     },
     engineering: { ...d.engineering, ...clean({ title: raw.engineering?.title, lead: raw.engineering?.lead }), photos: photos(raw.engineering?.photos) },
     eventAlbums: (raw.eventAlbums ?? []).map((a): EventAlbum => ({ title: a.title ?? '', date: a.date, photos: photos(a.photos) })).filter((a) => a.title && a.photos.length),
-    testimonials: list(raw.testimonials, d.testimonials).map((t) => ({ ...t, role: coded(t.role ?? '', d.clients), quote: coded(t.quote ?? '', d.clients) })),
+    testimonials: list(raw.testimonials, d.testimonials),
     purpose: list(raw.purpose, d.purpose),
     coreValues: list(raw.coreValues, d.coreValues),
     servicesInBrief: list(raw.servicesInBrief, d.servicesInBrief),

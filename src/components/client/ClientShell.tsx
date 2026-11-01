@@ -118,9 +118,9 @@ export function ClientShell({ user, products }: { user: { name: string; email: s
 
   return (
     <EngineerPhotosProvider>
-    <div className="flex min-h-svh bg-[#f5f6f4] text-ink">
+    <div className="flex min-h-svh bg-[#f5f6f4] pt-10 text-ink">
       {/* Sidebar */}
-      <aside className="sticky top-0 hidden h-svh w-[264px] shrink-0 flex-col bg-[linear-gradient(180deg,#00804f_0%,#006b42_55%,#005a38_100%)] text-white lg:flex">
+      <aside className="sticky top-10 hidden h-[calc(100svh-2.5rem)] w-[264px] shrink-0 flex-col bg-[linear-gradient(180deg,#00804f_0%,#006b42_55%,#005a38_100%)] text-white lg:flex">
         <Link href="/" aria-label="Flokefama home" className="flex h-[76px] items-center gap-1.5 border-b border-white/15 px-6">
           <LogoMark />
           <LogoWordmark className="h-[17px] text-white" />
@@ -181,7 +181,7 @@ export function ClientShell({ user, products }: { user: { name: string; email: s
 
       <main id="main" className="min-w-0 flex-1">
         {/* Header */}
-        <header className="sticky top-0 z-30 flex h-[76px] items-center gap-3 border-b border-line bg-paper px-4 md:px-10">
+        <header className="sticky top-10 z-30 flex h-[76px] items-center gap-3 border-b border-line bg-paper px-4 md:px-10">
           <Link href="/" className="flex items-center gap-2 lg:hidden" aria-label="Flokefama home"><LogoMark /></Link>
           <div className="min-w-0 flex-1">
             <p className="hidden truncate text-xs text-ink-3 sm:block">{facility} <span className="text-ink-3/50">/</span> Dashboard</p>

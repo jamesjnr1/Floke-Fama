@@ -30,7 +30,7 @@ const shadow = 'shadow-[0_30px_60px_-20px_rgb(0_0_0/0.45)]';
 export function NavDropdown({ id, items, isOn, variant = menuStyle }: { id: string; items: MenuChild[]; isOn: (href: string) => boolean; variant?: MenuStyle }) {
   if (variant === 'mega') {
     return (
-      <motion.div id={id} {...motionProps} className="fixed inset-x-0 top-[72px] pt-0">
+      <motion.div id={id} {...motionProps} className="fixed inset-x-0 top-[112px] pt-0">
         <div className={cn('border-t border-black/5 bg-white text-ink', shadow)}>
           <div className="mx-auto grid max-w-[1280px] gap-10 px-10 py-10 lg:grid-cols-[1fr_1.4fr_1fr]">
             <div>
@@ -139,7 +139,7 @@ export function NavDropdown({ id, items, isOn, variant = menuStyle }: { id: stri
 
   if (variant === 'strip') {
     return (
-      <motion.div id={id} {...motionProps} className="fixed inset-x-0 top-[72px]">
+      <motion.div id={id} {...motionProps} className="fixed inset-x-0 top-[112px]">
         <ul className={cn('flex justify-center gap-2 bg-white py-3', shadow)}>
           {items.map((c) => (
             <li key={c.href}>

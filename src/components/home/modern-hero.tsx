@@ -23,7 +23,7 @@ const featured = [
  */
 export function ModernHero() {
   return (
-    <section className="relative isolate flex flex-col overflow-hidden bg-[linear-gradient(180deg,#083825_0%,#042217_60%,#021810_100%)] pt-3 text-white lg:min-h-0 lg:flex-1">
+    <section className="relative isolate flex flex-col overflow-hidden bg-[linear-gradient(180deg,#083825_0%,#042217_60%,#021810_100%)] pt-28 text-white lg:min-h-0 lg:flex-1">
       {/* Soft green light behind the headline */}
       <div aria-hidden className="absolute left-1/2 top-[22%] -z-10 h-[500px] w-[900px] max-w-[160vw] -translate-x-1/2 -translate-y-1/2 bg-[radial-gradient(closest-side,rgb(16_185_129/0.2),transparent)]" />
       {/* A faint ECG line pulsing across the middle */}

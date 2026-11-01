@@ -8,7 +8,7 @@ import { Icon } from '@/components/ui/icon';
 export function ReadingProgress() {
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, { stiffness: 140, damping: 30, restDelta: 0.001 });
-  return <motion.div aria-hidden style={{ scaleX }} className="fixed inset-x-0 top-0 z-[60] h-1 origin-left bg-brand-500" />;
+  return <motion.div aria-hidden style={{ scaleX }} className="fixed inset-x-0 top-10 z-[125] h-1 origin-left bg-brand-500" />;
 }
 
 /** Share an article: WhatsApp, LinkedIn, or copy the link. Uses the address the reader is on. */

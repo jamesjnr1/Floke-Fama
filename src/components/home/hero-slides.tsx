@@ -140,7 +140,7 @@ export function HeroSlides({ intro, media = [], mediaOnly = false }: { intro: Re
 function EquipmentSlide({ e, n, total, priority }: { e: (typeof equipment)[number]; n: number; total: number; priority: boolean }) {
   return (
     <figure className="flex w-full self-stretch">
-      <div aria-hidden className="absolute inset-x-0 bottom-0 -top-[72px] -z-10">
+      <div aria-hidden className="absolute inset-x-0 bottom-0 -top-28 -z-10">
         <Image src={e.image} alt="" fill priority={priority} sizes="100vw" className="object-cover" />
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(0_0_0/0.45)_0%,transparent_22%,transparent_50%,rgb(0_0_0/0.72)_100%)]" />
       </div>
@@ -181,7 +181,7 @@ function MediaSlide({ m, n, total, on, onEnd }: { m: HeroMedia; n: number; total
   }, [on]);
   return (
     <figure className="flex w-full self-stretch">
-      <div aria-hidden className="absolute inset-x-0 bottom-0 -top-[72px] -z-10 bg-black">
+      <div aria-hidden className="absolute inset-x-0 bottom-0 -top-28 -z-10 bg-black">
         {m.kind === 'video' ? (
           <video ref={video} src={on ? m.src : undefined} poster={m.poster} muted playsInline preload="none" onEnded={onEnd} controlsList="nodownload" disablePictureInPicture className="absolute inset-0 h-full w-full object-cover" />
         ) : (

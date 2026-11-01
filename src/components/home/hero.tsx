@@ -27,7 +27,7 @@ export async function Hero({ bg = heroBackground }: { bg?: HeroBackground } = {}
   if (heroStyle === 'modern') {
     // Keep the hero and the full client/partner band inside the visible area below the fixed navigation.
     return (
-      <div className="flex flex-col lg:h-[calc(100svh-7rem)] lg:min-h-0 lg:overflow-hidden">
+      <div className="flex flex-col lg:h-[100svh] lg:min-h-0 lg:overflow-hidden">
         <ModernHero />
         <HeroLogos />
       </div>
