@@ -2,7 +2,7 @@ import { after, NextResponse, type NextRequest } from 'next/server';
 import { appwrite } from '@/lib/appwrite';
 import { getSession, renewSession } from '@/lib/auth/server';
 import type { Action } from '@/lib/service/desk';
-import { applyAction, DeskError, loadDesk, visibleTo } from '@/lib/service/server';
+import { applyAction, autoAssignStale, DeskError, loadDesk, visibleTo } from '@/lib/service/server';
 import { escalateStale } from '@/lib/sms';
 
 /**
@@ -14,7 +14,7 @@ export const dynamic = 'force-dynamic';
 
 const noStore = { 'Cache-Control': 'private, no-store' };
 const MAX_BODY = 16 * 1024;
-const TYPES = new Set<Action['type']>(['assign', 'travel', 'arrive', 'note', 'part', 'resolve', 'create', 'request', 'rate', 'calibrate', 'addAsset', 'read', 'readAll']);
+const TYPES = new Set<Action['type']>(['assign', 'decline', 'travel', 'arrive', 'note', 'part', 'resolve', 'create', 'request', 'rate', 'calibrate', 'addAsset', 'read', 'readAll']);
 
 /** Changes must come from this site (the session cookie is SameSite=Lax; this closes the rest). */
 const sameOrigin = (req: NextRequest) => {
@@ -30,7 +30,11 @@ export async function GET() {
     const desk = await loadDesk();
     await renewSession(s);
     // While anyone has a portal open, urgent requests nobody has taken are escalated by text (after the answer is sent)
-    after(() => escalateStale(desk));
+    // and urgent jobs nobody took after AUTO_ASSIGN_MINUTES go to an engineer automatically
+    after(async () => {
+      await autoAssignStale(desk);
+      await escalateStale(await loadDesk());
+    });
     return NextResponse.json({ enabled: true, state: visibleTo(s, desk) }, { headers: noStore });
   } catch (e) {
     console.error('service desk: load failed', e);

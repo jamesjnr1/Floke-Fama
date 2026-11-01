@@ -7,6 +7,7 @@ import { updateProfile, type ProfileState } from '@/lib/auth/actions';
 import { useEngineerPhoto } from '@/components/engineer/photo';
 import { LogoMark } from '@/components/layout/logo';
 import { Icon } from '@/components/ui/icon';
+import { regions } from '@/lib/regions';
 
 const field = 'h-12 w-full border border-line bg-paper px-4 text-base text-ink outline-none transition focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15 aria-[invalid=true]:border-signal';
 
@@ -14,7 +15,7 @@ const field = 'h-12 w-full border border-line bg-paper px-4 text-base text-ink o
  * The engineer's own profile: their photo and phone number (what hospitals see, and where texts go), with links
  * to change the photo and the password. Name and email are set by an admin.
  */
-export function EngineerProfile({ name, email, phone }: { name: string; email: string; phone: string }) {
+export function EngineerProfile({ name, email, phone, region }: { name: string; email: string; phone: string; region: string }) {
   const [state, action, pending] = useActionState<ProfileState, FormData>(updateProfile, {});
   const photo = useEngineerPhoto();
   const e = state.errors ?? {};
@@ -27,7 +28,7 @@ export function EngineerProfile({ name, email, phone }: { name: string; email: s
         <div className="bg-white p-7 shadow-[0_30px_60px_-34px_rgb(11_21_16/0.35)] md:p-10">
           <LogoMark className="size-10" />
           <h1 className="mt-6 text-[1.875rem] font-bold leading-tight tracking-[-0.02em] text-ink">My profile</h1>
-          <p className="mt-2 text-ink-3">What hospitals see when you take their job, and where your texts go.</p>
+          <p className="mt-2 text-ink-3">What hospitals see when you take their job, where your texts go, and your region.</p>
 
           <div className="mt-8 flex items-center gap-4">
             <span className="relative size-20 shrink-0 overflow-hidden rounded-full bg-mist">
@@ -46,6 +47,15 @@ export function EngineerProfile({ name, email, phone }: { name: string; email: s
               <input name="phone" type="tel" autoComplete="tel" defaultValue={state.phone ?? phone} placeholder="e.g. 024 123 4567" aria-invalid={!!e.phone} className={field} />
               <span className="text-xs text-ink-3">Hospitals see it on the jobs you take, and your job texts come to it.</span>
               {e.phone && <span role="alert" className="text-xs text-signal-700">{e.phone}</span>}
+            </label>
+            <label className="grid gap-1.5">
+              <span className="text-sm font-medium text-ink-2">Your region</span>
+              <select name="region" defaultValue={state.region ?? region} aria-invalid={!!e.region} className={field}>
+                <option value="">Choose where you work</option>
+                {regions.map((r) => <option key={r} value={r}>{r}</option>)}
+              </select>
+              <span className="text-xs text-ink-3">Urgent jobs in your region come to you first.</span>
+              {e.region && <span role="alert" className="text-xs text-signal-700">{e.region}</span>}
             </label>
             {e.form && <p role="alert" className="text-sm text-signal-700">{e.form}</p>}
             {state.done && (

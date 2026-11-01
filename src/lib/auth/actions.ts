@@ -10,6 +10,7 @@ import { AccountsUnavailable, accountExists, findAccount, findSavedAccount, hash
 import { ADMIN_COOKIE, cookieFor, ENGINEER_COOKIE, nextFor, safeNext, SESSION_COOKIE, sessionCookie, signSession, type SessionUser } from '@/lib/auth/session';
 import { getAdminSession, getConsoleSession, getEngineerSession, getSession } from '@/lib/auth/server';
 import { roleFor } from '@/lib/auth/users';
+import { engineerOrganisation, regions } from '@/lib/regions';
 import { appwrite } from '@/lib/appwrite';
 import { updateEngineerPhone } from '@/lib/service/server';
 
@@ -106,6 +107,8 @@ export async function login(_prev: LoginState, form: FormData): Promise<LoginSta
     return { error: 'That email and password don’t match an account.', email: parsed.data.email };
   }
   attempts.delete(key);
+  // An engineer who registered with the invite link, not approved yet
+  if (saved.id.startsWith('engp-')) return { error: 'Your engineer registration is waiting for approval. You will get a text as soon as it is approved.', email: parsed.data.email };
   // The admin and engineer sign-in pages (/admin/login, /engineer/login) only let their own role in
   const role = roleFor(saved.email, saved.id);
   if (form.get('area') === 'admin' && role !== 'admin' && role !== 'sales') return { error: 'This account doesn’t have access to the admin console.', email: parsed.data.email };
@@ -214,9 +217,10 @@ export async function changePassword(_prev: PasswordState, form: FormData): Prom
 }
 
 export interface ProfileState {
-  errors?: Partial<Record<'phone' | 'form', string>>;
+  errors?: Partial<Record<'phone' | 'region' | 'form', string>>;
   done?: boolean;
   phone?: string;
+  region?: string;
 }
 
 /**
@@ -227,15 +231,18 @@ export async function updateProfile(_prev: ProfileState, form: FormData): Promis
   const s = await getEngineerSession();
   if (!s) return { errors: { form: 'Your session has ended. Please sign in again.' } };
   const phone = String(form.get('phone') ?? '').trim().replace(/\s+/g, ' ');
-  if (!/^[+\d][\d\s()-]{6,}$/.test(phone) || phone.length > 30) return { phone, errors: { phone: 'Enter a valid phone number, e.g. 024 123 4567.' } };
+  const region = String(form.get('region') ?? '');
+  if (!/^[+\d][\d\s()-]{6,}$/.test(phone) || phone.length > 30) return { phone, region, errors: { phone: 'Enter a valid phone number, e.g. 024 123 4567.' } };
+  if (region && !(regions as readonly string[]).includes(region)) return { phone, region, errors: { region: 'Choose your region.' } };
   const account = await guarded(() => findAccount(s.email));
   if (!account.ok) return { phone, errors: { form: UNAVAILABLE } };
   if (!account.value) return { phone, errors: { form: 'Your account could not be found. Please sign in again.' } };
-  const saved = await guarded(() => saveAccount({ ...account.value!, phone }));
+  // The region rides on the organisation (“Flokefama · Ashanti”), used to send urgent jobs to the nearest engineer
+  const saved = await guarded(() => saveAccount({ ...account.value!, phone, ...(region ? { organisation: engineerOrganisation(region) } : {}) }));
   if (!saved.ok) return { phone, errors: { form: UNAVAILABLE } };
   const { exp: _exp, ...user } = s;
   void _exp;
   (await cookies()).set(ENGINEER_COOKIE, await signSession({ ...user, phone }), sessionCookie(user));
   if (appwrite) await updateEngineerPhone(s.name, phone).catch((e) => console.error('[profile] open jobs not updated', e));
-  return { done: true, phone };
+  return { done: true, phone, region };
 }

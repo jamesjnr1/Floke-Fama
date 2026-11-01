@@ -224,6 +224,7 @@ function TicketDetail({ ticket: t, state, me, dispatch, onResolve, onOpenAsset }
               <PrimaryButton onClick={() => onResolve(t)}><Icon name="fi-rr-check" /> Resolve…</PrimaryButton>
             )}
             {!mine && t.status === 'onsite' && <span className="text-sm text-ink-3">{t.engineer} is on site.</span>}
+            {mine && (t.status === 'assigned' || t.status === 'travelling') && <HandBack ticket={t} dispatch={dispatch} />}
           </div>
         )}
 
@@ -302,5 +303,18 @@ function TicketDetail({ ticket: t, state, me, dispatch, onResolve, onOpenAsset }
         </div>
       </div>
     </Panel>
+  );
+}
+
+/** “I can't take this job”: the job goes back to the queue (and, if urgent, straight to another engineer). */
+function HandBack({ ticket: t, dispatch }: { ticket: Ticket; dispatch: (a: Action) => void }) {
+  const [asking, setAsking] = useState(false);
+  if (!asking) return <GhostButton onClick={() => setAsking(true)}><Icon name="fi-rr-undo" /> I can’t take this job</GhostButton>;
+  return (
+    <span className="flex basis-full flex-wrap items-center justify-end gap-2 border-t border-line pt-3">
+      <span className="mr-auto text-sm text-ink-2">Hand it back? Another engineer will get it{t.priority === 'critical' || t.priority === 'high' ? ' straight away' : ''}.</span>
+      <GhostButton onClick={() => setAsking(false)}>Keep it</GhostButton>
+      <PrimaryButton onClick={() => { setAsking(false); dispatch({ type: 'decline', id: t.id }); }}>Yes, hand it back</PrimaryButton>
+    </span>
   );
 }
