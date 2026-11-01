@@ -6,8 +6,9 @@ import { ticketStatusMeta } from '@/components/service/status';
 import { fieldClass, GhostButton, Panel, PrimaryButton, PriorityBadge, SectionLabel, tag } from '@/components/service/ui';
 import { Hint } from '@/components/ui/hint';
 import { Icon } from '@/components/ui/icon';
-import { fmtTime, isOpen, statusSteps, stepIndex, type Action, type EngineerState, type Ticket } from '@/lib/service/store';
+import { fmtTime, isOpen, jobKind, statusSteps, stepIndex, type Action, type EngineerState, type Ticket } from '@/lib/service/store';
 import { cn } from '@/lib/utils';
+import { printServiceReport } from '@/lib/service/print';
 
 type Filter = 'open' | 'mine' | 'new' | 'resolved' | 'all';
 const filters: { id: Filter; label: string }[] = [
@@ -151,6 +152,11 @@ function TicketDetail({ ticket: t, state, me, dispatch, onResolve, onOpenAsset }
           <span className="mr-1 font-mono text-xs text-ink-3">{t.id} · Opened {fmtTime(t.openedAt)}</span>
           <PriorityBadge priority={t.priority} />
           <span className={cn(tag, ticketStatusMeta[t.status].tag)}>{ticketStatusMeta[t.status].label}</span>
+          <span className={cn(tag, 'bg-mist text-ink-2')}>{jobKind(t)}</span>
+          {/* The one-page report for the facility to stamp and sign, ready to print at any point of the visit */}
+          <button type="button" onClick={() => printServiceReport(t, asset)} className="ml-auto inline-flex h-9 items-center gap-2 rounded-lg border border-line bg-paper px-3 text-xs font-semibold text-ink hover:border-ink/30">
+            <Icon name="fi-rr-print" /> Service report
+          </button>
         </div>
         <h2 className="mt-3 text-2xl font-semibold tracking-[-0.02em] text-ink">{t.title}</h2>
         <p className="mt-2 text-sm text-ink-2">{t.description}</p>

@@ -6,7 +6,8 @@ import { EngineerFace } from '@/components/service/engineer-photos';
 import { Card, inputClass, statusBar, statusStyle, tag, urgency } from '@/components/client/ui';
 import { Icon } from '@/components/ui/icon';
 import { useSite } from '@/components/site-provider';
-import { clientSteps, fmtTime, isOpen, statusSteps, stepIndex, type Action, type Asset, type Ticket } from '@/lib/service/store';
+import { jobKind, clientSteps, fmtTime, isOpen, statusSteps, stepIndex, type Action, type Asset, type Ticket } from '@/lib/service/store';
+import { printServiceReport } from '@/lib/service/print';
 import { cn } from '@/lib/utils';
 
 type Filter = 'open' | 'resolved' | 'all';
@@ -94,6 +95,7 @@ function Detail({ ticket: t, asset, dispatch }: { ticket: Ticket; asset?: Asset;
       <div className="flex flex-wrap items-center gap-2">
         <span className="font-mono text-xs text-ink-3">{t.id} · Opened {fmtTime(t.openedAt)}</span>
         <span className={cn(tag, urgency[t.priority].className)}>{urgency[t.priority].label}</span>
+        <span className={cn(tag, 'bg-mist text-ink-2')}>{jobKind(t)}</span>
       </div>
       <h2 className="mt-2 text-2xl font-semibold tracking-[-0.02em] text-ink">{asset?.name}</h2>
       <p className="mt-1 text-ink-2">{t.description}</p>
@@ -150,6 +152,9 @@ function Detail({ ticket: t, asset, dispatch }: { ticket: Ticket; asset?: Asset;
             <p className="flex items-center gap-2 font-medium text-brand-700"><Icon name="fi-rr-badge-check" /> Resolved {t.resolvedAt && fmtTime(t.resolvedAt)}{t.engineer ? ` by ${t.engineer}` : ''}</p>
             <p className="mt-2 text-sm text-ink-2">{t.resolution}</p>
             {t.parts.length > 0 && <p className="mt-2 text-xs text-ink-3">Parts: {t.parts.map((p) => `${p.qty} × ${p.name}`).join(', ')}</p>}
+            <button type="button" onClick={() => printServiceReport(t, asset)} className="mt-3 inline-flex h-10 items-center gap-2 rounded-lg border border-brand-600 bg-paper px-3.5 text-sm font-semibold text-brand-700 hover:bg-brand-50">
+              <Icon name="fi-rr-print" /> Print service report
+            </button>
           </div>
           {t.rating ? (
             <p className="flex items-center gap-2 text-sm text-ink-3">

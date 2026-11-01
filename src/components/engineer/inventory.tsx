@@ -9,7 +9,8 @@ import { GhostButton, PrimaryButton, tag } from '@/components/service/ui';
 import { Icon, IconTile } from '@/components/ui/icon';
 import { useSite } from '@/components/site-provider';
 import { downloadCertificate } from '@/lib/service/certificate';
-import { assetImage, assetStatus, dueLabel, fmtDate, fmtTime, isOpen, type Asset, type Ticket } from '@/lib/service/store';
+import { scheduleLabel, assetImage, assetStatus, dueLabel, fmtDate, fmtTime, isOpen, type Asset, type Ticket } from '@/lib/service/store';
+import { printTag } from '@/lib/service/print';
 import { cn } from '@/lib/utils';
 
 /** Documents: every system; opening one shows its records, certificates and manuals. */
@@ -101,6 +102,11 @@ function Sheet({ asset, tickets, onLogFault, onRecord, onOpenTicket }: {
             <p className="text-xs text-ink-3">{asset.brand} · {asset.id}</p>
             <Dialog.Title className="mt-1 text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">{asset.name}</Dialog.Title>
             <p className={cn('mt-2 flex items-center gap-2 text-sm font-medium', h.text)}><span className={cn('size-2 rounded-[1px]', h.dot)} aria-hidden /> {h.label}</p>
+            <p className="mt-2 flex flex-wrap gap-1.5 text-xs">
+              {asset.suppliedByUs === false && <span className="rounded-md bg-[#fdecec] px-2 py-1 font-semibold text-signal-700">Not supplied by Flokefama</span>}
+              {asset.ivd && <span className="rounded-md bg-brand-50 px-2 py-1 font-semibold text-brand-700">IVD</span>}
+              <span className="rounded-md bg-mist px-2 py-1 text-ink-2">{scheduleLabel(asset)}</span>
+            </p>
           </div>
           <dl className="grid grid-cols-2 overflow-hidden rounded-lg border border-line text-sm">
             {[
@@ -108,8 +114,8 @@ function Sheet({ asset, tickets, onLogFault, onRecord, onOpenTicket }: {
               ['Facility', `${asset.facility}, ${asset.location}`],
               ['Installed', asset.installation ? 'Awaiting installation' : fmtDate(asset.installed)],
               ['Warranty until', asset.installation ? 'Starts at install' : fmtDate(asset.warrantyUntil)],
-              ['Last calibration', asset.installation ? '—' : fmtDate(asset.lastCalibration)],
-              ['Next calibration', asset.installation ? 'After install' : `${fmtDate(asset.nextCalibration)} · ${dueLabel(asset.nextCalibration)}`],
+              ['Last service', asset.installation ? '—' : fmtDate(asset.lastCalibration)],
+              ['Next service', asset.installation ? 'After install' : asset.suppliedByUs === false ? 'On request' : `${fmtDate(asset.nextCalibration)} · ${dueLabel(asset.nextCalibration)}`],
             ].map(([k, v], i) => (
               <div key={k} className={cn('p-4', i % 2 === 1 && 'border-l border-line', i >= 2 && 'border-t border-line')}>
                 <dt className="text-xs text-ink-3">{k}</dt>
@@ -119,7 +125,9 @@ function Sheet({ asset, tickets, onLogFault, onRecord, onOpenTicket }: {
           </dl>
           <div className="flex flex-wrap gap-2">
             <PrimaryButton onClick={() => onLogFault(asset.id)}><Icon name="fi-rr-plus" /> Log fault</PrimaryButton>
-            <GhostButton onClick={() => onRecord(asset)}><Icon name="fi-rr-badge-check" /> Record calibration</GhostButton>
+            <GhostButton onClick={() => onRecord(asset)}><Icon name="fi-rr-badge-check" /> Record service</GhostButton>
+            {/* The sticker for the machine: its details, service dates, the call centre and a QR code to report a fault */}
+            <GhostButton onClick={() => printTag(asset)}><Icon name="fi-rr-print" /> Print equipment tag</GhostButton>
           </div>
         </div>
       </div>

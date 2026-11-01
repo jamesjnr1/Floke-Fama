@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { choiceClass, Field, fieldClass, GhostButton, PortalDialog, PrimaryButton } from '@/components/service/ui';
 import { Hint } from '@/components/ui/hint';
 import { Icon } from '@/components/ui/icon';
-import { facilityKey, type Asset, type Certificate, type Priority, type Ticket } from '@/lib/service/store';
+import { facilityKey, looksIvd, scheduleLabel, serviceInterval, type Asset, type Certificate, type Priority, type Ticket } from '@/lib/service/store';
 import { cn } from '@/lib/utils';
 
 const NEW = '__new';
@@ -115,13 +115,15 @@ export function LogFaultDialog({ open, onOpenChange, assets: all, defaultAssetId
 export function ResolveDialog({ ticket, onOpenChange, onSubmit }: {
   ticket: Ticket | null;
   onOpenChange: (v: boolean) => void;
-  onSubmit: (v: { summary: string; calibrated: boolean }) => void;
+  onSubmit: (v: { summary: string; calibrated: boolean; km?: number }) => void;
 }) {
   const [summary, setSummary] = useState('');
   const [calibrated, setCalibrated] = useState(false);
+  const [km, setKm] = useState('');
   useEffect(() => {
     setSummary('');
     setCalibrated(false);
+    setKm('');
   }, [ticket]);
   return (
     <PortalDialog open={Boolean(ticket)} onOpenChange={onOpenChange} title={`Resolve ${ticket?.id ?? ''}`} description="Your summary becomes the service report sent to the facility.">
@@ -129,7 +131,7 @@ export function ResolveDialog({ ticket, onOpenChange, onSubmit }: {
         onSubmit={(e) => {
           e.preventDefault();
           if (!summary.trim()) return;
-          onSubmit({ summary: summary.trim(), calibrated });
+          onSubmit({ summary: summary.trim(), calibrated, km: Number(km) > 0 ? Number(km) : undefined });
         }}
         className="space-y-4"
       >
@@ -139,10 +141,17 @@ export function ResolveDialog({ ticket, onOpenChange, onSubmit }: {
         {ticket && ticket.parts.length > 0 && (
           <p className="text-xs text-ink-3">Parts on this ticket: {ticket.parts.map((p) => `${p.qty} × ${p.name}`).join(', ')}</p>
         )}
-        <label className="flex items-center gap-3 text-sm text-ink-2">
-          <input type="checkbox" checked={calibrated} onChange={(e) => setCalibrated(e.target.checked)} className="size-4 accent-[#007a4d]" />
-          Calibration performed and passed (issues a certificate)
-        </label>
+        <Field label="Distance travelled for this job (km, optional)">
+          <input type="number" inputMode="decimal" min={0} max={2000} value={km} onChange={(e) => setKm(e.target.value)} placeholder="e.g. 24" className={cn(fieldClass, 'h-11 max-w-40')} />
+        </Field>
+        {ticket?.kind === 'pm' ? (
+          <p className="text-xs text-ink-3">Preventive maintenance: resolving it issues a service certificate and schedules the next visit.</p>
+        ) : (
+          <label className="flex items-center gap-3 text-sm text-ink-2">
+            <input type="checkbox" checked={calibrated} onChange={(e) => setCalibrated(e.target.checked)} className="size-4 accent-[#007a4d]" />
+            Calibration performed and passed (issues a certificate)
+          </label>
+        )}
         <div className="flex justify-end gap-2 pt-2">
           <GhostButton type="button" onClick={() => onOpenChange(false)}>Cancel</GhostButton>
           <PrimaryButton type="submit" disabled={!summary.trim()}><Icon name="fi-rr-check" /> Resolve ticket</PrimaryButton>
@@ -186,7 +195,7 @@ export function CalibrationDialog({ asset, onOpenChange, onSubmit }: {
         <Field label="Notes (optional)">
           <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} placeholder="Reference standards used, readings, adjustments…" className={cn(fieldClass, 'py-2.5')} />
         </Field>
-        {asset && <p className="text-xs text-ink-3">Next calibration will be scheduled in {asset.intervalMonths} months.</p>}
+        {asset && <p className="text-xs text-ink-3">{asset.suppliedByUs === false ? 'Not supplied by Flokefama: no service schedule.' : `Next service in ${serviceInterval(asset)} months. ${scheduleLabel(asset)}.`}</p>}
         <div className="flex justify-end gap-2 pt-2">
           <GhostButton type="button" onClick={() => onOpenChange(false)}>Cancel</GhostButton>
           <PrimaryButton type="submit"><Icon name="fi-rr-badge-check" /> Issue certificate</PrimaryButton>
@@ -214,13 +223,21 @@ export function AddEquipmentDialog({ open, onOpenChange, facilities, products, o
 }) {
   const blank = { facility: '', name: '', brand: '', serial: '', location: '', installed: '', lastCalibration: '', interval: '12', warranty: '' };
   const [v, setV] = useState(blank);
+  /** null: decided from the name (analysers are IVD) until the engineer ticks or unticks it. */
+  const [ivdChoice, setIvd] = useState<boolean | null>(null);
+  const [orphan, setOrphan] = useState(false);
   useEffect(() => {
-    if (open) setV(blank);
+    if (open) {
+      setV(blank);
+      setIvd(null);
+      setOrphan(false);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- reset each time it opens
   }, [open]);
   const set = (k: keyof typeof blank) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => setV((x) => ({ ...x, [k]: e.target.value }));
   const match = products.find((p) => tidy(p.name).toLowerCase() === v.name.trim().toLowerCase());
   const ready = v.facility.trim().length > 1 && v.name.trim().length > 1;
+  const ivd = ivdChoice ?? looksIvd(v.name);
 
   return (
     <PortalDialog open={open} onOpenChange={onOpenChange} title="Add existing equipment" description="Equipment a hospital already owns. It appears on that hospital’s dashboard with its calibration schedule.">
@@ -249,6 +266,8 @@ export function AddEquipmentDialog({ open, onOpenChange, facilities, products, o
             nextCalibration: next.toISOString(),
             intervalMonths: interval,
             certificates: [],
+            ivd,
+            ...(orphan ? { suppliedByUs: false } : {}),
           });
           onOpenChange(false);
         }}
@@ -288,6 +307,17 @@ export function AddEquipmentDialog({ open, onOpenChange, facilities, products, o
             </select>
           </Field>
           <Field label="Warranty until (optional)"><input type="date" value={v.warranty} onChange={set('warranty')} className={cn(fieldClass, 'h-11')} /></Field>
+        </div>
+        <div className="space-y-2.5 border-t border-line pt-4">
+          <label className="flex items-start gap-3 text-sm text-ink-2">
+            <input type="checkbox" checked={ivd} onChange={(e) => setIvd(e.target.checked)} className="mt-0.5 size-4 accent-[#007a4d]" />
+            <span>In-vitro diagnostics (an analyser) <span className="block text-xs text-ink-3">After the warranty it is serviced every quarter.</span></span>
+          </label>
+          <label className="flex items-start gap-3 text-sm text-ink-2">
+            <input type="checkbox" checked={orphan} onChange={(e) => setOrphan(e.target.checked)} className="mt-0.5 size-4 accent-[#007a4d]" />
+            <span>Not supplied by Flokefama <span className="block text-xs text-ink-3">Repaired on request; no warranty or service schedule. Its jobs show as repairs.</span></span>
+          </label>
+          {!orphan && <p className="text-xs text-ink-3">Service schedule: twice a year under warranty, then {ivd ? 'every quarter' : `every ${v.interval} months`}.</p>}
         </div>
         <div className="flex justify-end gap-2 pt-2">
           <GhostButton type="button" onClick={() => onOpenChange(false)}>Cancel</GhostButton>

@@ -24,7 +24,6 @@
 .fi-rr-clipboard-list::before{content:"\f43b"}
 .fi-rr-clock::before{content:"\f45a"}
 .fi-rr-comment::before{content:"\f4b8"}
-.fi-rr-comment-dots::before{content:"\f4a8"}
 .fi-rr-copy::before{content:"\f4dd"}
 .fi-rr-cross-small::before{content:"\f4f6"}
 .fi-rr-database::before{content:"\f525"}
@@ -55,6 +54,7 @@
 .fi-rr-phone-call::before{content:"\fa61"}
 .fi-rr-play-circle::before{content:"\fa9b"}
 .fi-rr-plus::before{content:"\faac"}
+.fi-rr-print::before{content:"\fad6"}
 .fi-rr-refresh::before{content:"\fb34"}
 .fi-rr-rotate-right::before{content:"\fb6a"}
 .fi-rr-scalpel::before{content:"\fb99"}

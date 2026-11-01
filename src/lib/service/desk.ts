@@ -31,8 +31,14 @@ export interface Ticket {
   parts: Part[];
   resolution?: string;
   resolvedAt?: string;
-  /** 'installation': delivery and commissioning of newly bought equipment (created by a purchase). */
-  kind?: 'installation';
+  /**
+   * The kind of job: 'installation' (delivery and commissioning of newly bought equipment, created by a purchase),
+   * 'pm' (scheduled preventive maintenance, opened by the daily check), 'repair' (equipment Flokefama didn't supply).
+   * No kind: a fault reported by the hospital (corrective maintenance).
+   */
+  kind?: 'installation' | 'pm' | 'repair';
+  /** Distance the engineer travelled for the job, in km (entered when resolving): for the performance report. */
+  km?: number;
   /** Who raised it: a facility contact (client portal), an engineer, or the system (scheduled PM). */
   requestedBy?: string;
   contactPhone?: string;
@@ -58,6 +64,10 @@ export interface Asset {
   nextCalibration: string;
   intervalMonths: number;
   certificates: Certificate[];
+  /** In-vitro diagnostics (analysers): after the warranty, serviced every quarter instead of the usual interval. */
+  ivd?: boolean;
+  /** false: equipment Flokefama didn't supply ("orphan" equipment), repaired on request but with no warranty or schedule. */
+  suppliedByUs?: boolean;
   /** Set while newly bought equipment awaits delivery and installation (the order it came from). */
   installation?: { order: string };
 }
@@ -129,6 +139,33 @@ export const dueLabel = (s: string) => {
   return `Due in ${d} day${d === 1 ? '' : 's'}`;
 };
 
+/* ---------- service schedule ---------- */
+/**
+ * How often a machine is serviced (the engineering department's schedule, Nov 2026): twice a year while under
+ * warranty, every quarter after the warranty for IVD equipment (analysers), else its own interval.
+ */
+export function serviceInterval(a: Pick<Asset, 'warrantyUntil' | 'intervalMonths' | 'ivd'>, at = new Date()): number {
+  const underWarranty = new Date(a.warrantyUntil).getTime() > at.getTime();
+  if (underWarranty) return 6;
+  if (a.ivd) return 3;
+  return a.intervalMonths || 12;
+}
+export const scheduleLabel = (a: Pick<Asset, 'warrantyUntil' | 'intervalMonths' | 'ivd' | 'suppliedByUs'>) =>
+  a.suppliedByUs === false
+    ? 'Repairs on request (not supplied by Flokefama)'
+    : new Date(a.warrantyUntil).getTime() > Date.now()
+      ? 'Under warranty: serviced twice a year'
+      : a.ivd
+        ? 'After warranty (IVD): serviced every quarter'
+        : `After warranty: serviced every ${a.intervalMonths || 12} months`;
+/** The next service date after one done now. */
+const nextService = (a: Asset, at = new Date()) => iso(addMonths(at, serviceInterval(a, at)));
+/** Analysers and other in-vitro diagnostics, from the catalogue's category or the name. */
+export const looksIvd = (name: string, category?: string) =>
+  category === 'in-vitro-diagnostics' || /analy[sz]er|haematology|hematology|chemistry|urinalysis|coagulation|hba1c|\bise\b|immunoassay|elisa|electrolyte|blood gas/i.test(name);
+export const jobKindLabel: Record<NonNullable<Ticket['kind']> | 'fault', string> = { installation: 'Installation', pm: 'Preventive maintenance', repair: 'Repair (not supplied by us)', fault: 'Corrective maintenance' };
+export const jobKind = (t: Pick<Ticket, 'kind'>) => jobKindLabel[t.kind ?? 'fault'];
+
 /* ---------- derived ---------- */
 /** The asset's photo: its own, else the catalogue photo of the product it is. */
 export const assetImage = (a: Asset) => a.image ?? (a.productSlug ? `/images/products/${a.productSlug}.webp` : undefined);
@@ -186,13 +223,15 @@ export type Action =
   | { type: 'arrive'; id: string }
   | { type: 'note'; id: string; text: string }
   | { type: 'part'; id: string; part: Part }
-  | { type: 'resolve'; id: string; summary: string; calibrated: boolean }
+  | { type: 'resolve'; id: string; summary: string; calibrated: boolean; km?: number }
   | { type: 'create'; ticket: Pick<Ticket, 'assetId' | 'description' | 'priority'> & { contactPhone?: string }; assignToMe: boolean; /** Equipment registered with the request (a website caller's machine not on record yet). */ newAsset?: Asset; /** Filled in by the server from the engineer's account. */ phone?: string }
   | { type: 'request'; ticket: Pick<Ticket, 'assetId' | 'description' | 'priority' | 'contactPhone' | 'preferredVisit'> }
   | { type: 'rate'; id: string; rating: number; feedback?: string }
   | { type: 'calibrate'; assetId: string; result: Certificate['result']; notes?: string }
   | { type: 'addAsset'; asset: Asset }
-  | { type: 'purchase'; order: string; facility: string; items: { slug: string; name: string; brand: string; image?: string; qty: number; install: boolean }[] }
+  | { type: 'purchase'; order: string; facility: string; items: { slug: string; name: string; brand: string; image?: string; qty: number; install: boolean; ivd?: boolean }[] }
+  /** The daily check (server only): opens a preventive maintenance job for each machine due within two weeks. */
+  | { type: 'schedule' }
   | { type: 'read'; id: string }
   | { type: 'readAll'; audience: Audience };
 
@@ -231,7 +270,8 @@ export function reducer(actor: Actor) {
       case 'part':
         return patch(action.id, (t) => ({ ...t, parts: [...t.parts, action.part], log: [...t.log, entry(`Part used: ${action.part.qty} × ${action.part.name}`, 'part')] }));
       case 'resolve': {
-        let next = patch(action.id, (t) => ({ ...t, status: 'resolved', resolution: action.summary, resolvedAt: now, log: [...t.log, entry('Resolved')] }));
+        const km = action.km && action.km > 0 ? Math.min(2000, Math.round(action.km)) : undefined;
+        let next = patch(action.id, (t) => ({ ...t, status: 'resolved', resolution: action.summary, resolvedAt: now, km, log: [...t.log, entry(km ? `Resolved · ${km} km travelled` : 'Resolved')] }));
         if (ticket?.kind === 'installation') {
           // Installed and commissioned: the warranty and the calibration schedule start today.
           const asset = next.assets.find((a) => a.id === ticket.assetId);
@@ -240,13 +280,14 @@ export function reducer(actor: Actor) {
             ...next,
             assets: next.assets.map((a) =>
               a.id === ticket.assetId
-                ? { ...a, installation: undefined, installed: now, warrantyUntil: iso(addMonths(new Date(), 12)), lastCalibration: now, nextCalibration: iso(addMonths(new Date(), a.intervalMonths)), certificates: [cert, ...a.certificates] }
+                ? { ...a, installation: undefined, installed: now, warrantyUntil: iso(addMonths(new Date(), 12)), lastCalibration: now, nextCalibration: iso(addMonths(new Date(), 6)), certificates: [cert, ...a.certificates] }
                 : a,
             ),
           };
-          return notify(next, `${asset?.name ?? 'Your equipment'} is installed and commissioned. Its warranty runs for 12 months and the installation certificate is ready.`, { assetId: ticket.assetId });
+          return notify(next, `${asset?.name ?? 'Your equipment'} is installed and commissioned. Its warranty runs for 12 months (serviced twice a year) and the installation certificate is ready.`, { assetId: ticket.assetId });
         }
-        if (action.calibrated && ticket) next = reducer(actor)(next, { type: 'calibrate', assetId: ticket.assetId, result: 'Pass', notes: `After ${ticket.id}` });
+        // A preventive maintenance visit, or a check after a repair, moves the next service date on
+        if ((action.calibrated || ticket?.kind === 'pm') && ticket) next = reducer(actor)(next, { type: 'calibrate', assetId: ticket.assetId, result: 'Pass', notes: ticket.kind === 'pm' ? `Preventive maintenance ${ticket.id}` : `After ${ticket.id}` });
         return notify(next, `${label} is resolved. Your service report is ready, please rate the visit.`, { ticketId: action.id });
       }
       case 'create': {
@@ -255,6 +296,7 @@ export function reducer(actor: Actor) {
         const id = nextTicketId(state);
         const t: Ticket = {
           id, ...action.ticket, title: `${asset?.name ?? 'System'}: ${action.ticket.description.split(/[.\n]/)[0].slice(0, 60)}`,
+          ...(asset?.suppliedByUs === false ? { kind: 'repair' as const } : {}),
           status: action.assignToMe ? 'assigned' : 'new', engineer: action.assignToMe ? me : undefined, engineerPhone: action.assignToMe ? action.phone : undefined, openedAt: now, parts: [], requestedBy: me,
           log: [entry(`Ticket logged by ${me}`, 'system'), ...(action.assignToMe ? [entry(`Assigned to ${me}`)] : [])],
         };
@@ -265,6 +307,7 @@ export function reducer(actor: Actor) {
         const id = nextTicketId(state);
         const t: Ticket = {
           id, ...action.ticket, title: `${asset?.name ?? 'System'}: ${action.ticket.description.split(/[.\n]/)[0].slice(0, 60)}`,
+          ...(asset?.suppliedByUs === false ? { kind: 'repair' as const } : {}),
           status: 'new', openedAt: now, parts: [], requestedBy: me,
           log: [entry(`Request submitted by ${me}${action.ticket.preferredVisit ? ` · preferred visit: ${action.ticket.preferredVisit}` : ''}`, 'system')],
         };
@@ -278,7 +321,7 @@ export function reducer(actor: Actor) {
         const assets = state.assets.map((a) => {
           if (a.id !== action.assetId) return a;
           const cert: Certificate = { id: `CAL-${Math.floor(500 + Math.random() * 499)}`, date: now, result: action.result, engineer: me, notes: action.notes };
-          return { ...a, lastCalibration: now, nextCalibration: iso(addMonths(new Date(), a.intervalMonths)), certificates: [cert, ...a.certificates] };
+          return { ...a, lastCalibration: now, nextCalibration: a.suppliedByUs === false ? a.nextCalibration : nextService(a), certificates: [cert, ...a.certificates] };
         });
         const asset = state.assets.find((a) => a.id === action.assetId);
         return notify({ ...state, assets }, `New calibration certificate for ${asset?.name}.`, { assetId: action.assetId });
@@ -297,8 +340,8 @@ export function reducer(actor: Actor) {
               id, name: item.name, brand: item.brand, productSlug: item.slug, image: item.image,
               serial: item.install ? 'Recorded at installation' : 'On the delivery note',
               facility: action.facility, location: item.install ? 'Set at installation' : 'Location not set', readings: [50, 52, 51, 53, 52, 54, 53, 55, 54, 56],
-              installed: now, warrantyUntil: iso(addMonths(new Date(), 12)), lastCalibration: now, nextCalibration: iso(addMonths(new Date(), item.install ? 6 : 12)),
-              intervalMonths: item.install ? 6 : 12, certificates: [], ...(item.install ? { installation: { order: action.order } } : {}),
+              installed: now, warrantyUntil: iso(addMonths(new Date(), 12)), lastCalibration: now, nextCalibration: iso(addMonths(new Date(), 6)),
+              intervalMonths: item.install ? 6 : 12, certificates: [], ivd: item.ivd ?? looksIvd(item.name), ...(item.install ? { installation: { order: action.order } } : {}),
             });
             if (!item.install) continue;
             n += 1;
@@ -331,6 +374,31 @@ export function reducer(actor: Actor) {
             ? `${action.asset.name} (${action.asset.location}) was added to your equipment by ${me}. Its calibration schedule and service history now show here.`
             : `${action.asset.facility} registered ${action.asset.name} (${action.asset.location}).`,
           { assetId: action.asset.id });
+      case 'schedule': {
+        const soon = addDays(new Date(), 14).getTime();
+        let n = Math.max(1000, ...state.tickets.map((t) => Number(t.id.split('-')[1]) || 0));
+        const due = state.assets.filter(
+          (a) => a.suppliedByUs !== false && !a.installation && new Date(a.nextCalibration).getTime() <= soon && !state.tickets.some((t) => t.assetId === a.id && t.kind === 'pm' && isOpen(t)),
+        );
+        if (!due.length) return state;
+        const tickets: Ticket[] = due.map((a) => {
+          n += 1;
+          return {
+            id: `TK-${n}`, assetId: a.id, kind: 'pm', title: `${a.name}: preventive maintenance`,
+            description: `Scheduled preventive maintenance, due ${fmtDate(a.nextCalibration)}. ${scheduleLabel(a)}.`,
+            priority: 'routine', status: 'new', openedAt: now, parts: [], requestedBy: 'Service schedule',
+            log: [{ at: now, by: 'System', text: `Preventive maintenance due ${fmtDate(a.nextCalibration)}`, kind: 'system' }],
+          };
+        });
+        const notes: Notification[] = tickets.flatMap((t) => {
+          const a = due.find((x) => x.id === t.assetId)!;
+          return [
+            { id: uid('N'), at: now, text: `Preventive maintenance due for ${a.name} at ${a.facility} (${t.id}).`, audience: 'engineer' as const, ticketId: t.id, read: false },
+            { id: uid('N'), at: now, text: `${a.name} is due for its preventive maintenance on ${fmtDate(a.nextCalibration)}. Our engineers will contact you to book the visit.`, audience: 'client' as const, ticketId: t.id, read: false },
+          ];
+        });
+        return { ...state, tickets: [...tickets, ...state.tickets], notifications: [...notes, ...state.notifications] };
+      }
       case 'read':
         return { ...state, notifications: state.notifications.map((n) => (n.id === action.id ? { ...n, read: true } : n)) };
       case 'readAll':

@@ -27,9 +27,22 @@ export function SupportForm() {
   const [result, setResult] = useState<Result>(null);
   const [type, setType] = useState<SupportInput['type']>('fault');
   // Filled in from a link (e.g. "Book a demonstration" on a product: ?type=assistance&topic=demo&equipment=…)
-  const [prefill, setPrefill] = useState<Partial<Record<'topic' | 'equipment' | 'message', string>>>({});
+  const [prefill, setPrefill] = useState<Partial<Record<'topic' | 'equipment' | 'message' | 'serial' | 'facility', string>>>({});
   useEffect(() => {
     const q = new URLSearchParams(window.location.search);
+    // From the QR code on an equipment tag (?asset=AS-…): a fault report on that machine, filled in
+    const tagged = q.get('asset');
+    if (tagged) {
+      fetch(`/api/service/tag?asset=${encodeURIComponent(tagged)}`)
+        .then((r) => r.json())
+        .then((d: { asset?: { name: string; serial: string; facility: string } | null }) => {
+          if (!d.asset) return;
+          setType('fault');
+          setPrefill({ equipment: d.asset.name, serial: d.asset.serial === 'Not recorded' ? undefined : d.asset.serial, facility: d.asset.facility });
+        })
+        .catch(() => {});
+      return;
+    }
     const t = requestTypes.find((x) => x.id === q.get('type'))?.id;
     if (!t) return;
     setType(t);
@@ -87,6 +100,8 @@ export function SupportForm() {
 
   return (
     <form
+      // Drawn again once a tag's details arrive, so the filled-in values show
+      key={prefill.facility ?? prefill.equipment ?? 'blank'}
       onSubmit={onSubmit}
       // A message goes as soon as its field is changed
       onChange={(e) => {
@@ -125,7 +140,7 @@ export function SupportForm() {
             <div className="grid gap-5 md:grid-cols-2">
               {equipment('e.g. Mindray BC-5150 analyser')}
               <Field label="Serial number" optional error={errors.serial}>
-                <input name="serial" placeholder="On the label at the back" className={field} />
+                <input name="serial" placeholder="On the label at the back" defaultValue={prefill.serial} className={field} />
               </Field>
             </div>
             <Choices name="working" label="Is it still working?" options={workingStates} error={errors.working} />
@@ -172,7 +187,7 @@ export function SupportForm() {
 
         <div className="grid gap-5 border-t border-line pt-5 md:grid-cols-3">
           <Field label="Hospital or lab" error={errors.facility}>
-            <input name="facility" autoComplete="organization" aria-invalid={!!errors.facility} className={field} />
+            <input name="facility" autoComplete="organization" defaultValue={prefill.facility} aria-invalid={!!errors.facility} className={field} />
           </Field>
           <Field label="Your name" error={errors.name}>
             <input name="name" autoComplete="name" aria-invalid={!!errors.name} className={field} />
