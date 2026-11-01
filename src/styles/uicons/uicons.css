@@ -50,6 +50,7 @@
 .fi-rr-link::before{content:"\f8ba"}
 .fi-rr-link-alt::before{content:"\f8b5"}
 .fi-rr-lock::before{content:"\f8d5"}
+.fi-rr-map-marker::before{content:"\f8f8"}
 .fi-rr-marker::before{content:"\f8fd"}
 .fi-rr-microscope::before{content:"\f945"}
 .fi-rr-moon::before{content:"\f972"}

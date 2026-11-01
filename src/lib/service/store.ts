@@ -4,6 +4,7 @@ import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { createSeed, reducer, VERSION, type Action, type Actor, type ServiceState } from '@/lib/service/desk';
 import { PRACTICE_KEY, practiceDesk } from '@/lib/service/practice';
+import { DEMO_ENGINEER, DEMO_KEY } from '@/lib/demo';
 
 export * from '@/lib/service/desk';
 
@@ -60,7 +61,11 @@ async function fetchDesk(): Promise<Remote> {
   }
 }
 
-export function useServiceStore(actor: Actor, { practice = false }: { practice?: boolean } = {}) {
+/**
+ * `practice`: the engineer's sample desk, in this browser only. `demo`: the demo's sample desk (lib/demo.ts), shared by
+ * the demo hospital and the demo engineer in this browser (a request made in one tab shows in the other).
+ */
+export function useServiceStore(actor: Actor, { practice = false, demo = false }: { practice?: boolean; demo?: boolean } = {}) {
   const [state, dispatchLocal] = useReducer(reducer(actor), undefined, () => createSeed());
   const [ready, setReady] = useState(false);
   const [remote, setRemote] = useState(false);
@@ -85,6 +90,25 @@ export function useServiceStore(actor: Actor, { practice = false }: { practice?:
         /* storage unavailable: start empty */
       }
     };
+    // The demo: one sample desk for both demo users, kept in this browser (nothing goes to the server)
+    if (demo) {
+      const readDemo = () => {
+        try {
+          const saved = JSON.parse(localStorage.getItem(DEMO_KEY) ?? 'null') as ServiceState | null;
+          dispatchLocal({ type: 'load', state: saved?.version === VERSION ? saved : practiceDesk(DEMO_ENGINEER) });
+        } catch {
+          dispatchLocal({ type: 'load', state: practiceDesk(DEMO_ENGINEER) });
+        }
+      };
+      readDemo();
+      setReady(true);
+      const onDemo = (e: StorageEvent) => e.key === DEMO_KEY && readDemo();
+      window.addEventListener('storage', onDemo);
+      return () => {
+        live = false;
+        window.removeEventListener('storage', onDemo);
+      };
+    }
     // Practice mode: the sample desk, kept in this browser only (nothing goes to the server)
     if (practice) {
       try {
@@ -131,13 +155,13 @@ export function useServiceStore(actor: Actor, { practice = false }: { practice?:
   // Browser mode (and practice mode, under its own key): save every change.
   useEffect(() => {
     if (!ready || remote) return;
-    const key = practice ? PRACTICE_KEY : KEY;
+    const key = demo ? DEMO_KEY : practice ? PRACTICE_KEY : KEY;
     try {
       if (localStorage.getItem(key) !== JSON.stringify(state)) localStorage.setItem(key, JSON.stringify(state));
     } catch {
       /* ignore */
     }
-  }, [state, ready, remote, practice]);
+  }, [state, ready, remote, practice, demo]);
 
   // Server mode: pick up other people's changes (not while one of ours is on its way).
   const refresh = useCallback(async () => {
@@ -243,9 +267,9 @@ export function useServiceStore(actor: Actor, { practice = false }: { practice?:
     [remote, refresh, send],
   );
 
-  const reset = useCallback(() => dispatchLocal({ type: 'load', state: practice ? practiceDesk(actor.name) : createSeed() }), [practice, actor.name]);
+  const reset = useCallback(() => dispatchLocal({ type: 'load', state: demo ? practiceDesk(DEMO_ENGINEER) : practice ? practiceDesk(actor.name) : createSeed() }), [demo, practice, actor.name]);
   return { state, dispatch, ready, remote, reset, syncedAt, queued, failing, team };
 }
 
 /** Engineer portal entry point. */
-export const useEngineerStore = (me: string, practice = false) => useServiceStore({ name: me, role: 'engineer' }, { practice });
+export const useEngineerStore = (me: string, practice = false, demo = false) => useServiceStore({ name: me, role: 'engineer' }, { practice, demo });

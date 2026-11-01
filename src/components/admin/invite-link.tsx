@@ -4,9 +4,9 @@ import { useState } from 'react';
 import { Icon } from '@/components/ui/icon';
 
 /** The engineers' invite link, with Copy and Share on WhatsApp (a ready-written message with the link). */
-export function InviteLink({ url, until }: { url: string; until: string }) {
+export function InviteLink({ url, until, share }: { url: string; until: string; share?: string }) {
   const [copied, setCopied] = useState(false);
-  const message = `Hello, please register on the Flokefama engineer portal with this link (it takes 2 minutes): ${url}`;
+  const message = `${share ?? 'Hello, please register on the Flokefama engineer portal with this link (it takes 2 minutes):'} ${url}`;
   return (
     <div>
       <div className="flex flex-wrap items-stretch gap-2">
@@ -26,7 +26,7 @@ export function InviteLink({ url, until }: { url: string; until: string }) {
           <Icon name="fi-brands-whatsapp" /> Share on WhatsApp
         </a>
       </div>
-      <p className="mt-2 text-[0.875rem] text-ink-3">Works until {until}. Opening this page again gives a fresh link. Registrations wait for your approval below.</p>
+      <p className="mt-2 text-[0.875rem] text-ink-3">Works until {until}.{share ? '' : ' Opening this page again gives a fresh link. Registrations wait for your approval below.'}</p>
     </div>
   );
 }

@@ -24,8 +24,8 @@ export function SectionLabel({ children, className }: { children: React.ReactNod
   return <h2 className={cn('text-[0.8125rem] font-semibold uppercase tracking-[0.08em] text-ink-3', className)}>{children}</h2>;
 }
 
-export function Panel({ children, className }: { children: React.ReactNode; className?: string }) {
-  return <div className={cn('min-w-0 rounded-xl border border-line bg-paper', className)}>{children}</div>;
+export function Panel({ children, className, tour }: { children: React.ReactNode; className?: string; /** Where the guided tour points (data-tour). */ tour?: string }) {
+  return <div data-tour={tour} className={cn('min-w-0 rounded-xl border border-line bg-paper', className)}>{children}</div>;
 }
 
 /** A card's title row: label on the left, an optional link or button on the right. */

@@ -140,7 +140,7 @@ export function Overview({ name, facility, assets, tickets, orders, onOpenTicket
       {header(open.length === 0 ? 'All systems are running. There are no open service requests.' : `${open.length} service request${open.length === 1 ? ' is' : 's are'} in progress${next ? `; ${next.engineer} is ${next.status === 'onsite' ? 'on site' : 'on the way'}` : ''}.`)}
 
       {/* Key figures: one strip, divided */}
-      <ul className="grid grid-cols-2 overflow-hidden rounded-xl border border-line bg-paper xl:grid-cols-4">
+      <ul data-tour="stats" className="grid grid-cols-2 overflow-hidden rounded-xl border border-line bg-paper xl:grid-cols-4">
         {stats.map((s, i) => (
           <li key={s.label} className={cn('min-w-0 border-line', i % 2 === 1 && 'border-l', i >= 2 && 'border-t xl:border-t-0', i === 2 && 'xl:border-l')}>
             <button onClick={() => onGo(s.go)} className="group flex h-full w-full flex-col p-5 text-left transition hover:bg-canvas/60 md:p-6">
