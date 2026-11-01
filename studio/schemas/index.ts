@@ -158,6 +158,7 @@ export const event = defineType({
       type: 'image',
       fields: [defineField({ name: 'alt', title: 'Describe the flyer', type: 'string', description: 'Read aloud to visitors who use a screen reader' })],
     }),
+    defineField({ name: 'cover', title: 'Cover photo', type: 'image', options: { hotspot: true }, description: 'A photo from the event, shown for it in the events list (landscape works best)' }),
     defineField({
       name: 'photos',
       title: 'Event photos',
