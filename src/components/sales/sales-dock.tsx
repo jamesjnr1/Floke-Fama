@@ -16,8 +16,8 @@ import { cn } from '@/lib/utils';
 
 /** The Chat button: live chat with staff (Tawk.to) by default; see src/lib/live-chat.ts for the switches. */
 const chatOn = chatMode !== 'off';
-/** The WhatsApp "Contact us" button: hidden while the live chat is on (Nov 2026); NEXT_PUBLIC_WHATSAPP_BUTTON=on shows it again. */
-const whatsappButton = !chatOn || process.env.NEXT_PUBLIC_WHATSAPP_BUTTON === 'on';
+/** The WhatsApp "Contact us" button: removed (Nov 2026, live chat replaces it); NEXT_PUBLIC_WHATSAPP_BUTTON=on shows it again. */
+const whatsappButton = process.env.NEXT_PUBLIC_WHATSAPP_BUTTON === 'on';
 
 /**
  * Bottom-right on every public page: the visitor's quote list (once it has something in it)

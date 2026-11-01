@@ -5,12 +5,13 @@
  * not sit on top of the WhatsApp button, and shows again only while a conversation is open (or a staff reply arrives).
  *
  * Switches (env, all optional):
- *   NEXT_PUBLIC_CHAT          tawk (default) · assistant (the older built-in question flow) · off
+ *   NEXT_PUBLIC_LIVE_CHAT     tawk (default) · assistant (the older built-in question flow) · off
+ *   (the older NEXT_PUBLIC_CHAT is no longer read, so a value left in Vercel cannot hide the chat)
  *   NEXT_PUBLIC_TAWK_PROPERTY Tawk.to property ID (defaults to Flokefama's)
  *   NEXT_PUBLIC_TAWK_WIDGET   Tawk.to widget ID (defaults to Flokefama's)
  */
 export const chatMode: 'tawk' | 'assistant' | 'off' =
-  process.env.NEXT_PUBLIC_CHAT === 'off' ? 'off' : process.env.NEXT_PUBLIC_CHAT === 'assistant' || process.env.NEXT_PUBLIC_CHAT === 'on' ? 'assistant' : 'tawk';
+  process.env.NEXT_PUBLIC_LIVE_CHAT === 'off' ? 'off' : process.env.NEXT_PUBLIC_LIVE_CHAT === 'assistant' ? 'assistant' : 'tawk';
 
 const PROPERTY = process.env.NEXT_PUBLIC_TAWK_PROPERTY || '6ae754427ef3933c394c3bbd';
 const WIDGET = process.env.NEXT_PUBLIC_TAWK_WIDGET || '1k6bq292a';
