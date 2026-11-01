@@ -303,13 +303,15 @@ export const events: EventItem[] = [
     imageWidth: 1170,
     imageHeight: 1450,
     alt: 'Floke Praise 2026 flyer: Perez Music and other guest ministers, 24 October 2026 at 3:00 pm, Flokefama head office, Kwashieman. Theme: Grounded in gratitude, driven by purpose.',
-    // Photos from the evening (Nov 2026)
+    // Cover for the events list, and photos from the evening (Nov 2026)
+    cover: '/images/events/floke-praise-2026/cover.webp',
     photos: [
-      { src: '/images/events/floke-praise-2026/floke-team-praise.webp', alt: 'The Flokefama team in Floke Praise shirts, singing and dancing together' },
       { src: '/images/events/floke-praise-2026/worship-leader.webp', alt: 'A worship leader singing on stage with the choir behind her' },
+      { src: '/images/events/floke-praise-2026/lead-singer.webp', alt: 'A minister in white leading praise on stage' },
+      { src: '/images/events/floke-praise-2026/band.webp', alt: 'The drummer and keyboardist playing on stage' },
       { src: '/images/events/floke-praise-2026/celebration.webp', alt: 'A guest celebrating on stage with arms wide open' },
+      { src: '/images/events/floke-praise-2026/choir.webp', alt: 'The choir singing together on stage' },
       { src: '/images/events/floke-praise-2026/saving-lives-shirt.webp', alt: 'The back of a Flokefama shirt that reads "Saving Lives"' },
-      { src: '/images/events/floke-praise-2026/guest-in-the-audience.webp', alt: 'A guest in the audience enjoying the evening' },
     ],
   },
   {
