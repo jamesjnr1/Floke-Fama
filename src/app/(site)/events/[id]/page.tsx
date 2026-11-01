@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import { EventPhotos } from '@/components/events/event-photos';
+import { EventGallery } from '@/components/events/event-gallery';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Icon } from '@/components/ui/icon';
@@ -94,7 +95,7 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
 
       <section aria-labelledby="event-photos-title" className="mx-auto mt-14 max-w-[1280px] px-5 md:mt-20 md:px-10">
         <h2 id="event-photos-title" className="mb-5 text-2xl font-semibold tracking-[-0.01em] text-ink">Photos from the event</h2>
-        <EventPhotos photos={e.photos} title={e.title} large />
+        {e.photos?.length ? <EventGallery photos={e.photos} title={e.title} /> : <EventPhotos photos={e.photos} title={e.title} large />}
       </section>
     </article>
   );
