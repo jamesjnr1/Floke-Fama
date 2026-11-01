@@ -10,7 +10,7 @@ import { AccountsUnavailable, accountExists, findAccount, findSavedAccount, hash
 import { ADMIN_COOKIE, cookieFor, ENGINEER_COOKIE, nextFor, safeNext, SESSION_COOKIE, sessionCookie, signSession, type SessionUser } from '@/lib/auth/session';
 import { getAdminSession, getConsoleSession, getEngineerSession, getSession } from '@/lib/auth/server';
 import { roleFor } from '@/lib/auth/users';
-import { engineerOrganisation, regions } from '@/lib/regions';
+import { engineerOrganisation, isHeadOrganisation, regions } from '@/lib/regions';
 import { appwrite } from '@/lib/appwrite';
 import { updateEngineerPhone } from '@/lib/service/server';
 
@@ -238,7 +238,7 @@ export async function updateProfile(_prev: ProfileState, form: FormData): Promis
   if (!account.ok) return { phone, errors: { form: UNAVAILABLE } };
   if (!account.value) return { phone, errors: { form: 'Your account could not be found. Please sign in again.' } };
   // The region rides on the organisation (“Flokefama · Ashanti”), used to send urgent jobs to the nearest engineer
-  const saved = await guarded(() => saveAccount({ ...account.value!, phone, ...(region ? { organisation: engineerOrganisation(region) } : {}) }));
+  const saved = await guarded(() => saveAccount({ ...account.value!, phone, ...(region ? { organisation: engineerOrganisation(region, isHeadOrganisation(account.value!.organisation)) } : {}) }));
   if (!saved.ok) return { phone, errors: { form: UNAVAILABLE } };
   const { exp: _exp, ...user } = s;
   void _exp;

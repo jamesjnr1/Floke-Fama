@@ -37,7 +37,25 @@ export interface AdminData {
 
 type Row = Models.Row & Record<string, unknown>;
 
+/** Tables read last time, kept until they change (the console reads again every 30 seconds). */
+const cache = new Map<string, { key: string; at: number; rows: Row[] }>();
+
+/**
+ * Every row of a table. First one row tells whether anything changed (row count and latest change); only then is the
+ * whole table read again, so an open console doesn't use up the database's monthly reads.
+ */
 async function listAll(tableId: string, queries: string[] = []) {
+  const id = `${tableId}|${queries.join('|')}`;
+  const probe = await appwrite!.tables.listRows<Row>({ databaseId: DATABASE_ID, tableId, queries: [Query.orderDesc('$updatedAt'), Query.limit(1)] });
+  const key = `${probe.total}:${probe.rows[0]?.$id ?? ''}:${probe.rows[0]?.$updatedAt ?? ''}`;
+  const hit = cache.get(id);
+  if (hit && hit.key === key && Date.now() - hit.at < 10 * 60_000) return hit.rows;
+  const rows = await readAll(tableId, queries);
+  cache.set(id, { key, at: Date.now(), rows });
+  return rows;
+}
+
+async function readAll(tableId: string, queries: string[]) {
   const rows: Row[] = [];
   let cursor: string | undefined;
   for (let i = 0; i < 40; i++) {
@@ -91,7 +109,8 @@ export async function loadAdminData(): Promise<AdminData> {
       }),
     ),
     track(TABLES.pushSubscriptions, 'Push subscriptions', () => listAll(TABLES.pushSubscriptions, [Query.select(['$id'])])),
-    loadDesk().then(
+    // Tried twice: one slow answer from the database shouldn't empty the service desk on screen
+    loadDesk().catch(() => loadDesk()).then(
       (d) => {
         tables.push({ table: 'service_*', label: 'Service desk (equipment, requests, notifications)', ok: true, rows: d.assets.length + d.tickets.length + d.notifications.length });
         return d;

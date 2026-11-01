@@ -2,7 +2,7 @@ import { after, NextResponse, type NextRequest } from 'next/server';
 import { appwrite } from '@/lib/appwrite';
 import { getSession, renewSession } from '@/lib/auth/server';
 import type { Action } from '@/lib/service/desk';
-import { applyAction, autoAssignStale, DeskError, loadDesk, visibleTo } from '@/lib/service/server';
+import { applyAction, autoAssignStale, DeskError, loadDesk, teamFor, visibleTo } from '@/lib/service/server';
 import { escalateStale } from '@/lib/sms';
 
 /**
@@ -32,10 +32,11 @@ export async function GET() {
     // While anyone has a portal open, urgent requests nobody has taken are escalated by text (after the answer is sent)
     // and urgent jobs nobody took after AUTO_ASSIGN_MINUTES go to an engineer automatically
     after(async () => {
-      await autoAssignStale(desk);
-      await escalateStale(await loadDesk());
+      const assigned = await autoAssignStale(desk);
+      await escalateStale(assigned ? await loadDesk() : desk);
     });
-    return NextResponse.json({ enabled: true, state: visibleTo(s, desk) }, { headers: noStore });
+    // The head of engineering also gets the team, to give jobs to engineers
+    return NextResponse.json({ enabled: true, state: visibleTo(s, desk), team: await teamFor(s, desk) }, { headers: noStore });
   } catch (e) {
     console.error('service desk: load failed', e);
     return NextResponse.json({ error: 'The service desk could not be loaded.' }, { status: 502 });
