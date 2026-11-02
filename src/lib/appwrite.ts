@@ -26,6 +26,8 @@ export const TABLES = {
   smsOptOut: 'sms_optout',
   /** The hospital registry: one row per hospital, its id the hospital code (FLK-H001). */
   facilities: 'facilities',
+  /** Shared limits (wrong passwords, sign-ups, forms): one row per key, the times of its recent attempts. */
+  rateLimits: 'rate_limits',
 } as const;
 export const BUCKETS = { hospitalLogos: 'hospital-logos' } as const;
 

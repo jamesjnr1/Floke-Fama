@@ -1,6 +1,6 @@
 'use server';
 
-import { limited } from '@/lib/rate-limit';
+import { clearAttempts, overLimit, recordAttempt, sharedLimited } from '@/lib/shared-limit';
 import { registeredFacilities } from '@/lib/service/facilities';
 import { facilityKey } from '@/lib/service/desk';
 import { cookies, headers } from 'next/headers';
@@ -59,32 +59,33 @@ async function guarded<T>(work: () => Promise<T>): Promise<{ ok: true; value: T 
   }
 }
 
-/** Failed sign-ins per IP and email in the last window (per server instance): slows down password guessing. */
-const attempts = new Map<string, { count: number; first: number }>();
+/**
+ * Wrong passwords, counted on every server at once (lib/shared-limit.ts): 8 in 15 minutes from one connection for
+ * one email, and 30 in 15 minutes for one email from anywhere (guessing spread over many connections). A correct
+ * password clears both.
+ */
 const WINDOW = 15 * 60 * 1000;
 const MAX_ATTEMPTS = 8;
+const MAX_PER_EMAIL = 30;
 
-async function attemptKey(email: string) {
+async function attemptKeys(email: string) {
   const h = await headers();
   const ip = (h.get('x-forwarded-for') ?? '').split(',')[0].trim() || h.get('x-real-ip') || 'unknown';
-  return `${ip}|${email.toLowerCase()}`;
+  const e = email.trim().toLowerCase();
+  return [`login:${ip}|${e}`, `login-email:${e}`] as const;
 }
 
-function blocked(key: string) {
-  const a = attempts.get(key);
-  if (!a) return false;
-  if (Date.now() - a.first > WINDOW) {
-    attempts.delete(key);
-    return false;
-  }
-  return a.count >= MAX_ATTEMPTS;
+async function blocked([pair, email]: readonly [string, string]) {
+  const [a, b] = await Promise.all([overLimit(pair, MAX_ATTEMPTS, WINDOW), overLimit(email, MAX_PER_EMAIL, WINDOW)]);
+  return a || b;
 }
 
-function failed(key: string) {
-  const a = attempts.get(key);
-  if (!a || Date.now() - a.first > WINDOW) attempts.set(key, { count: 1, first: Date.now() });
-  else a.count += 1;
-  if (attempts.size > 5000) attempts.delete(attempts.keys().next().value!);
+async function failed(keys: readonly [string, string]) {
+  await Promise.all(keys.map((k) => recordAttempt(k, WINDOW)));
+}
+
+async function cleared(keys: readonly [string, string]) {
+  await Promise.all(keys.map((k) => clearAttempts(k)));
 }
 
 async function startSession(user: Omit<SessionUser, 'exp'>, next: string | undefined) {
@@ -97,17 +98,17 @@ export async function login(_prev: LoginState, form: FormData): Promise<LoginSta
   const parsed = credentials.safeParse({ email: form.get('email'), password: form.get('password'), next: form.get('next') ?? undefined, keep: form.get('keep') ?? undefined });
   if (!parsed.success) return { error: parsed.error.issues[0]?.message, email: String(form.get('email') ?? '') };
 
-  const key = await attemptKey(parsed.data.email);
-  if (blocked(key)) return { error: 'Too many sign-in attempts. Please wait 15 minutes and try again.', email: parsed.data.email };
+  const key = await attemptKeys(parsed.data.email);
+  if (await blocked(key)) return { error: 'Too many sign-in attempts. Please wait 15 minutes and try again.', email: parsed.data.email };
   const found = await guarded(() => findSavedAccount(parsed.data.email, parsed.data.password));
   if (!found.ok) return { error: UNAVAILABLE, email: parsed.data.email };
   const saved: StoredAccount | null = found.value;
   // One generic message: never reveal whether the email or the password was wrong.
   if (!saved) {
-    failed(key);
+    await failed(key);
     return { error: 'That email and password don’t match an account.', email: parsed.data.email };
   }
-  attempts.delete(key);
+  await cleared(key);
   // An engineer who registered with the invite link, not approved yet
   if (saved.id.startsWith('engp-')) return { error: 'Your engineer registration is waiting for approval. You will get a text as soon as it is approved.', email: parsed.data.email };
   // The admin and engineer sign-in pages (/admin/login, /engineer/login) only let their own role in
@@ -138,7 +139,7 @@ export async function register(_prev: SignupState, form: FormData): Promise<Sign
   if (d.website) return {};
   // At most 10 new accounts an hour from one connection, so a bot can't create accounts in bulk
   const ip = ((await headers()).get('x-forwarded-for') ?? '').split(',')[0].trim() || 'unknown';
-  if (limited(`register:${ip}`, 10, 60 * 60_000)) return { errors: { form: 'Too many new accounts from this connection. Please try again in an hour, or call us on +233 53 339 2863.' }, values };
+  if (await sharedLimited(`register:${ip}`, 10, 60 * 60_000)) return { errors: { form: 'Too many new accounts from this connection. Please try again in an hour, or call us on +233 53 339 2863.' }, values };
   const taken = await guarded(() => accountExists(d.email));
   if (!taken.ok) return { errors: { form: UNAVAILABLE }, values };
   if (taken.value) return { errors: { email: 'There is already an account with this email. Sign in instead.' }, values };
@@ -207,15 +208,15 @@ export async function changePassword(_prev: PasswordState, form: FormData): Prom
     for (const issue of parsed.error.issues) errors[issue.path[0] as keyof NonNullable<PasswordState['errors']>] ??= issue.message;
     return { errors };
   }
-  const key = await attemptKey(session.email);
-  if (blocked(key)) return { errors: { form: 'Too many attempts. Please wait 15 minutes and try again.' } };
+  const key = await attemptKeys(session.email);
+  if (await blocked(key)) return { errors: { form: 'Too many attempts. Please wait 15 minutes and try again.' } };
   const found = await guarded(() => findSavedAccount(session.email, parsed.data.current));
   if (!found.ok) return { errors: { form: UNAVAILABLE } };
   if (!found.value) {
-    failed(key);
+    await failed(key);
     return { errors: { current: 'That isn’t your current password.' } };
   }
-  attempts.delete(key);
+  await cleared(key);
   const { salt, hash } = await hashPassword(parsed.data.password);
   const saved = await guarded(() => saveAccount({ ...found.value!, salt, hash }));
   if (!saved.ok) return { errors: { form: UNAVAILABLE } };

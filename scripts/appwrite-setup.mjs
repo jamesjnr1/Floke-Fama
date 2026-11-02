@@ -111,6 +111,13 @@ const tables = [
     columns: [text('kind', 32), text('ref', 64, false), text('to', 400), text('text', 480), text('status', 16), text('detail', 200, false)],
     indexes: [],
   },
+  // Shared limits on wrong passwords, sign-ups and forms (also created by the site itself on first use)
+  {
+    id: 'rate_limits',
+    name: 'Attempt limits (sign-in, sign-up, forms)',
+    columns: [text('hits', 1000, false)],
+    indexes: [],
+  },
   // Hospitals who turned Flokefama's texts off in their portal (one row per account)
   {
     id: 'sms_optout',

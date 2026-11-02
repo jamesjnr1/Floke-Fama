@@ -7,7 +7,7 @@ import { appwrite } from '@/lib/appwrite';
 import { accountExists, hashPassword, saveAccount } from '@/lib/auth/accounts';
 import { getAdminSession } from '@/lib/auth/server';
 import { approve, checkInvite, decline, PENDING_PREFIX, setHead } from '@/lib/engineer-team';
-import { limited } from '@/lib/rate-limit';
+import { sharedLimited } from '@/lib/shared-limit';
 import { engineerOrganisation, regions } from '@/lib/regions';
 import { textAdmins, textPerson } from '@/lib/sms';
 import { siteUrl } from '@/lib/utils';
@@ -46,7 +46,7 @@ export async function joinAsEngineer(_prev: JoinState, form: FormData): Promise<
   const d = parsed.data;
   if (d.website) return {}; // a bot filled the hidden field
   const ip = ((await headers()).get('x-forwarded-for') ?? '').split(',')[0].trim() || 'unknown';
-  if (limited(`join:${ip}`, 10, 60 * 60_000)) return { errors: { form: 'Too many registrations from this connection. Please try again in an hour.' }, values };
+  if (await sharedLimited(`join:${ip}`, 10, 60 * 60_000)) return { errors: { form: 'Too many registrations from this connection. Please try again in an hour.' }, values };
   if (!appwrite) return { errors: { form: 'Registration isn’t open yet (the database isn’t connected). Please tell your manager.' }, values };
   try {
     if (await accountExists(d.email)) return { errors: { email: 'There is already an account with this email. Sign in at the engineer portal instead.' }, values };

@@ -4,7 +4,8 @@ import { smsWebsiteFault } from '@/lib/sms';
 import { emailSales, emailSupport } from '@/lib/support-email';
 import { saveSupportRequest, setSupportStatus } from '@/lib/support-requests';
 import { autoBookVisit } from '@/lib/service/server';
-import { clientIp, limited } from '@/lib/rate-limit';
+import { clientIp } from '@/lib/rate-limit';
+import { sharedLimited } from '@/lib/shared-limit';
 import { requestTypes, supportDetails, supportSchema, supportSubject } from '@/lib/support-schema';
 
 /**
@@ -22,7 +23,7 @@ export async function POST(request: Request) {
   // 5 every 10 minutes is plenty for a real fault. A connection as a whole may send 30, which still stops a flood.
   const ip = clientIp(request);
   const phone = data.phone.replace(/\D/g, '').slice(-9);
-  if (limited(`support:${ip}:${phone}`, 5, 10 * 60_000) || limited(`support:${ip}`, 30, 10 * 60_000)) {
+  if ((await sharedLimited(`support:${ip}:${phone}`, 5, 10 * 60_000)) || (await sharedLimited(`support:${ip}`, 30, 10 * 60_000))) {
     return NextResponse.json({ error: 'You’ve sent several requests in a short time. Please call +233 53 339 2863 if it’s urgent.' }, { status: 429 });
   }
   if (data.website) return NextResponse.json({ delivered: true });

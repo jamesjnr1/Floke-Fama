@@ -27,9 +27,23 @@ const MAX_ACCOUNTS = 5; // keeps the cookie small; the oldest is dropped
 
 const hex = (b: ArrayBuffer | Uint8Array) => [...new Uint8Array(b)].map((x) => x.toString(16).padStart(2, '0')).join('');
 
-export async function hashPassword(password: string, salt = hex(crypto.getRandomValues(new Uint8Array(16)))) {
+/**
+ * Rounds of PBKDF2-SHA-256 for new passwords (OWASP's recommendation, 2023 onwards). The count is kept at the start
+ * of the salt (`i600000$<salt>`), so it can be raised later; a salt without it is from before Nov 2026 (100,000
+ * rounds), and that password is re-hashed with the current count the next time its owner signs in.
+ */
+export const PASSWORD_ROUNDS = 600_000;
+const OLD_ROUNDS = 100_000;
+const roundsOf = (salt: string) => {
+  const m = /^i(\d{5,7})\$/.exec(salt);
+  return m ? Number(m[1]) : OLD_ROUNDS;
+};
+/** Whether a stored password should be re-hashed (fewer rounds than today's). */
+export const needsRehash = (salt: string) => roundsOf(salt) < PASSWORD_ROUNDS;
+
+export async function hashPassword(password: string, salt = `i${PASSWORD_ROUNDS}$${hex(crypto.getRandomValues(new Uint8Array(16)))}`) {
   const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveBits']);
-  const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: new TextEncoder().encode(salt), iterations: 100_000 }, key, 256);
+  const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: new TextEncoder().encode(salt), iterations: roundsOf(salt) }, key, 256);
   return { salt, hash: hex(bits) };
 }
 
@@ -113,8 +127,19 @@ export async function findSavedAccount(email: string, password: string) {
       return old;
     }
   }
-  if (!account) return null;
+  // No such account: the same work as checking a password, so the time taken doesn't reveal which emails exist
+  if (!account) {
+    await hashPassword(password);
+    return null;
+  }
   const { hash } = await hashPassword(password, account.salt);
-  return sameHash(hash, account.hash) ? account : null;
+  if (!sameHash(hash, account.hash)) return null;
+  // A password hashed with fewer rounds than today's: hash it again now (the password is known only at this moment)
+  if (needsRehash(account.salt)) {
+    const upgraded = { ...account, ...(await hashPassword(password)) };
+    await saveAccount(upgraded).catch((e) => console.error('[accounts] password not re-hashed (kept as it was):', e));
+    return upgraded;
+  }
+  return account;
 }
 

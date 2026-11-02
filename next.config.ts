@@ -1,14 +1,56 @@
 import type { NextConfig } from 'next';
 
+/**
+ * Content Security Policy: the browser may only run scripts, load images and fonts, and connect to the places this site
+ * uses. If someone managed to slip a script into a page, it could not load code from elsewhere or send data out.
+ *   - Scripts: the site itself; the live chat (Tidio, or Tawk.to); the engineer portal's photo check (MediaPipe from
+ *     jsDelivr, run as WebAssembly). Inline scripts are needed by Next.js itself.
+ *   - Images, fonts, video: the site, Sanity's image CDN, and the live chat's own files.
+ *   - Connections: the site, the live chat (including its live socket), jsDelivr (the photo check), Algolia only
+ *     when product search uses it.
+ * Switch (env, at build): CSP=report only reports what would be blocked (in the browser console) instead of
+ * blocking it; CSP=off sends only the baseline rules (no framing, no plugins). Default: enforced.
+ */
+const algolia = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID ? ' https://*.algolia.net https://*.algolianet.com' : '';
+// Vercel's preview toolbar (preview deployments only, never production)
+const preview = process.env.VERCEL_ENV === 'preview' ? ' https://vercel.live' : '';
+const chat = {
+  script: 'https://code.tidio.co https://embed.tawk.to https://*.tawk.to',
+  connect: 'https://*.tidio.co wss://*.tidio.co https://*.tidiochat.com https://uploads.tidio.com https://*.tawk.to wss://*.tawk.to',
+  img: 'https://*.tidio.co https://*.tidiochat.com https://tidio-images-messenger.s3.us-east-1.amazonaws.com https://cdnjs.cloudflare.com https://unpkg.com https://*.tawk.to https://tawk.link',
+  font: 'https://code.tidio.co https://*.tawk.to',
+  media: 'https://code.tidio.co https://*.tawk.to',
+  frame: 'https://*.tidio.co https://*.tawk.to',
+};
+const baseline = `frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self'${process.env.VERCEL ? '; upgrade-insecure-requests' : ''}`;
+const policy = [
+  "default-src 'self'",
+  `script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' ${chat.script} https://cdn.jsdelivr.net${preview}${process.env.NODE_ENV === 'development' ? " 'unsafe-eval'" : ''}`,
+  `style-src 'self' 'unsafe-inline' https://*.tawk.to${preview}`,
+  `img-src 'self' data: blob: https://cdn.sanity.io ${chat.img}${preview}`,
+  `font-src 'self' data: ${chat.font}${preview}`,
+  `connect-src 'self' https://cdn.sanity.io https://cdn.jsdelivr.net ${chat.connect}${algolia}${preview}${preview ? ' wss://ws-us3.pusher.com' : ''}`,
+  `media-src 'self' blob: https://cdn.sanity.io ${chat.media}`,
+  `frame-src 'self' ${chat.frame}${preview}`,
+  "worker-src 'self' blob:",
+  "manifest-src 'self'",
+  baseline,
+].join('; ');
+const cspMode = (process.env.CSP ?? '').trim().toLowerCase();
+const csp =
+  cspMode === 'off'
+    ? [{ key: 'Content-Security-Policy', value: baseline }]
+    : cspMode === 'report'
+      ? [{ key: 'Content-Security-Policy', value: baseline }, { key: 'Content-Security-Policy-Report-Only', value: policy }]
+      : [{ key: 'Content-Security-Policy', value: policy }];
+
 const securityHeaders = [
   { key: 'X-Content-Type-Options', value: 'nosniff' },
   { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
   { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
   { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), payment=(self), usb=(), browsing-topics=()' },
   { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
-  // Baseline CSP: no one may frame the site, no plugins, no <base> hijacking
-  // On Vercel (always HTTPS) any stray http:// link is loaded over HTTPS; not locally, where the site runs on plain http
-  { key: 'Content-Security-Policy', value: `frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self'${process.env.VERCEL ? '; upgrade-insecure-requests' : ''}` },
+  ...csp,
   // A site opened from a link can't reach back into this one (WhatsApp and maps links still open normally)
   { key: 'Cross-Origin-Opener-Policy', value: 'same-origin-allow-popups' },
   { key: 'X-Permitted-Cross-Domain-Policies', value: 'none' },

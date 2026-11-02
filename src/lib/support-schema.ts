@@ -1,3 +1,5 @@
+// First: zod set up to run without generating code (the Content-Security-Policy), before any schema below is made
+import '@/lib/zod-browser';
 import { z } from 'zod';
 
 /** What a technical support request is for (the tabs of the Support page's form). */
