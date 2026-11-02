@@ -251,7 +251,7 @@ function Portal({ user, products, practice, demo = false }: { user: { name: stri
     { target: 'guide', title: 'Help any time', text: 'The How-to guide explains every step. Practice mode lets you try everything on sample jobs without anything being saved.', before: () => setView('overview') },
     { title: 'You’re ready', text: demo ? 'Try it: take the urgent job, start travel, arrive and resolve it. Open the hospital dashboard in another tab to see it from the hospital’s side.' : 'Keep your phone number and region right in My profile: urgent jobs in your region come to you first, by text.', before: () => setView('overview') },
   ], [me, demo, firstOpen]);
-  const tour = useTour(demo ? 'engineer-demo' : 'engineer', tourSteps, { ready: ready && !photo.required });
+  const tour = useTour(demo ? 'engineer-demo' : 'engineer', tourSteps, { ready: ready && !photo.required, who: user.email });
   const startTour = tour.start;
   useNotificationPopups(mine, ready, onNotification);
 

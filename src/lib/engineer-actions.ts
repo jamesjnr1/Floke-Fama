@@ -6,7 +6,8 @@ import { z } from 'zod';
 import { appwrite } from '@/lib/appwrite';
 import { accountExists, hashPassword, saveAccount } from '@/lib/auth/accounts';
 import { getAdminSession } from '@/lib/auth/server';
-import { approve, checkInvite, decline, PENDING_PREFIX, setHead } from '@/lib/engineer-team';
+import { approve, checkInvite, decline, forgetTeam, PENDING_PREFIX, setHead } from '@/lib/engineer-team';
+import { ENGINEER_ID_PREFIX } from '@/lib/auth/users';
 import { sharedLimited } from '@/lib/shared-limit';
 import { engineerOrganisation, regions } from '@/lib/regions';
 import { textAdmins, textPerson } from '@/lib/sms';
@@ -15,8 +16,8 @@ import { siteUrl } from '@/lib/utils';
 export interface JoinState {
   errors?: Partial<Record<'name' | 'phone' | 'email' | 'region' | 'password' | 'form', string>>;
   values?: Record<string, string>;
-  /** Registered: waiting for an admin to approve. */
-  done?: { name: string };
+  /** Registered. `waiting`: an admin must approve first (ENGINEER_APPROVAL=on); otherwise they can sign in now. */
+  done?: { name: string; waiting: boolean };
 }
 
 const schema = z.object({
@@ -30,8 +31,14 @@ const schema = z.object({
 });
 
 /**
- * An engineer registers with the invite link (/engineer/join?code=…). The account waits for an admin's approval; the
- * admins get a text so they can approve it straight away.
+ * Whether new engineers wait for an admin's approval. Off for now (Nov 2026): anyone with the invite link gets an
+ * engineer account at once and the admins get a text saying who joined. ENGINEER_APPROVAL=on brings the approval back.
+ */
+const approvalOn = () => (process.env.ENGINEER_APPROVAL ?? '').trim().toLowerCase() === 'on';
+
+/**
+ * An engineer registers with the invite link (/engineer/join?code=…). Without approval (the default for now) the
+ * account works straight away; with ENGINEER_APPROVAL=on it waits for an admin, who gets a text to approve it.
  */
 export async function joinAsEngineer(_prev: JoinState, form: FormData): Promise<JoinState> {
   const raw = Object.fromEntries([...form.entries()].map(([k, v]) => [k, String(v)]));
@@ -48,16 +55,21 @@ export async function joinAsEngineer(_prev: JoinState, form: FormData): Promise<
   const ip = ((await headers()).get('x-forwarded-for') ?? '').split(',')[0].trim() || 'unknown';
   if (await sharedLimited(`join:${ip}`, 10, 60 * 60_000)) return { errors: { form: 'Too many registrations from this connection. Please try again in an hour.' }, values };
   if (!appwrite) return { errors: { form: 'Registration isn’t open yet (the database isn’t connected). Please tell your manager.' }, values };
+  const waiting = approvalOn();
   try {
     if (await accountExists(d.email)) return { errors: { email: 'There is already an account with this email. Sign in at the engineer portal instead.' }, values };
     const { salt, hash } = await hashPassword(d.password);
-    await saveAccount({ id: `${PENDING_PREFIX}${crypto.randomUUID().slice(0, 8)}`, name: d.name, email: d.email, organisation: engineerOrganisation(d.region), phone: d.phone, salt, hash });
+    await saveAccount({ id: `${waiting ? PENDING_PREFIX : ENGINEER_ID_PREFIX}${crypto.randomUUID().slice(0, 8)}`, name: d.name, email: d.email, organisation: engineerOrganisation(d.region), phone: d.phone, salt, hash });
   } catch {
     return { errors: { form: 'We couldn’t save your registration. Check your connection and try again.' }, values };
   }
-  await textAdmins('engineer-join', d.email, `New engineer to approve: ${d.name} (${d.region}), ${d.phone}. Approve: ${siteUrl}/admin?tab=team`).catch((e) => console.error('join: admin text failed', e));
+  const text = waiting
+    ? `New engineer to approve: ${d.name} (${d.region}), ${d.phone}. Approve: ${siteUrl}/admin?tab=team`
+    : `New engineer joined: ${d.name} (${d.region}), ${d.phone}. See or remove: ${siteUrl}/admin?tab=team`;
+  await textAdmins('engineer-join', d.email, text).catch((e) => console.error('join: admin text failed', e));
+  forgetTeam();
   revalidatePath('/admin');
-  return { done: { name: d.name } };
+  return { done: { name: d.name, waiting } };
 }
 
 /** Admin console → Engineers: approve a registration. The engineer gets a text with where to sign in. */

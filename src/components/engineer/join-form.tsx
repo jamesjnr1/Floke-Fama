@@ -21,8 +21,12 @@ export function JoinForm({ code }: { code: string }) {
       <div role="status" className="mt-6 rounded-xl bg-brand-50 p-5 text-center">
         <span className="mx-auto grid size-14 place-items-center rounded-full bg-brand-600 text-2xl text-white"><Icon name="fi-rr-check" /></span>
         <p className="mt-4 text-[1.25rem] font-bold text-ink">Thank you, {state.done.name.split(' ')[0]}!</p>
-        <p className="mt-2 text-[1.0625rem] text-ink-2">Your registration is with your manager. You will get a text as soon as it is approved, then sign in with your email and password.</p>
-        <Link href="/engineer/login" className="mt-5 inline-flex h-12 items-center justify-center rounded-xl bg-brand-700 px-5 font-semibold text-white hover:bg-brand-800">Go to the sign-in page</Link>
+        <p className="mt-2 text-[1.0625rem] text-ink-2">
+          {state.done.waiting
+            ? 'Your registration is with your manager. You will get a text as soon as it is approved, then sign in with your email and password.'
+            : 'Your engineer account is ready. Sign in with your email and password.'}
+        </p>
+        <Link href="/engineer/login" className="mt-5 inline-flex h-12 items-center justify-center rounded-xl bg-brand-700 px-5 font-semibold text-white hover:bg-brand-800">{state.done.waiting ? 'Go to the sign-in page' : 'Sign in now'}</Link>
       </div>
     );
 

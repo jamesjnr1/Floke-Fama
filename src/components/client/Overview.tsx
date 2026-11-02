@@ -154,7 +154,7 @@ export function Overview({ name, facility, assets, tickets, orders, onOpenTicket
             <button onClick={() => onGo(s.go)} className={cn('flex h-full w-full flex-col rounded-xl p-4 text-left text-white shadow-[0_14px_30px_-22px_rgb(11_21_16/0.7)] transition hover:-translate-y-0.5 hover:brightness-110 md:p-6', fill[s.color])}>
               <span className="text-[0.75rem] font-semibold uppercase tracking-[0.09em] text-white/85 md:text-[0.8125rem]">{s.label}</span>
               <span className="mt-3 flex items-baseline gap-1 md:mt-4">
-                <span className="text-[2.5rem] font-semibold leading-none tracking-[-0.04em] tabular-nums">{s.value}</span>
+                <span className="font-mono text-[2.5rem] font-medium leading-none tracking-[-0.02em]">{s.value}</span>
                 {s.suffix && <span className="text-sm text-white/85">{s.suffix}</span>}
               </span>
               {/* A warning (a system down, a fault, an overdue calibration) stands out in bold; up to two lines, so it isn't cut on phones */}

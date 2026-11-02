@@ -106,7 +106,7 @@ export function ClientShell({ user, products, demo = false }: { user: { name: st
     { target: 'bell', title: 'Alerts', text: 'Engineer assigned, on the way, fixed, services due. A red number means something new.', before: () => setView('overview') },
     { title: 'You’re ready', text: demo ? 'Try it: press Request service on a machine, then open the engineer portal in another tab and see the request arrive.' : `Need help? Call us on ${contact.phone}. You can take this tour again from “Take the tour”.`, before: () => setView('overview') },
   ], [facility, demo, contact.phone]);
-  const tour = useTour(demo ? 'hospital-demo' : 'hospital', tourSteps, { ready });
+  const tour = useTour(demo ? 'hospital-demo' : 'hospital', tourSteps, { ready, who: user.email });
 
   const request = (assetId?: string) => {
     if (installed.length === 0)
