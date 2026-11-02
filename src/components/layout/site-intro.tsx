@@ -3,7 +3,6 @@
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 import { LogoMark, LogoWordmark } from '@/components/layout/logo';
-import { cn } from '@/lib/utils';
 
 /**
  * The opening of the site: the Flokefama logo in the middle of a green gradient; after a moment it rises into its
@@ -41,10 +40,9 @@ const touch = () => {
 const HOLD = 1100; // the logo rests in the middle (counted from when the overlay first appeared)
 const RISE = 850; // the logo rises into the header
 
-export function SiteIntro({ mottoClassName }: { mottoClassName?: string }) {
+export function SiteIntro() {
   const overlay = useRef<HTMLDivElement>(null);
   const logo = useRef<HTMLDivElement>(null);
-  const motto = useRef<HTMLParagraphElement>(null);
   const pathname = usePathname();
 
   // Browsing (moving between pages, coming back to the tab) counts as activity, so "away" means away. Not leaving the
@@ -89,8 +87,6 @@ export function SiteIntro({ mottoClassName }: { mottoClassName?: string }) {
       const from = group.getBoundingClientRect();
       const to = target?.getBoundingClientRect();
       const bg = el.querySelector<HTMLElement>('[data-intro-bg]');
-      // The motto isn't in the header: it fades as the logo starts to rise
-      if (motto.current) animations.push(motto.current.animate([{ opacity: 1, transform: 'translateY(0)' }, { opacity: 0, transform: 'translateY(-6px)' }], { duration: 260, easing: 'ease-out', fill: 'forwards' }));
       if (to && to.width > 0) {
         // The big logo is the header logo scaled up: move its top-left corner onto the header logo's and scale down
         const k = to.width / from.width;
@@ -121,18 +117,7 @@ export function SiteIntro({ mottoClassName }: { mottoClassName?: string }) {
           computers. The move scales it down onto the header logo exactly */}
       <div ref={logo} className="site-intro-logo relative flex origin-top-left items-center gap-[11px] sm:gap-[18px] lg:gap-[22.5px]">
         <LogoMark className="size-[57.6px] sm:size-24 lg:size-[120px]" />
-        <span className="relative flex">
-          <LogoWordmark className="h-[34.2px] text-white sm:h-[57px] lg:h-[71.25px]" />
-          {/* The motto, in Poppins, right under the FLOKE FAMA lettering: a short line, then the words, ending under the
-              last "A" (placed outside the logo's box, so the move still lands the logo exactly) */}
-          <p
-            ref={motto}
-            className={cn('site-intro-motto absolute inset-x-0 top-full mt-1.5 flex items-center gap-2 whitespace-nowrap text-[0.8125rem] tracking-[0.06em] text-white/85 sm:mt-2.5 sm:gap-3 sm:text-base lg:mt-3 lg:text-lg', mottoClassName)}
-          >
-            <span aria-hidden className="h-[1.5px] flex-1 rounded-full bg-white/70 sm:h-[2px]" />
-            <span>Saving Lives since 2008</span>
-          </p>
-        </span>
+        <LogoWordmark className="h-[34.2px] text-white sm:h-[57px] lg:h-[71.25px]" />
       </div>
     </div>
   );
