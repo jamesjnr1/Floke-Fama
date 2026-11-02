@@ -129,10 +129,10 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
     cn('flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-[0.9375rem] font-medium transition', active ? 'bg-brand-50 text-brand-800 shadow-[inset_0_0_0_1px_rgb(0_122_77/0.12)]' : 'text-ink-3 hover:bg-[#f1f4f2] hover:text-ink');
 
   return (
-    <div className="min-h-svh bg-[#e9eeeb] p-3 pt-[52px] text-ink md:p-4 md:pt-[56px]">
+    <div className="min-h-svh bg-[#e9eeeb] p-3 pt-[calc(var(--banner)+12px)] text-ink md:p-4 md:pt-[calc(var(--banner)+16px)]">
       <div className="mx-auto flex max-w-[1600px] gap-4">
         {/* Sidebar */}
-        <aside className="sticky top-[56px] hidden h-[calc(100svh-4.5rem)] w-64 shrink-0 flex-col rounded-[1.75rem] bg-white p-5 shadow-[0_1px_2px_rgb(16_25_30/0.04)] lg:flex">
+        <aside className="sticky top-[calc(var(--banner)+16px)] hidden h-[calc(100svh-var(--banner)-2rem)] w-64 shrink-0 flex-col rounded-[1.75rem] bg-white p-5 shadow-[0_1px_2px_rgb(16_25_30/0.04)] lg:flex">
           <Link href="/admin" className="flex items-center gap-2 px-2 pt-1">
             <LogoMark className="size-9" />
             <LogoWordmark className="h-[19px] text-brand-800" />

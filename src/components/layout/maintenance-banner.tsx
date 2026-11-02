@@ -1,9 +1,16 @@
-export function MaintenanceBanner() {
+import type { MaintenanceNotice } from '@/lib/site-content';
+
+/**
+ * The maintenance strip across the top of every page, switched on and off in the Studio (Site content → Maintenance
+ * notice). Its height is --banner (globals.css): 2.5rem while it shows, 0 when it is off, so the header, the portals'
+ * sidebars and the page heroes move up into its place.
+ */
+export function MaintenanceBanner({ notice }: { notice: MaintenanceNotice }) {
   return (
     <div
       role="status"
       aria-live="polite"
-      className="fixed inset-x-0 top-0 z-[130] flex h-10 w-full items-center justify-center gap-2 overflow-hidden bg-[#087A48] px-3 text-center font-sans text-[10px] leading-none text-white sm:gap-2.5 sm:px-4 sm:text-xs md:text-[13px]"
+      className="fixed inset-x-0 top-0 z-[130] flex h-[var(--banner)] w-full items-center justify-center gap-2 overflow-hidden bg-[#087A48] px-3 text-center font-sans text-[10px] leading-none text-white sm:gap-2.5 sm:px-4 sm:text-xs md:text-[13px]"
     >
       <svg
         aria-hidden="true"
@@ -17,10 +24,10 @@ export function MaintenanceBanner() {
       >
         <path d="M14.7 6.3a5 5 0 0 0-6.4 6.4L3 18l3 3 5.3-5.3a5 5 0 0 0 6.4-6.4l-3.1 3.1-3-3 3.1-3.1Z" />
       </svg>
-      <span className="shrink-0 font-semibold">Website Under Maintenance</span>
+      <span className="shrink-0 font-semibold">{notice.title}</span>
       <span className="truncate text-white/90">
-        <span className="hidden sm:inline">We are making improvements to serve you better. Thank you for your patience.</span>
-        <span className="sm:hidden">We are improving our website. Thank you for your patience.</span>
+        <span className="hidden sm:inline">{notice.message}</span>
+        <span className="sm:hidden">{notice.short}</span>
       </span>
     </div>
   );

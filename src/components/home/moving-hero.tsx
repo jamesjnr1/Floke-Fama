@@ -29,7 +29,7 @@ function Photos({ hidden = false }: { hidden?: boolean }) {
 export async function MovingHero() {
   const { hero } = await getSite();
   return (
-    <section className="relative isolate flex flex-col overflow-hidden bg-[linear-gradient(180deg,#0a5a33_0%,#06482a_60%,#043822_100%)] pt-[88px] text-white lg:min-h-0 lg:flex-1">
+    <section className="relative isolate flex flex-col overflow-hidden bg-[linear-gradient(180deg,#0a5a33_0%,#06482a_60%,#043822_100%)] pt-[calc(var(--banner)+48px)] text-white lg:min-h-0 lg:flex-1">
       <div className="h-[300px] overflow-hidden sm:h-[340px] lg:h-auto lg:min-h-[260px] lg:flex-1">
         <ul className="flex h-full w-max animate-marquee [animation-duration:70s] hover:[animation-play-state:paused] motion-reduce:animate-none">
           <Photos />

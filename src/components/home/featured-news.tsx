@@ -69,7 +69,7 @@ export async function FeaturedNews({ layout = chosen }: { layout?: NewsLayout })
     return (
       <section aria-labelledby="featured-news" className="bg-paper pb-16 md:pb-28">
         <div className="mx-auto grid max-w-[1280px] gap-10 px-5 md:px-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
-          <Reveal className="lg:sticky lg:top-28 lg:self-start">
+          <Reveal className="lg:sticky lg:top-[calc(var(--banner)+4.5rem)] lg:self-start">
             <Chip />
             <Heading />
             <p className="no-justify mt-4 text-lg leading-relaxed text-ink-3">Recognition, partnerships and milestones from across Flokefama.</p>

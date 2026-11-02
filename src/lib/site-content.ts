@@ -34,7 +34,17 @@ export interface EsgPillar { label: string; icon: string; title: string; body: s
 export interface PageHeader { title: string; highlight: string; lead: string; image?: string; position?: string; /** 'strong': a darker veil, for bright photos */ veil?: 'strong'; /** Keep this built-in photo even when a photo is set in the Studio */ lockImage?: boolean; /** Show the italic words first, e.g. “*Saving Lives* since 2008” */ emphasisFirst?: boolean }
 export type PageKey = 'about' | 'services' | 'shop' | 'events' | 'awards' | 'esg' | 'contact';
 
+/** The strip across the top of every page (Studio: Site content → Maintenance notice). */
+export interface MaintenanceNotice {
+  show: boolean;
+  title: string;
+  message: string;
+  /** On phones, where space is short. */
+  short: string;
+}
+
 export interface SiteContent {
+  maintenance: MaintenanceNotice;
   contact: Contact;
   maps: { embed: string; directions: string; open: string };
   branches: Branch[];
@@ -190,6 +200,12 @@ export const defaultPageHeaders: Record<PageKey, PageHeader> = {
 };
 
 export const defaultSite: SiteContent = {
+  maintenance: {
+    show: true,
+    title: 'Website Under Maintenance',
+    message: 'We are making improvements to serve you better. Thank you for your patience.',
+    short: 'We are improving our website. Thank you for your patience.',
+  },
   ...withDerived(seed.contact, seed.maps.embed),
   branches: [...seed.branches],
   technologyPartners: seed.technologyPartners.map((x) => ({ ...x })),

@@ -156,7 +156,7 @@ function EquipmentSlide({ e, n, total, priority }: { e: (typeof equipment)[numbe
         <Image src={e.image} alt="" fill priority={priority} sizes="100vw" className="object-cover" />
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(0_0_0/0.45)_0%,transparent_22%,transparent_50%,rgb(0_0_0/0.72)_100%)]" />
       </div>
-      <figcaption className="mx-auto mt-auto w-full max-w-[1280px] px-5 pb-6 pt-40 text-center md:px-10 lg:pb-8">
+      <figcaption className="mx-auto mt-auto w-full max-w-[1280px] px-5 pb-6 pt-[calc(var(--banner)+7.5rem)] text-center md:px-10 lg:pb-8">
         <span>
           <span className="block text-sm font-medium text-white/75">
             {String(n).padStart(2, '0')} / {String(total).padStart(2, '0')} · {e.group}
@@ -201,7 +201,7 @@ function MediaSlide({ m, n, total, on, onEnd }: { m: HeroMedia; n: number; total
         )}
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(0_0_0/0.45)_0%,transparent_22%,transparent_50%,rgb(0_0_0/0.72)_100%)]" />
       </div>
-      <figcaption className="mx-auto mt-auto w-full max-w-[1280px] px-5 pb-6 pt-40 text-center md:px-10 lg:pb-8">
+      <figcaption className="mx-auto mt-auto w-full max-w-[1280px] px-5 pb-6 pt-[calc(var(--banner)+7.5rem)] text-center md:px-10 lg:pb-8">
         <span className="block text-sm font-medium text-white/75">
           {String(n).padStart(2, '0')} / {String(total).padStart(2, '0')} · {m.label || 'Flokefama engineering'}
         </span>

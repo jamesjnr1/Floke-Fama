@@ -8,6 +8,7 @@ const img = (f: string) => `"${f}": ${f}.asset->url, "${f}W": ${f}.asset->metada
 const header = (k: string) => `"${k}": pageHeaders.${k}{ title, highlight, emphasisFirst, lead, "image": image.asset->url }`;
 
 const query = `*[_id == "siteContent"][0]{
+  maintenance{ show, title, message, short },
   contact, branches[]{ name, detail, phone },
   technologyPartners[]{ name, role, ${img('logo')} },
   clients[]{ name, role, code, kind, ${img('logo')} },
@@ -29,6 +30,7 @@ const query = `*[_id == "siteContent"][0]{
 type RawLogo = { name?: string; role?: string; code?: string; kind?: string; logo?: string; logoW?: number; logoH?: number };
 type RawPhoto = { src?: string; alt?: string; caption?: string };
 type Raw = Partial<{
+  maintenance: Partial<{ show: boolean; title: string; message: string; short: string }>;
   contact: Partial<{ phone: string; info: string; sales: string; support: string; address: string; lat: number; lng: number; mapEmbed: string }>;
   branches: { name: string; detail: string; phone?: string }[];
   technologyPartners: RawLogo[];
@@ -139,6 +141,8 @@ function merge(raw: Raw | null): SiteContent {
       d.esgPillars,
     ),
     pageHeaders: headers,
+    // Shown until it is switched off in the Studio (a Studio that has never set it keeps it on)
+    maintenance: { ...d.maintenance, ...clean(raw.maintenance), show: raw.maintenance?.show !== false },
   };
 }
 

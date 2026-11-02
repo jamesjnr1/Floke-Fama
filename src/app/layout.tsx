@@ -57,7 +57,7 @@ const organizationLd = (contact: Contact) => ({
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const site = await getSite();
   return (
-    <html lang="en-GH" data-patterns={process.env.NEXT_PUBLIC_PATTERNS === 'off' ? 'off' : undefined} className={`${jakarta.variable} ${grotesk.variable} ${serif.variable} ${mona.variable} ${inter.variable}`} suppressHydrationWarning>
+    <html lang="en-GH" data-banner={site.maintenance.show ? undefined : 'off'} data-patterns={process.env.NEXT_PUBLIC_PATTERNS === 'off' ? 'off' : undefined} className={`${jakarta.variable} ${grotesk.variable} ${serif.variable} ${mona.variable} ${inter.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: bootScript }} />
       </head>
@@ -65,7 +65,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-brand-600 focus:px-4 focus:py-2 focus:text-white">
           Skip to content
         </a>
-        <MaintenanceBanner />
+        {site.maintenance.show && <MaintenanceBanner notice={site.maintenance} />}
         <SiteProvider value={site}>
           <MotionProvider>{children}</MotionProvider>
         </SiteProvider>
