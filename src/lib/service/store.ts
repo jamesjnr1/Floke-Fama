@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { createSeed, reducer, VERSION, type Action, type Actor, type ServiceState } from '@/lib/service/desk';
 import { PRACTICE_KEY, practiceDesk } from '@/lib/service/practice';
 import { DEMO_ENGINEER, DEMO_KEY } from '@/lib/demo';
+import { setFacilityCodes } from '@/lib/service/codes';
 
 export * from '@/lib/service/desk';
 
@@ -43,7 +44,7 @@ const POLL_MS = 15_000;
 /** `error`: the server is set up but couldn't answer just now (no connection, or the database didn't respond). */
 /** The team as the head of engineering sees it, to give jobs to engineers. */
 export type TeamEntry = { name: string; region: string | null; open: number; /** Their phone can receive texts. */ textable?: boolean };
-type Remote = { enabled: false; error?: boolean } | { enabled: true; state: ServiceState; team?: TeamEntry[] | null };
+type Remote = { enabled: false; error?: boolean } | { enabled: true; state: ServiceState; team?: TeamEntry[] | null; codes?: Record<string, string> };
 
 async function fetchDesk(): Promise<Remote> {
   try {
@@ -128,6 +129,7 @@ export function useServiceStore(actor: Actor, { practice = false, demo = false }
         setRemote(true);
         setSyncedAt(new Date());
         setTeam(r.team ?? null);
+        setFacilityCodes(r.codes);
         dispatchLocal({ type: 'load', state: r.state });
         // Changes made offline last time, not sent yet: shown again, and sent below
         const waiting = readOutbox();
@@ -170,6 +172,7 @@ export function useServiceStore(actor: Actor, { practice = false, demo = false }
     if (!r.enabled) return;
     setSyncedAt(new Date());
     setTeam(r.team ?? null);
+    setFacilityCodes(r.codes);
     if (pending.current === 0 && readOutbox().length === 0) dispatchLocal({ type: 'load', state: r.state });
   }, []);
 

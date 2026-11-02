@@ -6,6 +6,7 @@ import type { SavedOrder } from '@/lib/orders';
 import { loadDesk } from '@/lib/service/server';
 import type { ServiceState } from '@/lib/service/desk';
 import { sampleData } from '@/lib/admin/sample';
+import { listFacilities, syncRegistry, type Facility } from '@/lib/facility-registry';
 import { accountPictures } from '@/lib/account-photos';
 import { isTableMissing } from '@/lib/appwrite-tables';
 import { listSupportRequests, type SupportRequest } from '@/lib/support-requests';
@@ -32,6 +33,8 @@ export interface AdminData {
   supportRequests: SupportRequest[];
   /** Each account's picture by account id: an engineer's photo or a hospital's logo. */
   pictures: Record<string, string>;
+  /** The hospital registry: every hospital with its permanent code (FLK-H001 …). */
+  facilities: Facility[];
   tables: TableStatus[];
 }
 
@@ -72,7 +75,7 @@ const errorText = (e: unknown) => (e as Error)?.message?.slice(0, 200) || 'Unkno
 export async function loadAdminData(): Promise<AdminData> {
   if (!appwrite) {
     const sample = process.env.ADMIN_SAMPLE_DATA === 'true' && process.env.VERCEL_ENV !== 'production';
-    return sample ? sampleData() : { source: 'off', accounts: [], orders: [], desk: { assets: [], tickets: [], notifications: [] }, pushSubscriptions: 0, sms: [], supportRequests: [], pictures: {}, tables: [] };
+    return sample ? sampleData() : { source: 'off', accounts: [], orders: [], desk: { assets: [], tickets: [], notifications: [] }, pushSubscriptions: 0, sms: [], supportRequests: [], pictures: {}, facilities: [], tables: [] };
   }
 
   const tables: TableStatus[] = [];
@@ -126,8 +129,20 @@ export async function loadAdminData(): Promise<AdminData> {
     accountPictures().catch(() => ({}) as Record<string, string>),
   ]);
 
+  // Every hospital already in the system gets its code (once), then the registry is read
+  const facilities = await syncRegistry([
+    ...accounts.filter((a) => a.role === 'client' && a.organisation).map((a) => ({ name: a.organisation, at: a.createdAt, details: { contactName: a.name, phone: a.phone, email: a.email } })),
+    ...desk.assets.map((a) => ({ name: a.facility, at: a.installed || new Date().toISOString() })),
+  ])
+    .then(() => listFacilities())
+    .catch((e) => {
+      tables.push({ table: TABLES.facilities, label: 'Hospitals (registry)', ok: false, error: errorText(e) });
+      return [] as Facility[];
+    });
+
   return {
     source: 'live',
+    facilities,
     accounts: accounts.sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
     orders: orders.sort((a, b) => b.placedAt.localeCompare(a.placedAt)),
     desk: { assets: desk.assets, tickets: desk.tickets, notifications: desk.notifications },

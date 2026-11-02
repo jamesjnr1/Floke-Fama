@@ -4,6 +4,8 @@ import { getSession, renewSession } from '@/lib/auth/server';
 import type { Action } from '@/lib/service/desk';
 import { applyAction, autoAssignStale, DeskError, loadDesk, teamFor, visibleTo } from '@/lib/service/server';
 import { escalateStale } from '@/lib/sms';
+import { facilityCodes } from '@/lib/facility-registry';
+import { facilityKey } from '@/lib/service/desk';
 
 /**
  * The shared service desk (Appwrite). GET returns what the signed-in account may see; POST applies one action
@@ -36,7 +38,11 @@ export async function GET() {
       await escalateStale(assigned ? await loadDesk() : desk);
     });
     // The head of engineering also gets the team, to give jobs to engineers
-    return NextResponse.json({ enabled: true, state: visibleTo(s, desk), team: await teamFor(s, desk) }, { headers: noStore });
+    const team = await teamFor(s, desk);
+    // Hospital codes: every hospital's for engineers, a hospital its own
+    const codes = await facilityCodes().catch(() => ({}) as Record<string, string>);
+    const own = s.role === 'client' ? Object.fromEntries(Object.entries(codes).filter(([name]) => facilityKey(name) === facilityKey(s.facility ?? s.name))) : codes;
+    return NextResponse.json({ enabled: true, state: visibleTo(s, desk, { head: Boolean(team) }), team, codes: own }, { headers: noStore });
   } catch (e) {
     console.error('service desk: load failed', e);
     return NextResponse.json({ error: 'The service desk could not be loaded.' }, { status: 502 });

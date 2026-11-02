@@ -9,6 +9,7 @@ import { canonicalFacility } from '@/lib/service/facilities';
 import { supportDetails, type SupportInput } from '@/lib/support-schema';
 import { categoryOf } from '@/lib/categories';
 import { listTeam, teamCached, type TeamMember } from '@/lib/engineer-team';
+import { ensureFacility } from '@/lib/facility-registry';
 import { regionInText } from '@/lib/regions';
 import { createSeed, facilityKey, looksIvd, reducer, serviceInterval, type Action, type Actor, type Asset, type Notification, type ServiceState, type Ticket } from '@/lib/service/desk';
 
@@ -118,6 +119,14 @@ async function saveChanges(before: ServiceState, after: ServiceState) {
     }),
   );
   if (revs.size) after = { ...after, tickets: after.tickets.map((t) => (revs.has(t.id) ? { ...t, rev: revs.get(t.id) } : t)) };
+  await writeAll(before, after);
+  // A hospital seen for the first time (equipment filed under a new name) gets its code in the registry
+  const known = new Set(before.assets.map((a) => facilityKey(a.facility)));
+  const fresh = [...new Set(after.assets.filter((a) => !known.has(facilityKey(a.facility))).map((a) => a.facility))];
+  for (const name of fresh) await ensureFacility(name, {}, 'Service desk').catch((e) => console.error('registry: not added', name, e));
+}
+
+async function writeAll(before: ServiceState, after: ServiceState) {
   for (const kind of ['tickets', 'assets', 'notifications'] as const) {
     const writes: Promise<unknown>[] = [];
     const old = new Map((before[kind] as { id: string }[]).map((x) => [x.id, JSON.stringify(x)]));
@@ -142,9 +151,14 @@ export const actorFor = (s: SessionUser): Actor => ({ name: s.name, role: s.role
 const facilityOf = (s: SessionUser) => s.facility ?? s.name;
 
 /** What an account may see: engineers see every facility; a hospital only its own equipment and requests. */
-export function visibleTo(s: SessionUser, state: ServiceState): ServiceState {
+export function visibleTo(s: SessionUser, state: ServiceState, { head = false }: { head?: boolean } = {}): ServiceState {
   if (s.role === 'admin') return state; // the admin console sees everything (read-only)
-  if (s.role === 'engineer') return { ...state, notifications: state.notifications.filter((n) => n.audience === 'engineer'), purchases: [] };
+  if (s.role === 'engineer') {
+    // The hospital's contact number on a job goes to the engineer it is assigned to (and the head of engineering);
+    // other engineers see the hospital, its code and the job, and get the number when they take it
+    const tickets = head ? state.tickets : state.tickets.map((t) => (t.engineer && t.engineer !== s.name && t.contactPhone ? { ...t, contactPhone: undefined } : t));
+    return { ...state, tickets, notifications: state.notifications.filter((n) => n.audience === 'engineer'), purchases: [] };
+  }
   const assets = state.assets.filter((a) => a.facility === facilityOf(s));
   const ids = new Set(assets.map((a) => a.id));
   const tickets = state.tickets.filter((t) => ids.has(t.assetId));
@@ -307,7 +321,7 @@ export async function applyAction(s: SessionUser, action: Action): Promise<Servi
       await Promise.all([pushNew(before, after), smsNew(before, after, actorFor(s)), escalateStale(after)]);
       // Urgent jobs left waiting (a job just handed back, say) go to an engineer automatically
       if (await autoAssignStale(action.type === 'decline' ? undefined : after, action.type === 'decline')) return visibleTo(s, await loadDesk());
-      return visibleTo(s, after);
+      return visibleTo(s, after, { head: s.role === 'engineer' && (await teamCached().then((t) => isHead(s, t), () => false)) });
     } catch (e) {
       if ((e as { code?: number }).code === 409 && attempt < 2) continue;
       throw e;

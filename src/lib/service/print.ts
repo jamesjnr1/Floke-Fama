@@ -1,4 +1,5 @@
 import QRCode from 'qrcode';
+import { facilityCodeOf } from '@/lib/service/codes';
 import { contact } from '@/data/seed';
 import { fmtDate, jobKind, scheduleLabel, type Asset, type Ticket } from '@/lib/service/desk';
 
@@ -40,7 +41,7 @@ export function printServiceReport(t: Ticket, asset: Asset | undefined) {
   const body = `<header>${logo('38px')}<div class="co">Flokefama Company Limited<br>Santa Maria, Accra · ${esc(contact.phone)}<br>${esc(contact.support)}</div></header>
 <h1>Service report</h1><p class="sub">${esc(jobKind(t))} · Job ${esc(t.id)}</p>
 <table>
-<tr><th>Facility</th><td>${esc(asset?.facility ?? '')}</td><th>Department</th><td>${esc(asset?.location ?? '')}</td></tr>
+<tr><th>Facility</th><td>${esc(asset?.facility ?? '')}${facilityCodeOf(asset?.facility) ? ` (${esc(facilityCodeOf(asset?.facility)!)})` : ''}</td><th>Department</th><td>${esc(asset?.location ?? '')}</td></tr>
 <tr><th>Equipment</th><td>${esc(`${asset?.brand ?? ''} ${asset?.name ?? t.title.split(':')[0]}`.trim())}</td><th>Serial number</th><td>${esc(asset?.serial ?? '')}</td></tr>
 <tr><th>Reported</th><td>${esc(fmtDate(t.openedAt))}${t.requestedBy ? ` · ${esc(t.requestedBy)}` : ''}</td><th>Completed</th><td>${t.resolvedAt ? esc(fmtDate(t.resolvedAt)) : 'In progress'}</td></tr>
 <tr><th>Engineer</th><td>${esc(t.engineer ?? '')}${t.engineerPhone ? ` · ${esc(t.engineerPhone)}` : ''}</td><th>Warranty</th><td>${asset ? (asset.suppliedByUs === false ? 'Not supplied by Flokefama' : new Date(asset.warrantyUntil).getTime() > Date.now() ? `Under warranty until ${esc(fmtDate(asset.warrantyUntil))}` : 'Out of warranty') : ''}</td></tr>

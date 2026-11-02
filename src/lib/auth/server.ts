@@ -2,6 +2,7 @@ import 'server-only';
 import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { demoOn } from '@/lib/demo';
+import { facilityActive } from '@/lib/facility-registry';
 import { ADMIN_COOKIE, cookieFor, ENGINEER_COOKIE, isConsoleRole, roleLogin, SESSION_COOKIE, sessionCookie, signSession, verifySession, type Role, type SessionUser } from '@/lib/auth/session';
 
 /**
@@ -19,8 +20,11 @@ async function sessionFrom(cookie: string, role: Role, demo = false) {
   return s?.role === role ? allow(s, demo) : null;
 }
 
-/** The signed-in hospital on the site. */
-export const getClientSession = (demo = false) => sessionFrom(SESSION_COOKIE, 'client', demo);
+/** The signed-in hospital on the site (none when the hospital has been made inactive in the registry). */
+export const getClientSession = async (demo = false) => {
+  const s = await sessionFrom(SESSION_COOKIE, 'client', demo);
+  return s && (s.demo || (await facilityActive(s.facility))) ? s : null;
+};
 /** The signed-in engineer, from the engineer portal's own cookie. */
 export const getEngineerSession = (demo = false) => sessionFrom(ENGINEER_COOKIE, 'engineer', demo);
 /** The signed-in admin, from the admin console's own cookie. */
@@ -72,6 +76,8 @@ export async function renewSession(s: SessionUser) {
 /** Defence in depth: pages re-check the session even though middleware already guards the route. */
 export async function requireSession(role: Role, path: string, { demo = false } = {}) {
   const session = role === 'admin' ? await getAdminSession(demo) : role === 'engineer' ? await getEngineerSession(demo) : await getClientSession(demo);
+  // Signed in, but the hospital was made inactive: say so (the sign-in page would only send them back here)
+  if (!session && role === 'client' && (await sessionFrom(SESSION_COOKIE, 'client', demo))) redirect('/account-inactive');
   if (!session) redirect(`${roleLogin[role]}?next=${encodeURIComponent(path)}`);
   return session;
 }

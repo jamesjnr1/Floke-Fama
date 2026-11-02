@@ -10,6 +10,7 @@ import { AccountsUnavailable, accountExists, findAccount, findSavedAccount, hash
 import { ADMIN_COOKIE, cookieFor, ENGINEER_COOKIE, nextFor, safeNext, SESSION_COOKIE, sessionCookie, signSession, type SessionUser } from '@/lib/auth/session';
 import { getAdminSession, getConsoleSession, getEngineerSession, getSession } from '@/lib/auth/server';
 import { roleFor } from '@/lib/auth/users';
+import { ensureFacility, facilityActive } from '@/lib/facility-registry';
 import { engineerOrganisation, isHeadOrganisation, regions } from '@/lib/regions';
 import { appwrite } from '@/lib/appwrite';
 import { updateEngineerPhone } from '@/lib/service/server';
@@ -116,6 +117,9 @@ export async function login(_prev: LoginState, form: FormData): Promise<LoginSta
   // The site's sign-in (/login) is for hospitals only
   if (!form.get('area') && role === 'engineer') return { error: 'This sign-in is for hospitals. Engineers sign in to the engineer portal at /engineer/login.', email: parsed.data.email };
   if (!form.get('area') && (role === 'admin' || role === 'sales')) return { error: 'This sign-in is for hospitals. Flokefama staff sign in to the admin console at /admin/login.', email: parsed.data.email };
+  // A hospital made inactive in the registry (admin console → Hospitals) can't sign in
+  if (role === 'client' && !(await facilityActive(saved.organisation)))
+    return { error: 'This hospital’s account is not active. Please call Flokefama on +233 53 339 2863.', email: parsed.data.email };
 
   await startSession({ sub: saved.id, name: saved.name, email: saved.email, role: roleFor(saved.email, saved.id), facility: saved.organisation, phone: saved.phone, keep: parsed.data.keep === 'on' }, parsed.data.next);
   return {};
@@ -151,6 +155,8 @@ export async function register(_prev: SignupState, form: FormData): Promise<Sign
   const id = `hos-${crypto.randomUUID().slice(0, 8)}`;
   const saved = await guarded(() => saveAccount({ id, name: d.name, email: d.email, organisation: d.organisation, phone: d.phone, salt, hash }));
   if (!saved.ok) return { errors: { form: UNAVAILABLE }, values };
+  // The hospital gets its permanent code in the registry (FLK-H001 …)
+  if (roleFor(d.email, id) === 'client') await ensureFacility(d.organisation, { contactName: d.name, phone: d.phone, email: d.email }, 'Registered on the website').catch((e) => console.error('registry: not added', e));
   await startSession({ sub: id, name: d.name, email: d.email, role: roleFor(d.email, id), facility: d.organisation, phone: d.phone, keep: d.keep === 'on' }, d.next);
   return {};
 }

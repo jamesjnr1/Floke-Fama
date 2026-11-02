@@ -24,6 +24,8 @@ export const TABLES = {
   smsLog: 'sms_log',
   supportRequests: 'support_requests',
   smsOptOut: 'sms_optout',
+  /** The hospital registry: one row per hospital, its id the hospital code (FLK-H001). */
+  facilities: 'facilities',
 } as const;
 export const BUCKETS = { hospitalLogos: 'hospital-logos' } as const;
 
