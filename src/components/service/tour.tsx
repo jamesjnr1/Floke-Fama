@@ -4,13 +4,24 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react
 import { createPortal } from 'react-dom';
 
 /**
- * A guided tour for someone's first visit to their portal: it dims the page, lights up one button or section at a
- * time and says what it is for, with Next, Back and Skip. Shown once per browser (taken again from “Take the tour”).
- * Steps point at elements marked `data-tour="…"`; when one isn't on screen (e.g. on a phone), the card shows alone.
+ * A guided tour of someone's portal: it dims the page, lights up one button or section at a time and says what it is
+ * for, with Next and Back. It starts by itself on a person's first two visits (a visit: the portal opened in a new
+ * tab or window) and must be taken to the end there: no Skip, and Escape doesn't close it. From the third visit it no
+ * longer starts by itself; “Take the tour” still opens it, and then it can be skipped.
+ * Counted per person on each browser. Steps point at elements marked `data-tour="…"`; when one isn't on screen (e.g. on
+ * a phone), the card shows alone.
  */
 export type TourStep = { target?: string; title: string; text: string; /** Runs first, e.g. to open the right view. */ before?: () => void };
 
-const seenKey = (id: string) => `ff-tour-${id}-v1`;
+/** The visits on which the tour starts by itself, and can't be skipped. */
+const REQUIRED_VISITS = 2;
+
+/** A short, stable code for the person (so their email isn't kept in the browser as it is). */
+const code = (who: string) => {
+  let h = 5381;
+  for (const ch of who.trim().toLowerCase()) h = ((h << 5) + h + ch.charCodeAt(0)) >>> 0;
+  return h.toString(36);
+};
 
 /** The first visible element for a target (the same button can be in the sidebar on a computer and a bar on a phone). */
 function find(target?: string) {
@@ -22,38 +33,58 @@ function find(target?: string) {
   return null;
 }
 
-export function useTour(id: string, steps: TourStep[], { ready, auto = true }: { ready: boolean; auto?: boolean }) {
+/** `who`: the signed-in person (their email), so each person on a shared computer gets their own two tours. */
+export function useTour(id: string, steps: TourStep[], { ready, auto = true, who = '' }: { ready: boolean; auto?: boolean; who?: string }) {
   const [step, setStep] = useState<number | null>(null);
-  // Opened straight onto something (a job from a text message, say): let them see it; the tour waits for next time.
-  // Read on the first render, before the portal tidies the address
+  const [required, setRequired] = useState(false);
+  const key = `ff-tour-${id}-${code(who)}-v2`;
+  // Opened straight onto something (a job from a text message, say): let them see it; the tour waits for their next
+  // visit (this one isn't counted). Read on the first render, before the portal tidies the address
   const [deepLink] = useState(() => typeof window !== 'undefined' && /[?&](ticket|asset|website|photo|guide)=/.test(window.location.search));
-  // First visit: start by itself, once the portal has loaded
   useEffect(() => {
     if (!ready || !auto || deepLink) return;
-    let seen = true;
+    let visit = REQUIRED_VISITS + 1;
+    let done = true;
     try {
-      seen = localStorage.getItem(seenKey(id)) === '1';
+      // A visit is counted once per tab: moving around the portal or refreshing isn't a new one
+      const counted = sessionStorage.getItem(key);
+      visit = counted ? Number(counted.split(':')[0]) : Number(localStorage.getItem(key) ?? 0) + 1;
+      done = counted?.endsWith(':done') ?? false;
+      if (!counted) {
+        localStorage.setItem(key, String(visit));
+        sessionStorage.setItem(key, String(visit));
+      }
     } catch {
-      /* storage unavailable: don't show it on every visit */
+      /* storage unavailable: don't hold them in the tour on every visit */
     }
-    if (seen) return;
-    const t = window.setTimeout(() => setStep(0), 700);
+    if (done || !(visit <= REQUIRED_VISITS)) return;
+    const t = window.setTimeout(() => {
+      setRequired(true);
+      setStep(0);
+    }, 700);
     return () => window.clearTimeout(t);
-  }, [ready, auto, id, deepLink]);
+  }, [ready, auto, key, deepLink]);
   const close = useCallback(() => {
     setStep(null);
+    setRequired(false);
     try {
-      localStorage.setItem(seenKey(id), '1');
+      // Taken in this tab: not again until their next visit
+      const counted = sessionStorage.getItem(key);
+      if (counted && !counted.endsWith(':done')) sessionStorage.setItem(key, `${counted}:done`);
     } catch {
       /* ignore */
     }
-  }, [id]);
-  const start = useCallback(() => setStep(0), []);
-  const node = step === null ? null : <Tour steps={steps} step={step} onStep={setStep} onClose={close} />;
+  }, [key]);
+  const start = useCallback(() => {
+    setRequired(false);
+    setStep(0);
+  }, []);
+  const node = step === null ? null : <Tour steps={steps} step={step} required={required} onStep={setStep} onClose={close} />;
   return { start, node, open: step !== null };
 }
 
-function Tour({ steps, step, onStep, onClose }: { steps: TourStep[]; step: number; onStep: (n: number) => void; onClose: () => void }) {
+/** `required`: one of the first visits, so it can only be finished (no Skip, no Escape). */
+function Tour({ steps, step, required, onStep, onClose }: { steps: TourStep[]; step: number; required: boolean; onStep: (n: number) => void; onClose: () => void }) {
   const s = steps[step];
   const [rect, setRect] = useState<DOMRect | null>(null);
   const [vw, setVw] = useState(0);
@@ -95,7 +126,7 @@ function Tour({ steps, step, onStep, onClose }: { steps: TourStep[]; step: numbe
   useEffect(() => {
     card.current?.focus();
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape' && !required) onClose();
       if (e.key === 'ArrowRight') {
         if (step < steps.length - 1) onStep(step + 1);
         else onClose();
@@ -104,7 +135,7 @@ function Tour({ steps, step, onStep, onClose }: { steps: TourStep[]; step: numbe
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [step, steps.length, onStep, onClose]);
+  }, [step, steps.length, required, onStep, onClose]);
 
   const last = step === steps.length - 1;
   const pad = 8;
@@ -150,8 +181,8 @@ function Tour({ steps, step, onStep, onClose }: { steps: TourStep[]; step: numbe
           {steps.map((_, i) => <span key={i} className={i <= step ? 'h-1 flex-1 rounded-full bg-brand-600' : 'h-1 flex-1 rounded-full bg-[#e3e8e5]'} />)}
         </div>
         <div className="mt-4 flex items-center gap-2">
-          {!last && <button type="button" onClick={onClose} className="mr-auto text-sm font-medium text-ink-3 hover:text-ink">Skip tour</button>}
-          {last && <span className="mr-auto" />}
+          {!last && !required && <button type="button" onClick={onClose} className="mr-auto text-sm font-medium text-ink-3 hover:text-ink">Skip tour</button>}
+          {(last || required) && <span className="mr-auto" />}
           {step > 0 && <button type="button" onClick={() => onStep(step - 1)} className="h-10 rounded-md border border-line px-4 text-sm font-semibold hover:border-ink/30">Back</button>}
           <button type="button" onClick={() => (last ? onClose() : onStep(step + 1))} className="h-10 rounded-md bg-brand-700 px-5 text-sm font-semibold text-white hover:bg-brand-800">
             {last ? 'Finish' : step === 0 ? 'Show me' : 'Next'}

@@ -10,7 +10,7 @@ export const dynamic = 'force-dynamic';
 
 /**
  * Engineers register here from the invite link their manager sends (WhatsApp or email): one short form, made for a
- * phone. The account waits for the manager's approval; they get a text when they can sign in.
+ * phone. The account works at once (with ENGINEER_APPROVAL=on it waits for the manager's approval first).
  */
 export default async function EngineerJoinPage({ searchParams }: { searchParams: Promise<{ code?: string }> }) {
   const { code } = await searchParams;
@@ -27,7 +27,7 @@ export default async function EngineerJoinPage({ searchParams }: { searchParams:
             <>
               <p className="text-sm font-semibold uppercase tracking-[0.12em] text-brand-700">Engineer registration</p>
               <h1 className="mt-2 text-[1.75rem] font-bold leading-tight tracking-[-0.02em] text-ink">Join the Flokefama engineers</h1>
-              <p className="mt-2 text-[1.0625rem] text-ink-2">Fill in your details. Your manager approves you, then you get a text and can sign in.</p>
+              <p className="mt-2 text-[1.0625rem] text-ink-2">{process.env.ENGINEER_APPROVAL?.trim().toLowerCase() === 'on' ? 'Fill in your details. Your manager approves you, then you get a text and can sign in.' : 'Fill in your details, then sign in with your email and password.'}</p>
               <JoinForm code={code!} />
             </>
           ) : (
