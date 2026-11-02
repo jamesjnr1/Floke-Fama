@@ -18,7 +18,8 @@ export async function GET(req: Request) {
     jar.delete(SESSION_COOKIE);
     return NextResponse.json({ user: null }, { headers: { 'Cache-Control': 'no-store' } });
   }
-  if (!session) return NextResponse.json({ user: null }, { headers: { 'Cache-Control': 'no-store' } });
+  // The demo hospital (lib/demo.ts) is signed in to its demo dashboard only, never on the site
+  if (!session || session.demo) return NextResponse.json({ user: null }, { headers: { 'Cache-Control': 'no-store' } });
   if (peek) {
     const { name, email, role, facility, phone } = session;
     return NextResponse.json({ user: { name, email, role, facility, phone }, exp: session.exp }, { headers: { 'Cache-Control': 'no-store' } });
