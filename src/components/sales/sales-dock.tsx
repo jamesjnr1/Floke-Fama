@@ -94,7 +94,7 @@ export function SalesDock() {
 
   // Live chat loads once the page is idle, so a staff reply can reach a visitor who has chatted before
   useEffect(() => {
-    if (chatMode !== 'tawk') return;
+    if (chatMode !== 'tawk' && chatMode !== 'crisp') return;
     const id = setTimeout(loadLiveChat, 2500);
     return () => clearTimeout(id);
   }, []);
@@ -114,7 +114,7 @@ export function SalesDock() {
   return (
     // On phones, product pages have their own sticky bar, so the dock sits above it
     // With live chat, Tawk.to's bubble takes the bottom-right corner on a computer: the dock sits above it
-    <div data-dock className={cn('fixed right-4 z-40 flex flex-col items-end gap-3 md:right-6', chatMode === 'tawk' ? 'md:bottom-28' : 'md:bottom-6', onProduct ? 'bottom-24' : 'bottom-4')}>
+    <div data-dock className={cn('fixed right-4 z-40 flex flex-col items-end gap-3 md:right-6', chatMode === 'tawk' || chatMode === 'crisp' ? 'md:bottom-28' : 'md:bottom-6', onProduct ? 'bottom-24' : 'bottom-4')}>
       {chatMode === 'assistant' && <SupportChat open={chat} onClose={() => setChat(false)} />}
       <AnimatePresence>
         {open && !chat && items.length > 0 && (
