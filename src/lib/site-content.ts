@@ -4,6 +4,7 @@
  * content from src/data/seed.ts, used for anything Sanity leaves empty (and when Sanity isn't connected).
  * Shared by the server loader (lib/site.ts) and the browser (components/site-provider.tsx).
  */
+import type { NoticeColour } from '@/lib/notice';
 import * as seed from '../data/seed';
 
 export interface Contact {
@@ -41,6 +42,12 @@ export interface MaintenanceNotice {
   message: string;
   /** On phones, where space is short. */
   short: string;
+  /** A UIcon class from lib/notice.ts, or 'none'. */
+  icon: string;
+  colour: NoticeColour;
+  /** An optional link at the end, e.g. "Call us" → tel:+233… (only safe kinds: see safeNoticeHref). */
+  linkLabel?: string;
+  linkHref?: string;
 }
 
 export interface SiteContent {
@@ -193,7 +200,7 @@ export const defaultPageHeaders: Record<PageKey, PageHeader> = {
   about: { title: 'since 2008', highlight: 'Saving Lives', emphasisFirst: true, lead: 'FLOKEFAMA is a multiple award-winning company and one of the most trusted medical equipment suppliers in Ghana.', image: '/images/headers/about-microscopes.webp', position: '40% 50%', veil: 'strong', lockImage: true },
   services: { title: 'We go beyond just supplying', highlight: 'medical equipment', lead: 'End-to-end solutions, from procurement and installation to training and maintenance.', image: '/images/headers/services-technician.webp', position: '50% 40%', veil: 'strong', lockImage: true },
   shop: { title: 'Clinical-grade equipment.', highlight: 'Instantly searchable.', lead: '{count} products for hospitals and laboratories, with installation, training and after-sales support on everything we supply.', image: '/images/headers/shop.webp', position: '50% 35%' },
-  events: { title: 'Moments that', highlight: 'bring us together', lead: 'Celebrations, community programmes and industry events from across the Flokefama family.', image: '/images/headers/events-praise.webp', position: '50% 40%', lockImage: true },
+  events: { title: 'Moments that', highlight: 'bring us together', lead: 'Celebrations, community programmes and industry events from across the Flokefama family.', image: '/images/headers/events-stage.webp', position: '50% 42%', lockImage: true },
   awards: { title: 'Recognitions that', highlight: 'reflect our impact', lead: 'Our commitment to excellence, innovation and service, recognized through prestigious awards and honors.', image: '/images/headers/awards-cup.webp', position: '50% 50%', veil: 'strong', lockImage: true },
   esg: { title: 'Healthcare that', highlight: 'gives back', lead: 'Our corporate social responsibility: supporting healthcare institutions, developing professionals and serving communities across Ghana.', image: '/images/headers/esg-care.webp', position: '30% 60%', veil: 'strong', lockImage: true },
   contact: { title: 'Get in touch', highlight: 'with us', lead: 'We’re here to provide total healthcare solutions. Reach out to us anytime.', image: '/images/headers/contact-support.webp', position: '50% 30%' },
@@ -205,6 +212,8 @@ export const defaultSite: SiteContent = {
     title: 'Website Under Maintenance',
     message: 'We are making improvements to serve you better. Thank you for your patience.',
     short: 'We are improving our website. Thank you for your patience.',
+    icon: 'fi-rr-tools',
+    colour: 'green',
   },
   ...withDerived(seed.contact, seed.maps.embed),
   branches: [...seed.branches],
