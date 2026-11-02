@@ -1,5 +1,6 @@
 'use client';
 
+import { HospitalCode } from '@/components/service/hospital-code';
 import Image from 'next/image';
 import { useState } from 'react';
 import { statusMeta } from '@/components/service/status';
@@ -68,7 +69,7 @@ export function SystemsView({ state, onOpenAsset, onAdd }: { state: EngineerStat
                   </span>
                 </div>
                 <div className="flex flex-1 flex-col p-3">
-                  <p className="text-xs text-ink-3">{a.facility} · {a.location}</p>
+                  <p className="text-xs text-ink-3">{a.facility} <HospitalCode name={a.facility} /> · {a.location}</p>
                   <p className="mt-0.5 font-semibold text-ink">{a.name}</p>
                   {(a.suppliedByUs === false || a.ivd) && (
                     <p className="mt-1.5 flex flex-wrap gap-1.5 text-[0.6875rem] font-semibold">

@@ -1,5 +1,6 @@
 'use client';
 
+import { HospitalCode } from '@/components/service/hospital-code';
 import Image from 'next/image';
 import { statusMeta, ticketStatusMeta } from '@/components/service/status';
 import { linkButton, Panel, PanelHead, PrimaryButton, PriorityBadge, tag } from '@/components/service/ui';
@@ -99,7 +100,7 @@ export function Overview({ state, me, onOpenTicket, onOpenAsset, onGo, onLogFaul
                         <span className="min-w-0">
                           <span className="block font-mono text-xs text-ink-3">{t.id} · {fmtTime(t.openedAt)}</span>
                           <span className="mt-1 block truncate font-semibold text-ink">{a?.name ?? t.title}</span>
-                          <span className="block truncate text-sm text-ink-3">{a ? `${a.facility} · ${a.location}` : t.description}</span>
+                          <span className="flex min-w-0 items-center gap-1.5 text-sm text-ink-3">{a ? <><span className="truncate">{`${a.facility} · ${a.location}`}</span><HospitalCode name={a.facility} /></> : <span className="truncate">{t.description}</span>}</span>
                         </span>
                         <span className="min-w-0">
                           <span className="grid grid-cols-5 gap-1" aria-hidden>

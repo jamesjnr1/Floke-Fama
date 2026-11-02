@@ -80,13 +80,18 @@ export function sampleData(): AdminData {
     desk: { assets, tickets, notifications: [] },
     pushSubscriptions: 19,
     pictures: {},
+    // The sample hospitals, coded in order (the last one made inactive, to show how that looks)
+    facilities: facilities.map((name, i) => {
+      const who = accounts.find((a) => a.organisation === name);
+      return { code: `FLK-H${String(i + 1).padStart(3, '0')}`, name, status: i === facilities.length - 1 ? ('inactive' as const) : ('active' as const), region: regions[i % regions.length], address: `${name}, ${regions[i % regions.length]}`, contactName: who?.name, phone: who?.phone, email: who?.email, createdAt: daysAgo(180 - i * 9) };
+    }),
     supportRequests: [
       { id: 'SR-MH4Q2K1A', at: new Date(now - 25 * 60_000).toISOString(), status: 'new', type: 'fault', name: 'Esi Owusu', facility: 'Northern Star Clinic', phone: '+233 24 555 0192', equipment: 'Mindray BS-240 Chemistry Analyzer', serial: 'BS24-08817', working: 'down', message: 'Error 2-31 on start-up. The analyser will not run samples.' },
       { id: 'SR-MH4N8Z3C', at: new Date(now - 3 * 3600_000).toISOString(), status: 'called', handledBy: 'Samuel Tetteh', type: 'maintenance', name: 'Kojo Antwi', facility: 'Savannah Community Hospital', phone: '+233 20 441 7781', equipment: 'Patient monitors in the ICU', units: '6', lastService: '2026-04-12', preferredDate: '2026-10-28', message: 'Calibration certificates are due for renewal.' },
       { id: 'SR-MH2B7T9E', at: new Date(now - 2 * 864e5).toISOString(), status: 'closed', handledBy: 'Grace Mensah', ticketId: 'TK-1066', type: 'installation', name: 'Adwoa Sarpong', facility: 'Green Hills Medical Centre', phone: '+233 55 210 3349', equipment: 'Autoclave 35L', order: 'FF-5A3F1', location: 'Main theatre, 2nd floor', preferredDate: '2026-10-22', message: 'Delivered last week; power and water points are ready.' },
     ],
     sms: [
-      { id: 's5', at: new Date(now - 6 * 60_000).toISOString(), kind: 'urgent', ref: 'TK-1061', to: '233533392860,233533392861,233533392862,233533392863', text: 'FLOKEFAMA: CRITICAL fault at Ridge Hospital - BC-5150 Haematology Analyzer. Job TK-1061 needs an engineer. Open: https://flokefama.com/engineer?ticket=TK-1061', status: 'sent', detail: 'Arkesel' },
+      { id: 's5', at: new Date(now - 6 * 60_000).toISOString(), kind: 'urgent', ref: 'TK-1061', to: '233533392860,233533392861,233533392862,233533392863', text: 'FLOKEFAMA: CRITICAL fault at Ridge Practice Hospital - BC-5150 Haematology Analyzer. Job TK-1061 needs an engineer. Open: https://flokefama.com/engineer?ticket=TK-1061', status: 'sent', detail: 'Arkesel' },
       { id: 's4', at: new Date(now - 41 * 60_000).toISOString(), kind: 'escalation', ref: 'TK-1058', to: '233244000111', text: 'FLOKEFAMA: No engineer has taken HIGH job TK-1058 at Harbour View Hospital - Patient Monitor after 30 min. Open: https://flokefama.com/admin?tab=service', status: 'sent', detail: 'Arkesel' },
       { id: 's3', at: new Date(now - 95 * 60_000).toISOString(), kind: 'message', ref: 'TK-1052', to: '233533392861', text: 'FLOKEFAMA: New message from Asante Valley Hospital on job TK-1052 (CT Scanner). Open: https://flokefama.com/engineer?ticket=TK-1052', status: 'sent', detail: 'Arkesel' },
       { id: 's2', at: new Date(now - 3 * 3600_000).toISOString(), kind: 'assigned', ref: 'TK-1049', to: '233533392862', text: 'FLOKEFAMA: Job TK-1049 at Green Hills Medical Centre - Ultrasound System is now yours (routine). Open: https://flokefama.com/engineer?ticket=TK-1049', status: 'failed', detail: 'Arkesel: insufficient balance' },

@@ -8,6 +8,8 @@ import { Icon } from '@/components/ui/icon';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { removeEngineer, saveOrderNote, setOrderStatus } from '@/lib/admin/actions';
 import { approveEngineer, declineEngineer, setHeadEngineer } from '@/lib/engineer-actions';
+import { setHospitalStatus } from '@/lib/admin/hospital-actions';
+import { AddHospitalLoginForm, EditHospitalForm, RegisterHospitalForm } from '@/components/admin/hospital-forms';
 import { headByEmail } from '@/lib/auth/users';
 import { newInviteCode } from '@/lib/engineer-team';
 import { isHeadOrganisation, regionOfOrganisation, regions } from '@/lib/regions';
@@ -34,7 +36,7 @@ import { salesStages } from '@/lib/sales-stages';
 import { departments, timelines } from '@/lib/order-needs';
 import { cn } from '@/lib/utils';
 import { statusStyle } from '@/components/client/ui';
-import { visitStatus } from '@/lib/service/desk';
+import { facilityKey, visitStatus } from '@/lib/service/desk';
 import type { TicketStatus as TicketStatusId } from '@/lib/service/store';
 
 /**
@@ -44,11 +46,12 @@ import type { TicketStatus as TicketStatusId } from '@/lib/service/store';
  */
 export const dynamic = 'force-dynamic';
 
-type Tab = 'overview' | 'orders' | 'accounts' | 'team' | 'products' | 'service' | 'texts' | 'system';
+type Tab = 'overview' | 'orders' | 'accounts' | 'hospitals' | 'team' | 'products' | 'service' | 'texts' | 'system';
 const tabs: { id: Tab; label: string; icon: string }[] = [
   { id: 'overview', label: 'Overview', icon: 'fi-rr-apps' },
   { id: 'orders', label: 'Orders', icon: 'fi-rr-box-open' },
   { id: 'accounts', label: 'Accounts', icon: 'fi-rr-users' },
+  { id: 'hospitals', label: 'Hospitals', icon: 'fi-rr-hospital' },
   { id: 'team', label: 'Engineers', icon: 'fi-rr-user-gear' },
   { id: 'products', label: 'Product demand', icon: 'fi-rr-shopping-cart' },
   { id: 'service', label: 'Service desk', icon: 'fi-rr-tools' },
@@ -242,6 +245,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             {tab === 'orders' && <Orders data={data} q={params.q} open={params.order} stage={params.stage} now={now} />}
             {tab === 'accounts' && (params.account ? <AccountDetail data={data} id={params.account} now={now} /> : <Accounts data={data} q={params.q} role={roles.some((r) => r.id && r.id === params.role) ? params.role : undefined} adding={params.add === 'engineer'} />)}
             {tab === 'team' && <Team data={data} now={now} demo={demo} />}
+            {tab === 'hospitals' && <Hospitals data={data} q={params.q} code={params.code} adding={params.add === 'hospital' && !demo} demo={demo} />}
             {tab === 'products' && <Products data={data} />}
             {tab === 'service' && <Service data={data} now={now} />}
             {tab === 'texts' && <Texts data={data} now={now} />}
@@ -322,9 +326,9 @@ function Stat({ label, value, note, href, feature }: { label: string; value: str
   );
 }
 
-function Csv({ table, label = 'Download CSV' }: { table: string; label?: string }) {
+function Csv({ table, label = 'Download CSV', codes }: { table: string; label?: string; /** Hospital codes instead of names (for reports shared beyond management). */ codes?: boolean }) {
   return (
-    <a href={`/api/admin/export?table=${table}`} className="inline-flex h-11 items-center gap-2 rounded-xl border border-line bg-white px-4 text-[0.9375rem] font-medium transition hover:border-brand-600 hover:text-brand-700">
+    <a href={`/api/admin/export?table=${table}${codes ? '&codes=1' : ''}`} className="inline-flex h-11 items-center gap-2 rounded-xl border border-line bg-white px-4 text-[0.9375rem] font-medium transition hover:border-brand-600 hover:text-brand-700">
       <Icon name="fi-rr-download" /> {label}
     </a>
   );
@@ -1062,6 +1066,146 @@ function BackToAccounts({ role }: { role?: string }) {
   );
 }
 
+/* ---------- Hospitals (the registry) ---------- */
+
+/** A hospital's equipment and requests: matched to the registry by name (ignoring capitals, spaces and punctuation). */
+function ofHospital(data: AdminData, name: string) {
+  const k = facilityKey(name);
+  const assets = data.desk.assets.filter((a) => facilityKey(a.facility) === k);
+  const ids = new Set(assets.map((a) => a.id));
+  const tickets = data.desk.tickets.filter((t) => ids.has(t.assetId));
+  const logins = data.accounts.filter((a) => a.role === 'client' && facilityKey(a.organisation) === k);
+  return { assets, tickets, logins };
+}
+
+/**
+ * Admin console → Hospitals: every hospital and facility with its permanent code (FLK-H001 …), contact, equipment,
+ * requests and whether its account is active; register new ones and open each record.
+ */
+function Hospitals({ data, q, code, adding, demo }: { data: AdminData; q?: string; code?: string; adding?: boolean; demo?: boolean }) {
+  if (code) return <HospitalDetail data={data} code={code} demo={demo} />;
+  const needle = q?.trim().toLowerCase();
+  const list = data.facilities.filter((f) => !needle || [f.code, f.name, f.region, f.address, f.contactName, f.phone, f.email].some((v) => v?.toLowerCase().includes(needle)));
+  const inactive = data.facilities.filter((f) => f.status === 'inactive').length;
+  return (
+    <>
+      <Heading
+        title="Hospitals"
+        hint={<>Every hospital and facility gets a permanent code the first time it appears (registering on the website, registered here, or equipment filed under it). Codes are never reused, and the same hospital can’t be registered twice. Engineers see codes next to names; reports can use codes only.</>}
+        lead={`${data.facilities.length} hospitals and facilities${inactive ? `, ${inactive} inactive` : ''}. Codes identify them in reports; names stay with Flokefama and the hospital itself.`}
+        action={
+          <div className="flex flex-wrap gap-2">
+            {!demo && (
+              <Link href="/admin?tab=hospitals&add=hospital" className="inline-flex h-11 items-center gap-2 rounded-xl bg-brand-700 px-4 text-[0.9375rem] font-semibold text-white hover:bg-brand-800">
+                <Icon name="fi-rr-plus" /> Register a hospital
+              </Link>
+            )}
+            <Csv table="hospitals" />
+          </div>
+        }
+      />
+      {adding && (
+        <Panel title="Register a hospital" className="mb-6">
+          <RegisterHospitalForm />
+        </Panel>
+      )}
+      <div className="mb-4"><SearchBox tab="hospitals" q={q} placeholder="Code, name, region, contact…" /></div>
+      <Table head={['Code', 'Hospital', 'Region', 'Contact', 'Equipment', 'Requests', 'Status']} empty={!list.length}>
+        {list.map((f) => {
+          const { assets, tickets } = ofHospital(data, f.name);
+          const open = tickets.filter((t) => t.status !== 'resolved').length;
+          return (
+            <tr key={f.code}>
+              <td className="whitespace-nowrap font-mono font-semibold"><Link href={`/admin?tab=hospitals&code=${encodeURIComponent(f.code)}`} className="hover:text-brand-700">{f.code}</Link></td>
+              <td><Link href={`/admin?tab=hospitals&code=${encodeURIComponent(f.code)}`} className="font-medium hover:text-brand-700">{f.name}</Link></td>
+              <td>{f.region ?? <span className="text-ink-3">—</span>}</td>
+              <td>{f.contactName ?? '—'}{f.phone && <span className="block text-[0.8125rem] text-ink-3">{f.phone}</span>}</td>
+              <td className="tabular-nums">{assets.length}</td>
+              <td className="tabular-nums">{tickets.length}{open ? <span className="block text-[0.8125rem] text-ink-3">{open} open</span> : null}</td>
+              <td>{f.status === 'inactive' ? <Badge tone="bad">Inactive</Badge> : <Badge tone="good">Active</Badge>}</td>
+            </tr>
+          );
+        })}
+      </Table>
+    </>
+  );
+}
+
+/** One hospital's record: details, logins, equipment and service history; edit it, make it inactive, add logins. */
+function HospitalDetail({ data, code, demo }: { data: AdminData; code: string; demo?: boolean }) {
+  const f = data.facilities.find((x) => x.code === code);
+  const back = (
+    <Link href="/admin?tab=hospitals" className="mb-4 inline-flex items-center gap-1.5 text-[0.9375rem] font-medium text-ink-3 hover:text-ink">
+      <Icon name="fi-rr-arrow-small-left" /> All hospitals
+    </Link>
+  );
+  if (!f) return <>{back}<Heading title="Hospital not found" lead={`No hospital has the code ${code}.`} /></>;
+  const { assets, tickets, logins } = ofHospital(data, f.name);
+  const assetOf = (id: string) => data.desk.assets.find((a) => a.id === id);
+  return (
+    <>
+      {back}
+      <Heading
+        title={f.name}
+        lead={<span className="flex flex-wrap items-center gap-2"><span className="font-mono font-semibold text-ink">{f.code}</span> · {f.status === 'inactive' ? <Badge tone="bad">Inactive: its staff can’t sign in</Badge> : <Badge tone="good">Active</Badge>} · registered {fmt(f.createdAt)}{f.createdBy ? ` (${f.createdBy})` : ''}</span>}
+        action={
+          !demo && (
+            <form action={setHospitalStatus}>
+              <input type="hidden" name="code" value={f.code} />
+              <input type="hidden" name="status" value={f.status === 'inactive' ? 'active' : 'inactive'} />
+              {f.status === 'inactive' ? (
+                <button className="inline-flex h-11 items-center gap-2 rounded-xl bg-brand-700 px-4 text-[0.9375rem] font-semibold text-white hover:bg-brand-800"><Icon name="fi-rr-check" /> Make active</button>
+              ) : (
+                <ConfirmButton message={`Make ${f.name} inactive? Its staff won’t be able to sign in or use the dashboard until it is made active again. Its records stay.`} className="inline-flex h-11 items-center gap-2 rounded-xl border border-[#f3a7ab] bg-white px-4 text-[0.9375rem] font-medium text-signal-700 hover:bg-[#fff3f3]">
+                  Make inactive
+                </ConfirmButton>
+              )}
+            </form>
+          )
+        }
+      />
+      <div className="grid gap-4 lg:grid-cols-[1fr_1.4fr]">
+        <Panel title="Details">
+          <Facts rows={[['Code', <span key="c" className="font-mono">{f.code}</span>], ['Region', f.region ?? '—'], ['Location and address', f.address ?? '—'], ['Contact person', f.contactName ?? '—'], ['Phone', f.phone ?? '—'], ['Email', f.email ?? '—']]} />
+        </Panel>
+        <Panel title={demo ? 'Edit details (not saved in the demo)' : 'Edit details'}>
+          <EditHospitalForm code={f.code} values={{ region: f.region, address: f.address, contactName: f.contactName, phone: f.phone, email: f.email }} />
+        </Panel>
+      </div>
+      <Panel title={`Logins (${logins.length})`} className="mt-4">
+        {logins.length ? (
+          <ul className="-mt-2 mb-5 divide-y divide-line">
+            {logins.map((a) => (
+              <li key={a.id} className="flex flex-wrap items-center justify-between gap-2 py-3">
+                <Link href={`/admin?tab=accounts&account=${encodeURIComponent(a.id)}`} className="font-medium hover:text-brand-700">{a.name}<span className="block text-[0.8125rem] font-normal text-ink-3">{a.email} · {a.phone || 'no phone'}</span></Link>
+                <span className="text-[0.8125rem] text-ink-3">since {fmt(a.createdAt)}</span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="-mt-2 mb-5 text-[0.9375rem] text-ink-3">No one from this hospital can sign in yet.</p>
+        )}
+        {!demo && <AddHospitalLoginForm code={f.code} />}
+      </Panel>
+      <h2 className="mb-3 mt-8 text-xl font-semibold">Equipment ({assets.length})</h2>
+      <Table head={['Equipment ID', 'Equipment', 'Serial', 'Installed', 'Warranty until', 'Next service']} empty={!assets.length}>
+        {assets.map((a) => (
+          <tr key={a.id}>
+            <td className="whitespace-nowrap font-mono">{a.id}</td>
+            <td className="font-medium">{a.name}<span className="block text-[0.8125rem] font-normal text-ink-3">{a.location}</span></td>
+            <td className="font-mono">{a.serial}</td>
+            <td className="whitespace-nowrap">{fmt(a.installed)}</td>
+            <td className="whitespace-nowrap">{fmt(a.warrantyUntil)}</td>
+            <td className="whitespace-nowrap">{a.suppliedByUs === false ? '—' : fmt(a.nextCalibration)}</td>
+          </tr>
+        ))}
+      </Table>
+      <h2 className="mb-3 mt-8 text-xl font-semibold">Service history ({tickets.length})</h2>
+      <TicketTable tickets={tickets} assetOf={assetOf} />
+    </>
+  );
+}
+
 function Facts({ rows }: { rows: [string, React.ReactNode][] }) {
   return (
     <dl className="space-y-3">
@@ -1294,7 +1438,7 @@ function Service({ data, now }: { data: AdminData; now: number }) {
   return (
     <>
       <Heading hint={<><b>Service requests</b> are jobs on equipment, followed by the engineers in their portal. <b>Requests from the Support page</b> come from anyone; engineers call back, then mark them Called back, book a visit (it becomes a service request) or close them. “Visit booked · waiting for an engineer” means nobody has taken the job yet.</>}
-        title="Service desk" lead="Service requests from hospitals and the equipment Flokefama looks after." action={<div className="flex gap-2"><Csv table="tickets" label="Requests CSV" /><Csv table="equipment" label="Equipment CSV" /></div>} />
+        title="Service desk" lead="Service requests from hospitals and the equipment Flokefama looks after." action={<div className="flex gap-2"><Csv table="tickets" label="Requests CSV" /><Csv table="equipment" label="Equipment CSV" /><Csv table="tickets" codes label="Requests (codes only)" /></div>} />
       <Waiting data={data} now={now} />
       <WebsiteRequests data={data} now={now} />
       <div className="mb-4 grid gap-4 lg:grid-cols-3">

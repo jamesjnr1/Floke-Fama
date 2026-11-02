@@ -90,6 +90,13 @@ const tables = [
     columns: [text('account', 254), text('role', 16), text('facility', 160, false), json('data')],
     indexes: [{ key: 'role_facility', type: 'key', columns: ['role', 'facility'] }],
   },
+  // The hospital registry: the row id is the hospital's permanent code (FLK-H001); also created by the site on first use
+  {
+    id: 'facilities',
+    name: 'Hospitals (registry)',
+    columns: [text('key', 160), text('name', 160), text('status', 16), json('data')],
+    indexes: [],
+  },
   // Requests from the Support page's Report a fault form (also created by the site itself on the first request)
   {
     id: 'support_requests',
