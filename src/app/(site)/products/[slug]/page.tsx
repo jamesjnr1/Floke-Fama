@@ -52,7 +52,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         </Link>
         <div className="mt-8 grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-16">
           {/* Photo and a compact action card stay in view while the spec sheet scrolls */}
-          <div className="lg:sticky lg:top-28 lg:self-start">
+          <div className="lg:sticky lg:top-[calc(var(--banner)+4.5rem)] lg:self-start">
             <ProductGallery product={product} category={category} sizes="(min-width: 1024px) 50vw, 100vw" priority shared={false} visualClassName="aspect-square rounded-lg" />
             <div className="mt-4 hidden items-center gap-4 rounded-3xl border border-line bg-paper p-4 lg:flex">
               <div className="min-w-0 flex-1">

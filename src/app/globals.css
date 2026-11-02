@@ -330,3 +330,13 @@ main video {
   user-select: none;
   -webkit-touch-callout: none;
 }
+
+/* The maintenance strip's height (components/layout/maintenance-banner.tsx), switched in the Studio (Site content →
+   Maintenance notice). The header, the portals' sidebars and the page heroes are placed below it with this value, so
+   with the strip off (data-banner="off" on <html>, from app/layout.tsx) they move up into its place. */
+:root {
+  --banner: 2.5rem;
+}
+html[data-banner='off'] {
+  --banner: 0px;
+}

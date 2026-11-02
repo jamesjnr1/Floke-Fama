@@ -94,7 +94,7 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
         </div>
 
         {e.image && (
-          <figure className="lg:sticky lg:top-28 lg:self-start">
+          <figure className="lg:sticky lg:top-[calc(var(--banner)+4.5rem)] lg:self-start">
             <Image src={e.image} alt={e.alt ?? ''} width={e.imageWidth ?? 1200} height={e.imageHeight ?? 1200} sizes="(min-width: 1024px) 45vw, 100vw" priority className="h-auto w-full rounded-lg" />
           </figure>
         )}
