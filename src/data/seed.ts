@@ -325,6 +325,11 @@ export const events: EventItem[] = [
       { src: '/images/events/floke-praise-2026/speaker-on-stage.webp', alt: 'A speaker in white addressing the audience on stage, with the band behind him' },
       { src: '/images/events/floke-praise-2026/guests-cheering.webp', alt: 'Guests in matching print dresses cheering from the audience' },
       { src: '/images/events/floke-praise-2026/floke-sign.webp', alt: 'The glowing Floke Company sign above the stage' },
+      { src: '/images/events/floke-praise-2026/departments-on-stage.webp', alt: 'Staff on stage wearing the names of Flokefama’s departments, arm in arm' },
+      { src: '/images/events/floke-praise-2026/floke-praise-choir.webp', alt: 'The Floke Praise choir singing on stage in their Floke Praise shirts' },
+      { src: '/images/events/floke-praise-2026/guest-minister.webp', alt: 'A guest minister singing with his hand raised' },
+      { src: '/images/events/floke-praise-2026/minister-singing.webp', alt: 'A minister singing among the audience' },
+      { src: '/images/events/floke-praise-2026/speaker-in-white.webp', alt: 'A speaker in white addressing the audience from the stage' },
     ],
   },
   {
