@@ -43,6 +43,8 @@ export const categories: Category[] = [
     short: 'Consumables',
     description: 'A continuous, reliable supply of reagents, cuvettes, lamps and disposables.',
     icon: 'fi-rr-syringe',
+    // No product photo stands for the whole category: a placeholder until a real photo is chosen
+    noProductPhoto: true,
   },
   {
     slug: 'rapid-diagnostics',

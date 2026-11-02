@@ -36,7 +36,10 @@ export async function middleware(request: NextRequest) {
   const cookie = cookieFor(areaRole);
   const verified = await verifySession(request.cookies.get(cookie)?.value);
   // A demo session ends when the demo is switched off (DEMO=off, or after DEMO_UNTIL)
-  const found = verified?.demo && !demoOn() ? null : verified;
+  // The demo hospital is signed in to its demo dashboard only: everywhere else on the site it counts as signed out
+  // (its cookie is left alone, so the demo carries on)
+  const demoElsewhere = Boolean(verified?.demo) && areaRole === 'client' && !within(pathname, '/portal');
+  const found = (verified?.demo && !demoOn()) || demoElsewhere ? null : verified;
   // The admin console lets in admins and the sales team (who see only the sales tabs)
   const session = found && (areaRole === 'admin' ? isConsoleRole(found.role) : found.role === areaRole) ? found : null;
 
@@ -63,7 +66,7 @@ export async function middleware(request: NextRequest) {
     const login = new URL(area ? roleLogin[area.role] : '/login', request.url);
     login.searchParams.set('next', pathname + search);
     const res = NextResponse.redirect(login);
-    res.cookies.delete(cookie); // clear expired or tampered cookies
+    if (!demoElsewhere) res.cookies.delete(cookie); // clear expired or tampered cookies
     return res;
   }
   // Each role's own area (client portal, engineer portal) is closed to other roles.
