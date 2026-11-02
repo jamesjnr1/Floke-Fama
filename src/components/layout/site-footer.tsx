@@ -44,7 +44,11 @@ export async function SiteFooter() {
         <div className="grid grid-cols-2 gap-x-6 gap-y-8 py-8 md:grid-cols-3 lg:grid-cols-12 lg:gap-8 lg:py-10">
           <div className="col-span-2 flex flex-col gap-4 md:col-span-3 lg:col-span-3">
             <Logo tone="dark" />
-            <p className="text-sm text-white/75">Ghana’s No.1 healthcare company.</p>
+            <p className="max-w-[34ch] text-sm leading-relaxed text-white/75">
+              Revolutionizing healthcare practices in Ghana by introducing cutting-edge technologies and solutions that set new standards in medical
+              care and patient safety.
+            </p>
+            <p className="text-sm font-semibold text-white/90">Ghana’s No.1 healthcare company.</p>
             <ul className="flex flex-col gap-1.5 text-sm">
               <li>
                 <a href={maps.directions} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 transition-colors hover:text-white">
