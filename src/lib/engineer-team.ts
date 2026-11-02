@@ -50,15 +50,26 @@ export async function listTeam(): Promise<TeamMember[]> {
     .sort((a, b) => b.joined.localeCompare(a.joined));
 }
 
-let teamCache: { at: number; team: Promise<TeamMember[]> } | null = null;
-/** The team, read at most once a minute (the portals ask on every refresh). */
-export function teamCached(): Promise<TeamMember[]> {
-  if (!teamCache || Date.now() - teamCache.at > 60_000) {
+let teamCache: { at: number; key: string; team: Promise<TeamMember[]> } | null = null;
+/**
+ * The team, as the portals ask for it on every refresh: one small read says whether any account changed (count and
+ * latest change), and only then is the team read again. So a new head of engineering counts at once, on every page.
+ */
+export async function teamCached(): Promise<TeamMember[]> {
+  if (!appwrite) return [];
+  const probe = await appwrite.tables.listRows<Row>({ databaseId: DATABASE_ID, tableId: TABLES.accounts, queries: [Query.orderDesc('$updatedAt'), Query.limit(1)] });
+  const key = `${probe.total}:${probe.rows[0]?.$id ?? ''}:${probe.rows[0]?.$updatedAt ?? ''}`;
+  if (!teamCache || teamCache.key !== key || Date.now() - teamCache.at > 10 * 60_000) {
     const team = listTeam().catch((e) => ((teamCache = null), Promise.reject(e)));
-    teamCache = { at: Date.now(), team };
+    teamCache = { at: Date.now(), key, team };
   }
   return teamCache.team;
 }
+
+/** Forget the team read a moment ago (after someone is added or removed). */
+export const forgetTeam = () => {
+  teamCache = null;
+};
 
 /** Makes an engineer the head of engineering (or not): kept on their account, next to their region. */
 export async function setHead(id: string, on: boolean) {

@@ -217,6 +217,16 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             )}
             {demo && <Notice tone="info">Demo: made-up hospitals, orders and engineers to show how the console works. Buttons that change things don’t save anything here.</Notice>}
             {data.source === 'sample' && !demo && <Notice tone="info">Sample data for a local preview: the database isn’t connected on this computer. The live site shows the real figures.</Notice>}
+            {(() => {
+              // Texts aren't going out (gateway down or out of credit): the last texts of the day all failed
+              const last = data.sms.filter((m) => m.status !== 'logged' && m.status !== 'sending' && now - Date.parse(m.at) < DAY).slice(0, 3);
+              if (demo || last.length < 2 || !last.every((m) => m.status === 'failed')) return null;
+              return (
+                <Notice tone="warn">
+                  Texts aren’t going out: the last {last.length} failed ({last[0].detail || 'no reason given'}). Engineers and hospitals aren’t being texted until this is fixed: check the SMS account’s balance, then send a test text in <Link href="/admin?tab=system" className="font-semibold underline">Database &amp; settings</Link>. The portals, alerts and emails still work.
+                </Notice>
+              );
+            })()}
             {data.tables.some((t) => !t.ok) && (
               <Notice tone="warn">
                 Some data couldn’t be read from the database, so parts of this page may look empty:{' '}
@@ -547,6 +557,8 @@ function Orders({ data, q, open, stage, now }: { data: AdminData; q?: string; op
       <form action={setOrderStatus}>
         <input type="hidden" name="reference" value={o.reference} />
         <input type="hidden" name="status" value={to} />
+        {/* The stage this page showed: a move from an out-of-date page doesn't undo a colleague's newer one */}
+        <input type="hidden" name="from" value={o.status} />
         <button className={cn('h-9 whitespace-nowrap rounded-lg px-3.5 text-[0.875rem] font-semibold transition', primary ? 'bg-brand-700 text-white hover:bg-brand-800' : 'border border-line bg-white hover:border-brand-600')}>{label}</button>
       </form>
     ) : null;
@@ -865,7 +877,11 @@ async function Team({ data, now, demo }: { data: AdminData; now: number; demo?: 
               </Link>
             </td>
             <td>{r.region ?? <span className="text-ink-3">Not set</span>}</td>
-            <td className="whitespace-nowrap">{r.a.phone ? <a href={`tel:${r.a.phone.replace(/[^\d+]/g, '')}`} className="hover:text-brand-700">{r.a.phone}</a> : '—'}</td>
+            <td className="whitespace-nowrap">
+              {r.a.phone ? <a href={`tel:${r.a.phone.replace(/[^\d+]/g, '')}`} className="hover:text-brand-700">{r.a.phone}</a> : '—'}
+              {/* A number texts can't reach: the engineer would miss job texts (and isn't given urgent jobs automatically) */}
+              {!normalisePhone(r.a.phone) && <span className="block text-[0.8125rem] font-medium text-signal-700">Can’t receive texts: ask them to fix it in My profile</span>}
+            </td>
             <td className="tabular-nums">{r.open}</td>
             <td className="tabular-nums">{r.done}</td>
             <td className="whitespace-nowrap tabular-nums">{r.rating ? `${r.rating} / 5 (${r.ratings})` : '—'}</td>
@@ -931,7 +947,7 @@ function AccountDetail({ data, id, now }: { data: AdminData; id: string; now: nu
             a.id.startsWith('eng-') ? (
               <form action={removeEngineer}>
                 <input type="hidden" name="id" value={a.id} />
-                <ConfirmButton message={`Remove ${a.name}'s engineer account? They will no longer be able to sign in. Their past jobs stay on the service desk.`} className="inline-flex h-11 items-center gap-2 rounded-xl border border-[#f3a7ab] bg-white px-4 text-[0.9375rem] font-medium text-signal-700 hover:bg-[#fff3f3]">
+                <ConfirmButton message={`Remove ${a.name}'s engineer account? They will no longer be able to sign in. Their open jobs go back to the queue for another engineer (urgent ones straight away); their past jobs stay on the service desk.`} className="inline-flex h-11 items-center gap-2 rounded-xl border border-[#f3a7ab] bg-white px-4 text-[0.9375rem] font-medium text-signal-700 hover:bg-[#fff3f3]">
                   <Icon name="fi-rr-user-minus" /> Remove engineer
                 </ConfirmButton>
               </form>

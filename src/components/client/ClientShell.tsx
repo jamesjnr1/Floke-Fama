@@ -112,7 +112,9 @@ export function ClientShell({ user, products, demo = false }: { user: { name: st
       toast(assets.length ? 'Your equipment is being installed' : 'No equipment yet', {
         description: assets.length
           ? 'You can request service once our engineers have installed and commissioned it.'
-          : 'Equipment you buy from Flokefama appears here automatically. Already own Flokefama equipment? Call us to add it.',
+          : 'Equipment you buy from Flokefama appears here automatically. Something not working now? Report it on the Support page, for any machine.',
+        // No machine on record yet: the Support page's form takes a fault on any machine, so the hospital is never stuck
+        ...(assets.length ? {} : { action: { label: 'Report a fault', onClick: () => location.assign('/support#request') }, duration: 10000 }),
       });
     else setRequesting({ open: true, assetId });
   };

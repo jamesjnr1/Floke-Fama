@@ -99,16 +99,26 @@ export async function POST(req: NextRequest) {
     contact: { name: who.name, organisation: who.facility, phone: who.phone },
   };
 
+  // Saved on the sales board. If the database can't be reached, the order still goes to sales by email (below); if
+  // even that fails, the checkout asks the hospital to send it to sales itself, so an order is never lost
+  let onBoard = true;
   try {
     await appwrite.tables.getRow({ databaseId: DATABASE_ID, tableId: TABLES.orders, rowId: order.reference });
     return NextResponse.json({ order, sales: true }, { headers: noStore }); // already recorded
   } catch (e) {
-    if (!isNotFound(e)) throw e;
+    if (!isNotFound(e)) {
+      console.error('[orders] database not reachable', e);
+      onBoard = false;
+    }
   }
-  await appwrite.tables.createRow({ databaseId: DATABASE_ID, tableId: TABLES.orders, rowId: order.reference, data: { account: order.account, data: JSON.stringify(order) } });
+  if (onBoard)
+    await appwrite.tables.createRow({ databaseId: DATABASE_ID, tableId: TABLES.orders, rowId: order.reference, data: { account: order.account, data: JSON.stringify(order) } }).catch((e) => {
+      console.error('[orders] not saved on the sales board', e);
+      onBoard = false;
+    });
 
   // A hospital's purchase becomes its equipment; consumables are skipped
-  if (s.role === 'client') {
+  if (onBoard && s.role === 'client') {
     const equipment = items
       .filter(({ p }) => p.category !== CONSUMABLES)
       .map(({ p, qty }) => ({ slug: p.slug, name: tidyName(p.name), brand: p.brand, image: p.image, qty, install: needsInstallation(p) }));
@@ -121,7 +131,7 @@ export async function POST(req: NextRequest) {
   const payment = (order.method === 'momo' && text(momo?.network, 30)) || { momo: 'Mobile money', card: 'Card', bank: 'Bank transfer' }[order.method];
   const timeline = timelines.find((t) => t.id === order.needs?.timeline);
   const department = departmentLabel(order.needs?.department);
-  await emailSales(
+  const emailed = await emailSales(
     `${timeline?.id === 'urgent' ? 'URGENT order' : 'New order'} ${order.reference}: ${who.facility}`,
     {
       Reference: order.reference,
@@ -136,9 +146,11 @@ export async function POST(req: NextRequest) {
       Phone: who.phone,
       Email: who.email,
     },
-    { phone: who.phone, replyTo: who.email, link: { href: `${siteUrl}/admin?tab=orders&order=${order.reference}`, label: 'Open it on the sales board' } },
-  ).catch((e) => console.error('[orders] sales email not sent', e));
-  // Saved on the sales board, so sales has it whether or not the email went
-  const sales = true;
+    onBoard
+      ? { phone: who.phone, replyTo: who.email, link: { href: `${siteUrl}/admin?tab=orders&order=${order.reference}`, label: 'Open it on the sales board' } }
+      : { phone: who.phone, replyTo: who.email },
+  ).then((sent) => Boolean(sent), (e) => (console.error('[orders] sales email not sent', e), false));
+  // Sales has it when it's on the sales board, or at least in their inbox; otherwise the checkout asks the hospital to send it
+  const sales = onBoard || Boolean(emailed);
   return NextResponse.json({ order, sales }, { headers: noStore });
 }

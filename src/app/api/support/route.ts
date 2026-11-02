@@ -13,15 +13,18 @@ import { requestTypes, supportDetails, supportSchema, supportSubject } from '@/l
  * engineers (SMS), whichever are configured; with neither (or if both fail), the visitor sends it by email or WhatsApp.
  */
 export async function POST(request: Request) {
-  // Up to 5 requests per visitor every 10 minutes: plenty for a real fault, too few to flood the support inbox
-  if (limited(`support:${clientIp(request)}`, 5, 10 * 60_000)) {
-    return NextResponse.json({ error: 'You’ve sent several requests in a short time. Please call +233 53 339 2863 if it’s urgent.' }, { status: 429 });
-  }
   const parsed = supportSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) {
     return NextResponse.json({ error: 'Please check the highlighted fields.', issues: parsed.error.flatten().fieldErrors }, { status: 422 });
   }
   const data = parsed.data;
+  // A hospital's staff often share one internet connection, so the limit is per person (connection and phone number):
+  // 5 every 10 minutes is plenty for a real fault. A connection as a whole may send 30, which still stops a flood.
+  const ip = clientIp(request);
+  const phone = data.phone.replace(/\D/g, '').slice(-9);
+  if (limited(`support:${ip}:${phone}`, 5, 10 * 60_000) || limited(`support:${ip}`, 30, 10 * 60_000)) {
+    return NextResponse.json({ error: 'You’ve sent several requests in a short time. Please call +233 53 339 2863 if it’s urgent.' }, { status: 429 });
+  }
   if (data.website) return NextResponse.json({ delivered: true });
 
   const kind = requestTypes.find((t) => t.id === data.type)?.label ?? 'Support request';

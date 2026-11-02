@@ -7,7 +7,9 @@ import { appwrite, DATABASE_ID, TABLES } from '@/lib/appwrite';
 import { accountExists, findAccount, hashPassword, saveAccount } from '@/lib/auth/accounts';
 import { getAdminSession, getConsoleSession } from '@/lib/auth/server';
 import { ENGINEER_ID_PREFIX, roleFor } from '@/lib/auth/users';
-import { assignByAdmin, DeskError } from '@/lib/service/server';
+import type { Models } from 'node-appwrite';
+import { forgetTeam } from '@/lib/engineer-team';
+import { assignByAdmin, DeskError, releaseEngineerJobs } from '@/lib/service/server';
 import type { OrderStatus, SavedOrder } from '@/lib/orders';
 import { salesStages, stageLabel } from '@/lib/sales-stages';
 import { sendTestSms } from '@/lib/sms';
@@ -17,12 +19,19 @@ import { textAllHospitals } from '@/lib/client-sms';
 async function changeOrder(reference: string, change: (o: SavedOrder) => { order: SavedOrder; log?: string } | null) {
   const s = await getConsoleSession();
   if (!s || !appwrite || !/^FF-[A-Z0-9]{4,12}$/.test(reference)) return;
-  const row = await appwrite.tables.getRow({ databaseId: DATABASE_ID, tableId: TABLES.orders, rowId: reference });
-  const order = JSON.parse(String((row as unknown as { data: string }).data)) as SavedOrder;
-  const next = change(order);
-  if (!next) return;
-  const log = next.log ? [...(order.log ?? []), { at: new Date().toISOString(), by: s.name, text: next.log }].slice(-100) : order.log;
-  await appwrite.tables.updateRow({ databaseId: DATABASE_ID, tableId: TABLES.orders, rowId: reference, data: { data: JSON.stringify({ ...next.order, log }) } });
+  const read = () => appwrite!.tables.getRow({ databaseId: DATABASE_ID, tableId: TABLES.orders, rowId: reference }) as Promise<Models.Row & { data: string }>;
+  // Two people on one order: the change is made on the latest copy, and checked again just before saving, so a
+  // colleague's move or note a moment earlier is never overwritten (tried again on the newer copy)
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const row = await read();
+    const order = JSON.parse(String(row.data)) as SavedOrder;
+    const next = change(order);
+    if (!next) break;
+    const log = next.log ? [...(order.log ?? []), { at: new Date().toISOString(), by: s.name, text: next.log }].slice(-100) : order.log;
+    if ((await read()).$updatedAt !== row.$updatedAt) continue;
+    await appwrite.tables.updateRow({ databaseId: DATABASE_ID, tableId: TABLES.orders, rowId: reference, data: { data: JSON.stringify({ ...next.order, log }) } });
+    break;
+  }
   revalidatePath('/admin');
 }
 
@@ -49,8 +58,10 @@ export async function assignEngineer(_prev: AssignState, form: FormData): Promis
 /** Moves an order to another column of the sales board. */
 export async function setOrderStatus(form: FormData) {
   const status = String(form.get('status') ?? '') as OrderStatus;
+  const from = String(form.get('from') ?? '');
   if (!salesStages.some((x) => x.id === status)) return;
-  await changeOrder(String(form.get('reference') ?? ''), (o) => (o.status === status ? null : { order: { ...o, status }, log: `Moved to ${stageLabel(status)}` }));
+  // Moved by someone else since this page was opened: leave it (the page then shows where it is now)
+  await changeOrder(String(form.get('reference') ?? ''), (o) => (o.status === status || (from && o.status !== from) ? null : { order: { ...o, status }, log: `Moved to ${stageLabel(status)}` }));
 }
 
 /** Saves the agreed price (Ghana cedis) and/or adds a note, from the order's page on the sales board. */
@@ -115,7 +126,11 @@ export async function removeEngineer(form: FormData) {
   if (s?.role !== 'admin' || !appwrite) return;
   const id = String(form.get('id') ?? '');
   if (!/^eng-[a-z0-9]{8}$/.test(id)) return;
+  const row = await appwrite.tables.getRow<Models.Row & { name?: string }>({ databaseId: DATABASE_ID, tableId: TABLES.accounts, rowId: id }).catch(() => null);
   await appwrite.tables.deleteRow({ databaseId: DATABASE_ID, tableId: TABLES.accounts, rowId: id });
+  forgetTeam();
+  // Their open jobs go back to the queue (urgent ones straight to another engineer), so none is left with nobody
+  if (row?.name) await releaseEngineerJobs(row.name).catch((e) => console.error('remove engineer: releasing jobs failed', e));
   revalidatePath('/admin');
   redirect('/admin?tab=accounts&role=engineer');
 }

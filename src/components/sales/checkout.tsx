@@ -95,15 +95,17 @@ export function Checkout({ adding = [] }: { adding?: QuoteItem[] }) {
       };
       setBusy(true);
       track('checkout_pay', { items: units, method });
+      // The order reaches sales first, so it is on the sales board even if the payment page is closed half-way
+      setWithSales(null);
+      const sent = user ? saveOrder(order, user.email) : Promise.resolve(false);
       const result = await startPayment(order);
-      setBusy(false);
       if (result.status === 'redirect') {
+        await sent.catch(() => false);
         window.location.href = result.url;
         return;
       }
-      setWithSales(null);
-      if (user) saveOrder(order, user.email).then(setWithSales);
-      else setWithSales(false);
+      setBusy(false);
+      sent.then(setWithSales, () => setWithSales(false));
       setPlaced(order);
       // The order is placed: the cart starts empty again (the summary shows the placed order)
       quoteList.clear();

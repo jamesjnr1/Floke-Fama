@@ -39,6 +39,12 @@ export interface Ticket {
   kind?: 'installation' | 'pm' | 'repair';
   /** Distance the engineer travelled for the job, in km (entered when resolving): for the performance report. */
   km?: number;
+  /** How many times the hospital reopened it after a repair (it wasn't fixed). */
+  reopened?: number;
+  /** How many times it has been saved (server): two changes made from the same copy can't both be saved. */
+  rev?: number;
+  /** When it was last reopened: the wait before it is assigned automatically counts from here. */
+  reopenedAt?: string;
   /** Engineers who handed the job back (“I can't take this”): it is not given to them again automatically. */
   declined?: string[];
   /** Who raised it: a facility contact (client portal), an engineer, or the system (scheduled PM). */
@@ -220,7 +226,11 @@ export const nextTicketId = (s: ServiceState) => `TK-${Math.max(1000, ...s.ticke
 /* ---------- actions ---------- */
 export type Action =
   | { type: 'load'; state: ServiceState }
-  | { type: 'assign'; id: string; engineer: string; /** Filled in by the server from the engineer's account. */ phone?: string; /** Assigned by the system: why (shown in the job's log). */ auto?: string }
+  | { type: 'assign'; id: string; engineer: string; /** Filled in by the server from the engineer's account. */ phone?: string; /** Who had the job when the button was pressed ('' for nobody): refused if that changed. */ from?: string; /** Assigned by the system: why (shown in the job's log). */ auto?: string }
+  /** It's broken again after the repair: back in the queue (and to an engineer automatically, if urgent). Within 30 days. */
+  | { type: 'reopen'; id: string; reason: string }
+  /** Server only: an engineer has left the team; their open jobs go back to the queue for someone else. */
+  | { type: 'release'; engineer: string; reason: string }
   /** The assigned engineer can't go: the job goes back to the queue (and to another engineer, automatically, if urgent). */
   | { type: 'decline'; id: string; reason?: string }
   | { type: 'travel'; id: string; eta: string }
@@ -268,6 +278,34 @@ export function reducer(actor: Actor) {
         return action.auto
           ? { ...next, notifications: [{ id: uid('N'), at: now, text: `${label} was assigned to ${action.engineer} automatically (nobody had taken it).`, audience: 'engineer', ticketId: action.id, read: false }, ...next.notifications] }
           : next;
+      }
+      case 'reopen': {
+        if (!ticket || ticket.status !== 'resolved') return state;
+        const fixedBy = ticket.engineer;
+        const next = patch(action.id, (t) => ({
+          ...t, status: 'new', engineer: undefined, engineerPhone: undefined, eta: undefined, resolvedAt: undefined, rating: undefined, feedback: undefined,
+          reopened: (t.reopened ?? 0) + 1, reopenedAt: now, declined: undefined,
+          log: [...t.log, entry(`Reopened by ${me}: ${action.reason}${t.resolution ? ` (the earlier repair: ${t.resolution})` : ''}`)],
+        }));
+        const text = `${label} was reopened: ${action.reason}${fixedBy ? ` (fixed earlier by ${fixedBy})` : ''}. It needs an engineer.`;
+        const forEngineers: Notification = { id: uid('N'), at: now, text, audience: 'engineer', ticketId: action.id, read: false };
+        const forHospital: Notification = { id: uid('N'), at: now, text: `${label} is open again. An engineer will be assigned shortly.`, audience: 'client', ticketId: action.id, read: false };
+        return { ...next, notifications: [forEngineers, forHospital, ...next.notifications] };
+      }
+      case 'release': {
+        const theirs = state.tickets.filter((t) => t.engineer === action.engineer && t.status !== 'resolved');
+        if (!theirs.length) return state;
+        const ids = new Set(theirs.map((t) => t.id));
+        const tickets = state.tickets.map((t) =>
+          ids.has(t.id)
+            ? { ...t, status: 'new' as const, engineer: undefined, engineerPhone: undefined, eta: undefined, log: [...t.log, entry(`${action.engineer} ${action.reason}. Back in the queue for another engineer.`)] }
+            : t,
+        );
+        const notes: Notification[] = theirs.flatMap((t) => [
+          { id: uid('N'), at: now, text: `${t.id} needs an engineer: ${action.engineer} ${action.reason}.`, audience: 'engineer' as const, ticketId: t.id, read: false },
+          { id: uid('N'), at: now, text: `We’re sending another engineer for ${t.id}. You’ll get their name and number shortly.`, audience: 'client' as const, ticketId: t.id, read: false },
+        ]);
+        return { ...state, tickets, notifications: [...notes, ...state.notifications] };
       }
       case 'decline': {
         if (!ticket || ticket.engineer !== me || ticket.status === 'resolved' || ticket.status === 'onsite') return state;
