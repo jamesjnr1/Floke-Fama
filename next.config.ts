@@ -5,13 +5,23 @@ import type { NextConfig } from 'next';
  * uses. If someone managed to slip a script into a page, it could not load code from elsewhere or send data out.
  *   - Scripts: the site itself; the live chat (Tidio, or Tawk.to); the engineer portal's photo check (MediaPipe from
  *     jsDelivr, run as WebAssembly). Inline scripts are needed by Next.js itself.
- *   - Images, fonts, video: the site, Sanity's image CDN, and the live chat's own files.
+ *   - Images, fonts, video: the site, Sanity's image CDN, Appwrite's storage (engineers' photos, hospital logos), and
+ *     the live chat's own files.
  *   - Connections: the site, the live chat (including its live socket), jsDelivr (the photo check), Algolia only
  *     when product search uses it.
  * Switch (env, at build): CSP=report only reports what would be blocked (in the browser console) instead of
  * blocking it; CSP=off sends only the baseline rules (no framing, no plugins). Default: enforced.
  */
 const algolia = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID ? ' https://*.algolia.net https://*.algolianet.com' : '';
+// Photos and logos kept in Appwrite's storage (engineers' photos, hospital logos) are shown straight from it
+const appwriteOrigin = (() => {
+  try {
+    return process.env.APPWRITE_ENDPOINT ? ` ${new URL(process.env.APPWRITE_ENDPOINT).origin}` : '';
+  } catch {
+    return '';
+  }
+})();
+const storage = ` https://*.appwrite.io${appwriteOrigin}`;
 // Vercel's preview toolbar (preview deployments only, never production)
 const preview = process.env.VERCEL_ENV === 'preview' ? ' https://vercel.live' : '';
 const chat = {
@@ -27,7 +37,7 @@ const policy = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' ${chat.script} https://cdn.jsdelivr.net${preview}${process.env.NODE_ENV === 'development' ? " 'unsafe-eval'" : ''}`,
   `style-src 'self' 'unsafe-inline' https://*.tawk.to${preview}`,
-  `img-src 'self' data: blob: https://cdn.sanity.io ${chat.img}${preview}`,
+  `img-src 'self' data: blob: https://cdn.sanity.io${storage} ${chat.img}${preview}`,
   `font-src 'self' data: ${chat.font}${preview}`,
   `connect-src 'self' https://cdn.sanity.io https://cdn.jsdelivr.net ${chat.connect}${algolia}${preview}${preview ? ' wss://ws-us3.pusher.com' : ''}`,
   `media-src 'self' blob: https://cdn.sanity.io ${chat.media}`,
