@@ -11,7 +11,7 @@ import { EquipmentView } from '@/components/client/EquipmentView';
 import { OrdersView } from '@/components/client/OrdersView';
 import { Overview } from '@/components/client/Overview';
 import { RequestsView } from '@/components/client/RequestsView';
-import { LogoMark, LogoWordmark } from '@/components/layout/logo';
+import { LogoMark, PortalLogo } from '@/components/layout/logo';
 import { AlertsBanner, AlertsSwitch, useNotificationPopups } from '@/components/service/alerts';
 import { TextsSwitch } from '@/components/client/texts-switch';
 import { Hint } from '@/components/ui/hint';
@@ -141,10 +141,10 @@ export function ClientShell({ user, products, demo = false }: { user: { name: st
     <div className="flex min-h-svh bg-[#f5f6f4] pt-[var(--banner)] text-ink">
       {/* Sidebar */}
       <aside className="sticky top-[var(--banner)] hidden h-[calc(100svh-var(--banner))] w-[264px] shrink-0 flex-col bg-[linear-gradient(180deg,#00804f_0%,#006b42_55%,#005a38_100%)] text-white lg:flex">
-        <Link href="/" aria-label="Flokefama home" className="flex h-[76px] items-center gap-1.5 border-b border-white/15 px-6">
-          <LogoMark />
-          <LogoWordmark className="h-[17px] text-white" />
-          <span className="ml-auto text-[0.8125rem] font-semibold uppercase tracking-[0.18em] text-white/80">Care</span>
+        {/* The portal's logo, with the dashboard's name under it; the opening lands its big logo on this one */}
+        <Link href="/" aria-label="Flokefama home" className="flex h-[76px] flex-col justify-center gap-1 border-b border-white/15 px-5">
+          <PortalLogo product="Care" target />
+          <span className="pl-[36px] text-[0.75rem] font-medium tracking-[0.02em] text-white/70">Hospital dashboard</span>
         </Link>
         <div className="flex items-center gap-3 px-6 py-6">
           {demo ? (

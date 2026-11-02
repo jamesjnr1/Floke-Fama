@@ -1,7 +1,8 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { useEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
+import { decideIntro } from '@/lib/intro';
 import { LogoMark, LogoWordmark } from '@/components/layout/logo';
 
 /**
@@ -16,22 +17,10 @@ import { LogoMark, LogoWordmark } from '@/components/layout/logo';
  *   fails, the overlay clears itself after 4 seconds (globals.css, ff-intro-failsafe).
  * - NEXT_PUBLIC_INTRO=off switches it off.
  */
-export const introOn = (process.env.NEXT_PUBLIC_INTRO ?? '').trim().toLowerCase() !== 'off';
-
-/**
- * Runs before the first paint and decides whether the opening plays:
- * - when someone opens the site (first visit, or back after 30 minutes or more away);
- * - on every third refresh in a row: refresh → no, refresh → no, refresh → plays (then the count starts again).
- * Opening pages in new tabs, following a link in from Google or WhatsApp, the back button and moving between pages
- * during a visit never play it, so a visitor browsing the shop isn't held up. "Away" is counted from the visitor's
- * last activity (SiteIntro keeps it current while they browse). Kept in localStorage (no cookies, nothing sent).
- */
-export const introScript = `try{var s=localStorage,n=+(s.getItem('ff-intro-n')||0),t=+(s.getItem('ff-intro-t')||0),now=Date.now(),v=performance.getEntriesByType?performance.getEntriesByType('navigation')[0]:null,r=v?v.type==='reload':false,away=now-t>18e5;if(away)n=0;if((away||(r&&n>=2))&&!matchMedia('(prefers-reduced-motion: reduce)').matches){n=0;document.documentElement.classList.add('ff-intro');window.__ffIntro=performance.now()}else if(r){n++}s.setItem('ff-intro-n',String(n));s.setItem('ff-intro-t',String(now))}catch(e){}`;
-
-/** The visitor's last activity on the site, for "back after 30 minutes away". */
-const touch = () => {
+/** The visitor's last activity in this area, for "back after 30 minutes away". */
+const touchFor = (key: string) => () => {
   try {
-    localStorage.setItem('ff-intro-t', String(Date.now()));
+    localStorage.setItem(`${key}-t`, String(Date.now()));
   } catch {
     /* storage blocked: the opening simply plays less */
   }
@@ -40,26 +29,37 @@ const touch = () => {
 const HOLD = 1100; // the logo rests in the middle (counted from when the overlay first appeared)
 const RISE = 850; // the logo rises into the header
 
-export function SiteIntro() {
+/**
+ * `storageKey`: the area's counts (website, hospital dashboard, engineer dashboard). `target`: where the big logo lands
+ * (the first visible match). `logo`: the big logo, a larger copy of the target (default: the website's).
+ */
+export function SiteIntro({ storageKey = 'ff-intro', target: targetSelector = 'header [data-intro-target]', logo: bigLogo }: { storageKey?: string; target?: string; logo?: React.ReactNode } = {}) {
   const overlay = useRef<HTMLDivElement>(null);
   const logo = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
 
+  // Arriving without a page load (after signing in, from a demo link): decide here, before the first paint. After a
+  // page load the script in the page has decided already, and this does nothing
+  useLayoutEffect(() => decideIntro(storageKey), [storageKey]);
   // Browsing (moving between pages, coming back to the tab) counts as activity, so "away" means away. Not leaving the
   // page: a refresh after an hour with the tab idle should count as coming back
-  useEffect(touch, [pathname]);
+  useEffect(() => touchFor(storageKey)(), [pathname, storageKey]);
   useEffect(() => {
+    const touch = touchFor(storageKey);
     const seen = () => document.visibilityState === 'visible' && touch();
     document.addEventListener('visibilitychange', seen);
     return () => document.removeEventListener('visibilitychange', seen);
-  }, []);
+  }, [storageKey]);
 
   useEffect(() => {
     const root = document.documentElement;
     const el = overlay.current;
     const group = logo.current;
     if (!root.classList.contains('ff-intro') || !el || !group) return;
-    const target = document.querySelector<HTMLElement>('header a[aria-label="Flokefama home"]');
+    // The logo it lands on: the first visible one, looked up when the rise starts (a portal may draw its sidebar a moment
+    // after loading; the portals' sidebar is hidden on phones, where the logo just fades)
+    const findTarget = () => [...document.querySelectorAll<HTMLElement>(targetSelector)].find((e) => e.getBoundingClientRect().width > 0) ?? null;
+    let target = findTarget();
     const animations: Animation[] = [];
     let done = false;
     const finish = () => {
@@ -84,6 +84,8 @@ export function SiteIntro() {
     const shown = (window as Window & { __ffIntro?: number }).__ffIntro ?? performance.now();
     const timer = window.setTimeout(() => {
       if (done) return;
+      target ??= findTarget();
+      if (target) target.style.visibility = 'hidden';
       const from = group.getBoundingClientRect();
       const to = target?.getBoundingClientRect();
       const bg = el.querySelector<HTMLElement>('[data-intro-bg]');
@@ -108,17 +110,24 @@ export function SiteIntro() {
       window.clearTimeout(timer);
       finish();
     };
-  }, []);
+  }, [targetSelector]);
 
   return (
     <div ref={overlay} aria-hidden className="site-intro fixed inset-0 z-[200] items-center justify-center">
       <div data-intro-bg className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_40%,#0f7a4a_0%,#0a5a36_45%,#063d25_100%)]" />
-      {/* The header logo (mark 32px, gap 6px, lettering 19px tall) drawn larger: 1.8× on phones, 3× on tablets, 3.75× on
-          computers. The move scales it down onto the header logo exactly */}
-      <div ref={logo} className="site-intro-logo relative flex origin-top-left items-center gap-[11px] sm:gap-[18px] lg:gap-[22.5px]">
-        <LogoMark className="size-[57.6px] sm:size-24 lg:size-[120px]" />
-        <LogoWordmark className="h-[34.2px] text-white sm:h-[57px] lg:h-[71.25px]" />
-      </div>
+      {!bigLogo && (
+        /* The header logo (mark 32px, gap 6px, lettering 19px tall) drawn larger: 1.8× on phones, 3× on tablets, 3.75× on
+           computers. The move scales it down onto the header logo exactly */
+        <div ref={logo} className="site-intro-logo relative flex origin-top-left items-center gap-[11px] sm:gap-[18px] lg:gap-[22.5px]">
+          <LogoMark className="size-[57.6px] sm:size-24 lg:size-[120px]" />
+          <LogoWordmark className="h-[34.2px] text-white sm:h-[57px] lg:h-[71.25px]" />
+        </div>
+      )}
+      {bigLogo && (
+        <div ref={logo} className="site-intro-logo relative flex origin-top-left">
+          {bigLogo}
+        </div>
+      )}
     </div>
   );
 }
