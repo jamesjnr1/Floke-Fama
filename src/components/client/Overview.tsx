@@ -102,6 +102,10 @@ export function Overview({ name, facility, assets, tickets, orders, onOpenTicket
       </div>
     );
 
+  // Each figure is a card filled with its own colour, as in the engineer portal; the colour turns to amber or red when
+  // something needs the hospital's attention (a system down, a fault, an overdue calibration)
+  const fill = { blue: 'bg-[#2c6aa3]', teal: 'bg-[#0d7e86]', green: 'bg-[#0b7a4b]', amber: 'bg-[#9a6400]', red: 'bg-[#b42335]', violet: 'bg-[#5f4fb0]' } as const;
+  const overdueCal = due.some((a) => daysUntil(a.nextCalibration) < 0);
   const stats = [
     {
       label: 'Open requests',
@@ -109,6 +113,7 @@ export function Overview({ name, facility, assets, tickets, orders, onOpenTicket
       note: urgent ? `${urgent} marked system down` : open.length ? 'None marked urgent' : 'Nothing outstanding',
       tone: urgent ? 'text-[#a3172a]' : 'text-ink-3',
       go: 'requests' as const,
+      color: urgent ? ('red' as const) : ('blue' as const),
     },
     {
       label: 'Engineers active',
@@ -116,6 +121,7 @@ export function Overview({ name, facility, assets, tickets, orders, onOpenTicket
       note: next ? `${next.engineer ?? 'Engineer'} · ${next.status === 'onsite' ? 'on site now' : next.eta ? `ETA ${next.eta}` : 'on the way'}` : 'No visits in progress',
       tone: next ? 'text-[#7a5200]' : 'text-ink-3',
       go: 'requests' as const,
+      color: 'teal' as const,
     },
     {
       label: 'Systems operational',
@@ -124,14 +130,16 @@ export function Overview({ name, facility, assets, tickets, orders, onOpenTicket
       note: installing ? `${installing} awaiting installation` : operational === inService ? 'All systems running' : `${inService - operational} need${inService - operational === 1 ? 's' : ''} attention`,
       tone: installing ? 'text-[#4f3f9a]' : operational === inService ? 'text-[#0b6b45]' : 'text-[#7a5200]',
       go: 'equipment' as const,
+      color: installing ? ('violet' as const) : operational === inService ? ('green' as const) : ('amber' as const),
     },
     {
       label: 'Calibrations due',
       value: String(due.length),
       suffix: ' in 30 days',
       note: schedule[0] ? `Next: ${schedule[0].name.split(' ').slice(0, 3).join(' ')}` : '—',
-      tone: due.some((a) => daysUntil(a.nextCalibration) < 0) ? 'text-[#a3172a]' : 'text-ink-3',
+      tone: overdueCal ? 'text-[#a3172a]' : 'text-ink-3',
       go: 'certificates' as const,
+      color: overdueCal ? ('red' as const) : ('violet' as const),
     },
   ];
 
@@ -139,17 +147,18 @@ export function Overview({ name, facility, assets, tickets, orders, onOpenTicket
     <div className="space-y-8">
       {header(open.length === 0 ? 'All systems are running. There are no open service requests.' : `${open.length} service request${open.length === 1 ? ' is' : 's are'} in progress${next ? `; ${next.engineer} is ${next.status === 'onsite' ? 'on site' : 'on the way'}` : ''}.`)}
 
-      {/* Key figures: one strip, divided */}
-      <ul data-tour="stats" className="grid grid-cols-2 overflow-hidden rounded-xl border border-line bg-paper xl:grid-cols-4">
-        {stats.map((s, i) => (
-          <li key={s.label} className={cn('min-w-0 border-line', i % 2 === 1 && 'border-l', i >= 2 && 'border-t xl:border-t-0', i === 2 && 'xl:border-l')}>
-            <button onClick={() => onGo(s.go)} className="group flex h-full w-full flex-col p-5 text-left transition hover:bg-canvas/60 md:p-6">
-              <span className="text-[0.8125rem] font-semibold uppercase tracking-[0.09em] text-ink-3">{s.label}</span>
-              <span className="mt-4 flex items-baseline gap-1">
-                <span className="text-[2.5rem] font-semibold leading-none tracking-[-0.04em] text-ink tabular-nums">{s.value}</span>
-                {s.suffix && <span className="text-sm text-ink-3">{s.suffix}</span>}
+      {/* Key figures: four cards, each filled with its own colour (as in the engineer portal) */}
+      <ul data-tour="stats" className="grid grid-cols-2 gap-3 md:gap-4 xl:grid-cols-4">
+        {stats.map((s) => (
+          <li key={s.label} className="min-w-0">
+            <button onClick={() => onGo(s.go)} className={cn('flex h-full w-full flex-col rounded-xl p-4 text-left text-white shadow-[0_14px_30px_-22px_rgb(11_21_16/0.7)] transition hover:-translate-y-0.5 hover:brightness-110 md:p-6', fill[s.color])}>
+              <span className="text-[0.75rem] font-semibold uppercase tracking-[0.09em] text-white/85 md:text-[0.8125rem]">{s.label}</span>
+              <span className="mt-3 flex items-baseline gap-1 md:mt-4">
+                <span className="text-[2.5rem] font-semibold leading-none tracking-[-0.04em] tabular-nums">{s.value}</span>
+                {s.suffix && <span className="text-sm text-white/85">{s.suffix}</span>}
               </span>
-              <span className={cn('mt-3 truncate text-sm', s.tone)}>{s.note}</span>
+              {/* A warning (a system down, a fault, an overdue calibration) stands out in bold; up to two lines, so it isn't cut on phones */}
+              <span className={cn('mt-3 line-clamp-2 text-sm leading-snug', s.tone === 'text-ink-3' ? 'text-white/85' : 'font-semibold text-white')}>{s.note}</span>
             </button>
           </li>
         ))}
