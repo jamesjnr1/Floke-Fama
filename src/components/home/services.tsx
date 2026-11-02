@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { Cog, Gauge, GraduationCap, Settings, ShoppingCart, Wrench } from 'lucide-react';
 import { Reveal } from '@/components/motion/reveal';
 import { ToneIcon, type Tone } from '@/components/ui/tone-icon';
@@ -29,9 +30,14 @@ export function Services() {
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <Reveal className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
           <div>
-            <h2 className="display text-[clamp(2rem,1.3rem+2.6vw,3.5rem)]">
-Our Services
-            </h2>
+            <h2 className="display text-[clamp(2rem,1.3rem+2.6vw,3.5rem)]">Our Services</h2>
+            {/* The Mindray logo in place of the name: its letters sit three quarters of the way down the image (the rest is
+                the tail of the y), so lowering it by a quarter of its height puts them on the line's baseline. Its white
+                background blends into the section's tint (multiply) */}
+            <p className="mt-3 text-[clamp(1.15rem,1rem+0.6vw,1.5rem)] font-semibold tracking-[-0.01em] text-ink-2">
+              We are the official distributor of{' '}
+              <Image src="/images/partners/mindray.webp" alt="Mindray" width={800} height={190} className="inline-block h-[1.05em] w-auto align-[-0.26em] mix-blend-multiply" />
+            </p>
           </div>
           <p className="no-justify max-w-md leading-relaxed text-ink-3">
             We go beyond supplying medical equipment: from procurement and installation to training and maintenance, so our clients get the most out of their investment.
