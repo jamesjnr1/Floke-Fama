@@ -14,8 +14,11 @@ import { quoteList, useQuoteList } from '@/lib/quote-list';
 import { chatMode, loadLiveChat, openLiveChat } from '@/lib/live-chat';
 import { cn } from '@/lib/utils';
 
-/** The Chat button: live chat with staff (Tawk.to) by default; see src/lib/live-chat.ts for the switches. */
-const chatOn = chatMode !== 'off';
+/**
+ * The site's own Chat button: only for the built-in assistant. Live chat (Tawk.to, the default) shows its own bubble,
+ * so a second button isn't added (the two showed at once). See src/lib/live-chat.ts for the switches.
+ */
+const chatOn = chatMode === 'assistant';
 /** The WhatsApp "Contact us" button: removed (Nov 2026, live chat replaces it); NEXT_PUBLIC_WHATSAPP_BUTTON=on shows it again. */
 const whatsappButton = process.env.NEXT_PUBLIC_WHATSAPP_BUTTON === 'on';
 
@@ -110,7 +113,8 @@ export function SalesDock() {
 
   return (
     // On phones, product pages have their own sticky bar, so the dock sits above it
-    <div data-dock className={cn('fixed right-4 z-40 flex flex-col items-end gap-3 md:bottom-6 md:right-6', onProduct ? 'bottom-24' : 'bottom-4')}>
+    // With live chat, Tawk.to's bubble takes the bottom-right corner on a computer: the dock sits above it
+    <div data-dock className={cn('fixed right-4 z-40 flex flex-col items-end gap-3 md:right-6', chatMode === 'tawk' ? 'md:bottom-28' : 'md:bottom-6', onProduct ? 'bottom-24' : 'bottom-4')}>
       {chatMode === 'assistant' && <SupportChat open={chat} onClose={() => setChat(false)} />}
       <AnimatePresence>
         {open && !chat && items.length > 0 && (

@@ -1,8 +1,8 @@
 /**
  * Live chat with Flokefama's staff through Tawk.to (tawk.to dashboard: answers from the browser or the Tawk.to app).
  *
- * The site's own "Chat" button in the bottom-right dock opens it; Tawk.to's floating bubble is kept hidden so it does
- * not sit on top of the WhatsApp button, and shows again only while a conversation is open (or a staff reply arrives).
+ * Tawk.to's own bubble is the chat button (the site's own one was removed, Nov 2026: the two showed at once). On a
+ * computer it sits bottom-right, under the cart; on a phone bottom-left, in the space product pages' bottom bar keeps free.
  *
  * Switches (env, all optional):
  *   NEXT_PUBLIC_LIVE_CHAT     tawk (default) · assistant (the older built-in question flow) · off
@@ -45,17 +45,17 @@ export function loadLiveChat() {
   started = true;
   const api: TawkApi = (window.Tawk_API = window.Tawk_API || {});
   window.Tawk_LoadStart = new Date();
-  // Above the maintenance banner and the menu bar
-  api.customStyle = { zIndex: 1000 };
+  // Above the maintenance banner and the menu bar; bottom-left on phones (clear of the product pages' Order now bar)
+  api.customStyle = {
+    zIndex: 1000,
+    visibility: {
+      desktop: { position: 'br', xOffset: '24px', yOffset: '24px' },
+      mobile: { position: 'bl', xOffset: '10px', yOffset: '10px' },
+    },
+  };
   api.onLoad = () => {
     ready = true;
     if (openWhenReady) openLiveChat();
-    else api.hideWidget?.();
-  };
-  api.onChatMinimized = () => api.hideWidget?.();
-  // A staff reply while the window is closed: show the bubble so the visitor sees it
-  api.onChatMessageAgent = () => {
-    if (!api.isChatMaximized?.()) api.showWidget?.();
   };
   const s = document.createElement('script');
   s.async = true;
