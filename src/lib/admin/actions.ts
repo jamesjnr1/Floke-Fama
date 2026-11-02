@@ -1,5 +1,6 @@
 'use server';
 
+import { ticketIdPattern } from '@/lib/service/desk';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
@@ -43,7 +44,7 @@ export async function assignEngineer(_prev: AssignState, form: FormData): Promis
   if (s?.role !== 'admin') return { result: { ok: false, detail: 'Please sign in again.' } };
   const ticket = String(form.get('ticket') ?? '');
   const email = String(form.get('engineer') ?? '').trim().toLowerCase();
-  if (!/^TK-\d{1,8}$/.test(ticket) || !email) return { result: { ok: false, detail: 'Choose an engineer.' } };
+  if (!ticketIdPattern.test(ticket) || !email) return { result: { ok: false, detail: 'Choose an engineer.' } };
   const acc = await findAccount(email);
   if (!acc || roleFor(acc.email, acc.id) !== 'engineer') return { result: { ok: false, detail: 'That person is not an engineer.' } };
   try {

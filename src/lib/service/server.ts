@@ -11,7 +11,7 @@ import { categoryOf } from '@/lib/categories';
 import { listTeam, teamCached, type TeamMember } from '@/lib/engineer-team';
 import { ensureFacility } from '@/lib/facility-registry';
 import { regionInText } from '@/lib/regions';
-import { createSeed, facilityKey, looksIvd, reducer, serviceInterval, type Action, type Actor, type Asset, type Notification, type ServiceState, type Ticket } from '@/lib/service/desk';
+import { createSeed, facilityKey, looksIvd, reducer, serviceInterval, type Action, type Actor, type Asset, type Notification, type ServiceState, type Ticket, assetIdPattern } from '@/lib/service/desk';
 
 /**
  * The service desk kept in Appwrite: one row per piece of equipment, request and notification, each holding
@@ -234,7 +234,7 @@ function cleanAsset(raw: Asset): Asset {
   const facility = text(raw.facility, 160);
   if (name.length < 2) throw new DeskError('Enter the equipment name.');
   if (facility.length < 2) throw new DeskError('Choose the hospital.');
-  if (!/^AS-[A-Z0-9]{2,20}$/.test(raw.id ?? '')) throw new DeskError('Invalid equipment.');
+  if (!assetIdPattern.test(raw.id ?? '')) throw new DeskError('Invalid equipment.');
   const now = new Date().toISOString();
   const interval = Math.min(36, Math.max(1, Math.round(Number(raw.intervalMonths) || 12)));
   const ivd = typeof raw.ivd === 'boolean' ? raw.ivd : looksIvd(name, p ? categoryOf(p.slug, p.category) : undefined);
