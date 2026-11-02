@@ -314,6 +314,11 @@ export const events: EventItem[] = [
       { src: '/images/events/floke-praise-2026/celebration.webp', alt: 'A guest celebrating on stage with arms wide open' },
       { src: '/images/events/floke-praise-2026/choir.webp', alt: 'The choir singing together on stage' },
       { src: '/images/events/floke-praise-2026/saving-lives-shirt.webp', alt: 'The back of a Flokefama shirt that reads "Saving Lives"' },
+      { src: '/images/events/floke-praise-2026/guest-with-fan.webp', alt: 'A guest in a lime top smiling during worship' },
+      { src: '/images/events/floke-praise-2026/guests-filming.webp', alt: 'Guests in the front row filming the performance on their phones' },
+      { src: '/images/events/floke-praise-2026/front-row.webp', alt: 'Guests in the front row watching the stage' },
+      { src: '/images/events/floke-praise-2026/guest-listening.webp', alt: 'A guest in a waistcoat and tie listening from the audience' },
+      { src: '/images/events/floke-praise-2026/guest-speaking.webp', alt: 'A guest in white raising a finger as he speaks from his seat' },
     ],
   },
   {
