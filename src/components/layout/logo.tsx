@@ -35,9 +35,24 @@ export function LogoWordmark({ className }: { className?: string }) {
 /** Left Brand Node: mark + lettering. White lettering on dark, logo green on light. */
 export function Logo({ className, tone = 'dark' }: { className?: string; tone?: 'dark' | 'light' }) {
   return (
-    <Link href="/" aria-label="Flokefama home" className={cn('flex items-center gap-1.5', className)}>
+    <Link href="/" aria-label="Flokefama home" data-intro-target="" className={cn('flex items-center gap-1.5', className)}>
       <LogoMark />
       <LogoWordmark className={tone === 'dark' ? 'text-white' : 'text-[#00703A]'} />
     </Link>
+  );
+}
+
+/**
+ * A portal's logo: the mark, the lettering and the portal's name (CARE for hospitals, SERVICE for engineers), in white.
+ * Its size follows --s (1 = the sidebar's size), so the opening can draw the same logo larger and land it exactly on
+ * the sidebar's (components/layout/site-intro.tsx). w-fit: its box is the logo itself, never stretched by its parent.
+ */
+export function PortalLogo({ product, className, target }: { product: string; className?: string; target?: boolean }) {
+  return (
+    <span data-intro-target={target ? '' : undefined} className={cn('flex w-fit items-center gap-[calc(var(--s,1)*6px)]', className)}>
+      <LogoMark className="size-[calc(var(--s,1)*30px)]" />
+      <LogoWordmark className="h-[calc(var(--s,1)*15.5px)] text-white" />
+      <span className="ml-[calc(var(--s,1)*5px)] text-[length:calc(var(--s,1)*11.5px)] font-semibold uppercase leading-none tracking-[0.16em] text-white/80">{product}</span>
+    </span>
   );
 }
