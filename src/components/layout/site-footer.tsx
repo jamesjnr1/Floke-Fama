@@ -41,31 +41,16 @@ export async function SiteFooter() {
   return (
     <footer className="border-t border-white/10 bg-[#10191e] text-white/70">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
-        <div className="grid grid-cols-2 gap-x-6 gap-y-8 py-8 md:grid-cols-3 lg:grid-cols-12 lg:gap-8 lg:py-10">
-          <div className="col-span-2 flex flex-col gap-4 md:col-span-3 lg:col-span-3">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-8 py-8 md:grid-cols-4 lg:grid-cols-12 lg:gap-8 lg:py-10">
+          {/* Who we are: the logo, the company statement and the social links */}
+          <div className="col-span-2 flex flex-col gap-4 md:col-span-4 lg:col-span-3">
             <Logo tone="dark" />
-            <p className="max-w-[34ch] text-sm leading-relaxed text-white/75">
+            <p className="max-w-[46ch] text-sm leading-relaxed text-white/75">
               Revolutionizing healthcare practices in Ghana by introducing cutting-edge technologies and solutions that set new standards in medical
               care and patient safety.
             </p>
             <p className="text-sm font-semibold text-white/90">Ghana’s No.1 healthcare company.</p>
-            <ul className="flex flex-col gap-1.5 text-sm">
-              <li>
-                <a href={maps.directions} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 transition-colors hover:text-white">
-                  <MapPin className="size-4 shrink-0 text-white/50" aria-hidden /> Santa Maria, Accra, Ghana
-                </a>
-              </li>
-              <li>
-                <a href={contact.phoneHref} className="flex items-center gap-3 transition-colors hover:text-white">
-                  <Phone className="size-4 shrink-0 text-white/50" aria-hidden /> {contact.phone}
-                </a>
-              </li>
-              <li>
-                <a href={`mailto:${contact.info}`} className="flex items-center gap-3 transition-colors hover:text-white">
-                  <Mail className="size-4 shrink-0 text-white/50" aria-hidden /> {contact.info}
-                </a>
-              </li>
-            </ul>
+            <SocialLinks buttonClassName="text-white/75 hover:text-white" />
           </div>
 
           {columns.map((col) => (
@@ -83,14 +68,30 @@ export async function SiteFooter() {
             </nav>
           ))}
 
-          <div className="col-span-2 flex flex-col gap-2.5 md:col-span-3 lg:col-span-3">
-            <h2 className="text-sm font-semibold text-white">Need equipment?</h2>
-            <p className="text-sm">Order from the shop; sales confirms price and delivery.</p>
-            <Link href="/products" className="group inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-white underline-offset-4 hover:underline">
+          {/* How to reach us, and the shop */}
+          <div className="col-span-2 flex flex-col gap-2.5 md:col-span-1 lg:col-span-3">
+            <h2 className="text-sm font-semibold text-white">Contact</h2>
+            <ul className="flex flex-col gap-1.5 text-sm">
+              <li>
+                <a href={maps.directions} target="_blank" rel="noopener noreferrer" className="flex items-start gap-2 transition-colors hover:text-white">
+                  <MapPin className="mt-0.5 size-4 shrink-0 text-white/50" aria-hidden /> Santa Maria, Accra
+                </a>
+              </li>
+              <li>
+                <a href={contact.phoneHref} className="flex items-start gap-2 transition-colors hover:text-white">
+                  <Phone className="mt-0.5 size-4 shrink-0 text-white/50" aria-hidden /> {contact.phone}
+                </a>
+              </li>
+              <li>
+                <a href={`mailto:${contact.info}`} className="flex items-start gap-2 whitespace-nowrap transition-colors hover:text-white">
+                  <Mail className="mt-0.5 size-4 shrink-0 text-white/50" aria-hidden /> {contact.info}
+                </a>
+              </li>
+            </ul>
+            <Link href="/products" className="group mt-2 inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-white underline-offset-4 hover:underline">
               Order equipment
               <ArrowUpRight className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden />
             </Link>
-            <SocialLinks className="mt-2" buttonClassName="text-white/75 hover:text-white" />
           </div>
         </div>
 
@@ -99,8 +100,8 @@ export async function SiteFooter() {
           <p className="font-wordmark whitespace-nowrap text-[17.5cqw] font-black uppercase leading-[0.8] tracking-[-0.08em] text-[#2d3539]">Floke Fama</p>
         </div>
 
-        <div className="flex flex-col gap-4 border-t border-white/10 pb-24 pt-4 text-xs text-white/55 md:flex-row md:items-center md:justify-between md:pb-4">
-          <div className="flex flex-col gap-2 md:flex-row md:gap-6">
+        <div className="flex flex-col gap-4 border-t border-white/10 pb-24 pt-4 text-xs text-white/55 lg:flex-row lg:items-center lg:justify-between lg:pb-4">
+          <div className="flex flex-col gap-2 lg:flex-row lg:gap-6">
             <p>© {new Date().getFullYear()} Flokefama Company Limited</p>
             <p>Ghana Club 100 · Forbes Africa · Mindray Best in IVD</p>
           </div>
