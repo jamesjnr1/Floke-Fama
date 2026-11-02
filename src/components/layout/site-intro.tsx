@@ -2,12 +2,14 @@
 
 import { useEffect, useRef } from 'react';
 import { LogoMark, LogoWordmark } from '@/components/layout/logo';
+import { cn } from '@/lib/utils';
 
 /**
  * The opening of the site: the Flokefama logo in the middle of a green gradient; after a moment it rises into its
  * place in the header and the green fades away, showing the page.
  *
- * - Once per visit (sessionStorage), on the public site only (app/(site)/layout.tsx), never in the portals or admin.
+ * - When the site is opened, then on every third load, and after 30 minutes away (introScript); on the public site
+ *   only (app/(site)/layout.tsx), never in the portals or admin.
  * - Skipped for visitors whose device asks for reduced motion; any click, tap, scroll or key ends it at once (the
  *   overlay takes that first tap, so it never lands on a link underneath).
  * - The decision is made before the page is painted (introScript, in the layout), so nothing flashes; if JavaScript
@@ -16,15 +18,21 @@ import { LogoMark, LogoWordmark } from '@/components/layout/logo';
  */
 export const introOn = (process.env.NEXT_PUBLIC_INTRO ?? '').trim().toLowerCase() !== 'off';
 
-/** Runs before the first paint: marks <html> when the opening should play (and remembers it has played). */
-export const introScript = `try{if(!sessionStorage.getItem('ff-intro')&&!matchMedia('(prefers-reduced-motion: reduce)').matches){document.documentElement.classList.add('ff-intro');window.__ffIntro=performance.now();sessionStorage.setItem('ff-intro','1')}}catch(e){}`;
+/**
+ * Runs before the first paint and decides whether the opening plays. It plays when someone opens the site, then on
+ * every third full load after that (a refresh, or arriving from another site): open → plays, refresh → no,
+ * refresh → no, refresh → plays. It also plays again when the visitor comes back after 30 minutes or more away.
+ * Moving between pages inside the site is not a load and never plays it. Counts are kept in localStorage.
+ */
+export const introScript = `try{var s=localStorage,n=+(s.getItem('ff-intro-n')||0),t=+(s.getItem('ff-intro-t')||0),now=Date.now();if((now-t>18e5||n>=2)&&!matchMedia('(prefers-reduced-motion: reduce)').matches){n=0;document.documentElement.classList.add('ff-intro');window.__ffIntro=performance.now()}else{n++}s.setItem('ff-intro-n',String(n));s.setItem('ff-intro-t',String(now))}catch(e){}`;
 
 const HOLD = 1100; // the logo rests in the middle (counted from when the overlay first appeared)
 const RISE = 850; // the logo rises into the header
 
-export function SiteIntro() {
+export function SiteIntro({ mottoClassName }: { mottoClassName?: string }) {
   const overlay = useRef<HTMLDivElement>(null);
   const logo = useRef<HTMLDivElement>(null);
+  const motto = useRef<HTMLParagraphElement>(null);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -59,6 +67,8 @@ export function SiteIntro() {
       const from = group.getBoundingClientRect();
       const to = target?.getBoundingClientRect();
       const bg = el.querySelector<HTMLElement>('[data-intro-bg]');
+      // The motto isn't in the header: it fades as the logo starts to rise
+      if (motto.current) animations.push(motto.current.animate([{ opacity: 1, transform: 'translateY(0)' }, { opacity: 0, transform: 'translateY(-6px)' }], { duration: 260, easing: 'ease-out', fill: 'forwards' }));
       if (to && to.width > 0) {
         // The big logo is the header logo scaled up: move its top-left corner onto the header logo's and scale down
         const k = to.width / from.width;
@@ -85,11 +95,17 @@ export function SiteIntro() {
   return (
     <div ref={overlay} aria-hidden className="site-intro fixed inset-0 z-[200] items-center justify-center">
       <div data-intro-bg className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_40%,#0f7a4a_0%,#0a5a36_45%,#063d25_100%)]" />
-      {/* The header logo (mark 32px, gap 6px, lettering 19px tall) drawn larger, 1.5× on phones and 2.5× from tablets:
-          the move scales it down exactly */}
-      <div ref={logo} className="site-intro-logo relative flex origin-top-left items-center gap-[9px] sm:gap-[15px]">
-        <LogoMark className="size-12 sm:size-20" />
-        <LogoWordmark className="h-[28.5px] text-white sm:h-[47.5px]" />
+      <div className="relative flex flex-col items-center">
+        {/* The header logo (mark 32px, gap 6px, lettering 19px tall) drawn larger: 1.8× on phones, 3× on tablets, 3.75×
+            on computers. The move scales it down onto the header logo exactly */}
+        <div ref={logo} className="site-intro-logo flex origin-top-left items-center gap-[11px] sm:gap-[18px] lg:gap-[22.5px]">
+          <LogoMark className="size-[57.6px] sm:size-24 lg:size-[120px]" />
+          <LogoWordmark className="h-[34.2px] text-white sm:h-[57px] lg:h-[71.25px]" />
+        </div>
+        {/* The motto, in Poppins: under the logo, not too big */}
+        <p ref={motto} className={cn('site-intro-motto mt-4 text-[0.9375rem] tracking-[0.08em] text-white/85 sm:mt-6 sm:text-lg lg:text-xl', mottoClassName)}>
+          Saving Lives since 2008
+        </p>
       </div>
     </div>
   );

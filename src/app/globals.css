@@ -342,7 +342,7 @@ html[data-banner='off'] {
 }
 
 /* The site's opening (components/layout/site-intro.tsx): shown only while <html> has .ff-intro (set before the first
-   paint, once per visit). If JavaScript never removes it, it fades by itself after 4 seconds. */
+   paint: when the site is opened, every third load, and after 30 minutes away). If JavaScript never removes it, it fades by itself after 4 seconds. */
 .site-intro {
   display: none;
 }
@@ -352,6 +352,9 @@ html.ff-intro .site-intro {
 }
 html.ff-intro .site-intro-logo {
   animation: ff-intro-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+html.ff-intro .site-intro-motto {
+  animation: ff-intro-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.25s both;
 }
 @keyframes ff-intro-in {
   from {
