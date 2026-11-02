@@ -123,13 +123,14 @@ export function SiteIntro({ mottoClassName }: { mottoClassName?: string }) {
         <LogoMark className="size-[57.6px] sm:size-24 lg:size-[120px]" />
         <span className="relative flex">
           <LogoWordmark className="h-[34.2px] text-white sm:h-[57px] lg:h-[71.25px]" />
-          {/* The motto, in Poppins, right under the FLOKE FAMA lettering (placed outside the logo's box, so the move
-              still lands the logo exactly) */}
+          {/* The motto, in Poppins, right under the FLOKE FAMA lettering: a short line, then the words, ending under the
+              last "A" (placed outside the logo's box, so the move still lands the logo exactly) */}
           <p
             ref={motto}
-            className={cn('site-intro-motto absolute inset-x-0 top-full mt-1.5 whitespace-nowrap text-center text-[0.8125rem] tracking-[0.08em] text-white/85 sm:mt-2.5 sm:text-base lg:mt-3 lg:text-lg', mottoClassName)}
+            className={cn('site-intro-motto absolute inset-x-0 top-full mt-1.5 flex items-center gap-2 whitespace-nowrap text-[0.8125rem] tracking-[0.06em] text-white/85 sm:mt-2.5 sm:gap-3 sm:text-base lg:mt-3 lg:text-lg', mottoClassName)}
           >
-            Saving Lives since 2008
+            <span aria-hidden className="h-[1.5px] flex-1 rounded-full bg-white/70 sm:h-[2px]" />
+            <span>Saving Lives since 2008</span>
           </p>
         </span>
       </div>
