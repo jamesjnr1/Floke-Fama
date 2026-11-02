@@ -19,7 +19,7 @@ export function SpecModal({ product, category }: { product: Product; category?: 
         </Dialog.Overlay>
         <Dialog.Content
           aria-describedby={undefined}
-          className="fixed inset-x-3 bottom-3 top-16 z-[70] mx-auto max-w-6xl overflow-hidden rounded-5xl bg-canvas shadow-2xl outline-none md:inset-x-6 md:bottom-6 md:top-24"
+          className="fixed inset-x-3 bottom-3 top-[calc(var(--banner)+80px)] z-[70] mx-auto max-w-6xl overflow-hidden rounded-5xl bg-canvas shadow-2xl outline-none md:inset-x-6 md:bottom-6 md:top-[calc(var(--banner)+96px)]"
         >
           <Dialog.Title className="sr-only">{product.name}</Dialog.Title>
           <div className="grid h-full overflow-y-auto lg:grid-cols-[1fr_1.1fr] lg:overflow-hidden">
