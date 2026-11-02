@@ -353,9 +353,6 @@ html.ff-intro .site-intro {
 html.ff-intro .site-intro-logo {
   animation: ff-intro-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
-html.ff-intro .site-intro-motto {
-  animation: ff-intro-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.25s both;
-}
 @keyframes ff-intro-in {
   from {
     opacity: 0;
