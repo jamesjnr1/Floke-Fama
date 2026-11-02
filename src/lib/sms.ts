@@ -204,6 +204,9 @@ export async function smsNew(before: ServiceState, after: ServiceState, actor: A
         jobs.push({ kind: 'urgent', ref: t.id, to: (p) => p.role === 'engineer' && p.name !== actor.name, text: `${t.priority.toUpperCase()} fault at ${facility} - ${equipment}. Job ${t.id} needs an engineer. Open: ${jobLink(t.id)}` });
       if (t.engineer && t.engineer !== prev?.engineer && t.engineer !== actor.name)
         jobs.push({ kind: 'assigned', ref: t.id, to: (p) => p.role === 'engineer' && p.name === t.engineer, text: `Job ${t.id} at ${facility} - ${equipment} is now yours (${t.priority}). Open: ${jobLink(t.id)}` });
+      // Reopened after a repair (it isn't fixed): the engineer who fixed it, and every engineer when it is urgent
+      if (prev?.status === 'resolved' && t.status === 'new')
+        jobs.push({ kind: 'reopened', ref: t.id, to: (p) => p.role === 'engineer' && p.name !== actor.name && (p.name === prev.engineer || isUrgent(t.priority)), text: `Job ${t.id} at ${facility} - ${equipment} was reopened: it is not fixed. It needs an engineer. Open: ${jobLink(t.id)}` });
       const note = prev && t.engineer && t.status !== 'resolved' && actor.role === 'client' && t.log.length > prev.log.length && t.log.at(-1)?.kind === 'note';
       if (note) jobs.push({ kind: 'message', ref: t.id, to: (p) => p.role === 'engineer' && p.name === t.engineer, text: `New message from ${facility} on job ${t.id} (${equipment}). Open: ${jobLink(t.id)}` });
     }

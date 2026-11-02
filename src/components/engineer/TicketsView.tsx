@@ -116,7 +116,7 @@ export function TicketsView({ state, me, team = null, selectedId, onSelect, disp
       <section ref={detail} aria-label="Ticket detail" className="min-w-0 scroll-mt-4">
         <AnimatePresence mode="wait">
           {selected ? (
-            <motion.div key={selected.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}>
+            <motion.div key={selected.id} className="min-w-0 [overflow-wrap:anywhere]" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}>
               <TicketDetail ticket={selected} state={state} me={me} team={team} dispatch={dispatch} onResolve={onResolve} onOpenAsset={onOpenAsset} />
             </motion.div>
           ) : (
@@ -207,7 +207,7 @@ function TicketDetail({ ticket: t, state, me, team, dispatch, onResolve, onOpenA
               </Hint>
             </span>
             {(t.status === 'new' || (!mine && t.status !== 'onsite')) && (
-              <PrimaryButton onClick={() => dispatch({ type: 'assign', id: t.id, engineer: me })}>
+              <PrimaryButton onClick={() => dispatch({ type: 'assign', id: t.id, engineer: me, from: t.engineer ?? '' })}>
                 <Icon name="fi-rr-user-add" /> {t.status === 'new' ? 'Assign to me' : 'Take over'}
               </PrimaryButton>
             )}
@@ -236,6 +236,17 @@ function TicketDetail({ ticket: t, state, me, team, dispatch, onResolve, onOpenA
           <div className="mt-6 rounded-lg border border-ok/30 bg-ok/[0.06] p-4">
             <p className="flex items-center gap-2 text-sm font-semibold text-ink"><Icon name="fi-rr-badge-check" className="text-ok" /> Resolved {t.resolvedAt && fmtTime(t.resolvedAt)}</p>
             <p className="mt-2 text-sm text-ink-2">{t.resolution}</p>
+            {(!t.resolvedAt || Date.now() - Date.parse(t.resolvedAt) <= 30 * 864e5) && (
+              <GhostButton
+                className="mt-3"
+                onClick={() => {
+                  const reason = window.prompt('The hospital says it is still not working. What is wrong?')?.trim();
+                  if (reason) dispatch({ type: 'reopen', id: t.id, reason: reason.slice(0, 300) });
+                }}
+              >
+                <Icon name="fi-rr-rotate-right" /> Reopen (still not working)
+              </GhostButton>
+            )}
           </div>
         )}
 
@@ -335,10 +346,10 @@ function GiveTo({ ticket: t, team, dispatch }: { ticket: Ticket; team: TeamEntry
       <select id={`give-${t.id}`} value={to} onChange={(e) => setTo(e.target.value)} className={cn(fieldClass, 'h-10 w-64')}>
         <option value="">Choose an engineer…</option>
         {others.map((m) => (
-          <option key={m.name} value={m.name}>{m.name}{m.region ? ` · ${m.region}` : ''} · {m.open} open</option>
+          <option key={m.name} value={m.name}>{m.name}{m.region ? ` · ${m.region}` : ''} · {m.open} open{m.textable === false ? ' · no texts (phone)' : ''}</option>
         ))}
       </select>
-      <PrimaryButton disabled={!to} onClick={() => { dispatch({ type: 'assign', id: t.id, engineer: to }); setTo(''); }}><Icon name="fi-rr-user-add" /> Assign</PrimaryButton>
+      <PrimaryButton disabled={!to} onClick={() => { dispatch({ type: 'assign', id: t.id, engineer: to, from: t.engineer ?? '' }); setTo(''); }}><Icon name="fi-rr-user-add" /> Assign</PrimaryButton>
     </span>
   );
 }
