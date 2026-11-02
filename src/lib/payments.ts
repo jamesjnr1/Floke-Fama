@@ -18,7 +18,12 @@ export interface CheckoutOrder {
 
 export type PaymentResult = { status: 'redirect'; url: string } | { status: 'not-configured' };
 
-export const paymentsConfigured = Boolean(process.env.NEXT_PUBLIC_PAYMENTS_PROVIDER);
+/**
+ * Providers whose integration is written in `startPayment`. None yet: until one is, setting
+ * NEXT_PUBLIC_PAYMENTS_PROVIDER changes nothing, so the checkout never says “Make payment” without taking one.
+ */
+const implemented: string[] = [];
+export const paymentsConfigured = implemented.includes((process.env.NEXT_PUBLIC_PAYMENTS_PROVIDER ?? '').trim().toLowerCase());
 
 export async function startPayment(order: CheckoutOrder): Promise<PaymentResult> {
   if (!paymentsConfigured) return { status: 'not-configured' };

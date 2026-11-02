@@ -42,7 +42,7 @@ const POLL_MS = 15_000;
 
 /** `error`: the server is set up but couldn't answer just now (no connection, or the database didn't respond). */
 /** The team as the head of engineering sees it, to give jobs to engineers. */
-export type TeamEntry = { name: string; region: string | null; open: number };
+export type TeamEntry = { name: string; region: string | null; open: number; /** Their phone can receive texts. */ textable?: boolean };
 type Remote = { enabled: false; error?: boolean } | { enabled: true; state: ServiceState; team?: TeamEntry[] | null };
 
 async function fetchDesk(): Promise<Remote> {

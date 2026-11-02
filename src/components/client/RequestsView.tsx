@@ -71,7 +71,7 @@ export function RequestsView({ assets, tickets, selectedId, onSelect, onRequest,
       <section ref={detail} aria-label="Request detail" className="min-w-0 scroll-mt-4">
         <AnimatePresence mode="wait">
           {selected ? (
-            <motion.div key={selected.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+            <motion.div key={selected.id} className="min-w-0 [overflow-wrap:anywhere]" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
               <Detail ticket={selected} asset={assets.find((a) => a.id === selected.assetId)} dispatch={dispatch} />
             </motion.div>
           ) : (
@@ -156,6 +156,7 @@ function Detail({ ticket: t, asset, dispatch }: { ticket: Ticket; asset?: Asset;
               <Icon name="fi-rr-print" /> Print service report
             </button>
           </div>
+          <Reopen ticket={t} dispatch={dispatch} />
           {t.rating ? (
             <p className="flex items-center gap-2 text-sm text-ink-3">
               <span className="flex text-brand-600" aria-label={`Rated ${t.rating} out of 5`}>{[1, 2, 3, 4, 5].map((n) => <Icon key={n} name="fi-rr-star" className={n <= t.rating! ? 'text-brand-600' : 'text-line'} />)}</span>
@@ -221,5 +222,39 @@ function Detail({ ticket: t, asset, dispatch }: { ticket: Ticket; asset?: Asset;
         )}
       </section>
     </Card>
+  );
+}
+
+/** “Still not working?”: reopens a repaired request (for 30 days), so an engineer comes back. */
+function Reopen({ ticket: t, dispatch }: { ticket: Ticket; dispatch: (a: Action) => void }) {
+  const [open, setOpen] = useState(false);
+  const [reason, setReason] = useState('');
+  if (t.resolvedAt && Date.now() - Date.parse(t.resolvedAt) > 30 * 864e5) return null;
+  if (!open)
+    return (
+      <button type="button" onClick={() => setOpen(true)} className="inline-flex h-10 items-center gap-2 rounded-lg border border-line px-3.5 text-sm font-semibold text-ink hover:border-ink/30">
+        <Icon name="fi-rr-rotate-right" /> Still not working? Reopen this request
+      </button>
+    );
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (!reason.trim()) return;
+        dispatch({ type: 'reopen', id: t.id, reason: reason.trim() });
+        setOpen(false);
+        setReason('');
+      }}
+      className="rounded-lg border border-[#e4b4ae] bg-[#fdf3f2] p-4"
+    >
+      <label className="block">
+        <span className="font-medium text-ink">What is still wrong?</span>
+        <textarea autoFocus value={reason} onChange={(e) => setReason(e.target.value)} rows={3} maxLength={300} placeholder="e.g. The same error came back this morning." className={cn(inputClass, 'mt-2 py-2.5')} />
+      </label>
+      <div className="mt-3 flex gap-2">
+        <button type="submit" disabled={!reason.trim()} className="rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-40">Reopen request</button>
+        <button type="button" onClick={() => setOpen(false)} className="rounded-lg border border-line px-4 py-2.5 text-sm font-medium hover:border-ink/30">Cancel</button>
+      </div>
+    </form>
   );
 }

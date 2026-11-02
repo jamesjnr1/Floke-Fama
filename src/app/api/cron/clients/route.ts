@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { timingSafeEqual } from 'node:crypto';
 import { clientDaily, clientTextsAuto } from '@/lib/client-sms';
 import { appwrite } from '@/lib/appwrite';
-import { loadDesk, scheduleMaintenance } from '@/lib/service/server';
+import { clearSaveLocks, loadDesk, scheduleMaintenance } from '@/lib/service/server';
 
 /**
  * The daily check: opens preventive maintenance jobs for machines due within two weeks (the engineering department's
@@ -23,6 +23,7 @@ export async function GET(req: NextRequest) {
   if (!authorised(req)) return NextResponse.json({ error: 'Not allowed.' }, { status: 401 });
   // Preventive maintenance jobs open whether or not texts are switched on
   const scheduled = appwrite ? await scheduleMaintenance().catch((e) => (console.error('[cron] maintenance schedule:', e), 0)) : 0;
+  if (appwrite) await clearSaveLocks().catch((e) => console.error('[cron] save marks:', e));
   if (!clientTextsAuto) return NextResponse.json({ enabled: false, scheduled });
   const on = req.nextUrl.searchParams.get('on');
   const now = on && /^\d{4}-\d{2}-\d{2}$/.test(on) ? Date.parse(`${on}T09:00:00Z`) : Date.now();

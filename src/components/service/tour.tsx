@@ -24,9 +24,12 @@ function find(target?: string) {
 
 export function useTour(id: string, steps: TourStep[], { ready, auto = true }: { ready: boolean; auto?: boolean }) {
   const [step, setStep] = useState<number | null>(null);
+  // Opened straight onto something (a job from a text message, say): let them see it; the tour waits for next time.
+  // Read on the first render, before the portal tidies the address
+  const [deepLink] = useState(() => typeof window !== 'undefined' && /[?&](ticket|asset|website|photo|guide)=/.test(window.location.search));
   // First visit: start by itself, once the portal has loaded
   useEffect(() => {
-    if (!ready || !auto) return;
+    if (!ready || !auto || deepLink) return;
     let seen = true;
     try {
       seen = localStorage.getItem(seenKey(id)) === '1';
@@ -36,7 +39,7 @@ export function useTour(id: string, steps: TourStep[], { ready, auto = true }: {
     if (seen) return;
     const t = window.setTimeout(() => setStep(0), 700);
     return () => window.clearTimeout(t);
-  }, [ready, auto, id]);
+  }, [ready, auto, id, deepLink]);
   const close = useCallback(() => {
     setStep(null);
     try {

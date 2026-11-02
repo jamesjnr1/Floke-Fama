@@ -4,7 +4,7 @@ import { appwrite, DATABASE_ID, TABLES } from '@/lib/appwrite';
 import type { SessionUser } from '@/lib/auth/session';
 import { catalogue } from '@/data/catalogue';
 import { pushNew } from '@/lib/push';
-import { escalateStale, smsNew } from '@/lib/sms';
+import { escalateStale, normalisePhone, smsNew } from '@/lib/sms';
 import { canonicalFacility } from '@/lib/service/facilities';
 import { supportDetails, type SupportInput } from '@/lib/support-schema';
 import { categoryOf } from '@/lib/categories';
@@ -84,8 +84,40 @@ const columns = (kind: Kind, item: Asset | Ticket | Notification, state: Service
  * Saves what an action changed. New items are created (so two people can never claim the same id) and changed ones
  * updated. Requests go first: if a new request's id was just taken, nothing else has been written yet.
  */
+const lockId = (id: string, rev: number) => `lk-${id}-r${rev}`.slice(0, 36);
+
+/** Clears the save marks older than a day (the daily check): only saves seconds apart can clash. */
+export async function clearSaveLocks() {
+  if (!appwrite) return 0;
+  const old = (await listAll(tableOf.tickets)).filter((r) => r.$id.startsWith('lk-') && Date.now() - Date.parse(r.$createdAt) > 864e5);
+  for (const r of old) await appwrite.tables.deleteRow({ databaseId: DATABASE_ID, tableId: tableOf.tickets, rowId: r.$id }).catch(() => {});
+  return old.length;
+}
+
 async function saveChanges(before: ServiceState, after: ServiceState) {
   cached = null;
+  // Someone else changed a request since it was read (two engineers pressing Assign at once): stop, so the caller reads
+  // again and decides on the latest (a 409, like a clash on a new id), instead of quietly overwriting their change
+  const changed = after.tickets.filter((t) => {
+    const prev = before.tickets.find((x) => x.id === t.id);
+    return prev && JSON.stringify(prev) !== JSON.stringify(t);
+  });
+  const current = await Promise.all(changed.map((t) => appwrite!.tables.getRow<Row>({ databaseId: DATABASE_ID, tableId: tableOf.tickets, rowId: t.id }).catch(() => null)));
+  changed.forEach((t, i) => {
+    const prev = JSON.stringify(before.tickets.find((x) => x.id === t.id));
+    if (current[i] && current[i]!.data !== prev) throw Object.assign(new Error(`${t.id} changed while saving`), { code: 409 });
+  });
+  // Two saves can still both pass that check in the same instant. Each save of a request claims a one-time row for the
+  // copy it started from (“lk-TK-1043-r7”): the database lets only one create it, and the other gets a 409 and reads again
+  const revs = new Map<string, number>();
+  await Promise.all(
+    changed.map(async (t) => {
+      const rev = before.tickets.find((x) => x.id === t.id)?.rev ?? 0;
+      await appwrite!.tables.createRow({ databaseId: DATABASE_ID, tableId: tableOf.tickets, rowId: lockId(t.id, rev), data: { data: 'lock', facility: '' } });
+      revs.set(t.id, rev + 1);
+    }),
+  );
+  if (revs.size) after = { ...after, tickets: after.tickets.map((t) => (revs.has(t.id) ? { ...t, rev: revs.get(t.id) } : t)) };
   for (const kind of ['tickets', 'assets', 'notifications'] as const) {
     const writes: Promise<unknown>[] = [];
     const old = new Map((before[kind] as { id: string }[]).map((x) => [x.id, JSON.stringify(x)]));
@@ -121,6 +153,15 @@ export function visibleTo(s: SessionUser, state: ServiceState): ServiceState {
   return { ...state, assets, tickets, notifications, purchases: [] };
 }
 
+/** A repaired job can be reopened for 30 days after it was resolved (later, it's a new request). */
+const REOPEN_DAYS = 30;
+function reopenable(state: ServiceState, id: string) {
+  const t = state.tickets.find((x) => x.id === id);
+  if (!t || t.status !== 'resolved') return 'Only a resolved request can be reopened.';
+  if (t.resolvedAt && Date.now() - Date.parse(t.resolvedAt) > REOPEN_DAYS * 864e5) return `It was resolved more than ${REOPEN_DAYS} days ago: please send a new request.`;
+  return null;
+}
+
 /** Which actions each role may send, and the checks that keep them to their own facility. */
 function allowed(s: SessionUser, a: Action, state: ServiceState, head: TeamMember[] | null): string | null {
   const mine = visibleTo(s, state);
@@ -131,6 +172,7 @@ function allowed(s: SessionUser, a: Action, state: ServiceState, head: TeamMembe
     switch (a.type) {
       case 'request': return ownAsset(a.ticket.assetId) ? null : 'That equipment isn’t registered to your facility.';
       case 'note': case 'rate': return ownTicket(a.id) ? null : 'That request isn’t one of yours.';
+      case 'reopen': return ownTicket(a.id) ? reopenable(state, a.id) : 'That request isn’t one of yours.';
       case 'read': return ownNote(a.id) ? null : 'Unknown notification.';
       case 'readAll': return a.audience === 'client' ? null : 'Not allowed.';
       default: return 'Not allowed.';
@@ -146,6 +188,7 @@ function allowed(s: SessionUser, a: Action, state: ServiceState, head: TeamMembe
       return head.some((m) => !m.pending && m.name === a.engineer) ? null : 'That engineer isn’t on the team.';
     }
     case 'travel': case 'arrive': case 'note': case 'part': case 'resolve': return ownTicket(a.id) ? null : 'Unknown request.';
+    case 'reopen': return ownTicket(a.id) ? reopenable(state, a.id) : 'Unknown request.';
     case 'decline': {
       const t = state.tickets.find((x) => x.id === a.id);
       return t && t.engineer === s.name && (t.status === 'assigned' || t.status === 'travelling') ? null : 'You can only hand back a job of yours you haven’t started on site.';
@@ -233,7 +276,18 @@ export async function applyAction(s: SessionUser, action: Action): Promise<Servi
     const team = s.role === 'engineer' && action.type === 'assign' && action.engineer !== s.name ? await teamCached() : null;
     const why = allowed(s, action, before, team && isHead(s, team) ? team : null);
     if (why) throw new DeskError(why, 403);
+    // “Assign to me” on what the engineer saw: if someone took the job meanwhile, say so (don't take it over from them)
+    if (action.type === 'assign' && action.from !== undefined) {
+      const { id } = action;
+      const cur = before.tickets.find((t) => t.id === id);
+      if ((cur?.engineer ?? '') !== action.from) throw new DeskError(cur?.engineer ? `${cur.engineer} took this job a moment ago.` : 'This job changed a moment ago. Look at it again.', 409);
+    }
     if (action.type === 'addAsset') action = { ...action, asset: cleanAsset(action.asset) };
+    if (action.type === 'reopen') {
+      const reason = text(action.reason, 300);
+      if (!reason) throw new DeskError('Say what is still wrong.', 400);
+      action = { ...action, reason };
+    }
     // The hospital gets the engineer's own number, from their account (not from the browser)
     if (action.type === 'assign') {
       const to = action.engineer;
@@ -273,7 +327,7 @@ export async function teamFor(s: SessionUser, desk: ServiceState) {
   const team = await teamCached().catch(() => [] as TeamMember[]);
   if (!isHead(s, team)) return null;
   const open = (name: string) => desk.tickets.filter((t) => t.engineer === name && t.status !== 'resolved').length;
-  return team.filter((m) => !m.pending).map((m) => ({ name: m.name, region: m.region ?? null, open: open(m.name) })).sort((a, b) => a.name.localeCompare(b.name));
+  return team.filter((m) => !m.pending).map((m) => ({ name: m.name, region: m.region ?? null, open: open(m.name), textable: Boolean(normalisePhone(m.phone)) })).sort((a, b) => a.name.localeCompare(b.name));
 }
 
 /** Minutes an urgent job may wait for an engineer to take it before the system gives it to one (0 = never). */
@@ -290,13 +344,14 @@ let lastAutoAssign = 0;
 export async function autoAssignStale(desk?: ServiceState, force = false): Promise<number> {
   if (!appwrite || !autoAssignMinutes) return 0;
   const now = Date.now();
-  const due = (d: ServiceState) => d.tickets.filter((t) => t.status === 'new' && (t.priority === 'critical' || t.priority === 'high') && now - new Date(t.openedAt).getTime() >= autoAssignMinutes * 60_000);
+  const due = (d: ServiceState) => d.tickets.filter((t) => t.status === 'new' && (t.priority === 'critical' || t.priority === 'high') && now - new Date(t.reopenedAt ?? t.openedAt).getTime() >= autoAssignMinutes * 60_000);
   if (desk && !due(desk).length) return 0;
   // At most once a minute (only counted when there is something to assign)
   if (!force && now - lastAutoAssign < 60_000) return 0;
   lastAutoAssign = now;
   try {
-    const team = (await listTeam()).filter((m) => !m.pending && m.phone.trim());
+    // Only engineers a text can reach: one who isn't told wouldn't know the job is theirs
+    const team = (await listTeam()).filter((m) => !m.pending && normalisePhone(m.phone));
     if (!team.length) return 0;
     for (let attempt = 0; ; attempt++) {
       const before = await loadDesk();
@@ -347,6 +402,28 @@ export async function scheduleMaintenance(): Promise<number> {
       await saveChanges(before, after);
       await pushNew(before, after);
       return opened;
+    } catch (e) {
+      if ((e as { code?: number }).code === 409 && attempt < 2) continue;
+      throw e;
+    }
+  }
+}
+
+/**
+ * An engineer left the team (their account was removed): their open jobs go back to the queue, the engineers and
+ * hospitals are told, and urgent ones go straight to another engineer.
+ */
+export async function releaseEngineerJobs(name: string, reason = 'has left the team') {
+  if (!appwrite) return 0;
+  for (let attempt = 0; ; attempt++) {
+    const before = await loadDesk();
+    const after = reducer({ name: 'Flokefama', role: 'engineer' })(before, { type: 'release', engineer: name, reason });
+    if (after === before) return 0;
+    try {
+      await saveChanges(before, after);
+      await pushNew(before, after);
+      await autoAssignStale(undefined, true);
+      return before.tickets.filter((t) => t.engineer === name && t.status !== 'resolved').length;
     } catch (e) {
       if ((e as { code?: number }).code === 409 && attempt < 2) continue;
       throw e;
