@@ -35,6 +35,7 @@
 .fi-rr-eye::before{content:"\f5f8"}
 .fi-rr-eye-crossed::before{content:"\f5f5"}
 .fi-rr-file-pdf::before{content:"\f66a"}
+.fi-rr-gift::before{content:"\f6f5"}
 .fi-rr-globe::before{content:"\f705"}
 .fi-rr-graduation-cap::before{content:"\f70f"}
 .fi-rr-hand-holding-heart::before{content:"\f75a"}
@@ -42,6 +43,7 @@
 .fi-rr-hands-heart::before{content:"\f770"}
 .fi-rr-handshake::before{content:"\f779"}
 .fi-rr-headset::before{content:"\f794"}
+.fi-rr-heart::before{content:"\f7a0"}
 .fi-rr-heart-rate::before{content:"\f79d"}
 .fi-rr-hospital::before{content:"\f7c5"}
 .fi-rr-info::before{content:"\f80b"}
@@ -52,10 +54,12 @@
 .fi-rr-lock::before{content:"\f8d5"}
 .fi-rr-map-marker::before{content:"\f8f8"}
 .fi-rr-marker::before{content:"\f8fd"}
+.fi-rr-megaphone::before{content:"\f917"}
 .fi-rr-microscope::before{content:"\f945"}
 .fi-rr-moon::before{content:"\f972"}
 .fi-rr-newspaper::before{content:"\f9a5"}
 .fi-rr-paper-plane::before{content:"\f9f7"}
+.fi-rr-party-horn::before{content:"\fa01"}
 .fi-rr-phone-call::before{content:"\fa61"}
 .fi-rr-play-circle::before{content:"\fa9b"}
 .fi-rr-plus::before{content:"\faac"}
@@ -71,12 +75,14 @@
 .fi-rr-shopping-cart::before{content:"\fbfc"}
 .fi-rr-sign-out-alt::before{content:"\fc0c"}
 .fi-rr-star::before{content:"\fce9"}
+.fi-rr-stethoscope::before{content:"\fcf4"}
 .fi-rr-sun::before{content:"\fd17"}
 .fi-rr-syringe::before{content:"\fd36"}
 .fi-rr-test-tube::before{content:"\fd7a"}
 .fi-rr-time-fast::before{content:"\fda4"}
 .fi-rr-tool-box::before{content:"\fdc8"}
 .fi-rr-tools::before{content:"\fdcb"}
+.fi-rr-triangle-warning::before{content:"\fe33"}
 .fi-rr-trophy::before{content:"\fe39"}
 .fi-rr-truck-side::before{content:"\fe4d"}
 .fi-rr-undo::before{content:"\fe6b"}

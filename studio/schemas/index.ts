@@ -498,7 +498,67 @@ export const siteContent = defineType({
         defineField({ name: 'title', title: 'Heading', type: 'string', description: 'e.g. Website Under Maintenance. Empty: the standard heading.', validation: (r) => r.max(40) }),
         defineField({ name: 'message', title: 'Message (computers)', type: 'string', description: 'One short sentence. Empty: the standard message.', validation: (r) => r.max(110) }),
         defineField({ name: 'short', title: 'Message (phones)', type: 'string', description: 'A shorter version for phones. Empty: the standard one.', validation: (r) => r.max(70) }),
+        defineField({
+          name: 'icon',
+          title: 'Icon',
+          type: 'string',
+          initialValue: 'fi-rr-tools',
+          description: 'Shown before the heading. Empty: the tools icon.',
+          // The same list as src/lib/notice.ts (the website only shows icons from it)
+          options: {
+            list: [
+              { value: 'none', title: 'No icon' },
+              { value: 'fi-rr-tools', title: 'Tools (maintenance)' },
+              { value: 'fi-rr-info', title: 'Information' },
+              { value: 'fi-rr-megaphone', title: 'Announcement' },
+              { value: 'fi-rr-triangle-warning', title: 'Warning' },
+              { value: 'fi-rr-calendar', title: 'Calendar (event)' },
+              { value: 'fi-rr-clock', title: 'Clock (opening hours)' },
+              { value: 'fi-rr-phone-call', title: 'Phone' },
+              { value: 'fi-rr-truck-side', title: 'Delivery' },
+              { value: 'fi-rr-gift', title: 'Gift (offer)' },
+              { value: 'fi-rr-party-horn', title: 'Celebration' },
+              { value: 'fi-rr-heart', title: 'Heart' },
+              { value: 'fi-rr-star', title: 'Star' },
+              { value: 'fi-rr-shield-check', title: 'Shield (security)' },
+              { value: 'fi-rr-stethoscope', title: 'Stethoscope' },
+            ],
+          },
+        }),
+        defineField({
+          name: 'colour',
+          title: 'Colour',
+          type: 'string',
+          initialValue: 'green',
+          options: {
+            list: [
+              { value: 'green', title: 'Flokefama green' },
+              { value: 'red', title: 'Red (urgent)' },
+              { value: 'dark', title: 'Dark' },
+              { value: 'gold', title: 'Gold' },
+              { value: 'blue', title: 'Blue' },
+            ],
+            layout: 'radio',
+            direction: 'horizontal',
+          },
+        }),
+        defineField({ name: 'linkLabel', title: 'Link text (optional)', type: 'string', description: 'e.g. Call us, Read more. Shown at the end of the strip.', validation: (r) => r.max(24) }),
+        defineField({
+          name: 'linkHref',
+          title: 'Link goes to (optional)',
+          type: 'string',
+          description: 'A page on the site (/support), a web address (https://…), a phone number (tel:+233533392863) or an email (mailto:info@flokefama.com).',
+          validation: (r) =>
+            r.custom((v) => {
+              const h = String(v ?? '').trim();
+              if (!h) return true;
+              return /^\/(?!\/)/.test(h) || /^https?:\/\/\S+$/i.test(h) || /^tel:\+?[\d\s-]{6,}$/i.test(h) || /^mailto:[^\s@]+@[^\s@]+$/i.test(h)
+                ? true
+                : 'Use a page (/support), https://…, tel:… or mailto:…';
+            }),
+        }),
       ],
+      preview: { select: { show: 'show', title: 'title' }, prepare: ({ show, title }) => ({ title: `${show === false ? 'Off' : 'On'}: ${title || 'Website Under Maintenance'}` }) },
     }),
     defineField({
       name: 'pageHeaders',
