@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { assetIdPattern } from '@/lib/service/desk';
 import { appwrite } from '@/lib/appwrite';
 import { clientIp, limited } from '@/lib/rate-limit';
 import { loadDesk } from '@/lib/service/server';
@@ -12,7 +13,7 @@ export const dynamic = 'force-dynamic';
 export async function GET(req: NextRequest) {
   if (limited(`tag:${clientIp(req)}`, 30, 60_000)) return NextResponse.json({ error: 'Too many requests.' }, { status: 429 });
   const id = req.nextUrl.searchParams.get('asset') ?? '';
-  if (!appwrite || !/^AS-[A-Z0-9]{2,20}$/.test(id)) return NextResponse.json({ asset: null });
+  if (!appwrite || !assetIdPattern.test(id)) return NextResponse.json({ asset: null });
   try {
     const a = (await loadDesk()).assets.find((x) => x.id === id);
     if (!a) return NextResponse.json({ asset: null });
