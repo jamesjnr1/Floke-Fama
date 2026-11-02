@@ -43,7 +43,8 @@ export const categories: Category[] = [
     short: 'Consumables',
     description: 'A continuous, reliable supply of reagents, cuvettes, lamps and disposables.',
     icon: 'fi-rr-syringe',
-    // No product photo stands for the whole category: a placeholder until a real photo is chosen
+    // Original Mindray reagents (from the Flokefama brochure, page 7); never a single product's photo (a lamp)
+    image: '/images/solutions/mindray-reagents.webp',
     noProductPhoto: true,
   },
   {
@@ -319,6 +320,11 @@ export const events: EventItem[] = [
       { src: '/images/events/floke-praise-2026/front-row.webp', alt: 'Guests in the front row watching the stage' },
       { src: '/images/events/floke-praise-2026/guest-listening.webp', alt: 'A guest in a waistcoat and tie listening from the audience' },
       { src: '/images/events/floke-praise-2026/guest-speaking.webp', alt: 'A guest in white raising a finger as he speaks from his seat' },
+      { src: '/images/events/floke-praise-2026/guests-dancing.webp', alt: 'Two guests dancing and laughing in the aisle' },
+      { src: '/images/events/floke-praise-2026/guest-worshipping.webp', alt: 'A guest worshipping with her eyes closed and her hand raised' },
+      { src: '/images/events/floke-praise-2026/speaker-on-stage.webp', alt: 'A speaker in white addressing the audience on stage, with the band behind him' },
+      { src: '/images/events/floke-praise-2026/guests-cheering.webp', alt: 'Guests in matching print dresses cheering from the audience' },
+      { src: '/images/events/floke-praise-2026/floke-sign.webp', alt: 'The glowing Floke Company sign above the stage' },
     ],
   },
   {

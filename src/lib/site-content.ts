@@ -168,7 +168,7 @@ export const defaultSolutions: SiteContent['solutions'] = {
     { title: 'Orthopaedics', body: 'Implants and instruments for joint replacement, fracture fixation and spinal surgery.', points: ['Arthroplasty (hip & knee)', 'Trauma plates & nails', 'Spine systems'], href: '/services#departments', image: '/images/solutions/arthroplasty.webp', alt: 'Orthopaedic joint replacement implants', fit: 'cover' },
     { title: 'Biomedical Engineering & Spare Parts', body: 'Our engineers install, calibrate and maintain every system we supply, with genuine spare parts.', points: ['Installation & commissioning', 'Calibration & repairs', 'Genuine spare parts'], href: '/services', image: '/images/pillars/biomedical-lab.webp', alt: 'A laboratory scientist in gloves working with laboratory equipment', fit: 'cover' },
     // The CEO (Oct 2026): the earlier photo (an analyser lamp) is not a reagent; a placeholder shows until a real photo is set in the Studio
-    { title: 'Reagents & Consumables', body: 'A continuous, reliable supply of reagents, cuvettes, lamps and disposables.', points: ['Chemistry reagents', 'Spare lamps & cuvettes', 'Six branches nationwide'], href: '/products?category=medical-consumables', fit: 'cover' },
+    { title: 'Reagents & Consumables', body: 'A continuous, reliable supply of reagents, cuvettes, lamps and disposables.', points: ['Chemistry reagents', 'Spare lamps & cuvettes', 'Six branches nationwide'], href: '/products?category=medical-consumables', image: '/images/solutions/mindray-reagents.webp', alt: 'Original Mindray haematology reagents, controls and calibrators', fit: 'contain' },
   ],
 };
 
