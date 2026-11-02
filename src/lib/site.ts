@@ -106,7 +106,12 @@ function merge(raw: Raw | null): SiteContent {
       items: list(
         raw.solutions?.items
           ?.filter((s) => s.title)
-          .map((s): Solution => ({ title: s.title!, body: s.body ?? '', points: s.points ?? [], href: s.href || '/products', image: s.image, alt: s.alt || s.title, fit: s.fit === 'contain' ? 'contain' : 'cover' })),
+          .map((s): Solution => {
+            // A Studio card without its own photo takes the built-in photo of the card with the same title
+            const own = d.solutions.items.find((x) => x.title.toLowerCase() === s.title!.toLowerCase());
+            if (!s.image && own?.image) return { title: s.title!, body: s.body ?? '', points: s.points ?? [], href: s.href || own.href, image: own.image, alt: own.alt, fit: own.fit };
+            return { title: s.title!, body: s.body ?? '', points: s.points ?? [], href: s.href || '/products', image: s.image, alt: s.alt || s.title, fit: s.fit === 'contain' ? 'contain' : 'cover' };
+          }),
         d.solutions.items,
       ),
     },
