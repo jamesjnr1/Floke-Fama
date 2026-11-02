@@ -1,5 +1,6 @@
 'use client';
 
+import { HospitalCode } from '@/components/service/hospital-code';
 import Link from 'next/link';
 import { motion } from 'motion/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -155,6 +156,8 @@ export function ClientShell({ user, products, demo = false }: { user: { name: st
             <LogoChanger facility={facility} className="size-10 rounded-full" fallbackClassName="bg-white text-lg text-[#006b42]">
               <p className="text-sm font-semibold leading-snug">{facility}</p>
               <p className="truncate text-xs text-white/75">{user.name}</p>
+              {/* The hospital's own code (FLK-H001), to quote when calling Flokefama */}
+              <HospitalCode name={facility} className="mt-1 bg-white/15 text-white" />
             </LogoChanger>
           )}
         </div>

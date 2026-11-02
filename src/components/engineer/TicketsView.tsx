@@ -1,5 +1,6 @@
 'use client';
 
+import { HospitalCode } from '@/components/service/hospital-code';
 import { AnimatePresence, motion } from 'motion/react';
 import { useMemo, useRef, useState } from 'react';
 import { ticketStatusMeta } from '@/components/service/status';
@@ -102,7 +103,7 @@ export function TicketsView({ state, me, team = null, selectedId, onSelect, disp
                   </span>
                   <span className="mt-2 block text-sm font-semibold text-ink">{t.title}</span>
                   <span className="mt-1 flex items-center justify-between gap-2 text-xs">
-                    <span className="truncate text-ink-3">{a?.facility}</span>
+                    <span className="flex min-w-0 items-center gap-1.5 text-ink-3"><span className="truncate">{a?.facility}</span><HospitalCode name={a?.facility} /></span>
                     <span className={cn('shrink-0 font-medium', ticketStatusMeta[t.status].text)}>{ticketStatusMeta[t.status].label}{t.engineer && t.status !== 'new' ? ` · ${t.engineer === me ? 'you' : t.engineer.split(' ')[0]}` : ''}</span>
                   </span>
                 </button>
@@ -173,7 +174,7 @@ function TicketDetail({ ticket: t, state, me, team, dispatch, onResolve, onOpenA
         )}
         {asset && (
           <button onClick={() => onOpenAsset(asset.id)} className="mt-4 inline-flex items-center gap-2 rounded-lg border border-line bg-canvas px-3 py-2 text-left text-xs text-ink-2 transition hover:border-ink/25 hover:text-ink">
-            <Icon name="fi-rr-hospital" className="text-brand-700" /> {asset.name} · {asset.facility}, {asset.location} · {asset.serial}
+            <Icon name="fi-rr-hospital" className="text-brand-700" /> {asset.name} · {asset.facility} <HospitalCode name={asset.facility} /> · {asset.location} · {asset.serial}
           </button>
         )}
 
