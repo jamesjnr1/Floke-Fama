@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Instrument_Serif, Inter, Mona_Sans, Plus_Jakarta_Sans, Space_Grotesk } from 'next/font/google';
+import localFont from 'next/font/local';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Toaster } from 'sonner';
@@ -14,15 +14,19 @@ import { allowIndexing, siteUrl, jsonLdHtml } from '@/lib/utils';
 import '@/styles/uicons/uicons.css';
 import './globals.css';
 
-/** Plus Jakarta Sans: the main typeface (headings, body, navigation, the hero). Space Grotesk: small labels and figures. */
-const jakarta = Plus_Jakarta_Sans({ subsets: ['latin'], weight: ['400', '500', '600', '700', '800'], variable: '--font-jakarta', display: 'swap' });
-const grotesk = Space_Grotesk({ subsets: ['latin'], weight: ['400', '500', '600', '700'], variable: '--font-grotesk', display: 'swap' });
-// Italic serif for the accent words in page headers
+/*
+ * The fonts are kept in the site (src/app/fonts, Latin, from Google Fonts; all under the SIL Open Font License), so a
+ * build never depends on Google Fonts answering, and visitors' browsers never contact Google for them.
+ * Plus Jakarta Sans: the main typeface (headings, body, navigation, the hero). Space Grotesk: small labels and figures.
+ */
+const jakarta = localFont({ src: './fonts/jakarta.woff2', weight: '400 800', variable: '--font-jakarta', display: 'swap' });
+const grotesk = localFont({ src: './fonts/grotesk.woff2', weight: '400 700', variable: '--font-grotesk', display: 'swap' });
 // Mona Sans: the menu bar only
-const mona = Mona_Sans({ subsets: ['latin'], weight: ['400', '500', '600', '700'], variable: '--font-mona', display: 'swap' });
+const mona = localFont({ src: './fonts/mona.woff2', weight: '400 700', variable: '--font-mona', display: 'swap' });
 // Inter Black: the FLOKE FAMA lettering on the hero, as in the hero designs
-const inter = Inter({ subsets: ['latin'], weight: '900', variable: '--font-inter', display: 'swap' });
-const serif = Instrument_Serif({ subsets: ['latin'], weight: '400', style: 'italic', variable: '--font-instrument', display: 'swap' });
+const inter = localFont({ src: './fonts/inter.woff2', weight: '900', variable: '--font-inter', display: 'swap' });
+// Italic serif for the accent words in page headers
+const serif = localFont({ src: './fonts/serif.woff2', weight: '400', style: 'italic', variable: '--font-instrument', display: 'swap' });
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
