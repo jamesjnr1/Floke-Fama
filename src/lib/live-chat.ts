@@ -3,8 +3,9 @@
  * (tawk.to dashboard) remains as a switch.
  *
  * The chat's own bubble is the chat button (the site's own one was removed, Nov 2026: the two showed at once). On a
- * computer it sits bottom-right, under the cart; on a phone bottom-left (Tidio above product pages' Order now bar,
- * Tawk.to in the space the bar keeps free). Tidio's colour, greeting and opening hours are set in the Tidio panel (Settings → Live chat → Appearance).
+ * computer it sits under the cart. Tidio's side is set in its panel (Settings → Live chat → Appearance → Position:
+ * left keeps it clear of the cart on phones; on the right, the cart button moves up). Tawk.to sits bottom-right on a
+ * computer and bottom-left on a phone, in the space product pages' Order now bar keeps free. Tidio's colour, greeting and opening hours are set in the Tidio panel (Settings → Live chat → Appearance).
  *
  * Switches (env, all optional):
  *   NEXT_PUBLIC_TIDIO_KEY     Tidio's public key (Tidio → Settings → Developer → Public key, or the 32 letters in its
@@ -36,20 +37,36 @@ declare global {
   }
 }
 
-/** Loads Tidio once. On a phone its closed bubble moves bottom-left (the cart sits bottom-right), above product pages' Order now bar. */
+/**
+ * Loads Tidio once. Its side (left or right) is set in the Tidio panel; on a phone, product pages lift its bubble
+ * above the Order now bar, and a bubble on the right lifts the cart button above it.
+ */
 function loadTidio() {
+  const root = document.documentElement;
   const style = document.createElement('style');
   style.textContent =
-    '@media (max-width:767px){html:not(.tidio-open) #tidio-chat-iframe{left:0!important;right:auto!important}' +
-    // Product pages: above the Order now bar
-    'html:not(.tidio-open):has([data-quote-bar]) #tidio-chat-iframe{bottom:76px!important}}';
+    '@media (max-width:767px){' +
+    'html:not(.tidio-open):has([data-quote-bar]) #tidio-chat-iframe{bottom:76px!important}' +
+    'html.chat-right [data-dock]{bottom:104px!important}' +
+    'html.chat-right:has([data-quote-bar]) [data-dock]{bottom:180px!important}}';
   document.head.appendChild(style);
+  // Which side the bubble is on (Tidio places it after loading its settings)
+  const side = () => {
+    const r = document.getElementById('tidio-chat-iframe')?.getBoundingClientRect();
+    root.classList.toggle('chat-right', !!r && r.width > 0 && r.left + r.width / 2 > window.innerWidth / 2);
+  };
   const onReady = () => {
     const api = window.tidioChatApi;
     if (!api) return;
     ready = true;
-    api.on('open', () => document.documentElement.classList.add('tidio-open'));
-    api.on('close', () => document.documentElement.classList.remove('tidio-open'));
+    api.on('open', () => root.classList.add('tidio-open'));
+    api.on('close', () => {
+      root.classList.remove('tidio-open');
+      side();
+    });
+    api.on('resize', side);
+    window.addEventListener('resize', side);
+    for (const ms of [0, 1500, 5000]) setTimeout(side, ms);
     if (openWhenReady) openLiveChat();
   };
   document.addEventListener('tidioChat-ready', onReady, { once: true });
