@@ -5,43 +5,39 @@ import { AccessPanel } from '@/components/auth/access-panel';
 import { Logo } from '@/components/layout/logo';
 import { Icon } from '@/components/ui/icon';
 import { safeNext } from '@/lib/auth/session';
-import { getSite } from '@/lib/site';
 
 export const metadata: Metadata = { title: 'Portal access', robots: { index: false } };
 
 /**
- * Portal access for hospitals: a split screen outside the marketing chrome. Flokefama's lab team on the left (the CEO:
- * only photos of people we know), a quiet light
- * panel on the right with Sign in and Register tabs. On phones the photo becomes a short banner. Engineers sign in
+ * Portal access for hospitals: a split screen outside the marketing chrome. Two Flokefama engineers on the left (the
+ * CEO: only photos of people we know) with the company statement, a quiet light panel on the right with Sign in and
+ * Register tabs. On phones the photo becomes a short banner. Engineers sign in
  * on their own page (/engineer/login), linked at the foot.
  */
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ next?: string; signedout?: string; mode?: string }> }) {
   const { next, signedout, mode } = await searchParams;
-  const { contact, signInPhones } = await getSite();
 
   return (
     <main id="main" className="grid min-h-[calc(100svh-var(--banner))] bg-paper pt-[var(--banner)] lg:grid-cols-2">
       <section className="relative isolate flex min-h-[300px] flex-col justify-between overflow-hidden bg-brand-800 p-6 text-white h-[40svh] md:p-10 lg:sticky lg:top-0 lg:h-[100svh] lg:p-12 lg:pb-28">
         <Image
-          src="/images/headers/team-lab.webp"
-          alt="Flokefama’s engineering and quality control team in a hospital laboratory"
+          src="/images/headers/login-team.webp"
+          alt="Two Flokefama engineers looking at a laptop together"
           fill
           priority
           sizes="(min-width: 1024px) 50vw, 100vw"
-          className="-z-20 object-cover object-[6%_30%]"
+          className="-z-20 object-cover object-[42%_38%]"
         />
         <div aria-hidden className="absolute inset-0 -z-10 bg-brand-800/15 mix-blend-multiply" />
         <div aria-hidden className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgb(11_21_16/0.4)_0%,transparent_28%,transparent_45%,rgb(19_66_40/0.7)_75%,rgb(11_21_16/0.92)_100%)]" />
 
         <Logo />
 
-        <div className="max-w-md">
-          <h1 className="text-[clamp(26px,18px+1.6vw,40px)] font-semibold leading-[1.1] tracking-[-0.02em] text-white">
-            Your hospital, one dashboard.
+        <div className="max-w-lg">
+          <h1 className="text-[clamp(19px,14px+1.1vw,28px)] font-semibold leading-[1.3] tracking-[-0.01em] text-white">
+            Revolutionizing healthcare practices in Ghana by introducing cutting-edge technologies and solutions that set new standards in medical care and
+            patient safety.
           </h1>
-          <p className="mt-3 hidden text-[1.125rem] leading-relaxed text-white/75 sm:block">
-            Request service and follow the engineer, keep calibration certificates, order equipment and check out, all under your facility’s account.
-          </p>
         </div>
       </section>
 
@@ -60,29 +56,11 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
             engineer={false}
             initialMode={mode === 'register' ? 'register' : 'signin'}
           />
-          {/* Numbers hospitals can call (the main number, then any the team adds in the Studio: Site content → Contact) */}
-          <div className="mt-10 border-t border-line pt-5">
-            <p className="text-sm font-semibold text-ink">Need help? Call us</p>
-            <ul className="mt-2 grid gap-1.5 text-sm text-ink-3">
-              {[{ label: 'Flokefama (24/7)', phone: contact.phone }, ...signInPhones].map((p) => (
-                <li key={p.phone} className="flex items-center justify-between gap-3">
-                  <span>{p.label}</span>
-                  <a href={`tel:${telOf(p.phone)}`} className="whitespace-nowrap font-medium text-brand-700 underline-offset-4 hover:underline">{p.phone}</a>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <p className="mt-5 border-t border-line pt-5 text-sm text-ink-3">
+          <p className="mt-10 border-t border-line pt-5 text-sm text-ink-3">
             Flokefama engineer? <Link href="/engineer/login" className="font-semibold text-brand-700 hover:underline">Sign in to the engineer portal</Link>
           </p>
         </div>
       </section>
     </main>
   );
-}
-
-/** A local number (024 423 7783) or an international one (+233 …) as a tel: address. */
-function telOf(phone: string) {
-  const d = phone.replace(/[^\d+]/g, '');
-  return d.startsWith('+') ? d : d.startsWith('0') ? `+233${d.slice(1)}` : d;
 }

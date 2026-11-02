@@ -22,7 +22,7 @@ export function CalibrationView({ state, onRecord, onOpenAsset }: { state: Engin
         {stats.map((s, i) => (
           <li key={s.label} className={cn('min-w-0 p-5 md:p-6', i > 0 && 'border-l border-line')}>
             <p className="text-[0.8125rem] font-semibold uppercase tracking-[0.09em] text-ink-3">{s.label}</p>
-            <p className={cn('mt-3 text-[2rem] font-semibold leading-none tracking-[-0.04em] tabular-nums', s.tone)}>{s.value}</p>
+            <p className={cn('mt-3 font-mono text-[2rem] font-medium leading-none tracking-[-0.02em]', s.tone)}>{s.value}</p>
           </li>
         ))}
       </ul>

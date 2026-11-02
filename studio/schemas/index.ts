@@ -311,6 +311,8 @@ export const siteContent = defineType({
       title: 'Numbers on the hospital sign-in page',
       type: 'array',
       group: 'contact',
+      // No longer shown (Nov 2026: the sign-in page was kept to the form); hidden so it doesn't look like it does something
+      hidden: true,
       description: 'Extra numbers hospitals can call, shown under the sign-in form (the main phone number is always shown)',
       of: [defineArrayMember({ type: 'object', name: 'signInPhone', fields: [defineField({ name: 'label', type: 'string', description: 'e.g. Client service, Engineering desk', validation: (r) => r.required() }), defineField({ name: 'phone', type: 'string', description: 'e.g. 024 423 7783', validation: (r) => r.required() })], preview: { select: { title: 'phone', subtitle: 'label' } } })],
     }),
