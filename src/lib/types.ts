@@ -8,6 +8,8 @@ export interface Category {
   icon: Icon;
   /** A representative product photo for the category card; falls back to the category's first product photo. */
   image?: string;
+  /** No single product stands for the category (e.g. consumables): a placeholder instead of the first product photo. */
+  noProductPhoto?: boolean;
 }
 
 export interface Spec {
