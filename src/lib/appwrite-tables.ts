@@ -25,6 +25,10 @@ const specs: Record<string, { name: string; columns: Column[]; indexes?: { key: 
     name: 'Hospitals (registry)',
     columns: [{ key: 'key', size: 160, required: true }, { key: 'name', size: 160, required: true }, { key: 'status', size: 16, required: true }, { key: 'data', required: true }],
   },
+  [TABLES.rateLimits]: {
+    name: 'Attempt limits (sign-in, sign-up, forms)',
+    columns: [{ key: 'hits', size: 1000, required: false }],
+  },
   [TABLES.smsLog]: {
     name: 'Text messages',
     columns: [
