@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { ticketIdPattern } from '@/lib/service/desk';
 import { appwrite } from '@/lib/appwrite';
 import { isTableMissing } from '@/lib/appwrite-tables';
 import { getEngineerSession } from '@/lib/auth/server';
@@ -34,7 +35,7 @@ export async function POST(req: NextRequest) {
   if (!s) return NextResponse.json({ error: 'Your session has ended. Please sign in again.' }, { status: 401 });
   const body = (await req.json().catch(() => null)) as { id?: unknown; status?: unknown; ticketId?: unknown } | null;
   const status = body?.status as SupportStatus;
-  const ticketId = typeof body?.ticketId === 'string' && /^TK-\d{4,7}$/.test(body.ticketId) ? body.ticketId : undefined;
+  const ticketId = typeof body?.ticketId === 'string' && ticketIdPattern.test(body.ticketId) ? body.ticketId : undefined;
   if (!isReference(body?.id) || !supportStatuses.includes(status)) return NextResponse.json({ error: 'Invalid request.' }, { status: 400 });
   try {
     await setSupportStatus(body.id, status, s.name, ticketId);

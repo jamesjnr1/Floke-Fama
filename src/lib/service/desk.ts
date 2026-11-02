@@ -221,7 +221,21 @@ export function createSeed(): ServiceState {
 /** A new id for equipment a facility registers itself. */
 export const newAssetId = () => uidAsset();
 
-export const nextTicketId = (s: ServiceState) => `TK-${Math.max(1000, ...s.tickets.map((t) => Number(t.id.split('-')[1]) || 0)) + 1}`;
+/**
+ * Reference numbers: service requests FLK-SR0120, equipment FLK-EQ0045 (hospitals FLK-H001, in the registry). They
+ * count on from the highest number used so far, including the older TK-1043 requests, which keep their numbers.
+ * Valid ids, old and new, are matched with `ticketIdPattern` and `assetIdPattern`.
+ */
+const numberIn = (id: string) => Number(id.match(/(\d+)$/)?.[1] ?? 0) || 0;
+const pad = (n: number) => String(n).padStart(4, '0');
+export const ticketIdPattern = /^(TK-\d{1,8}|FLK-SR\d{4,8})$/;
+export const assetIdPattern = /^(AS-[A-Z0-9]{2,20}|FLK-EQ\d{4,8})$/;
+const lastTicketNumber = (s: ServiceState) => Math.max(0, ...s.tickets.map((t) => numberIn(t.id)));
+const lastAssetNumber = (s: ServiceState) => Math.max(0, ...s.assets.filter((a) => a.id.startsWith('FLK-EQ')).map((a) => numberIn(a.id)));
+export const ticketId = (n: number) => `FLK-SR${pad(n)}`;
+export const assetId = (n: number) => `FLK-EQ${pad(n)}`;
+export const nextTicketId = (s: ServiceState) => ticketId(lastTicketNumber(s) + 1);
+export const nextAssetId = (s: ServiceState) => assetId(lastAssetNumber(s) + 1);
 
 /* ---------- actions ---------- */
 export type Action =
@@ -349,11 +363,14 @@ export function reducer(actor: Actor) {
         return notify(next, `${label} is resolved. Your service report is ready, please rate the visit.`, { ticketId: action.id });
       }
       case 'create': {
-        const assets = action.newAsset ? [...state.assets, action.newAsset] : state.assets;
-        const asset = assets.find((a) => a.id === action.ticket.assetId);
+        // A machine registered with the request gets the next equipment number
+        const fresh = action.newAsset ? { ...action.newAsset, id: nextAssetId(state) } : undefined;
+        const assets = fresh ? [...state.assets, fresh] : state.assets;
+        const ticketAsset = fresh && action.ticket.assetId === action.newAsset!.id ? fresh.id : action.ticket.assetId;
+        const asset = assets.find((a) => a.id === ticketAsset);
         const id = nextTicketId(state);
         const t: Ticket = {
-          id, ...action.ticket, title: `${asset?.name ?? 'System'}: ${action.ticket.description.split(/[.\n]/)[0].slice(0, 60)}`,
+          id, ...action.ticket, assetId: ticketAsset, title: `${asset?.name ?? 'System'}: ${action.ticket.description.split(/[.\n]/)[0].slice(0, 60)}`,
           ...(asset?.suppliedByUs === false ? { kind: 'repair' as const } : {}),
           status: action.assignToMe ? 'assigned' : 'new', engineer: action.assignToMe ? me : undefined, engineerPhone: action.assignToMe ? action.phone : undefined, openedAt: now, parts: [], requestedBy: me,
           log: [entry(`Ticket logged by ${me}`, 'system'), ...(action.assignToMe ? [entry(`Assigned to ${me}`)] : [])],
@@ -388,10 +405,11 @@ export function reducer(actor: Actor) {
         if (state.purchases?.includes(action.order)) return state;
         const assets: Asset[] = [];
         const tickets: Ticket[] = [];
-        let n = Math.max(1000, ...state.tickets.map((t) => Number(t.id.split('-')[1]) || 0));
+        let n = lastTicketNumber(state);
+        let e = lastAssetNumber(state);
         for (const item of action.items)
           for (let k = 0; k < item.qty; k++) {
-            const id = uid('AS');
+            const id = assetId((e += 1));
             // Ready-to-use equipment (BP monitors, diagnostic sets, beds…) goes straight into service on delivery;
             // the rest waits for an engineer to install and commission it.
             assets.push({
@@ -404,7 +422,7 @@ export function reducer(actor: Actor) {
             if (!item.install) continue;
             n += 1;
             tickets.push({
-              id: `TK-${n}`, assetId: id, kind: 'installation', title: `${item.name}: delivery, installation and commissioning`,
+              id: ticketId(n), assetId: id, kind: 'installation', title: `${item.name}: delivery, installation and commissioning`,
               description: `Deliver, install and commission the ${item.name} bought on order ${action.order}, then train the users.`,
               priority: 'routine', status: 'new', openedAt: now, parts: [], requestedBy: 'Flokefama sales',
               log: [{ at: now, by: 'System', text: `Installation booked from order ${action.order}`, kind: 'system' }],
@@ -425,16 +443,19 @@ export function reducer(actor: Actor) {
             : `Order ${action.order}: ${what} added to your equipment. ${ready} ${ready === 1 ? 'is' : 'are'} ready to use on delivery; our engineers will install and commission ${tickets.length === 1 ? `the ${assets.find((a) => a.installation)?.name}` : `the other ${tickets.length}`}.`;
         return { ...next, notifications: [{ id: uid('N'), at: now, text, audience: 'client', read: false, ...(tickets[0] ? { ticketId: tickets[0].id } : { assetId: assets[0].id }) }, ...next.notifications] };
       }
-      case 'addAsset':
-        // An engineer registering equipment a hospital already owns tells that hospital; a hospital adding its own tells the engineers
-        return notify({ ...state, assets: [...state.assets, action.asset] },
+      case 'addAsset': {
+        // The machine gets the next equipment number (FLK-EQ…). An engineer registering equipment a hospital already
+        // owns tells that hospital; a hospital adding its own tells the engineers
+        const added = { ...action.asset, id: nextAssetId(state) };
+        return notify({ ...state, assets: [...state.assets, added] },
           actor.role === 'engineer'
-            ? `${action.asset.name} (${action.asset.location}) was added to your equipment by ${me}. Its calibration schedule and service history now show here.`
-            : `${action.asset.facility} registered ${action.asset.name} (${action.asset.location}).`,
-          { assetId: action.asset.id });
+            ? `${added.name} (${added.location}) was added to your equipment by ${me}. Its calibration schedule and service history now show here.`
+            : `${added.facility} registered ${added.name} (${added.location}).`,
+          { assetId: added.id });
+      }
       case 'schedule': {
         const soon = addDays(new Date(), 14).getTime();
-        let n = Math.max(1000, ...state.tickets.map((t) => Number(t.id.split('-')[1]) || 0));
+        let n = lastTicketNumber(state);
         const due = state.assets.filter(
           (a) => a.suppliedByUs !== false && !a.installation && new Date(a.nextCalibration).getTime() <= soon && !state.tickets.some((t) => t.assetId === a.id && t.kind === 'pm' && isOpen(t)),
         );
@@ -442,7 +463,7 @@ export function reducer(actor: Actor) {
         const tickets: Ticket[] = due.map((a) => {
           n += 1;
           return {
-            id: `TK-${n}`, assetId: a.id, kind: 'pm', title: `${a.name}: preventive maintenance`,
+            id: ticketId(n), assetId: a.id, kind: 'pm', title: `${a.name}: preventive maintenance`,
             description: `Scheduled preventive maintenance, due ${fmtDate(a.nextCalibration)}. ${scheduleLabel(a)}.`,
             priority: 'routine', status: 'new', openedAt: now, parts: [], requestedBy: 'Service schedule',
             log: [{ at: now, by: 'System', text: `Preventive maintenance due ${fmtDate(a.nextCalibration)}`, kind: 'system' }],
