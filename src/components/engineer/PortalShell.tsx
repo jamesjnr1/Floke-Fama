@@ -22,7 +22,7 @@ import { restartDemo } from '@/lib/demo';
 import { DemoGuide } from '@/components/demo-guide';
 import { reducer } from '@/lib/service/desk';
 import { supportDetails } from '@/lib/support-schema';
-import { LogoMark, LogoWordmark } from '@/components/layout/logo';
+import { LogoMark, PortalLogo } from '@/components/layout/logo';
 import { LiveStatus } from '@/components/service/live-status';
 import { Icon } from '@/components/ui/icon';
 import { useSite } from '@/components/site-provider';
@@ -286,10 +286,10 @@ function Portal({ user, products, practice, demo = false }: { user: { name: stri
     <div className="eng-page flex min-h-svh pt-[var(--banner)] text-ink">
       {/* Sidebar */}
       <aside className="eng-rail sticky top-[var(--banner)] hidden h-[calc(100svh-var(--banner))] w-[264px] shrink-0 flex-col text-white lg:flex">
-        <Link href="/" aria-label="Flokefama home" className="flex h-[76px] items-center gap-1.5 border-b border-white/15 px-6">
-          <LogoMark />
-          <LogoWordmark className="h-[17px] text-white" />
-          <span className="ml-auto text-[0.8125rem] font-semibold uppercase tracking-[0.18em] text-white/80">Service</span>
+        {/* The portal's logo, with the dashboard's name under it; the opening lands its big logo on this one */}
+        <Link href="/" aria-label="Flokefama home" className="flex h-[76px] flex-col justify-center gap-1 border-b border-white/15 px-5">
+          <PortalLogo product="Service" target />
+          <span className="pl-[36px] text-[0.75rem] font-medium tracking-[0.02em] text-white/70">Engineer dashboard</span>
         </Link>
         <div className="flex items-center gap-3 px-6 py-6">
           <button onClick={() => setChangingPhoto(true)} title="Change your photo" aria-label="Change your photo" className="shrink-0 rounded-full">
