@@ -497,7 +497,7 @@ export const siteContent = defineType({
         defineField({ name: 'show', title: 'Show the notice', type: 'boolean', initialValue: true, description: 'On: the strip shows on every page. Off: it is hidden and the pages move up to fill its place.' }),
         defineField({ name: 'title', title: 'Heading', type: 'string', description: 'e.g. Website Under Maintenance. Empty: the standard heading.', validation: (r) => r.max(40) }),
         defineField({ name: 'message', title: 'Message (computers)', type: 'string', description: 'One short sentence. Empty: the standard message.', validation: (r) => r.max(110) }),
-        defineField({ name: 'short', title: 'Message (phones)', type: 'string', description: 'A shorter version for phones. Empty: the standard one.', validation: (r) => r.max(70) }),
+        defineField({ name: 'short', title: 'Message (phones)', type: 'string', description: 'Phones show only this (with the icon and the link), not the heading or the message above. Keep it to about 40 characters, or about 30 with a link. Empty: the standard one.', validation: (r) => r.max(70) }),
         defineField({
           name: 'icon',
           title: 'Icon',
