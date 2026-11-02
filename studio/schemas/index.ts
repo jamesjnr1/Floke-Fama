@@ -277,6 +277,7 @@ export const siteContent = defineType({
   title: 'Site content',
   type: 'document',
   groups: [
+    { name: 'notice', title: 'Maintenance notice' },
     { name: 'contact', title: 'Contact & branches', default: true },
     { name: 'logos', title: 'Partners & clients' },
     { name: 'home', title: 'Home' },
@@ -484,6 +485,19 @@ export const siteContent = defineType({
           ],
           preview: { select: { title: 'title', subtitle: 'date', media: 'photos.0' } },
         }),
+      ],
+    }),
+    defineField({
+      name: 'maintenance',
+      title: 'Maintenance notice',
+      type: 'object',
+      group: 'notice',
+      description: 'The green strip across the top of every page. Turn it on while you work on parts of the website, then Publish; turn it off and Publish again when you are done. The site updates within a minute.',
+      fields: [
+        defineField({ name: 'show', title: 'Show the notice', type: 'boolean', initialValue: true, description: 'On: the strip shows on every page. Off: it is hidden and the pages move up to fill its place.' }),
+        defineField({ name: 'title', title: 'Heading', type: 'string', description: 'e.g. Website Under Maintenance. Empty: the standard heading.', validation: (r) => r.max(40) }),
+        defineField({ name: 'message', title: 'Message (computers)', type: 'string', description: 'One short sentence. Empty: the standard message.', validation: (r) => r.max(110) }),
+        defineField({ name: 'short', title: 'Message (phones)', type: 'string', description: 'A shorter version for phones. Empty: the standard one.', validation: (r) => r.max(70) }),
       ],
     }),
     defineField({

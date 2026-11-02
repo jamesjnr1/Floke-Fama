@@ -105,7 +105,7 @@ export function Navbar() {
 
   return (
     <>
-    <header className={cn(bar ? 'fixed inset-x-0 top-10 z-[120] font-nav' : 'sticky inset-x-0 top-10 z-[120] mt-10 font-nav px-3 pt-3 md:px-6 md:pt-4')}>
+    <header className={cn(bar ? 'fixed inset-x-0 top-[var(--banner)] z-[120] font-nav' : 'sticky inset-x-0 top-[var(--banner)] z-[120] mt-[var(--banner)] font-nav px-3 pt-3 md:px-6 md:pt-4')}>
       <div
         className={cn(
           // No shadow at the top, where the bar sits on the dark hero; a light one once the page scrolls under it
@@ -296,7 +296,7 @@ export function Navbar() {
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
             className={cn(
               'fixed flex flex-col overflow-y-auto bg-midnight/95 p-5 backdrop-blur-xl xl:hidden',
-              bar ? 'inset-x-0 bottom-0 top-[112px] border-t border-white/10' : 'inset-x-3 bottom-3 top-[132px] rounded-2xl border border-white/10',
+              bar ? 'inset-x-0 bottom-0 top-[calc(var(--banner)+72px)] border-t border-white/10' : 'inset-x-3 bottom-3 top-[calc(var(--banner)+92px)] rounded-2xl border border-white/10',
             )}
           >
             <ul className="divide-y divide-white/10">

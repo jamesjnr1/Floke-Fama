@@ -49,7 +49,7 @@ export async function Hero({ bg = heroBackground }: { bg?: HeroBackground } = {}
       <HeroBackdrop bg={bg} />
 
       {(heroStyle === 'pages' || heroStyle === 'catalogue') && (
-        <div className="mx-auto grid w-full max-w-[1280px] flex-1 grid-cols-1 items-center gap-12 px-5 pb-12 pt-28 md:px-10 md:pt-32 lg:grid-cols-12">
+        <div className="mx-auto grid w-full max-w-[1280px] flex-1 grid-cols-1 items-center gap-12 px-5 pb-12 pt-[calc(var(--banner)+4.5rem)] md:px-10 md:pt-[calc(var(--banner)+5.5rem)] lg:grid-cols-12">
           <div className="flex min-w-0 flex-col gap-7 lg:col-span-5">
             <Reveal>
               <h1 className={cn('text-[clamp(2.5rem,1.4rem+3.2vw,4rem)] font-extrabold leading-[1.05] tracking-[-0.035em]', light ? 'text-ink' : 'text-white')}>
@@ -79,7 +79,7 @@ export async function Hero({ bg = heroBackground }: { bg?: HeroBackground } = {}
       )}
 
       {heroStyle === 'strips' && (
-        <div className="mx-auto flex w-full max-w-[1280px] flex-1 flex-col justify-center gap-10 px-5 pb-10 pt-28 md:px-10 md:pt-32 lg:gap-12">
+        <div className="mx-auto flex w-full max-w-[1280px] flex-1 flex-col justify-center gap-10 px-5 pb-10 pt-[calc(var(--banner)+4.5rem)] md:px-10 md:pt-[calc(var(--banner)+5.5rem)] lg:gap-12">
           <div className="grid gap-6 lg:grid-cols-12 lg:items-end lg:gap-12">
             <Reveal className="lg:col-span-7">
               <h1 className={cn('text-[clamp(2.5rem,1.4rem+3.2vw,4rem)] font-extrabold leading-[1.05] tracking-[-0.035em]', light ? 'text-ink' : 'text-white')}>
@@ -109,7 +109,7 @@ export async function Hero({ bg = heroBackground }: { bg?: HeroBackground } = {}
       )}
 
       {(heroStyle === 'card' || heroStyle === 'carousel') && (
-        <div className="mx-auto grid w-full max-w-[1280px] flex-1 grid-cols-1 items-center gap-10 px-5 pb-10 pt-28 md:px-10 md:pt-32 lg:grid-cols-12 lg:gap-12 lg:pb-8">
+        <div className="mx-auto grid w-full max-w-[1280px] flex-1 grid-cols-1 items-center gap-10 px-5 pb-10 pt-[calc(var(--banner)+4.5rem)] md:px-10 md:pt-[calc(var(--banner)+5.5rem)] lg:grid-cols-12 lg:gap-12 lg:pb-8">
           <div className="flex min-w-0 flex-col gap-7 lg:col-span-7">
             <Reveal>
               <h1 className={cn('text-[clamp(2.5rem,1.4rem+3.2vw,4rem)] font-extrabold leading-[1.05] tracking-[-0.035em]', light ? 'text-ink' : 'text-white')}>

@@ -58,7 +58,7 @@ export async function CollageHero({ feature = false, tone = 'green' }: { feature
   const tint = !neutralTones.includes(tone);
   const { hero } = await getSite();
   return (
-    <section className={cn('relative isolate overflow-hidden pt-28', heroTones[tone], light ? 'text-ink' : 'text-white', 'flex flex-col lg:min-h-0 lg:flex-1')}>
+    <section className={cn('relative isolate overflow-hidden pt-[calc(var(--banner)+4.5rem)]', heroTones[tone], light ? 'text-ink' : 'text-white', 'flex flex-col lg:min-h-0 lg:flex-1')}>
       {/* Faint design: soft light, a fine grid of small medical crosses fading out, and two gentle diagonal light bands */}
       <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(50%_45%_at_15%_15%,rgb(127_209_165/0.14),transparent_70%)]" />
       <div
@@ -121,7 +121,7 @@ export async function CollageHero({ feature = false, tone = 'green' }: { feature
         )}
       </div>
 
-      <Seal className="absolute left-1/2 top-[116px] z-20 hidden -translate-x-1/2 lg:block" />
+      <Seal className="absolute left-1/2 top-[calc(var(--banner)+76px)] z-20 hidden -translate-x-1/2 lg:block" />
     </section>
   );
 }

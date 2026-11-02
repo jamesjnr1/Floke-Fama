@@ -49,7 +49,7 @@ export function PageHero({
         )}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_45%_at_50%_55%,rgb(10_16_20/0.28),transparent_75%)]" />
       </div>
-      <div className="mx-auto w-full max-w-[1280px] px-5 pb-16 pt-36 md:px-16 md:pb-24 md:pt-40">
+      <div className="mx-auto w-full max-w-[1280px] px-5 pb-16 pt-[calc(var(--banner)+6.5rem)] md:px-16 md:pb-24 md:pt-[calc(var(--banner)+7.5rem)]">
         <Reveal>
           {/* The company name over every page title */}
           <p className="inline-flex items-center gap-2 [filter:drop-shadow(0_2px_12px_rgb(0_0_0/0.35))]">

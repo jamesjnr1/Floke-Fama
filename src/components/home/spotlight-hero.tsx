@@ -12,7 +12,7 @@ import { getSite } from '@/lib/site';
 export async function SpotlightHero() {
   const { hero } = await getSite();
   return (
-    <section className="relative isolate flex flex-col overflow-hidden bg-[linear-gradient(160deg,#0a5a33_0%,#06482a_55%,#043822_100%)] pt-28 text-white lg:min-h-0 lg:flex-1">
+    <section className="relative isolate flex flex-col overflow-hidden bg-[linear-gradient(160deg,#0a5a33_0%,#06482a_55%,#043822_100%)] pt-[calc(var(--banner)+4.5rem)] text-white lg:min-h-0 lg:flex-1">
       <div aria-hidden className="absolute inset-0 -z-20 bg-[radial-gradient(50%_55%_at_12%_30%,rgb(127_209_165/0.13),transparent_70%)]" />
       <div
         aria-hidden
