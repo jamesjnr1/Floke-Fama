@@ -340,3 +340,32 @@ main video {
 html[data-banner='off'] {
   --banner: 0px;
 }
+
+/* The site's opening (components/layout/site-intro.tsx): shown only while <html> has .ff-intro (set before the first
+   paint, once per visit). If JavaScript never removes it, it fades by itself after 4 seconds. */
+.site-intro {
+  display: none;
+}
+html.ff-intro .site-intro {
+  display: flex;
+  animation: ff-intro-failsafe 0.4s ease 4s forwards;
+}
+html.ff-intro .site-intro-logo {
+  animation: ff-intro-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes ff-intro-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes ff-intro-failsafe {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
