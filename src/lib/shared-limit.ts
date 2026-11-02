@@ -62,10 +62,14 @@ async function write(key: string, times: number[]) {
 /** The attempts for `key` within the window, from Appwrite (or this server's memory). */
 async function attempts(key: string, windowMs: number) {
   const shared = await read(key);
-  const local = memory.get(key) ?? [];
-  // The larger of the two: a server that saw attempts Appwrite missed (while it was down) still counts them
-  const times = shared && shared.length >= local.length ? shared : local;
-  return recent(times, windowMs);
+  // Appwrite answered: its count is the true one (a correct password elsewhere may have cleared it), and this
+  // server's memory follows it. Appwrite down: this server's own count, so the limit still holds
+  if (shared) {
+    if (shared.length) memory.set(key, shared.slice(-MAX_KEPT));
+    else memory.delete(key);
+    return recent(shared, windowMs);
+  }
+  return recent(memory.get(key) ?? [], windowMs);
 }
 
 /** True when `key` has reached `max` attempts within `windowMs`. Does not record anything. */
