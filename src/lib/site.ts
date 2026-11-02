@@ -2,13 +2,14 @@ import 'server-only';
 import { cache } from 'react';
 import { sanity } from '@/lib/sanity';
 import { visibleBrands } from '@/data/seed';
+import { noticeColours, noticeIcons, safeNoticeHref, type NoticeColour } from '@/lib/notice';
 import { defaultSite, withDerived, type Award, type EsgPillar, type EventAlbum, type Faq, type HeroMedia, type Logo, type PageHeader, type PageKey, type Photo, type SiteContent, type Solution } from '@/lib/site-content';
 
 const img = (f: string) => `"${f}": ${f}.asset->url, "${f}W": ${f}.asset->metadata.dimensions.width, "${f}H": ${f}.asset->metadata.dimensions.height`;
 const header = (k: string) => `"${k}": pageHeaders.${k}{ title, highlight, emphasisFirst, lead, "image": image.asset->url }`;
 
 const query = `*[_id == "siteContent"][0]{
-  maintenance{ show, title, message, short },
+  maintenance{ show, title, message, short, icon, colour, linkLabel, linkHref },
   contact, branches[]{ name, detail, phone },
   technologyPartners[]{ name, role, ${img('logo')} },
   clients[]{ name, role, code, kind, ${img('logo')} },
@@ -30,7 +31,7 @@ const query = `*[_id == "siteContent"][0]{
 type RawLogo = { name?: string; role?: string; code?: string; kind?: string; logo?: string; logoW?: number; logoH?: number };
 type RawPhoto = { src?: string; alt?: string; caption?: string };
 type Raw = Partial<{
-  maintenance: Partial<{ show: boolean; title: string; message: string; short: string }>;
+  maintenance: Partial<{ show: boolean; title: string; message: string; short: string; icon: string; colour: string; linkLabel: string; linkHref: string }>;
   contact: Partial<{ phone: string; info: string; sales: string; support: string; address: string; lat: number; lng: number; mapEmbed: string }>;
   branches: { name: string; detail: string; phone?: string }[];
   technologyPartners: RawLogo[];
@@ -142,7 +143,13 @@ function merge(raw: Raw | null): SiteContent {
     ),
     pageHeaders: headers,
     // Shown until it is switched off in the Studio (a Studio that has never set it keeps it on)
-    maintenance: { ...d.maintenance, ...clean(raw.maintenance), show: raw.maintenance?.show !== false },
+    maintenance: (() => {
+      const m = clean(raw.maintenance);
+      const icon = m.icon === 'none' || noticeIcons.some((i) => i.value === m.icon) ? m.icon! : d.maintenance.icon;
+      const colour = (m.colour && m.colour in noticeColours ? m.colour : d.maintenance.colour) as NoticeColour;
+      const linkHref = safeNoticeHref(m.linkHref) ?? undefined;
+      return { ...d.maintenance, ...m, icon, colour, linkHref, linkLabel: linkHref ? m.linkLabel : undefined, show: raw.maintenance?.show !== false };
+    })(),
   };
 }
 
