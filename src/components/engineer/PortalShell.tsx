@@ -112,7 +112,7 @@ export function PortalShell(props: { user: { name: string; email: string }; prod
   }, []);
   // The demo always runs on its sample desk
   if (props.demo) return <Portal {...props} practice demo />;
-  if (practice === null) return <div className="eng-page min-h-svh pt-10" aria-busy="true" />;
+  if (practice === null) return <div className="eng-page min-h-svh pt-[var(--banner)]" aria-busy="true" />;
   return <Portal {...props} practice={practice} />;
 }
 
@@ -283,7 +283,7 @@ function Portal({ user, products, practice, demo = false }: { user: { name: stri
   );
 
   return (
-    <div className="eng-page flex min-h-svh pt-10 text-ink">
+    <div className="eng-page flex min-h-svh pt-[var(--banner)] text-ink">
       {/* Sidebar */}
       <aside className="eng-rail sticky top-[var(--banner)] hidden h-[calc(100svh-var(--banner))] w-[264px] shrink-0 flex-col text-white lg:flex">
         <Link href="/" aria-label="Flokefama home" className="flex h-[76px] items-center gap-1.5 border-b border-white/15 px-6">

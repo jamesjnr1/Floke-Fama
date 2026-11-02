@@ -138,7 +138,7 @@ export function ClientShell({ user, products, demo = false }: { user: { name: st
 
   return (
     <EngineerPhotosProvider>
-    <div className="flex min-h-svh bg-[#f5f6f4] pt-10 text-ink">
+    <div className="flex min-h-svh bg-[#f5f6f4] pt-[var(--banner)] text-ink">
       {/* Sidebar */}
       <aside className="sticky top-[var(--banner)] hidden h-[calc(100svh-var(--banner))] w-[264px] shrink-0 flex-col bg-[linear-gradient(180deg,#00804f_0%,#006b42_55%,#005a38_100%)] text-white lg:flex">
         <Link href="/" aria-label="Flokefama home" className="flex h-[76px] items-center gap-1.5 border-b border-white/15 px-6">
