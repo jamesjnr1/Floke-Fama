@@ -12,8 +12,8 @@ import { ensureFacility, findFacility, listFacilities, updateFacility } from '@/
 import { regions } from '@/lib/regions';
 
 /**
- * Admin console → Hospitals: register a hospital (it gets its code at once), edit its details, make it active or
- * inactive, and give its staff logins. Admins only; never from the demo (a demo session isn't an admin session here).
+ * Admin console → Hospitals: register a hospital (it gets its code at once), make it active or inactive, and give
+ * its staff logins. Its details (location, contact) are the hospital's own, kept in its dashboard (Hospital profile). Admins only; never from the demo (a demo session isn't an admin session here).
  */
 const phone = z.string().trim().regex(/^([+\d][\d\s()-]{6,})?$/, 'Enter a valid phone number').max(30);
 const email = z.union([z.literal(''), z.string().trim().toLowerCase().email('Enter a valid email')]);
@@ -80,22 +80,6 @@ export async function registerHospital(_prev: HospitalFormState, form: FormData)
     console.error('register hospital', e);
     return { errors: { form: 'Not saved. Please try again.' }, values: raw };
   }
-}
-
-/** Edits a hospital's details (its name and code stay). */
-export async function editHospital(_prev: HospitalFormState, form: FormData): Promise<HospitalFormState> {
-  const s = await getAdminSession();
-  if (s?.role !== 'admin') return { errors: { form: 'Only admins can edit hospitals.' } };
-  const raw = read(form);
-  const parsed = details.safeParse(raw);
-  if (!parsed.success) return { errors: firstErrors(parsed.error.issues), values: raw };
-  try {
-    await updateFacility(String(raw.code ?? ''), parsed.data);
-  } catch {
-    return { errors: { form: 'Not saved. Please try again.' }, values: raw };
-  }
-  revalidatePath('/admin');
-  return { done: { code: raw.code ?? '', name: '' } };
 }
 
 /** Makes a hospital active or inactive (inactive: its staff can't sign in or use the dashboard). */

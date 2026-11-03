@@ -2,9 +2,8 @@
 
 import Link from 'next/link';
 import { useActionState, useState } from 'react';
-import { addHospitalLogin, editHospital, registerHospital, type HospitalFormState } from '@/lib/admin/hospital-actions';
+import { addHospitalLogin, registerHospital, type HospitalFormState } from '@/lib/admin/hospital-actions';
 import { Icon } from '@/components/ui/icon';
-import { regions } from '@/lib/regions';
 
 const field = 'h-11 w-full rounded-xl border border-line bg-white px-3.5 text-[0.9375rem] outline-none focus:border-brand-600 aria-[invalid=true]:border-signal';
 
@@ -15,34 +14,6 @@ function Field({ label, error, children, wide }: { label: string; error?: string
       {children}
       {error && <span role="alert" className="text-[0.8125rem] text-signal-700">{error}</span>}
     </label>
-  );
-}
-
-type Values = { region?: string; address?: string; contactName?: string; phone?: string; email?: string };
-
-/** The fields a hospital's record keeps (name and code aside). */
-function DetailFields({ e, v }: { e: NonNullable<HospitalFormState['errors']>; v: Values }) {
-  return (
-    <>
-      <Field label="Region" error={e.region}>
-        <select name="region" defaultValue={v.region ?? ''} className={field}>
-          <option value="">Not given</option>
-          {regions.map((r) => <option key={r}>{r}</option>)}
-        </select>
-      </Field>
-      <Field label="Location and address" error={e.address} wide>
-        <input name="address" defaultValue={v.address} placeholder="e.g. Castle Road, Ridge, Accra" className={field} />
-      </Field>
-      <Field label="Contact person" error={e.contactName}>
-        <input name="contactName" defaultValue={v.contactName} placeholder="e.g. Head of laboratory" className={field} />
-      </Field>
-      <Field label="Phone" error={e.phone}>
-        <input name="phone" type="tel" defaultValue={v.phone} placeholder="+233" aria-invalid={!!e.phone} className={field} />
-      </Field>
-      <Field label="Email" error={e.email}>
-        <input name="email" type="email" defaultValue={v.email} aria-invalid={!!e.email} className={field} />
-      </Field>
-    </>
   );
 }
 
@@ -84,8 +55,17 @@ export function RegisterHospitalForm() {
         <Field label="Hospital or facility name" error={e.name}>
           <input name="name" defaultValue={state.values?.name} aria-invalid={!!e.name} className={field} />
         </Field>
-        <DetailFields e={e} v={state.values ?? {}} />
+        <Field label="Contact person (for their login)" error={e.contactName}>
+          <input name="contactName" defaultValue={state.values?.contactName} aria-invalid={!!e.contactName} className={field} />
+        </Field>
+        <Field label="Their email" error={e.email}>
+          <input name="email" type="email" defaultValue={state.values?.email} aria-invalid={!!e.email} className={field} />
+        </Field>
+        <Field label="Their phone" error={e.phone}>
+          <input name="phone" type="tel" defaultValue={state.values?.phone} placeholder="+233" aria-invalid={!!e.phone} className={field} />
+        </Field>
       </div>
+      <p className="mt-3 text-[0.875rem] text-ink-3">The hospital adds its location and other details itself, from its dashboard (Hospital profile).</p>
       <label className="mt-4 flex items-center gap-2 text-[0.9375rem]">
         <input type="checkbox" name="login" defaultChecked={state.values?.login === 'on'} className="size-4 accent-[#007a4d]" /> Also create a login for the contact person (needs their name and email)
       </label>
@@ -95,25 +75,6 @@ export function RegisterHospitalForm() {
           <Icon name="fi-rr-plus" /> {pending ? 'Registering…' : 'Register hospital'}
         </button>
         <Link href="/admin?tab=hospitals" className="text-[0.9375rem] font-medium text-ink-3 hover:text-ink">Cancel</Link>
-      </div>
-    </form>
-  );
-}
-
-/** A hospital's record → Edit details. */
-export function EditHospitalForm({ code, values }: { code: string; values: Values }) {
-  const [state, action, pending] = useActionState<HospitalFormState, FormData>(editHospital, {});
-  const e = state.errors ?? {};
-  return (
-    <form action={action} noValidate>
-      <input type="hidden" name="code" value={code} />
-      <div className="grid gap-4 md:grid-cols-2">
-        <DetailFields e={e} v={state.values ?? values} />
-      </div>
-      {e.form && <p role="alert" className="mt-3 text-[0.9375rem] text-signal-700">{e.form}</p>}
-      <div className="mt-4 flex items-center gap-3">
-        <button disabled={pending} className="inline-flex h-11 items-center rounded-xl bg-brand-700 px-5 text-[0.9375rem] font-semibold text-white hover:bg-brand-800 disabled:opacity-60">{pending ? 'Saving…' : 'Save details'}</button>
-        {state.done && !pending && <span className="text-[0.9375rem] font-medium text-brand-700">Saved</span>}
       </div>
     </form>
   );
