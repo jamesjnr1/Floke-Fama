@@ -26,9 +26,14 @@ export const headByEmail = (email: string) => heads.has(email.trim().toLowerCase
  * link and wait for approval carry `engp-`: engineers (never hospitals), but they can't sign in until approved.
  */
 export const ENGINEER_ID_PREFIX = 'eng-';
+/**
+ * Admins added in the admin console (Database & settings → Admins) carry this id prefix, which makes them admins
+ * without touching ADMIN_EMAILS. Ids are always made on the server, so no one can give themselves one.
+ */
+export const ADMIN_ID_PREFIX = 'adm-';
 
 export const roleFor = (email: string, id?: string): Role => {
   const e = email.trim().toLowerCase();
-  return admins.has(e) ? 'admin' : sales.has(e) ? 'sales' : engineers.has(e) || id?.startsWith(ENGINEER_ID_PREFIX) || id?.startsWith('engp-') ? 'engineer' : 'client';
+  return admins.has(e) || id?.startsWith(ADMIN_ID_PREFIX) ? 'admin' : sales.has(e) ? 'sales' : engineers.has(e) || id?.startsWith(ENGINEER_ID_PREFIX) || id?.startsWith('engp-') ? 'engineer' : 'client';
 };
 

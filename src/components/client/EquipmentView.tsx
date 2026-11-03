@@ -46,7 +46,7 @@ export function EquipmentView({ assets, tickets, onOpenAsset }: { assets: Asset[
                   </span>
                 </div>
                 <div className="flex flex-1 flex-col p-3">
-                  <p className="text-xs text-ink-3">{a.brand} · {a.location}</p>
+                  <p className="text-xs text-ink-3">{[a.brand, a.location].filter(Boolean).join(' · ')}</p>
                   <p className="mt-0.5 font-semibold text-ink">{a.name}</p>
                   {(a.suppliedByUs === false || a.ivd) && (
                     <p className="mt-1.5 flex flex-wrap gap-1.5 text-[0.6875rem] font-semibold">

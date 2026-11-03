@@ -50,6 +50,12 @@ export async function middleware(request: NextRequest) {
 
   // The admin console and the engineer portal have their own sign-in pages; someone already signed in to that area goes straight in.
   if (pathname === '/admin/login') {
+    // Sent here by the console because the account behind a still-valid cookie was removed: sign out, don't loop
+    if (session && request.nextUrl.searchParams.has('gone')) {
+      const res = NextResponse.next();
+      res.cookies.delete(cookie);
+      return res;
+    }
     return session ? NextResponse.redirect(new URL(roleHome[session.role], request.url)) : NextResponse.next();
   }
   // Engineers register with the invite link before they have an account

@@ -3,6 +3,8 @@ import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { demoOn } from '@/lib/demo';
 import { facilityActive } from '@/lib/facility-registry';
+import { appwrite, DATABASE_ID, isNotFound, TABLES } from '@/lib/appwrite';
+import { ADMIN_ID_PREFIX } from '@/lib/auth/users';
 import { ADMIN_COOKIE, cookieFor, ENGINEER_COOKIE, isConsoleRole, roleLogin, SESSION_COOKIE, sessionCookie, signSession, verifySession, type Role, type SessionUser } from '@/lib/auth/session';
 
 /**
@@ -15,9 +17,23 @@ import { ADMIN_COOKIE, cookieFor, ENGINEER_COOKIE, isConsoleRole, roleLogin, SES
  */
 const allow = (s: SessionUser | null, demo: boolean) => (s && (!s.demo || (demo && demoOn())) ? s : null);
 
+/**
+ * An admin added in the console (an `adm-` id) whose account has since been removed is signed out at once, not when
+ * the session would run out. Checked at most once a minute per admin; if the database can't be reached they stay in.
+ */
+const adminChecked = new Map<string, { at: number; ok: boolean }>();
+async function adminStillThere(s: SessionUser | null) {
+  if (!s || !s.sub.startsWith(ADMIN_ID_PREFIX) || !appwrite) return s;
+  const seen = adminChecked.get(s.sub);
+  if (seen && Date.now() - seen.at < 60_000) return seen.ok ? s : null;
+  const ok = await appwrite.tables.getRow({ databaseId: DATABASE_ID, tableId: TABLES.accounts, rowId: s.sub }).then(() => true, (e) => !isNotFound(e));
+  adminChecked.set(s.sub, { at: Date.now(), ok });
+  return ok ? s : null;
+}
+
 async function sessionFrom(cookie: string, role: Role, demo = false) {
   const s = await verifySession((await cookies()).get(cookie)?.value);
-  return s?.role === role ? allow(s, demo) : null;
+  return s?.role === role ? adminStillThere(allow(s, demo)) : null;
 }
 
 /** The signed-in hospital on the site (none when the hospital has been made inactive in the registry). */
@@ -32,12 +48,14 @@ export const getAdminSession = (demo = false) => sessionFrom(ADMIN_COOKIE, 'admi
 /** Whoever is signed in to the admin console: an admin, or the sales team (limited to the sales tabs). */
 export async function getConsoleSession(demo = false) {
   const s = await verifySession((await cookies()).get(ADMIN_COOKIE)?.value);
-  return s && isConsoleRole(s.role) ? allow(s, demo) : null;
+  return s && isConsoleRole(s.role) ? adminStillThere(allow(s, demo)) : null;
 }
 /** The admin console's pages: an admin or the sales team, else to the console's sign-in. */
 export async function requireConsole(path: string, { demo = false } = {}) {
   const session = await getConsoleSession(demo);
-  if (!session) redirect(`${roleLogin.admin}?next=${encodeURIComponent(path)}`);
+  // `gone`: a removed admin's cookie is still valid, so the sign-in page (middleware) clears it rather than sending
+  // them straight back here
+  if (!session) redirect(`${roleLogin.admin}?gone=1&next=${encodeURIComponent(path)}`);
   return session;
 }
 

@@ -7,7 +7,7 @@ import { z } from 'zod';
 import { appwrite, DATABASE_ID, TABLES } from '@/lib/appwrite';
 import { accountExists, findAccount, hashPassword, saveAccount } from '@/lib/auth/accounts';
 import { getAdminSession, getConsoleSession } from '@/lib/auth/server';
-import { ENGINEER_ID_PREFIX, roleFor } from '@/lib/auth/users';
+import { ADMIN_ID_PREFIX, ENGINEER_ID_PREFIX, roleFor } from '@/lib/auth/users';
 import { Query, type Models } from 'node-appwrite';
 import { forgetTeam } from '@/lib/engineer-team';
 import { assignByAdmin, DeskError, releaseEngineerJobs, removeOrderEquipment } from '@/lib/service/server';
@@ -120,6 +120,61 @@ export async function addEngineer(_prev: AddEngineerState, form: FormData): Prom
   }
   revalidatePath('/admin');
   return { done: { name: d.name, email: d.email, password: d.password } };
+}
+
+export interface AddAdminState {
+  errors?: Partial<Record<'name' | 'email' | 'phone' | 'password' | 'form', string>>;
+  values?: Record<string, string>;
+  /** Set once the admin is created: what to pass on to them (the password is shown only this once). */
+  done?: { name: string; email: string; password: string };
+}
+
+const adminSchema = z.object({
+  name: z.string().trim().min(2, 'Enter the person’s full name').max(100),
+  email: z.string().trim().toLowerCase().email('Enter a valid email address'),
+  phone: z.union([z.literal(''), z.string().trim().regex(/^[+\d][\d\s()-]{6,}$/, 'Enter a valid phone number')]),
+  password: z.string().min(8, 'Use at least 8 characters').max(200),
+});
+
+/**
+ * Admin console → Database & settings → Admins → Add admin: creates an account (an `adm-` id) that signs in to the
+ * admin console straight away, with full access. Admins only (not the sales team); needs the database (Appwrite).
+ */
+export async function addAdmin(_prev: AddAdminState, form: FormData): Promise<AddAdminState> {
+  const s = await getAdminSession();
+  if (s?.role !== 'admin') return { errors: { form: 'Only admins can add admins.' } };
+  const raw = Object.fromEntries([...form.entries()].map(([k, v]) => [k, String(v)]));
+  const values = { name: raw.name ?? '', email: raw.email ?? '', phone: raw.phone ?? '' };
+  const parsed = adminSchema.safeParse({ ...raw, phone: raw.phone ?? '' });
+  if (!parsed.success) {
+    const errors: AddAdminState['errors'] = {};
+    for (const issue of parsed.error.issues) errors[issue.path[0] as keyof NonNullable<AddAdminState['errors']>] ??= issue.message;
+    return { errors, values };
+  }
+  const d = parsed.data;
+  if (!appwrite) return { errors: { form: 'The database (Appwrite) isn’t connected, so accounts can’t be created here yet.' }, values };
+  try {
+    if (await accountExists(d.email)) return { errors: { email: 'There is already an account with this email.' }, values };
+    const { salt, hash } = await hashPassword(d.password);
+    await saveAccount({ id: `${ADMIN_ID_PREFIX}${crypto.randomUUID().slice(0, 8)}`, name: d.name, email: d.email, organisation: 'Flokefama', phone: d.phone, salt, hash });
+  } catch {
+    return { errors: { form: 'The database couldn’t be reached. Please try again.' }, values };
+  }
+  console.info(`[admin] ${s.email} added admin ${d.email}`);
+  revalidatePath('/admin');
+  return { done: { name: d.name, email: d.email, password: d.password } };
+}
+
+/** Removes an admin the console added (an `adm-` id). Admins listed in ADMIN_EMAILS are removed in Vercel; no one removes themselves. */
+export async function removeAdmin(form: FormData) {
+  const s = await getAdminSession();
+  if (s?.role !== 'admin' || !appwrite) return;
+  const id = String(form.get('id') ?? '');
+  if (!/^adm-[a-z0-9]{8}$/.test(id) || id === s.sub) return;
+  await appwrite.tables.deleteRow({ databaseId: DATABASE_ID, tableId: TABLES.accounts, rowId: id });
+  console.info(`[admin] ${s.email} removed admin ${id}`);
+  revalidatePath('/admin');
+  redirect('/admin?tab=system');
 }
 
 /** Removes an engineer account the console created (an `eng-` id); their past jobs stay on the service desk. */
