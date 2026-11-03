@@ -65,8 +65,8 @@ export async function joinAsEngineer(_prev: JoinState, form: FormData): Promise<
     return { errors: { form: 'We couldn’t save your registration. Check your connection and try again.' }, values };
   }
   const text = waiting
-    ? `New engineer to approve: ${d.name} (${d.region}), ${d.phone}. Approve: ${siteUrl}/admin?tab=team`
-    : `New engineer joined: ${d.name} (${d.region}), ${d.phone}. See or remove: ${siteUrl}/admin?tab=team`;
+    ? `New engineer to approve: ${d.name} (${d.region}), ${showPhone(d.phone)}. Approve: ${siteUrl}/admin?tab=team`
+    : `New engineer joined: ${d.name} (${d.region}), ${showPhone(d.phone)}. See or remove: ${siteUrl}/admin?tab=team`;
   await textAdmins('engineer-join', d.email, text).catch((e) => console.error('join: admin text failed', e));
   forgetTeam();
   revalidatePath('/admin');

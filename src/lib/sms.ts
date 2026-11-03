@@ -15,7 +15,10 @@ import { siteUrl } from '@/lib/utils';
  * Text messages (SMS) to engineers, so they hear about urgent faults even without data or the portal open.
  * Only things an engineer must act on are texted: an urgent new request (all engineers), a job given to them by
  * someone else, a hospital's message on their job, and, if an urgent request is still untaken after
- * SMS_ESCALATE_MINUTES, the admins and SMS_ESCALATION_NUMBERS. Texts never carry the fault description, only
+ * SMS_ESCALATE_MINUTES, the admins and SMS_ESCALATION_NUMBERS.
+ * SMS_IMPORTANT_NUMBERS (comma-separated, e.g. the CEO's) get only the important ones: an urgent job no engineer has
+ * taken, and a fault from the website nobody has called back, both after SMS_ESCALATE_MINUTES. Not a new engineer
+ * joining or any other day-to-day text, and without a link (they don't sign in to the admin console). Texts never carry the fault description, only
  * the hospital, the equipment, the job number and a link (which needs a sign-in).
  *
  * SMS_PROVIDER picks the gateway: empty = off; "log" = nothing is sent, each text is only recorded (for demos);
@@ -164,6 +167,9 @@ async function staff(): Promise<Person[]> {
   return rows.filter((r) => !r.$id.startsWith('engp-')).map((r) => ({ name: r.name, phone: r.phone ?? '', role: roleFor(r.email ?? '', r.$id), head: isHeadOrganisation(r.organisation) || headByEmail(r.email ?? '') })).filter((p) => p.role !== 'client' && p.phone);
 }
 
+/** Numbers that get only the important texts (SMS_IMPORTANT_NUMBERS): see the top of this file. */
+const importantNumbers = () => (process.env.SMS_IMPORTANT_NUMBERS ?? '').split(',').filter((n) => n.trim());
+
 /** One text to every admin (with a phone on their account) and SMS_ESCALATION_NUMBERS, e.g. a new engineer to approve. */
 export async function textAdmins(kind: string, ref: string, text: string) {
   if (!smsEnabled || !appwrite) return;
@@ -308,6 +314,7 @@ export async function escalateStale(desk: ServiceState, force = false) {
         return [
           send('escalation', t.id, [...admins, ...extra], `${what} Open: ${siteUrl}/admin?tab=service`, rowId(t)).catch(failed),
           send('escalation', t.id, heads, `${what} Give it to an engineer: ${jobLink(t.id)}`, `${rowId(t)}h`.slice(0, 36)).catch(failed),
+          send('escalation', t.id, importantNumbers(), `Flokefama: ${what} The team has been alerted.`, `${rowId(t)}i`.slice(0, 36)).catch(failed),
         ];
       }),
     );
@@ -340,7 +347,11 @@ async function callbackEscalations(now: number) {
     todo.map((r) => {
       const mins = Math.round((now - Date.parse(r.at)) / 60_000);
       const text = `Nobody has called back ${plain(r.name, 30)} at ${plain(r.facility, 40)} (${plain(r.equipment ?? 'equipment', 30)}) after ${mins} min. Call ${plain(r.phone, 20)}. Ref ${r.id}.`;
-      return send('callback', r.id, to, text, rowId(r.id)).catch((e) => console.error('sms: call-back warning not recorded', e));
+      const failed = (e: unknown) => console.error('sms: call-back warning not recorded', e);
+      return Promise.all([
+        send('callback', r.id, to, text, rowId(r.id)).catch(failed),
+        send('callback', r.id, importantNumbers(), `Flokefama: nobody has called back ${plain(r.facility, 40)} about a fault (${plain(r.equipment ?? 'equipment', 30)}) after ${mins} min. The team has been alerted.`, `${rowId(r.id)}i`.slice(0, 36)).catch(failed),
+      ]);
     }),
   );
   return todo.length;
