@@ -9,6 +9,7 @@ import { ServiceWorkerRegister } from '@/components/layout/sw-register';
 import { bootScript, revealNowScript } from '@/lib/a11y';
 import { SiteProvider } from '@/components/site-provider';
 import { getSite } from '@/lib/site';
+import { socials } from '@/data/socials';
 import type { Contact } from '@/lib/site-content';
 import { allowIndexing, siteUrl, jsonLdHtml } from '@/lib/utils';
 import '@/styles/uicons/uicons.css';
@@ -51,16 +52,43 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = { themeColor: '#16232a', width: 'device-width', initialScale: 1 };
 
-const organizationLd = (contact: Contact) => ({
+/**
+ * Who Flokefama is, for search engines (schema.org): the head office with its map position, every branch with its
+ * phone, the 24/7 support line, where it works, and its social profiles. Kept in step with the Studio (Site content).
+ */
+const organizationLd = (contact: Contact, branches: { name: string; detail: string; phone?: string }[]) => ({
   '@context': 'https://schema.org',
   '@type': 'MedicalBusiness',
+  '@id': `${siteUrl}/#organization`,
   name: 'Flokefama Company Limited',
+  alternateName: 'Flokefama',
   url: siteUrl,
   logo: `${siteUrl}/images/logo.png`,
+  image: `${siteUrl}/images/og-image.jpg`,
+  description: 'Medical equipment and laboratory diagnostics supplied, installed, maintained and calibrated for hospitals and laboratories across Ghana and West Africa. Official distributor of Mindray.',
   foundingDate: '2008',
   telephone: contact.phone,
   email: contact.info,
-  address: { '@type': 'PostalAddress', addressLocality: 'Santa Maria, Accra', addressCountry: 'GH' },
+  address: { '@type': 'PostalAddress', streetAddress: contact.address || undefined, addressLocality: 'Accra', addressRegion: 'Greater Accra', addressCountry: 'GH' },
+  ...(contact.lat && contact.lng ? { geo: { '@type': 'GeoCoordinates', latitude: contact.lat, longitude: contact.lng } } : {}),
+  areaServed: [{ '@type': 'Country', name: 'Ghana' }, { '@type': 'Place', name: 'West Africa' }],
+  contactPoint: [
+    { '@type': 'ContactPoint', contactType: 'customer support', telephone: contact.phone, email: contact.support || contact.info, availableLanguage: ['English'], hoursAvailable: { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], opens: '00:00', closes: '23:59' } },
+    ...(contact.sales ? [{ '@type': 'ContactPoint', contactType: 'sales', email: contact.sales, telephone: contact.phone }] : []),
+  ],
+  department: branches.map((b) => ({ '@type': 'MedicalBusiness', name: `Flokefama ${b.name}`, address: { '@type': 'PostalAddress', streetAddress: b.detail || undefined, addressLocality: b.name, addressCountry: 'GH' }, telephone: b.phone || undefined })),
+  sameAs: socials.map((x) => x.href),
+});
+
+/** The site itself, with its catalogue search, so search engines can offer a search box for it. */
+const websiteLd = () => ({
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  '@id': `${siteUrl}/#website`,
+  name: 'Flokefama',
+  url: siteUrl,
+  publisher: { '@id': `${siteUrl}/#organization` },
+  potentialAction: { '@type': 'SearchAction', target: { '@type': 'EntryPoint', urlTemplate: `${siteUrl}/products?q={search_term_string}` }, 'query-input': 'required name=search_term_string' },
 });
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
@@ -93,7 +121,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         {process.env.VERCEL && <Analytics />}
         {/* Vercel Speed Insights: track Core Web Vitals */}
         {process.env.VERCEL && <SpeedInsights />}
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdHtml(organizationLd(site.contact)) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdHtml([organizationLd(site.contact, site.branches), websiteLd()]) }} />
         <script dangerouslySetInnerHTML={{ __html: revealNowScript }} />
       </body>
     </html>

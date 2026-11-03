@@ -71,8 +71,9 @@ const fmt = (iso: string | undefined) => (iso ? dateFmt.format(new Date(iso)) : 
 const units = (o: { items: { qty: number }[] }) => o.items.reduce((n, i) => n + i.qty, 0);
 // Kept here: '@/lib/orders' is a browser module, so its constants can't be read on the server
 const orderStatusLabel = Object.fromEntries(salesStages.map((x) => [x.id, x.label])) as Record<OrderStatus, string>;
-/** "AUTO HEAMATOLOGY ANALYZER BC5150" → "Auto Heamatology Analyzer BC5150" (model codes stay upper case). */
-const tidy = (n: string) => n.split(/(\s+|[()])/).map((w) => (/\d/.test(w) ? w.toUpperCase() : w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())).join('');
+// Only a name written all in capitals (an older order or record) is re-cased; the catalogue's names are already in
+// the house style (lib/product-names.ts), which re-casing would spoil ("pH Meter")
+const tidy = (n: string) => (/[a-z]/.test(n) ? n : n.split(/(\s+|[()])/).map((w) => (/\d/.test(w) ? w.toUpperCase() : w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())).join(''));
 const methodLabel: Record<string, string> = { momo: 'Mobile money', card: 'Card', bank: 'Bank transfer' };
 const ticketLabel: Record<string, string> = { new: 'Logged', assigned: 'Assigned', travelling: 'En route', onsite: 'On site', resolved: 'Resolved' };
 const smsKind: Record<string, string> = { website: 'Website fault', urgent: 'Urgent fault', assigned: 'Job given', message: 'Hospital message', escalation: 'Not taken', test: 'Test text', hospitals: 'To all hospitals', checkin: 'Check-in', calibration: 'Calibration reminder', holiday: 'Holiday greeting', update: 'Update to hospital', callback: 'Not called back', written: 'Sent by hand', reopened: 'Reopened', 'engineer-join': 'New engineer', 'engineer-approved': 'Engineer approved', 'head-on': 'Made head', 'head-off': 'No longer head' };
@@ -311,6 +312,47 @@ function Panel({ title, children, className, action }: { title: string; children
   );
 }
 
+/**
+ * What visitors did, from the site's own records (no cookies, nothing sent to anyone else): the last 30 days against
+ * the 30 before. Visits and pages viewed are in Vercel → Analytics.
+ */
+function Conversions({ data, now }: { data: AdminData; now: number }) {
+  const DAY_MS = 864e5;
+  const engineers = new Set(data.accounts.filter((a) => a.role === 'engineer').map((a) => a.name));
+  const count = (times: string[], from: number, to: number) => times.filter((t) => { const x = Date.parse(t); return x >= now - from * DAY_MS && x < now - to * DAY_MS; }).length;
+  const rows = [
+    { label: 'Hospitals registered', icon: 'fi-rr-hospital', times: data.accounts.filter((a) => a.role === 'client').map((a) => a.createdAt) },
+    { label: 'Orders placed', icon: 'fi-rr-shopping-cart', times: data.orders.map((o) => o.placedAt) },
+    { label: 'Service requests from hospitals', icon: 'fi-rr-clipboard-list', times: data.desk.tickets.filter((t) => t.kind !== 'installation' && t.requestedBy && !['Service schedule', 'Flokefama sales'].includes(t.requestedBy) && !engineers.has(t.requestedBy)).map((t) => t.openedAt) },
+    { label: 'Enquiries from the Support page', icon: 'fi-rr-headset', times: data.supportRequests.filter((r) => r.topic !== 'demo').map((r) => r.at) },
+    { label: 'Demonstrations asked for', icon: 'fi-rr-play-circle', times: data.supportRequests.filter((r) => r.topic === 'demo').map((r) => r.at) },
+  ].map((r) => ({ ...r, now: count(r.times, 30, 0), before: count(r.times, 60, 30) }));
+  return (
+    <Panel title="Conversions" action={<span className="text-[0.875rem] text-ink-3">Last 30 days, against the 30 before</span>}>
+      <ul className="-mt-1 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+        {rows.map((r) => {
+          const diff = r.now - r.before;
+          return (
+            <li key={r.label} className="rounded-2xl bg-[#f5f7fb] px-4 py-3.5">
+              <p className="flex items-center gap-2 text-[0.875rem] font-medium text-ink-2"><Icon name={r.icon} className="text-ink-3" /> {r.label}</p>
+              <p className="mt-1.5 flex items-baseline gap-2">
+                <span className="font-mono text-[1.75rem] font-medium text-ink">{r.now}</span>
+                <span className={cn('text-[0.8125rem] font-medium', diff > 0 ? 'text-brand-700' : diff < 0 ? 'text-signal-700' : 'text-ink-3')}>
+                  {diff > 0 ? `▲ ${diff}` : diff < 0 ? `▼ ${-diff}` : 'no change'}
+                </span>
+              </p>
+            </li>
+          );
+        })}
+      </ul>
+      <p className="mt-4 text-[0.8125rem] text-ink-3">
+        Counted from the site’s own records: no cookies, nothing sent elsewhere. Visits and the pages people view are in{' '}
+        <a href="https://vercel.com/jamesjnr1s-projects/floke-fama/analytics" target="_blank" rel="noopener noreferrer" className="font-medium text-brand-700 underline">Vercel → Analytics</a>.
+      </p>
+    </Panel>
+  );
+}
+
 /** The colours of the overview's figures, so the row reads at a glance (the same fills as the hospital dashboard). */
 const statFill = {
   green: 'bg-[radial-gradient(130%_120%_at_0%_0%,#0f8a55_0%,#06482a_55%,#032a19_100%)] shadow-[0_14px_30px_-16px_rgb(4_56_34/0.75)]',
@@ -454,6 +496,10 @@ function Overview({ data, now }: { data: AdminData; now: number }) {
         <Mini tone="green" label="Equipment under care" value={data.desk.assets.length} note={`${dueSoon.length} due for calibration`} />
         <Mini tone="amber" label="Service rating" value={rated.length ? `${(rated.reduce((n, t) => n + (t.rating ?? 0), 0) / rated.length).toFixed(1)}/5` : '—'} note={`${rated.length} rated visits`} />
         <Mini tone="blue" label="Phones with alerts on" value={data.pushSubscriptions} note="Push subscribers" />
+      </div>
+
+      <div className="mt-4">
+        <Conversions data={data} now={now} />
       </div>
 
       <div className="mt-4">

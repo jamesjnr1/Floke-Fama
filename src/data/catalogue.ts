@@ -2,8 +2,10 @@
  * product names, brands, descriptions and images are as published there; key features come from
  * the Flokefama brochure. Categories follow the CEO's five (src/lib/categories.ts). `source` is the product's path on the current site (used for redirects). */
 import type { Product } from '@/lib/types';
+import { tidyProduct } from '@/lib/product-names';
 
-export const catalogue: Product[] = [
+/** As imported; the site uses `catalogue` below, with the names in the house style (lib/product-names.ts). */
+const imported: Product[] = [
   {
     "slug": "semi-automated-chemistry-analysermindray",
     "name": "SEMI AUTOMATED CHEMISTRY ANALYSER(MINDRAY)",
@@ -2444,3 +2446,5 @@ export const catalogue: Product[] = [
     "source": "/index.php/product/zima-frame-with-wheels/"
   }
 ];
+
+export const catalogue: Product[] = imported.map(tidyProduct);

@@ -207,8 +207,9 @@ export function CalibrationDialog({ asset, onOpenChange, onSubmit }: {
 
 export type CatalogueOption = { slug: string; name: string; brand: string; image?: string };
 const today = () => new Date().toISOString().slice(0, 10);
-/** "AUTO HEAMATOLOGY ANALYZER BC5150" → "Auto Heamatology Analyzer BC5150" (model codes stay upper case). */
-const tidy = (n: string) => n.split(/(\s+|[()])/).map((w) => (/\d/.test(w) ? w.toUpperCase() : w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())).join('');
+// Only a name written all in capitals (an older order or record) is re-cased; the catalogue's names are already in
+// the house style (lib/product-names.ts), which re-casing would spoil ("pH Meter")
+const tidy = (n: string) => (/[a-z]/.test(n) ? n : n.split(/(\s+|[()])/).map((w) => (/\d/.test(w) ? w.toUpperCase() : w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())).join(''));
 
 /**
  * Register equipment a hospital already owns (bought before the website, or elsewhere), so it gets a calibration
