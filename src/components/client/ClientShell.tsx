@@ -9,6 +9,8 @@ import { CertificatesView } from '@/components/client/CertificatesView';
 import { EquipmentSheet, RequestDialog, type CatalogueItem } from '@/components/client/dialogs';
 import { EquipmentView } from '@/components/client/EquipmentView';
 import { OrdersView } from '@/components/client/OrdersView';
+import { CompleteProfileCard, ProfileView } from '@/components/client/ProfileView';
+import { profileComplete, type HospitalProfile } from '@/lib/hospital-profile-fields';
 import { Overview } from '@/components/client/Overview';
 import { RequestsView } from '@/components/client/RequestsView';
 import { LogoMark, PortalLogo } from '@/components/layout/logo';
@@ -34,23 +36,25 @@ import { CONSUMABLES } from '@/lib/categories';
 /** "AUTO HEAMATOLOGY ANALYZER BC5150" → "Auto Heamatology Analyzer BC5150" (model codes stay upper case). */
 const tidyName = (n: string) => n.split(/(\s+|[()])/).map((w) => (/\d/.test(w) ? w.toUpperCase() : w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())).join('');
 
-type View = 'overview' | 'requests' | 'equipment' | 'certificates' | 'orders';
+type View = 'overview' | 'requests' | 'equipment' | 'certificates' | 'orders' | 'profile';
 const nav: { id: View; label: string; icon: string }[] = [
   { id: 'overview', label: 'Overview', icon: 'fi-rr-apps' },
   { id: 'requests', label: 'Service requests', icon: 'fi-rr-clipboard-list' },
   { id: 'equipment', label: 'Equipment', icon: 'fi-rr-microscope' },
   { id: 'certificates', label: 'Certificates', icon: 'fi-rr-badge-check' },
   { id: 'orders', label: 'Orders', icon: 'fi-rr-box-open' },
+  { id: 'profile', label: 'Hospital profile', icon: 'fi-rr-hospital' },
 ];
 
 /** Hospital dashboard (Flokefama Care): the facility's service desk, equipment, certificates and orders. */
-export function ClientShell({ user, products, demo = false }: { user: { name: string; email: string; facility?: string; phone?: string }; products: CatalogueItem[]; /** The demo (lib/demo.ts): the sample desk in this browser. */ demo?: boolean }) {
+export function ClientShell({ user, products, demo = false, profile: savedProfile = null }: { user: { name: string; email: string; facility?: string; phone?: string }; products: CatalogueItem[]; /** The hospital's own details (Hospital profile); null in the demo */ profile?: HospitalProfile | null; /** The demo (lib/demo.ts): the sample desk in this browser. */ demo?: boolean }) {
   const { contact } = useSite();
   const facility = user.facility ?? user.name;
   const orders = useOrders(user.email);
   const actor = useMemo(() => ({ name: user.name, role: 'client' as const, facility }), [user.name, facility]);
   const { state, dispatch: rawDispatch, ready, remote, syncedAt, queued, failing } = useServiceStore(actor, { demo });
   const [view, setView] = useState<View>('overview');
+  const [profile, setProfile] = useState<HospitalProfile | null>(savedProfile);
   // Deep links such as /portal?view=orders (from checkout)
   useEffect(() => {
     const v = new URLSearchParams(location.search).get('view');
@@ -260,12 +264,14 @@ export function ClientShell({ user, products, demo = false }: { user: { name: st
             <div className="grid grid-cols-2 gap-3 xl:grid-cols-4" aria-busy="true">{[0, 1, 2, 3].map((i) => <div key={i} className="h-32 animate-pulse rounded-xl bg-mist" />)}</div>
           ) : (
             <>
+              {view === 'overview' && !demo && !profileComplete(profile) && <CompleteProfileCard onOpen={() => setView('profile')} />}
               {view === 'overview' && !demo && <AlertsBanner what="your engineer’s visits and updates" />}
               {view === 'overview' && <Overview name={user.name} facility={facility} orders={orders.length} assets={assets} tickets={tickets} onOpenTicket={openTicket} onOpenAsset={openAsset} onRequest={() => request()} onGo={setView} />}
               {view === 'requests' && <div data-tour="view-requests"><RequestsView assets={assets} tickets={tickets} selectedId={ticketId} onSelect={setTicketId} onRequest={() => request()} dispatch={dispatch} /></div>}
               {view === 'equipment' && <div data-tour="view-equipment"><EquipmentView assets={assets} tickets={tickets} onOpenAsset={openAsset} /></div>}
               {view === 'certificates' && <div data-tour="view-certificates"><CertificatesView assets={assets} onOpenAsset={openAsset} /></div>}
               {view === 'orders' && <OrdersView orders={orders} />}
+              {view === 'profile' && <ProfileView initial={profile} facility={facility} demo={demo} onSaved={setProfile} />}
             </>
           )}
         </div>
