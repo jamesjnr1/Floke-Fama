@@ -61,6 +61,8 @@ export function SiteIntro({ storageKey = 'ff-intro', target: targetSelector = 'h
     const el = overlay.current;
     const group = logo.current;
     if (!root.classList.contains('ff-intro') || !el || !group) return;
+    // From here this handles a click or key (the page's own script did until now)
+    (window as Window & { __ffIntroLive?: boolean }).__ffIntroLive = true;
     // The logo it lands on: the first visible one, looked up when the rise starts (a portal may draw its sidebar a moment
     // after loading; the portals' sidebar is hidden on phones, where the logo just fades)
     const findTarget = () => [...document.querySelectorAll<HTMLElement>(targetSelector)].find((e) => e.getBoundingClientRect().width > 0) ?? null;
