@@ -107,6 +107,8 @@
   h1, h2, h3, h4 {
     @apply text-ink;
     text-wrap: balance;
+    /* A long word (a model name, "ANALYSER(MINDRAY)") breaks onto the next line instead of running out of its box */
+    overflow-wrap: break-word;
   }
   ::selection {
     @apply bg-brand-100 text-midnight;

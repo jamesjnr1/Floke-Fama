@@ -57,7 +57,7 @@ export function RelatedProducts({ products, category }: { products: Product[]; c
                 </span>
                 <span className="px-2 pb-2 pt-3">
                   <span className="label block">{p.brand}</span>
-                  <span className="mt-1 block text-sm font-semibold leading-snug text-ink">{p.name}</span>
+                  <span className="mt-1 block text-sm font-semibold leading-snug text-ink [overflow-wrap:anywhere]">{p.name}</span>
                 </span>
               </Link>
             </li>
