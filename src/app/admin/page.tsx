@@ -8,7 +8,8 @@ import { Icon } from '@/components/ui/icon';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { removeAdmin, removeEngineer, saveOrderNote, setOrderStatus } from '@/lib/admin/actions';
 import { AddAdminForm } from '@/components/admin/add-admin-form';
-import { approveEngineer, declineEngineer, setHeadEngineer } from '@/lib/engineer-actions';
+import { approveEngineer, declineEngineer } from '@/lib/engineer-actions';
+import { HeadToggle } from '@/components/admin/head-toggle';
 import { setHospitalStatus } from '@/lib/admin/hospital-actions';
 import { AddHospitalLoginForm, RegisterHospitalForm } from '@/components/admin/hospital-forms';
 import { headByEmail } from '@/lib/auth/users';
@@ -886,7 +887,7 @@ async function Team({ data, now, demo }: { data: AdminData; now: number; demo?: 
   return (
     <>
       <Heading
-        hint={<>Send the invite link to engineers anywhere in the country (WhatsApp is easiest). They register themselves with their name, phone, email, region and a password. Each registration waits here until you approve it, so a forwarded link can’t let a stranger in. Approved engineers get a text and sign in at /engineer/login. Make head gives an engineer (the head of the engineering department) the power to give any job to any engineer from their portal; they also get the texts about urgent jobs nobody has taken.</>}
+        hint={<>Send the invite link to engineers anywhere in the country (WhatsApp is easiest). They register themselves with their name, phone, email, region and a password. Each registration waits here until you approve it, so a forwarded link can’t let a stranger in. Approved engineers get a text and sign in at /engineer/login. Make head (you can have more than one head) gives an engineer the power to give any job to any engineer from their portal; they also get the texts about urgent jobs nobody has taken.</>}
         title="Engineers"
         lead={`${engineers.length} engineer${engineers.length === 1 ? '' : 's'} on the system${pending.length ? `, ${pending.length} waiting for your approval` : ''}. Every engineer gets a text about urgent jobs; one nobody takes quickly is given to an engineer in the hospital’s region.`}
         action={<Csv table="accounts" />}
@@ -944,12 +945,7 @@ async function Team({ data, now, demo }: { data: AdminData; now: number; demo?: 
               {headByEmail(r.a.email) ? (
                 <Badge tone="good">Head (HEAD_ENGINEER_EMAILS)</Badge>
               ) : (
-                <form action={setHeadEngineer} className="flex items-center gap-2">
-                  <input type="hidden" name="id" value={r.a.id} />
-                  <input type="hidden" name="on" value={r.head ? '0' : '1'} />
-                  {r.head && <Badge tone="good">Head</Badge>}
-                  <button className={r.head ? 'text-[0.875rem] font-medium text-ink-3 hover:text-signal-700' : 'inline-flex h-9 items-center rounded-lg border border-line px-3 text-[0.875rem] font-medium hover:border-ink/40'}>{r.head ? 'Remove' : 'Make head'}</button>
-                </form>
+                <HeadToggle id={r.a.id} name={r.a.name} head={r.head} />
               )}
             </td>
           </tr>
