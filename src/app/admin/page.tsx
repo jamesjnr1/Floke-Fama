@@ -120,7 +120,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
     const b = badges[id];
     if (!b?.n) return null;
     return (
-      <span title={`${b.n} ${b.title}`} className={cn('relative rounded-full px-2 py-0.5 text-[0.75rem] font-bold tabular-nums', phone ? 'ml-1' : 'ml-auto', b.tone === 'red' ? 'bg-signal text-white' : phone ? 'bg-brand-600 text-white' : 'bg-white text-[#1f3157]')}>
+      <span title={`${b.n} ${b.title}`} className={cn('relative rounded-full px-2 py-0.5 text-[0.75rem] font-bold tabular-nums', phone ? 'ml-1' : 'ml-auto', b.tone === 'red' ? 'bg-signal text-white' : phone ? 'bg-brand-600 text-white' : 'bg-white text-brand-800')}>
         {b.n}
         <span className="sr-only"> {b.title}</span>
       </span>
@@ -133,11 +133,11 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
   return (
     <div className="min-h-svh bg-[#e7ebf2] p-3 pt-[calc(var(--banner)+12px)] text-ink md:p-4 md:pt-[calc(var(--banner)+16px)]">
       <div className="mx-auto flex max-w-[1600px] gap-4">
-        {/* Sidebar: deep navy, the admin console's own colour (the hospital and engineer dashboards are green), so it is
-            never mistaken for them. As tall as the screen with everything in
+        {/* Sidebar: a deep emerald gradient, darker and richer than the dashboards' flat green, with the console's navy
+            touches elsewhere. As tall as the screen with everything in
             view and no scrolling: the space around each row grows with the screen's height (tighter on a laptop with the
             notice strip, roomier on a big screen). Below 820px tall the export card becomes a row under General. */}
-        <aside className="sticky top-[calc(var(--banner)+16px)] hidden h-[calc(100svh-var(--banner)-2rem)] w-64 shrink-0 flex-col overflow-y-auto overscroll-contain rounded-[1.75rem] bg-[linear-gradient(180deg,#1f3157_0%,#172646_55%,#101b33_100%)] px-4 py-5 text-white shadow-[0_18px_40px_-24px_rgb(16_27_51/0.75)] [scrollbar-color:rgb(255_255_255/0.35)_transparent] [scrollbar-width:thin] lg:flex">
+        <aside className="sticky top-[calc(var(--banner)+16px)] hidden h-[calc(100svh-var(--banner)-2rem)] w-64 shrink-0 flex-col overflow-y-auto overscroll-contain rounded-[1.75rem] bg-[radial-gradient(140%_70%_at_0%_0%,#0f8a55_0%,#06482a_55%,#032a19_100%)] px-4 py-5 text-white shadow-[0_18px_40px_-24px_rgb(4_56_34/0.75)] [scrollbar-color:rgb(255_255_255/0.35)_transparent] [scrollbar-width:thin] lg:flex">
           <Link href="/admin" className="flex shrink-0 flex-col gap-1.5 px-2">
             <PortalLogo product="Admin" />
             <span className="pl-[36px] text-[0.75rem] font-medium tracking-[0.02em] text-white/75">Admin console</span>
@@ -192,7 +192,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             <Link href="/admin" className="flex items-center gap-2 lg:hidden">
               <LogoMark className="size-8" />
             </Link>
-            <UserAvatar className="size-11 rounded-full bg-[linear-gradient(135deg,#2a4275,#101b33)] text-lg text-white" />
+            <UserAvatar className="size-11 rounded-full bg-[linear-gradient(135deg,#0f8a55,#032a19)] text-lg text-white" />
             <div className="min-w-0">
               <p className="truncate font-semibold">{session.name}</p>
               <p className="truncate text-[0.875rem] text-ink-3">{session.email}</p>
