@@ -1782,8 +1782,17 @@ function Admins({ data, me }: { data: AdminData; me: string }) {
         <p className="-mt-2 text-ink-3">No admin accounts yet.</p>
       )}
       <details className="group mt-4 open:rounded-2xl open:p-5 open:ring-1 open:ring-line">
-        <summary className="inline-flex cursor-pointer list-none items-center gap-2 rounded-xl bg-brand-700 px-4 py-2.5 text-[0.9375rem] font-semibold text-white hover:bg-brand-800 group-open:mb-3 group-open:bg-transparent group-open:p-0 group-open:text-lg group-open:text-ink [&::-webkit-details-marker]:hidden">
-          <Icon name="fi-rr-user-add" /> Add admin
+        {/* Closed: the green Add admin button. Open: a plain heading for the form, with Close on the right */}
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-brand-600 group-open:mb-3 [&::-webkit-details-marker]:hidden">
+          <span className="inline-flex h-11 items-center gap-2 rounded-xl bg-brand-700 px-4 text-[0.9375rem] font-semibold text-white transition-colors hover:bg-brand-800 group-open:hidden">
+            <Icon name="fi-rr-user-add" /> Add admin
+          </span>
+          <span className="hidden items-center gap-2 text-lg font-semibold text-ink group-open:inline-flex">
+            <Icon name="fi-rr-user-add" className="text-brand-700" /> Add admin
+          </span>
+          <span className="hidden h-9 items-center gap-1.5 rounded-lg border border-line bg-white px-3 text-[0.875rem] font-medium text-ink-2 hover:border-ink/30 group-open:inline-flex">
+            <Icon name="fi-rr-cross-small" /> Close
+          </span>
         </summary>
         <p className="mb-4 text-[0.9375rem] text-ink-3">For Flokefama management only: an admin sees everything here and can change orders, accounts and settings. They sign in at /admin/login.</p>
         <AddAdminForm />
