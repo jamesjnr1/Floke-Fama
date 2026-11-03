@@ -8,9 +8,9 @@ import { appwrite, DATABASE_ID, TABLES } from '@/lib/appwrite';
 import { accountExists, findAccount, hashPassword, saveAccount } from '@/lib/auth/accounts';
 import { getAdminSession, getConsoleSession } from '@/lib/auth/server';
 import { ENGINEER_ID_PREFIX, roleFor } from '@/lib/auth/users';
-import type { Models } from 'node-appwrite';
+import { Query, type Models } from 'node-appwrite';
 import { forgetTeam } from '@/lib/engineer-team';
-import { assignByAdmin, DeskError, releaseEngineerJobs } from '@/lib/service/server';
+import { assignByAdmin, DeskError, releaseEngineerJobs, removeOrderEquipment } from '@/lib/service/server';
 import type { OrderStatus, SavedOrder } from '@/lib/orders';
 import { salesStages, stageLabel } from '@/lib/sales-stages';
 import { sendTestSms, sendWrittenMessage } from '@/lib/sms';
@@ -148,6 +148,53 @@ export async function testSms(_prev: TestSmsState, form: FormData): Promise<Test
   if (!s) return { result: { ok: false, detail: 'Please sign in again.' } };
   const phone = String(form.get('phone') ?? '').trim().slice(0, 30);
   return { phone, result: await sendTestSms(phone, s.name) };
+}
+
+export interface ClearOrdersState {
+  error?: string;
+  done?: { orders: number; assets: number; tickets: number };
+}
+
+/**
+ * Admin console → Database & settings → Clear test orders: deletes every order (so the console's order figures and
+ * Product demand start again from nothing) and, unless unticked, the equipment and installation jobs those orders
+ * added to the service desk. Accounts, hospitals, engineers and everything else stay. Admins only; typed confirmation.
+ */
+export async function clearTestOrders(_prev: ClearOrdersState, form: FormData): Promise<ClearOrdersState> {
+  const s = await getAdminSession();
+  if (s?.role !== 'admin') return { error: 'Only admins can do this.' };
+  if (String(form.get('confirm') ?? '').trim().toUpperCase() !== 'DELETE ORDERS') return { error: 'Type DELETE ORDERS to confirm.' };
+  if (!appwrite) return { error: 'The database isn’t connected.' };
+  try {
+    const rows: (Models.Row & { data: string })[] = [];
+    let cursor: string | undefined;
+    for (let i = 0; i < 40; i++) {
+      const page = await appwrite.tables.listRows<Models.Row & { data: string }>({ databaseId: DATABASE_ID, tableId: TABLES.orders, queries: [Query.limit(500), ...(cursor ? [Query.cursorAfter(cursor)] : [])] });
+      rows.push(...page.rows);
+      if (page.rows.length < 500) break;
+      cursor = page.rows[page.rows.length - 1].$id;
+    }
+    const orders = rows.flatMap((r) => {
+      try {
+        return [JSON.parse(r.data) as SavedOrder];
+      } catch {
+        return [];
+      }
+    });
+    let removed = { assets: 0, tickets: 0 };
+    if (form.get('equipment') === 'on') {
+      const orgOf = new Map<string, string | undefined>();
+      for (const o of orders) if (!orgOf.has(o.account)) orgOf.set(o.account, (await findAccount(o.account).catch(() => null))?.organisation ?? o.contact?.organisation);
+      removed = await removeOrderEquipment(orders.map((o) => ({ reference: o.reference, placedAt: o.placedAt, facility: orgOf.get(o.account), slugs: o.items.map((i) => i.slug) })));
+    }
+    for (const r of rows) await appwrite.tables.deleteRow({ databaseId: DATABASE_ID, tableId: TABLES.orders, rowId: r.$id });
+    console.info(`[admin] ${s.email} cleared ${rows.length} orders, ${removed.assets} items of equipment, ${removed.tickets} jobs`);
+    revalidatePath('/admin');
+    return { done: { orders: rows.length, ...removed } };
+  } catch (e) {
+    console.error('clear orders failed', e);
+    return { error: 'Not everything was cleared (the database didn’t answer). Press it again to finish.' };
+  }
 }
 
 export interface MessageState {
