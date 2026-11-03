@@ -1,4 +1,5 @@
 import 'server-only';
+import { normalisePhone } from '@/lib/phone';
 import { ID, Query, type Models } from 'node-appwrite';
 import { appwrite, DATABASE_ID, isNotFound, TABLES } from '@/lib/appwrite';
 import { isTableMissing, withTable } from '@/lib/appwrite-tables';
@@ -34,12 +35,8 @@ export const escalateMinutes = Math.max(0, Number(process.env.SMS_ESCALATE_MINUT
 
 export interface SmsLogEntry { id: string; at: string; kind: string; ref: string; to: string; text: string; status: 'sent' | 'logged' | 'failed' | 'sending'; detail: string }
 
-/** Ghana numbers in the international form gateways expect: 0241234567 or +233 24 123 4567 → 233241234567. */
-export function normalisePhone(raw: string) {
-  const d = (raw ?? '').replace(/\D/g, '');
-  const n = d.startsWith('00') ? d.slice(2) : d.length === 10 && d.startsWith('0') ? `233${d.slice(1)}` : d;
-  return /^\d{11,15}$/.test(n) ? n : null;
-}
+/** Ghana numbers in the international form gateways expect (lib/phone: also used by the forms). */
+export { normalisePhone };
 
 /** Plain characters only, so one text stays one text (curly quotes and dashes switch phones to a 70-character limit). */
 export const plain = (s: string, max: number) => {
@@ -297,15 +294,21 @@ export async function escalateStale(desk: ServiceState, force = false) {
     const todo = due.filter((t) => !done.has(rowId(t)));
     if (!todo.length) return calls;
     const extra = (process.env.SMS_ESCALATION_NUMBERS ?? '').split(',');
-    // The admins and the head of engineering
-    const admins = (await staff()).filter((p) => p.role === 'admin' || (p.role === 'engineer' && p.head)).map((p) => p.phone);
+    // The admins (and SMS_ESCALATION_NUMBERS) get a link to the admin console. The head of engineering can't open
+    // that, so theirs opens the job in the engineer dashboard, where they can give it to an engineer
+    const people = await staff();
+    const admins = people.filter((p) => p.role === 'admin').map((p) => p.phone);
+    const heads = people.filter((p) => p.role === 'engineer' && p.head).map((p) => p.phone);
     await Promise.all(
-      todo.map((t) => {
+      todo.flatMap((t) => {
         const { facility, equipment } = where(t, desk);
         const mins = Math.round((now - new Date(t.openedAt).getTime()) / 60_000);
-        return send('escalation', t.id, [...admins, ...extra], `No engineer has taken ${t.priority.toUpperCase()} job ${t.id} at ${facility} - ${equipment} after ${mins} min. Open: ${siteUrl}/admin?tab=service`, rowId(t)).catch((e) =>
-          console.error('sms: escalation not recorded', e),
-        );
+        const what = `No engineer has taken ${t.priority.toUpperCase()} job ${t.id} at ${facility} - ${equipment} after ${mins} min.`;
+        const failed = (e: unknown) => console.error('sms: escalation not recorded', e);
+        return [
+          send('escalation', t.id, [...admins, ...extra], `${what} Open: ${siteUrl}/admin?tab=service`, rowId(t)).catch(failed),
+          send('escalation', t.id, heads, `${what} Give it to an engineer: ${jobLink(t.id)}`, `${rowId(t)}h`.slice(0, 36)).catch(failed),
+        ];
       }),
     );
     return todo.length + calls;
