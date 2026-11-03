@@ -25,6 +25,7 @@ import { brevoStatus } from '@/lib/support-email';
 import { normalisePhone, smsProvider, smsStatus as smsGatewayStatus } from '@/lib/sms';
 import { showPhone, telOf } from '@/lib/phone';
 import { TestSmsForm } from '@/components/admin/test-sms-form';
+import { SendMessageForm } from '@/components/admin/send-message-form';
 import { AssignForm } from '@/components/admin/assign-form';
 import { HospitalTextsForm } from '@/components/admin/hospital-texts-form';
 import { CALIBRATION_NOTICE_DAYS, CHECK_IN_DAYS, calibrationText, checkInText, clientTextsAuto, hospitalsToText, messageTemplates, upcomingClientTexts } from '@/lib/client-sms';
@@ -72,7 +73,7 @@ const orderStatusLabel = Object.fromEntries(salesStages.map((x) => [x.id, x.labe
 const tidy = (n: string) => n.split(/(\s+|[()])/).map((w) => (/\d/.test(w) ? w.toUpperCase() : w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())).join('');
 const methodLabel: Record<string, string> = { momo: 'Mobile money', card: 'Card', bank: 'Bank transfer' };
 const ticketLabel: Record<string, string> = { new: 'Logged', assigned: 'Assigned', travelling: 'En route', onsite: 'On site', resolved: 'Resolved' };
-const smsKind: Record<string, string> = { website: 'Website fault', urgent: 'Urgent fault', assigned: 'Job given', message: 'Hospital message', escalation: 'Not taken', test: 'Test text', hospitals: 'To all hospitals', checkin: 'Check-in', calibration: 'Calibration reminder', holiday: 'Holiday greeting', update: 'Update to hospital', callback: 'Not called back' };
+const smsKind: Record<string, string> = { website: 'Website fault', urgent: 'Urgent fault', assigned: 'Job given', message: 'Hospital message', escalation: 'Not taken', test: 'Test text', hospitals: 'To all hospitals', checkin: 'Check-in', calibration: 'Calibration reminder', holiday: 'Holiday greeting', update: 'Update to hospital', callback: 'Not called back', written: 'Sent by hand', reopened: 'Reopened', 'engineer-join': 'New engineer', 'engineer-approved': 'Engineer approved', 'head-on': 'Made head', 'head-off': 'No longer head' };
 const smsStatus: Record<string, string> = { sent: 'Sent', logged: 'Recorded only', failed: 'Not sent', sending: 'Sending' };
 const categoryName = (slug: string) => slug.replace(/-/g, ' ').replace(/^\w/, (c) => c.toUpperCase());
 
@@ -250,7 +251,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             {tab === 'hospitals' && <Hospitals data={data} q={params.q} code={params.code} adding={params.add === 'hospital' && !demo} demo={demo} />}
             {tab === 'products' && <Products data={data} />}
             {tab === 'service' && <Service data={data} now={now} />}
-            {tab === 'texts' && <Texts data={data} now={now} />}
+            {tab === 'texts' && <Texts data={data} now={now} to={params.to} message={params.message} />}
             {tab === 'system' && <System data={data} phone={session.phone} />}
           </main>
         </div>
@@ -1610,7 +1611,7 @@ function WebsiteRequests({ data, now }: { data: AdminData; now: number }) {
  * Every text the website has sent, newest first: what it was about, who got it (by name where the number belongs to
  * an account), the message exactly as sent, and whether the gateway accepted it (with its reason if not).
  */
-async function Texts({ data, now }: { data: AdminData; now: number }) {
+async function Texts({ data, now, to, message }: { data: AdminData; now: number; /** Fills in Send a message (a link can carry them) */ to?: string; message?: string }) {
   const [hospitals, templates, upcoming] = await Promise.all([hospitalsToText().catch(() => []), messageTemplates(), upcomingClientTexts(data.desk, now)]);
   const auto = [
     { title: 'Updates on a request', when: 'When an engineer is assigned, and when it is fixed, to the number the hospital gave with the request', text: 'Request FLK-SR1042 (Mindray BC-5150 analyser): engineer Samuel Owusu is assigned. You can reach Samuel on 024 555 0101.', note: 'Then: “your … is fixed, please rate the visit”. On the way and on site show in the portal only.' },
@@ -1629,6 +1630,7 @@ async function Texts({ data, now }: { data: AdminData; now: number }) {
         lead={<>Texts to engineers about their work, and to hospitals to keep in touch. Below, every text sent, newest first: what it was about, who got it, the message exactly as it arrived, and whether it went out. Texts are sent from “Flokefama”{smsProvider === 'arkesel' ? ' through Arkesel' : ''}; send a test from <Link href="/admin?tab=system" className="font-medium text-brand-700 underline">Database &amp; settings</Link>.</>}
       />
       {!smsProvider && <p className="mb-5 rounded-xl bg-[#fdf6e3] px-4 py-3 text-[0.9375rem] text-[#7a5200]">Texts are off: set SMS_PROVIDER and SMS_API_KEY in Vercel (see Database &amp; settings).</p>}
+      {smsProvider && <div className="mb-6"><SendMessageForm defaultTo={to?.slice(0, 200)} defaultMessage={message?.slice(0, 459)} /></div>}
 
       <h2 className="mb-1 text-lg font-semibold">Texts to hospitals</h2>
       <p className="mb-4 text-[0.9375rem] text-ink-3">

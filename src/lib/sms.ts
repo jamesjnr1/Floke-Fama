@@ -93,10 +93,11 @@ const save = (rowId: string, data: Omit<SmsLogEntry, 'id' | 'at'>, create = true
  * Sends one text to some numbers and records it. With `rowId` given, the record is written first and a second
  * attempt with the same id is skipped, so an escalation goes out once even if two servers notice it together.
  */
-export async function send(kind: string, ref: string, phones: string[], text: string, rowId?: string, max = 300): Promise<{ status: SmsLogEntry['status']; detail: string } | undefined> {
+export async function send(kind: string, ref: string, phones: string[], text: string, rowId?: string, max = 300, lines = false): Promise<{ status: SmsLogEntry['status']; detail: string } | undefined> {
   const to = [...new Set(phones.map(normalisePhone).filter((n): n is string => Boolean(n)))];
   if (!to.length) return;
-  const body = plain(text, max);
+  // `lines`: keep the line breaks (a message written by hand, e.g. with a name on its own line)
+  const body = lines ? text.split(/\r?\n/).map((l) => plain(l, max)).join('\n').replace(/\n{3,}/g, '\n\n').trim().slice(0, max) : plain(text, max);
   const record = { kind, ref, to: to.join(',').slice(0, 400), text: body };
   const id = rowId ?? ID.unique();
   if (rowId) {
@@ -121,6 +122,28 @@ export async function sendTestSms(phone: string, by: string): Promise<{ ok: bool
   if (!r) return { ok: false, detail: 'That number could not be used.' };
   if (r.status === 'logged') return { ok: true, detail: 'Recorded but not sent: SMS_PROVIDER is "log". Set it to "arkesel" to send real texts.' };
   return r.status === 'sent' ? { ok: true, detail: `Sent from "${sender}". It should arrive within a minute.` } : { ok: false, detail: r.detail };
+}
+
+/** The longest message the admin console sends by hand: three texts (153 characters each when a message is split). */
+export const MESSAGE_MAX = 459;
+
+/**
+ * The admin console's "Send a message": one message, as written (line breaks kept), to up to 5 numbers. Recorded
+ * like every other text, so it shows in the admin console's list.
+ */
+export async function sendWrittenMessage(numbers: string, text: string, by: string): Promise<{ ok: boolean; detail: string }> {
+  if (!smsEnabled) return { ok: false, detail: 'Texts are off: set SMS_PROVIDER (and the gateway keys) in Vercel, then redeploy.' };
+  const list = numbers.split(/[,;\n]/).map((n) => n.trim()).filter(Boolean);
+  if (!list.length) return { ok: false, detail: 'Enter a phone number, e.g. 024 123 4567.' };
+  if (list.length > 5) return { ok: false, detail: 'Up to 5 numbers at a time.' };
+  const bad = list.find((n) => !normalisePhone(n));
+  if (bad) return { ok: false, detail: `“${bad}” can't receive texts. Enter a mobile number, e.g. 024 123 4567.` };
+  if (!text.trim()) return { ok: false, detail: 'Write the message.' };
+  if (text.length > MESSAGE_MAX) return { ok: false, detail: `Keep it to ${MESSAGE_MAX} characters (three texts).` };
+  const r = await send('written', plain(by, 60), list, text, undefined, MESSAGE_MAX, true);
+  if (!r) return { ok: false, detail: 'That number could not be used.' };
+  if (r.status === 'logged') return { ok: true, detail: 'Recorded but not sent: SMS_PROVIDER is "log".' };
+  return r.status === 'sent' ? { ok: true, detail: `Sent from "${sender}" to ${list.length === 1 ? list[0] : `${list.length} numbers`}. It should arrive within a minute.` } : { ok: false, detail: r.detail };
 }
 
 /**
