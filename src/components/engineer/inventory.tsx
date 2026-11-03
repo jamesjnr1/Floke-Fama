@@ -26,7 +26,7 @@ export function Inventory({ assets, tickets, onSelect, onAdd }: { assets: Asset[
             <button onClick={() => onSelect(a)} className="flex h-full w-full flex-col rounded-xl border border-line bg-paper p-2 text-left transition hover:border-ink/20">
               <AssetVisual asset={a} className="aspect-[16/9] rounded-md" />
               <div className="p-3">
-                <p className="text-xs text-ink-3">{a.brand} · {a.facility}</p>
+                <p className="text-xs text-ink-3">{[a.brand, a.facility].filter(Boolean).join(' · ')}</p>
                 <p className="mt-0.5 font-semibold text-ink">{a.name}</p>
                 <p className="mt-2 flex items-center justify-between gap-2 text-xs">
                   <span className="text-ink-3">{a.certificates.length} certificate{a.certificates.length === 1 ? '' : 's'}</span>
@@ -99,7 +99,7 @@ function Sheet({ asset, tickets, onLogFault, onRecord, onOpenTicket }: {
         <AssetVisual asset={asset} className="aspect-[16/10] w-full" />
         <div className="space-y-6 p-6 md:p-8">
           <div>
-            <p className="text-xs text-ink-3">{asset.brand} · {asset.id}</p>
+            <p className="text-xs text-ink-3">{[asset.brand, asset.id].filter(Boolean).join(' · ')}</p>
             <Dialog.Title className="mt-1 text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">{asset.name}</Dialog.Title>
             <p className={cn('mt-2 flex items-center gap-2 text-sm font-medium', h.text)}><span className={cn('size-2 rounded-[1px]', h.dot)} aria-hidden /> {h.label}</p>
             <p className="mt-2 flex flex-wrap gap-1.5 text-xs">

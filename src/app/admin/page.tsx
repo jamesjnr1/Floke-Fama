@@ -1,12 +1,13 @@
 import Link from 'next/link';
-import { Children, Suspense, cloneElement, isValidElement } from 'react';
+import { Children, cloneElement, isValidElement } from 'react';
 import { Bars, Columns } from '@/components/admin/charts';
 import { LiveRefresh } from '@/components/admin/live-refresh';
 import { LogoMark, PortalLogo } from '@/components/layout/logo';
 import { Hint } from '@/components/ui/hint';
 import { Icon } from '@/components/ui/icon';
 import { UserAvatar } from '@/components/ui/user-avatar';
-import { removeEngineer, saveOrderNote, setOrderStatus } from '@/lib/admin/actions';
+import { removeAdmin, removeEngineer, saveOrderNote, setOrderStatus } from '@/lib/admin/actions';
+import { AddAdminForm } from '@/components/admin/add-admin-form';
 import { approveEngineer, declineEngineer, setHeadEngineer } from '@/lib/engineer-actions';
 import { setHospitalStatus } from '@/lib/admin/hospital-actions';
 import { AddHospitalLoginForm, RegisterHospitalForm } from '@/components/admin/hospital-forms';
@@ -138,14 +139,14 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
 
   return (
     <AdminNavProvider active={tab} panes={panes} fallback={sales ? 'orders' : 'overview'} exact={Object.keys(params).some((k) => k !== 'tab')}>
-    <div className="min-h-svh bg-[#e7ebf2] p-3 pt-[calc(var(--banner)+12px)] text-ink md:p-4 md:pt-[calc(var(--banner)+16px)]">
-      <div className="mx-auto flex max-w-[1600px] gap-4">
+    <div className="min-h-svh bg-[#f5f7fb] pt-[var(--banner)] text-ink">
+      <div className="flex">
         {/* Sidebar: a deep emerald gradient, darker and richer than the dashboards' flat green, with the console's navy
             touches elsewhere. As tall as the screen with everything in
             view and no scrolling: the space around each row grows with the screen's height (tighter on a laptop with the
             notice strip, roomier on a big screen). Below 820px tall the export card becomes a row under General. */}
-        <aside className="sticky top-[calc(var(--banner)+16px)] hidden h-[calc(100svh-var(--banner)-2rem)] w-64 shrink-0 flex-col overflow-y-auto overscroll-contain rounded-[1.75rem] bg-[radial-gradient(140%_70%_at_0%_0%,#0f8a55_0%,#06482a_55%,#032a19_100%)] px-4 py-5 text-white shadow-[0_18px_40px_-24px_rgb(4_56_34/0.75)] [scrollbar-color:rgb(255_255_255/0.35)_transparent] [scrollbar-width:thin] lg:flex">
-          <Link href="/admin" className="flex shrink-0 flex-col px-2">
+        <aside className="sticky top-[var(--banner)] hidden h-[calc(100svh-var(--banner))] w-[264px] shrink-0 flex-col overflow-y-auto overscroll-contain bg-[radial-gradient(140%_70%_at_0%_0%,#0f8a55_0%,#06482a_55%,#032a19_100%)] px-4 pb-5 text-white [scrollbar-color:rgb(255_255_255/0.35)_transparent] [scrollbar-width:thin] lg:flex">
+          <Link href="/admin" className="-mx-4 flex h-[76px] shrink-0 flex-col justify-center border-b border-white/15 px-6">
             <PortalLogo product="Admin" />
             <span className="-mt-[4px] pl-[36px] text-[0.75rem] font-medium leading-none tracking-[0.02em] text-white/75">Admin console</span>
           </Link>
@@ -186,9 +187,9 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
           </div>
         </aside>
 
-        <div className="min-w-0 flex-1 space-y-4">
+        <div className="min-w-0 flex-1">
           {/* Profile bar */}
-          <header className="flex items-center gap-4 rounded-[1.75rem] bg-white px-5 py-4 shadow-[0_1px_2px_rgb(16_25_30/0.04)]">
+          <header className="sticky top-[var(--banner)] z-30 flex h-[76px] items-center gap-4 border-b border-line bg-white px-5 md:px-8 xl:px-10">
             <Link href="/admin" className="flex items-center gap-2 lg:hidden">
               <LogoMark className="size-8" />
             </Link>
@@ -217,13 +218,13 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
 
           {/* Sections on phones and tablets */}
           {/* Wraps onto a second line rather than scrolling sideways */}
-          <nav aria-label="Admin sections" className="flex flex-wrap gap-1 rounded-2xl bg-[radial-gradient(140%_120%_at_0%_0%,#0f8a55_0%,#06482a_55%,#032a19_100%)] p-2 lg:hidden">
+          <nav aria-label="Admin sections" className="flex flex-wrap gap-1 bg-[radial-gradient(140%_120%_at_0%_0%,#0f8a55_0%,#06482a_55%,#032a19_100%)] p-2 lg:hidden">
             {tabs.filter((t) => allowed(t.id)).map((t) => (
               <AdminNavLink key={t.id} id={t.id} href={href(t.id)} icon={t.icon} label={t.label} badge={badge(t.id, true)} className="whitespace-nowrap px-3 py-2" />
             ))}
           </nav>
 
-          <main className="rounded-[1.75rem] bg-[#f5f7fb] p-5 md:p-8">
+          <main className="p-5 md:p-8 xl:px-10">
             {data.source === 'off' && (
               <Notice tone="warn">
                 The database (Appwrite) isn’t connected, so there is nothing to show yet. Add APPWRITE_ENDPOINT, APPWRITE_PROJECT_ID and APPWRITE_API_KEY in Vercel, then run <code>npm run appwrite:setup</code>. See <Link href="/admin?tab=system" className="font-semibold underline">Database &amp; settings</Link>.
@@ -261,8 +262,8 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             {allowed('hospitals') && <AdminPane id="hospitals">{tab === 'hospitals' ? <Hospitals data={data} q={params.q} code={params.code} adding={params.add === 'hospital' && !demo} demo={demo} /> : <Hospitals data={data} adding={false} demo={demo} />}</AdminPane>}
             {allowed('products') && <AdminPane id="products"><Products data={data} /></AdminPane>}
             {allowed('service') && <AdminPane id="service"><Service data={data} now={now} /></AdminPane>}
-            {allowed('texts') && <AdminPane id="texts"><Suspense fallback={<p className="text-ink-3">Loading text messages…</p>}>{tab === 'texts' ? <Texts data={data} now={now} to={params.to} message={params.message} /> : <Texts data={data} now={now} />}</Suspense></AdminPane>}
-            {tab === 'system' && <AdminPane id="system"><System data={data} phone={session.phone} /></AdminPane>}
+            {allowed('texts') && <AdminPane id="texts">{tab === 'texts' ? <Texts data={data} now={now} to={params.to} message={params.message} /> : <Texts data={data} now={now} />}</AdminPane>}
+            {tab === 'system' && <AdminPane id="system"><System data={data} phone={session.phone} me={session.sub} /></AdminPane>}
           </main>
         </div>
       </div>
@@ -1750,7 +1751,48 @@ async function Texts({ data, now, to, message }: { data: AdminData; now: number;
   );
 }
 
-async function System({ data, phone }: { data: AdminData; phone?: string }) {
+/** Who can open the admin console: those added here (removable here) and those listed in ADMIN_EMAILS in Vercel. */
+function Admins({ data, me }: { data: AdminData; me: string }) {
+  const admins = data.accounts.filter((a) => a.role === 'admin').sort((a, b) => a.name.localeCompare(b.name));
+  return (
+    <Panel title="Admins" className="mt-4" action={<span className="text-[0.875rem] text-ink-3">Full access to this console</span>}>
+      {admins.length ? (
+        <ul className="-mt-2 divide-y divide-[#edf1ef]">
+          {admins.map((a) => (
+            <li key={a.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
+              <span className="min-w-0">
+                <span className="font-medium">{a.name}</span>
+                {a.id === me && <span className="ml-2 rounded-full bg-brand-50 px-2 py-0.5 text-[0.75rem] font-semibold text-brand-800">You</span>}
+                <span className="block text-[0.875rem] text-ink-3">{a.email}</span>
+              </span>
+              {a.id.startsWith('adm-') && a.id !== me ? (
+                <form action={removeAdmin}>
+                  <input type="hidden" name="id" value={a.id} />
+                  <ConfirmButton message={`Remove ${a.name} as an admin? Their account is deleted and they can no longer sign in to the admin console.`} className="inline-flex h-10 items-center gap-2 rounded-xl border border-[#f3a7ab] bg-white px-4 text-[0.875rem] font-medium text-signal-700 hover:bg-[#fff3f3]">
+                    <Icon name="fi-rr-user-minus" /> Remove
+                  </ConfirmButton>
+                </form>
+              ) : !a.id.startsWith('adm-') ? (
+                <span className="text-[0.8125rem] text-ink-3">Listed in ADMIN_EMAILS (Vercel)</span>
+              ) : null}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="-mt-2 text-ink-3">No admin accounts yet.</p>
+      )}
+      <details className="group mt-4 open:rounded-2xl open:p-5 open:ring-1 open:ring-line">
+        <summary className="inline-flex cursor-pointer list-none items-center gap-2 rounded-xl bg-brand-700 px-4 py-2.5 text-[0.9375rem] font-semibold text-white hover:bg-brand-800 group-open:mb-3 group-open:bg-transparent group-open:p-0 group-open:text-lg group-open:text-ink [&::-webkit-details-marker]:hidden">
+          <Icon name="fi-rr-user-add" /> Add admin
+        </summary>
+        <p className="mb-4 text-[0.9375rem] text-ink-3">For Flokefama management only: an admin sees everything here and can change orders, accounts and settings. They sign in at /admin/login.</p>
+        <AddAdminForm />
+      </details>
+    </Panel>
+  );
+}
+
+async function System({ data, phone, me }: { data: AdminData; phone?: string; me: string }) {
   // Brevo and Arkesel are checked live (nothing is sent), so the reason shows here when emails or texts aren't going out
   const [brevo, sms] = await Promise.all([brevoStatus(), smsGatewayStatus()]);
   const checks = [...configChecks().map((c) => (c.label === 'Text messages (SMS)' && sms ? { ...c, ...sms } : c)), { label: 'Support requests and new orders by email (Brevo)', ...brevo }];
@@ -1808,6 +1850,7 @@ async function System({ data, phone }: { data: AdminData; phone?: string }) {
           </ul>
         </Panel>
       </div>
+      <Admins data={data} me={me} />
       {data.source === 'live' && (
         <Panel title="Clear test orders" className="mt-4 border border-[#f3c9cd]">
           <ClearOrdersForm orders={data.orders.length} />
