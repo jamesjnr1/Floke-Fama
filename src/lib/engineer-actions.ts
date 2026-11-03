@@ -1,6 +1,7 @@
 'use server';
 
 import { headers } from 'next/headers';
+import { after } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { appwrite } from '@/lib/appwrite';
@@ -82,21 +83,40 @@ export async function approveEngineer(form: FormData) {
   revalidatePath('/admin');
 }
 
-/** Admin console → Engineers: make an engineer the head of engineering, or not. They get a text saying so. */
-export async function setHeadEngineer(form: FormData) {
+export interface HeadState {
+  error?: string;
+  /** Bumped on each change, so the form can say it's saved */
+  saved?: number;
+}
+
+/**
+ * Admin console → Engineers: make an engineer the head of engineering, or not. Any number of engineers can be head.
+ * They get a text saying so, sent after the page has answered (so the button doesn't wait on the SMS gateway).
+ */
+export async function setHeadEngineer(_prev: HeadState, form: FormData): Promise<HeadState> {
   const s = await getAdminSession();
-  if (s?.role !== 'admin') return;
+  if (s?.role !== 'admin') return { error: 'Please sign in again.' };
+  const id = String(form.get('id') ?? '');
   const on = form.get('on') === '1';
-  const who = await setHead(String(form.get('id') ?? ''), on).catch((e) => (console.error('set head failed', e), null));
+  const result = await setHead(id, on).catch((e) => {
+    console.error('set head failed', id, on, e);
+    return { error: 'It couldn’t be saved (the database didn’t answer). Please try again.' };
+  });
+  if ('error' in result) {
+    console.error('set head refused', id, on, result.error);
+    return { error: result.error };
+  }
+  console.info(`[admin] ${s.email} ${on ? 'made' : 'removed'} head of engineering: ${result.name}${result.changed ? '' : ' (no change)'}`);
   // Tell them: the role changes what they can do and which texts they get
-  if (who?.phone) {
-    const first = who.name.split(' ')[0];
+  if (result.changed && result.phone) {
+    const first = result.name.split(' ')[0];
     const text = on
       ? `${first}, you are now Flokefama's head of engineering. You can give any job to any engineer, and you'll get texts about urgent jobs nobody has taken. ${siteUrl}/engineer`
       : `${first}, you are no longer Flokefama's head of engineering. Your engineer account is unchanged. ${siteUrl}/engineer`;
-    await textPerson(on ? 'head-on' : 'head-off', who.name, who.phone, text).catch((e) => console.error('head: text failed', e));
+    after(() => textPerson(on ? 'head-on' : 'head-off', result.name, result.phone, text).catch((e) => console.error('head: text failed', e)));
   }
   revalidatePath('/admin');
+  return { saved: Date.now() };
 }
 
 /** Admin console → Engineers: decline a registration (deletes it). */

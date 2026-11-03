@@ -75,14 +75,21 @@ export const forgetTeam = () => {
  * Makes an engineer the head of engineering (or not): kept on their account, next to their region. Returns the
  * engineer when it changed (to tell them by text), or null.
  */
-export async function setHead(id: string, on: boolean): Promise<{ name: string; phone: string } | null> {
-  if (!appwrite || id.startsWith(PENDING_PREFIX)) return null;
-  const row = await appwrite.tables.getRow<Row>({ databaseId: DATABASE_ID, tableId: TABLES.accounts, rowId: id });
-  if (roleFor(row.email ?? '', row.$id) !== 'engineer') return null;
-  if (isHeadOrganisation(row.organisation) === on) return null;
+/**
+ * Makes an engineer head of engineering, or not (any number can be head). Says why when nothing could be changed;
+ * `changed: false` when they already were (or weren't) head.
+ */
+export async function setHead(id: string, on: boolean): Promise<{ name: string; phone: string; changed: boolean } | { error: string }> {
+  if (!appwrite) return { error: 'The database isn’t connected.' };
+  if (id.startsWith(PENDING_PREFIX)) return { error: 'Approve this engineer first.' };
+  const row = await appwrite.tables.getRow<Row>({ databaseId: DATABASE_ID, tableId: TABLES.accounts, rowId: id }).catch(() => null);
+  if (!row) return { error: 'This engineer’s account wasn’t found. Refresh the page and try again.' };
+  if (roleFor(row.email ?? '', row.$id) !== 'engineer') return { error: 'This account isn’t an engineer.' };
+  const who = { name: row.name, phone: row.phone ?? '' };
+  if (isHeadOrganisation(row.organisation) === on) return { ...who, changed: false };
   await appwrite.tables.updateRow({ databaseId: DATABASE_ID, tableId: TABLES.accounts, rowId: id, data: { organisation: engineerOrganisation(regionOfOrganisation(row.organisation), on) } });
   teamCache = null;
-  return { name: row.name, phone: row.phone ?? '' };
+  return { ...who, changed: true };
 }
 
 /** Approves a waiting registration: the same details, under an engineer id. Returns the engineer, or null. */
