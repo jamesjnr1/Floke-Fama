@@ -185,7 +185,7 @@ export function EquipmentSheet({ asset, tickets, onClose, onRequest, onOpenTicke
   const st = asset ? assetStatus(asset, tickets) : 'online';
   const warrantyActive = asset ? daysUntil(asset.warrantyUntil) >= 0 : false;
   return (
-    <Shell open={Boolean(asset)} onOpenChange={(v) => !v && onClose()} title={asset?.name ?? ''} description={asset ? `${asset.brand} · ${asset.location} · ${asset.serial}` : undefined} wide>
+    <Shell open={Boolean(asset)} onOpenChange={(v) => !v && onClose()} title={asset?.name ?? ''} description={asset ? [asset.brand, asset.location, asset.serial].filter(Boolean).join(' · ') : undefined} wide>
       {asset && (
         <div className="space-y-8">
           <div className="grid gap-4 sm:grid-cols-[180px_1fr]">
