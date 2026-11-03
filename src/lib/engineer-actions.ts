@@ -12,6 +12,7 @@ import { sharedLimited } from '@/lib/shared-limit';
 import { engineerOrganisation, regions } from '@/lib/regions';
 import { textAdmins, textPerson } from '@/lib/sms';
 import { siteUrl } from '@/lib/utils';
+import { normalisePhone, phoneHint, showPhone } from '@/lib/phone';
 
 export interface JoinState {
   errors?: Partial<Record<'name' | 'phone' | 'email' | 'region' | 'password' | 'form', string>>;
@@ -23,7 +24,7 @@ export interface JoinState {
 const schema = z.object({
   code: z.string().min(10),
   name: z.string().trim().min(2, 'Enter your full name').max(100),
-  phone: z.string().trim().regex(/^[+\d][\d\s()-]{6,}$/, 'Enter your phone number, e.g. 024 123 4567').max(30),
+  phone: z.string().trim().max(30).refine((v) => normalisePhone(v), phoneHint),
   email: z.string().trim().toLowerCase().email('Enter your email address'),
   region: z.enum(regions, { message: 'Choose your region' }),
   password: z.string().min(8, 'Use at least 8 characters').max(200),
@@ -59,7 +60,7 @@ export async function joinAsEngineer(_prev: JoinState, form: FormData): Promise<
   try {
     if (await accountExists(d.email)) return { errors: { email: 'There is already an account with this email. Sign in at the engineer portal instead.' }, values };
     const { salt, hash } = await hashPassword(d.password);
-    await saveAccount({ id: `${waiting ? PENDING_PREFIX : ENGINEER_ID_PREFIX}${crypto.randomUUID().slice(0, 8)}`, name: d.name, email: d.email, organisation: engineerOrganisation(d.region), phone: d.phone, salt, hash });
+    await saveAccount({ id: `${waiting ? PENDING_PREFIX : ENGINEER_ID_PREFIX}${crypto.randomUUID().slice(0, 8)}`, name: d.name, email: d.email, organisation: engineerOrganisation(d.region), phone: showPhone(d.phone), salt, hash });
   } catch {
     return { errors: { form: 'We couldn’t save your registration. Check your connection and try again.' }, values };
   }
@@ -81,11 +82,20 @@ export async function approveEngineer(form: FormData) {
   revalidatePath('/admin');
 }
 
-/** Admin console → Engineers: make an engineer the head of engineering, or not. */
+/** Admin console → Engineers: make an engineer the head of engineering, or not. They get a text saying so. */
 export async function setHeadEngineer(form: FormData) {
   const s = await getAdminSession();
   if (s?.role !== 'admin') return;
-  await setHead(String(form.get('id') ?? ''), form.get('on') === '1').catch((e) => console.error('set head failed', e));
+  const on = form.get('on') === '1';
+  const who = await setHead(String(form.get('id') ?? ''), on).catch((e) => (console.error('set head failed', e), null));
+  // Tell them: the role changes what they can do and which texts they get
+  if (who?.phone) {
+    const first = who.name.split(' ')[0];
+    const text = on
+      ? `${first}, you are now Flokefama's head of engineering. You can give any job to any engineer, and you'll get texts about urgent jobs nobody has taken. ${siteUrl}/engineer`
+      : `${first}, you are no longer Flokefama's head of engineering. Your engineer account is unchanged. ${siteUrl}/engineer`;
+    await textPerson(on ? 'head-on' : 'head-off', who.name, who.phone, text).catch((e) => console.error('head: text failed', e));
+  }
   revalidatePath('/admin');
 }
 

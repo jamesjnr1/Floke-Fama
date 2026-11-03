@@ -1,5 +1,6 @@
 'use server';
 
+import { normalisePhone, phoneHint, showPhone } from '@/lib/phone';
 import { clearAttempts, overLimit, recordAttempt, sharedLimited } from '@/lib/shared-limit';
 import { registeredFacilities } from '@/lib/service/facilities';
 import { facilityKey } from '@/lib/service/desk';
@@ -36,7 +37,7 @@ const signup = z
   .object({
     name: z.string().trim().min(2, 'Enter your full name').max(100),
     organisation: z.string().trim().min(2, 'Enter your hospital or facility name').max(120),
-    phone: z.string().trim().regex(/^[+\d][\d\s()-]{6,}$/, 'Enter a valid phone number'),
+    phone: z.string().trim().max(30).refine((v) => normalisePhone(v), phoneHint),
     email: z.string().trim().toLowerCase().email('Enter a valid email address'),
     password: z.string().min(8, 'Use at least 8 characters').max(200),
     confirm: z.string(),
@@ -154,7 +155,7 @@ export async function register(_prev: SignupState, form: FormData): Promise<Sign
 
   const { salt, hash } = await hashPassword(d.password);
   const id = `hos-${crypto.randomUUID().slice(0, 8)}`;
-  const saved = await guarded(() => saveAccount({ id, name: d.name, email: d.email, organisation: d.organisation, phone: d.phone, salt, hash }));
+  const saved = await guarded(() => saveAccount({ id, name: d.name, email: d.email, organisation: d.organisation, phone: showPhone(d.phone), salt, hash }));
   if (!saved.ok) return { errors: { form: UNAVAILABLE }, values };
   // The hospital gets its permanent code in the registry (FLK-H001 …)
   if (roleFor(d.email, id) === 'client') await ensureFacility(d.organisation, { contactName: d.name, phone: d.phone, email: d.email }, 'Registered on the website').catch((e) => console.error('registry: not added', e));
@@ -237,9 +238,10 @@ export interface ProfileState {
 export async function updateProfile(_prev: ProfileState, form: FormData): Promise<ProfileState> {
   const s = await getEngineerSession();
   if (!s) return { errors: { form: 'Your session has ended. Please sign in again.' } };
-  const phone = String(form.get('phone') ?? '').trim().replace(/\s+/g, ' ');
+  let phone = String(form.get('phone') ?? '').trim().replace(/\s+/g, ' ');
   const region = String(form.get('region') ?? '');
-  if (!/^[+\d][\d\s()-]{6,}$/.test(phone) || phone.length > 30) return { phone, region, errors: { phone: 'Enter a valid phone number, e.g. 024 123 4567.' } };
+  if (!normalisePhone(phone) || phone.length > 30) return { phone, region, errors: { phone: phoneHint } };
+  phone = showPhone(phone); // saved as 050 758 4822, the 0 put back when it was left off
   if (region && !(regions as readonly string[]).includes(region)) return { phone, region, errors: { region: 'Choose your region.' } };
   const account = await guarded(() => findAccount(s.email));
   if (!account.ok) return { phone, errors: { form: UNAVAILABLE } };

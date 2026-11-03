@@ -23,6 +23,7 @@ import { demoLink } from '@/lib/demo-server';
 import { DemoGuide } from '@/components/demo-guide';
 import { brevoStatus } from '@/lib/support-email';
 import { normalisePhone, smsProvider, smsStatus as smsGatewayStatus } from '@/lib/sms';
+import { showPhone, telOf } from '@/lib/phone';
 import { TestSmsForm } from '@/components/admin/test-sms-form';
 import { AssignForm } from '@/components/admin/assign-form';
 import { HospitalTextsForm } from '@/components/admin/hospital-texts-form';
@@ -651,8 +652,8 @@ function Orders({ data, q, open, stage, now }: { data: AdminData; q?: string; op
                 </Link>
                 <span className="w-28 text-right font-semibold tabular-nums text-brand-800">{o.amount !== undefined ? cedis(o.amount) : <span className="font-normal text-ink-3">No price yet</span>}</span>
                 {w.phone ? (
-                  <a href={`tel:${w.phone.replace(/[^\d+]/g, '')}`} className="inline-flex h-9 items-center gap-2 rounded-lg border border-line px-3 text-[0.875rem] font-medium text-brand-700 hover:border-brand-600">
-                    <Icon name="fi-rr-phone-call" /> {w.phone}
+                  <a href={`tel:${telOf(w.phone)}`} className="inline-flex h-9 items-center gap-2 rounded-lg border border-line px-3 text-[0.875rem] font-medium text-brand-700 hover:border-brand-600">
+                    <Icon name="fi-rr-phone-call" /> {showPhone(w.phone)}
                   </a>
                 ) : null}
                 {next && move(o, next.to, next.label, true)}
@@ -677,7 +678,7 @@ function OrderDetail({ o, who, live, now, move }: { o: SavedOrder; who: { name: 
   const needed = o.needs?.timeline && timelines.find((t) => t.id === o.needs!.timeline);
   const rows: [string, React.ReactNode][] = [
     ['Hospital', who.facility],
-    ['Contact', <>{who.name}{who.phone && <> · <a href={`tel:${who.phone.replace(/[^\d+]/g, '')}`} className="font-medium text-brand-700 underline">{who.phone}</a></>} · <a href={`mailto:${o.account}`} className="text-brand-700 underline">{o.account}</a></>],
+    ['Contact', <>{who.name}{who.phone && <> · <a href={`tel:${telOf(who.phone)}`} className="font-medium text-brand-700 underline">{showPhone(who.phone)}</a></>} · <a href={`mailto:${o.account}`} className="text-brand-700 underline">{o.account}</a></>],
     ['Items', <span key="i">{o.items.map((i) => <span key={i.slug} className="block">{i.qty} × {tidy(i.name)}</span>)}</span>],
     ...(department ? [['Department', department] as [string, React.ReactNode]] : []),
     ...(needed ? [['Needed', `${needed.label} (${needed.detail.toLowerCase()})`] as [string, React.ReactNode]] : []),
@@ -807,7 +808,7 @@ function Accounts({ data, q, role, adding }: { data: AdminData; q?: string; role
                   </span>
                 </span>
               </td>
-              <td className="whitespace-nowrap">{a.phone || '—'}</td>
+              <td className="whitespace-nowrap">{a.phone ? showPhone(a.phone) : '—'}</td>
               <td><Badge tone={a.role === 'client' ? 'neutral' : 'good'}>{roleLabel(a.role)}</Badge></td>
               <td className="whitespace-nowrap">{fmt(a.createdAt)}</td>
               <td className="tabular-nums">{a.role === 'engineer' ? <JobBadge job={job} /> : orders.length}</td>
@@ -863,7 +864,7 @@ async function Team({ data, now, demo }: { data: AdminData; now: number; demo?: 
               <li key={a.id} className="flex flex-wrap items-center gap-x-6 gap-y-3 py-4">
                 <span className="min-w-0 flex-1 basis-60">
                   <span className="block text-[1.0625rem] font-semibold">{a.name}</span>
-                  <span className="block text-[0.9375rem] text-ink-3">{regionOfOrganisation(a.organisation) ?? 'Region not given'} · {a.phone} · {a.email}</span>
+                  <span className="block text-[0.9375rem] text-ink-3">{regionOfOrganisation(a.organisation) ?? 'Region not given'} · {showPhone(a.phone)} · {a.email}</span>
                   <span className="block text-[0.8125rem] text-ink-3">Registered {fmt(a.createdAt)}</span>
                 </span>
                 <span className="flex gap-2">
@@ -893,7 +894,7 @@ async function Team({ data, now, demo }: { data: AdminData; now: number; demo?: 
             </td>
             <td>{r.region ?? <span className="text-ink-3">Not set</span>}</td>
             <td className="whitespace-nowrap">
-              {r.a.phone ? <a href={`tel:${r.a.phone.replace(/[^\d+]/g, '')}`} className="hover:text-brand-700">{r.a.phone}</a> : '—'}
+              {r.a.phone ? <a href={`tel:${telOf(r.a.phone)}`} className="hover:text-brand-700">{showPhone(r.a.phone)}</a> : '—'}
               {/* A number texts can't reach: the engineer would miss job texts (and isn't given urgent jobs automatically) */}
               {!normalisePhone(r.a.phone) && <span className="block text-[0.8125rem] font-medium text-signal-700">Can’t receive texts: ask them to fix it in My profile</span>}
             </td>
@@ -971,7 +972,7 @@ function AccountDetail({ data, id, now }: { data: AdminData; id: string; now: nu
         />
         <div className="grid gap-4 lg:grid-cols-3">
           <Panel title="Contact">
-            <Facts rows={[['Email', <a key="e" href={`mailto:${a.email}`} className="text-brand-700 underline">{a.email}</a>], ['Phone', a.phone ? <a key="p" href={`tel:${a.phone.replace(/\s/g, '')}`} className="text-brand-700 underline">{a.phone}</a> : '—'], ['Registered', fmt(a.createdAt)]]} />
+            <Facts rows={[['Email', <a key="e" href={`mailto:${a.email}`} className="text-brand-700 underline">{a.email}</a>], ['Phone', a.phone ? <a key="p" href={`tel:${telOf(a.phone)}`} className="text-brand-700 underline">{showPhone(a.phone)}</a> : '—'], ['Registered', fmt(a.createdAt)]]} />
           </Panel>
           <Panel title="Right now" className="lg:col-span-2">
             {job ? <JobLine job={job} data={data} now={now} /> : <p className="text-ink-3">No open job: available.</p>}
@@ -1021,7 +1022,7 @@ function AccountDetail({ data, id, now }: { data: AdminData; id: string; now: nu
                 <UserAvatar src={p.role === 'engineer' ? data.pictures[p.id] : undefined} className="size-10 rounded-full bg-[#eaf5ef] text-base text-brand-800" />
                 <span className="min-w-40 font-medium">{p.name}</span>
                 <a href={`mailto:${p.email}`} className="text-brand-700 underline">{p.email}</a>
-                <span className="text-ink-2">{p.phone ? <a href={`tel:${p.phone.replace(/\s/g, '')}`}>{p.phone}</a> : '—'}</span>
+                <span className="text-ink-2">{p.phone ? <a href={`tel:${telOf(p.phone)}`}>{showPhone(p.phone)}</a> : '—'}</span>
                 <span className="text-[0.875rem] text-ink-3">since {fmt(p.createdAt)}</span>
               </li>
             ))}
@@ -1130,7 +1131,7 @@ function Hospitals({ data, q, code, adding, demo }: { data: AdminData; q?: strin
               <td className="whitespace-nowrap font-mono font-semibold"><Link href={`/admin?tab=hospitals&code=${encodeURIComponent(f.code)}`} className="hover:text-brand-700">{f.code}</Link></td>
               <td><Link href={`/admin?tab=hospitals&code=${encodeURIComponent(f.code)}`} className="font-medium hover:text-brand-700">{f.name}</Link></td>
               <td>{f.region ?? <span className="text-ink-3">—</span>}</td>
-              <td>{f.contactName ?? '—'}{f.phone && <span className="block text-[0.8125rem] text-ink-3">{f.phone}</span>}</td>
+              <td>{f.contactName ?? '—'}{f.phone && <span className="block text-[0.8125rem] text-ink-3">{showPhone(f.phone)}</span>}</td>
               <td className="tabular-nums">{assets.length}</td>
               <td className="tabular-nums">{tickets.length}{open ? <span className="block text-[0.8125rem] text-ink-3">{open} open</span> : null}</td>
               <td>{f.status === 'inactive' ? <Badge tone="bad">Inactive</Badge> : <Badge tone="good">Active</Badge>}</td>
@@ -1177,7 +1178,7 @@ function HospitalDetail({ data, code, demo }: { data: AdminData; code: string; d
       />
       <div className="grid gap-4 lg:grid-cols-[1fr_1.4fr]">
         <Panel title="Details">
-          <Facts rows={[['Code', <span key="c" className="font-mono">{f.code}</span>], ['Region', f.region ?? '—'], ['Location and address', f.address ?? '—'], ['Contact person', f.contactName ?? '—'], ['Phone', f.phone ?? '—'], ['Email', f.email ?? '—']]} />
+          <Facts rows={[['Code', <span key="c" className="font-mono">{f.code}</span>], ['Region', f.region ?? '—'], ['Location and address', f.address ?? '—'], ['Contact person', f.contactName ?? '—'], ['Phone', f.phone ? showPhone(f.phone) : '—'], ['Email', f.email ?? '—']]} />
         </Panel>
         <Panel title={demo ? 'Edit details (not saved in the demo)' : 'Edit details'}>
           <EditHospitalForm code={f.code} values={{ region: f.region, address: f.address, contactName: f.contactName, phone: f.phone, email: f.email }} />
@@ -1188,7 +1189,7 @@ function HospitalDetail({ data, code, demo }: { data: AdminData; code: string; d
           <ul className="-mt-2 mb-5 divide-y divide-line">
             {logins.map((a) => (
               <li key={a.id} className="flex flex-wrap items-center justify-between gap-2 py-3">
-                <Link href={`/admin?tab=accounts&account=${encodeURIComponent(a.id)}`} className="font-medium hover:text-brand-700">{a.name}<span className="block text-[0.8125rem] font-normal text-ink-3">{a.email} · {a.phone || 'no phone'}</span></Link>
+                <Link href={`/admin?tab=accounts&account=${encodeURIComponent(a.id)}`} className="font-medium hover:text-brand-700">{a.name}<span className="block text-[0.8125rem] font-normal text-ink-3">{a.email} · {a.phone ? showPhone(a.phone) : 'no phone'}</span></Link>
                 <span className="text-[0.8125rem] text-ink-3">since {fmt(a.createdAt)}</span>
               </li>
             ))}
@@ -1328,7 +1329,7 @@ function EngineersNow({ data, now }: { data: AdminData; now: number }) {
                 ) : (
                   <span className="font-medium">{r.name}</span>
                 )}
-                <span className="block text-[0.8125rem] text-ink-3">{r.account?.phone || 'Engineer'}</span>
+                <span className="block text-[0.8125rem] text-ink-3">{r.account?.phone ? showPhone(r.account.phone) : 'Engineer'}</span>
               </span>
               <span className="min-w-0 flex-1">{r.job ? <JobLine job={r.job} data={data} now={now} /> : <JobBadge />}</span>
             </li>
@@ -1565,7 +1566,7 @@ function WebsiteRequests({ data, now }: { data: AdminData; now: number }) {
             <td className="font-medium">{r.facility}</td>
             <td className="whitespace-nowrap">
               {r.name}
-              <a href={`tel:${r.phone.replace(/[^\d+]/g, '')}`} className="keep block font-medium text-brand-700 hover:underline">{r.phone}</a>
+              <a href={`tel:${telOf(r.phone)}`} className="keep block font-medium text-brand-700 hover:underline">{showPhone(r.phone)}</a>
             </td>
             <td>
               <span className="font-medium">{supportSubject(r)}</span>
