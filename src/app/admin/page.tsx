@@ -145,9 +145,9 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             view and no scrolling: the space around each row grows with the screen's height (tighter on a laptop with the
             notice strip, roomier on a big screen). Below 820px tall the export card becomes a row under General. */}
         <aside className="sticky top-[calc(var(--banner)+16px)] hidden h-[calc(100svh-var(--banner)-2rem)] w-64 shrink-0 flex-col overflow-y-auto overscroll-contain rounded-[1.75rem] bg-[radial-gradient(140%_70%_at_0%_0%,#0f8a55_0%,#06482a_55%,#032a19_100%)] px-4 py-5 text-white shadow-[0_18px_40px_-24px_rgb(4_56_34/0.75)] [scrollbar-color:rgb(255_255_255/0.35)_transparent] [scrollbar-width:thin] lg:flex">
-          <Link href="/admin" className="flex shrink-0 flex-col gap-1.5 px-2">
+          <Link href="/admin" className="flex shrink-0 flex-col px-2">
             <PortalLogo product="Admin" />
-            <span className="pl-[36px] text-[0.75rem] font-medium tracking-[0.02em] text-white/75">Admin console</span>
+            <span className="-mt-[4px] pl-[36px] text-[0.75rem] font-medium leading-none tracking-[0.02em] text-white/75">Admin console</span>
           </Link>
           <p className="mt-[clamp(14px,3vh,34px)] px-3.5 pb-1.5 text-[0.75rem] font-semibold uppercase tracking-[0.14em] text-white/60">Menu</p>
           <nav aria-label="Admin sections" className="space-y-0.5">

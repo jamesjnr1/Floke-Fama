@@ -289,9 +289,9 @@ function Portal({ user, products, practice, demo = false }: { user: { name: stri
           notice strip showing) the rows and spaces are tighter. Only a very short window scrolls, so nothing is cut off */}
       <aside className="eng-rail sticky top-[var(--banner)] hidden h-[calc(100svh-var(--banner))] w-[264px] shrink-0 flex-col overflow-y-auto overscroll-contain [scrollbar-color:rgb(255_255_255/0.35)_transparent] [scrollbar-width:thin] text-white lg:flex">
         {/* The portal's logo, with the dashboard's name under it; the opening lands its big logo on this one */}
-        <Link href="/" aria-label="Flokefama home" className="flex h-[76px] shrink-0 flex-col justify-center gap-1 border-b border-white/15 px-5">
+        <Link href="/" aria-label="Flokefama home" className="flex h-[76px] shrink-0 flex-col justify-center border-b border-white/15 px-5">
           <PortalLogo product="Service" target />
-          <span className="pl-[36px] text-[0.75rem] font-medium tracking-[0.02em] text-white/70">Engineer dashboard</span>
+          <span className="-mt-[4px] pl-[36px] text-[0.75rem] font-medium leading-none tracking-[0.02em] text-white/70">Engineer dashboard</span>
         </Link>
         <div className="flex shrink-0 items-center gap-3 px-6 py-2.5 [@media(min-height:900px)]:py-6">
           <button onClick={() => setChangingPhoto(true)} title="Change your photo" aria-label="Change your photo" className="shrink-0 rounded-full">
