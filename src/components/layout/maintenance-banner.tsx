@@ -22,11 +22,11 @@ export function MaintenanceBanner({ notice }: { notice: MaintenanceNotice }) {
       className="fixed inset-x-0 top-0 z-[130] flex h-[var(--banner)] w-full items-center justify-center gap-2 overflow-hidden px-3 text-center font-notice text-[10px] leading-normal text-white sm:gap-2.5 sm:px-4 sm:text-xs md:text-[13px]"
     >
       {notice.icon !== 'none' && <Icon name={notice.icon} className="shrink-0 text-[0.95em] sm:text-sm" />}
-      {/* Phones (narrower than a tablet): the phone text alone, in full, instead of the heading and the message */}
+      {/* Phones (narrower than a tablet): the phone text alone, in full and in regular weight, instead of the heading and the message */}
       <span className="hidden shrink-0 font-semibold md:inline">{notice.title}</span>
       <span className="min-w-0 truncate md:text-white/90">
         <span className="hidden md:inline">{notice.message}</span>
-        <span className="font-semibold md:hidden">{notice.short}</span>
+        <span className="md:hidden">{notice.short}</span>
       </span>
       {href && notice.linkLabel &&
         (external ? (
