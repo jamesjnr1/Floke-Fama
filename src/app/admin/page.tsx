@@ -390,7 +390,7 @@ function Table({ head, children, empty, wide = false }: { head: string[]; childr
     <div className={card}>
       <table className={cn('w-full text-left text-[0.9375rem] [&_td]:whitespace-normal [&_td_*]:whitespace-normal [&_td]:break-words [&_td.keep]:whitespace-nowrap [&_td_.keep]:whitespace-nowrap', stacked.table)}>
         {/* A soft navy header row (the console's colour), so a table reads as one block on the page */}
-        <thead className={cn('text-[0.8125rem] font-semibold uppercase tracking-[0.05em] text-[#2a3d63]', stacked.thead)}>
+        <thead className={cn('text-[0.875rem] font-semibold text-[#2a3d63]', stacked.thead)}>
           <tr className="bg-[#edf1f8] [&>th:first-child]:rounded-tl-[1.25rem] [&>th:last-child]:rounded-tr-[1.25rem]">{head.map((h) => <th key={h} className={cn('py-3.5', wide ? 'px-4' : 'px-3 xl:px-5')}>{h}</th>)}</tr>
         </thead>
         <tbody className={cn('divide-y divide-[#edf0f5] [&_tr:hover]:bg-[#f7f9fc]', ...stacked.body)}>{rows}</tbody>
@@ -803,7 +803,7 @@ function Accounts({ data, q, role, adding }: { data: AdminData; q?: string; role
       )}
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         {/* One tab bar: each group with its icon and count; the chosen one raised, in its colour; empty groups quieter */}
-        <nav aria-label="Account groups" className="flex max-w-full gap-1 overflow-x-auto rounded-2xl bg-[#e3ebe6] p-1.5 [scrollbar-width:none]">
+        <nav aria-label="Account groups" className="flex max-w-full gap-1 overflow-x-auto rounded-2xl bg-[#e1e7f1] p-1.5 [scrollbar-width:none]">
           {roles.map((r) => {
             const n = r.id ? data.accounts.filter((a) => a.role === r.id).length : data.accounts.length;
             const on = (role ?? '') === r.id;
@@ -826,7 +826,7 @@ function Accounts({ data, q, role, adding }: { data: AdminData; q?: string; role
         </nav>
         <SearchBox tab="accounts" q={q} placeholder="Name, hospital, email, phone…" extra={{ role }} />
       </div>
-      <Table head={['Hospital / organisation', 'Contact', 'Phone', 'Role', 'Registered', role === 'engineer' ? 'Now' : 'Orders', '']} empty={!list.length}>
+      <Table head={['Hospital / organisation', 'Contact', 'Phone', 'Role', 'Registered', role === 'engineer' ? 'Now' : 'Orders', '']} empty={!list.length} wide>
         {list.map((a) => {
           const orders = ordersOf(a.email);
           const job = a.role === 'engineer' ? currentJob(data, a.name) : undefined;
