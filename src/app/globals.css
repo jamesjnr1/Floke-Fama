@@ -352,7 +352,7 @@ html[data-banner='off'] {
 }
 html.ff-intro .site-intro {
   display: flex;
-  animation: ff-intro-failsafe 0.4s ease 4s forwards;
+  animation: ff-intro-failsafe 0.4s ease 5.5s forwards;
 }
 html.ff-intro .site-intro-logo {
   animation: ff-intro-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
