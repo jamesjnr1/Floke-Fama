@@ -13,7 +13,8 @@ import { forgetTeam } from '@/lib/engineer-team';
 import { assignByAdmin, DeskError, releaseEngineerJobs } from '@/lib/service/server';
 import type { OrderStatus, SavedOrder } from '@/lib/orders';
 import { salesStages, stageLabel } from '@/lib/sales-stages';
-import { sendTestSms } from '@/lib/sms';
+import { sendTestSms, sendWrittenMessage } from '@/lib/sms';
+import { sharedLimited } from '@/lib/shared-limit';
 import { textAllHospitals } from '@/lib/client-sms';
 
 /** Reads an order, changes it and writes it back, with a line in its log saying who did what. Admins and the sales team. */
@@ -147,6 +148,25 @@ export async function testSms(_prev: TestSmsState, form: FormData): Promise<Test
   if (!s) return { result: { ok: false, detail: 'Please sign in again.' } };
   const phone = String(form.get('phone') ?? '').trim().slice(0, 30);
   return { phone, result: await sendTestSms(phone, s.name) };
+}
+
+export interface MessageState {
+  result?: { ok: boolean; detail: string };
+  to?: string;
+  message?: string;
+}
+
+/** Admin console → Text messages: a message written by hand, to up to 5 numbers. Admins only (not sales). */
+export async function sendMessage(_prev: MessageState, form: FormData): Promise<MessageState> {
+  const s = await getAdminSession();
+  if (s?.role !== 'admin') return { result: { ok: false, detail: 'Please sign in again as an admin.' } };
+  const to = String(form.get('to') ?? '').slice(0, 200);
+  const message = String(form.get('message') ?? '').slice(0, 2000);
+  if (await sharedLimited(`admin-message:${s.email}`, 30, 60 * 60_000)) return { to, message, result: { ok: false, detail: 'That is a lot of messages in an hour. Please try again later.' } };
+  const result = await sendWrittenMessage(to, message, s.name);
+  revalidatePath('/admin');
+  // Sent: clear the box, so the same message isn't sent twice by accident
+  return result.ok ? { result } : { to, message, result };
 }
 
 export interface HospitalTextState {
