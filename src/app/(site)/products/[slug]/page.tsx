@@ -19,7 +19,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const product = await getProduct((await params).slug);
   if (!product) return {};
   return {
-    title: `${product.brand} ${product.name}`,
+    // The maker's name first when it is a maker's product (not Flokefama's own)
+    title: /^floke/i.test(product.brand) ? product.name : `${product.brand} ${product.name}`,
     description: product.summary,
     alternates: { canonical: `/products/${product.slug}` },
     openGraph: { images: product.image ? [product.image] : undefined },
@@ -33,16 +34,32 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const related = relatedProducts(product, all);
   const category = categories.find((c) => c.slug === product.category);
 
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Product',
-    name: `${product.brand} ${product.name}`,
-    brand: { '@type': 'Brand', name: product.brand },
-    description: product.summary,
-    category: category?.title,
-    image: product.image ? `${siteUrl}${product.image}` : undefined,
-    offers: { '@type': 'Offer', availability: 'https://schema.org/InStock', seller: { '@type': 'Organization', name: 'Flokefama' } },
-  };
+  // The product, and where it sits in the catalogue, for search engines. No offer: prices are agreed with sales, and an
+  // offer without a price is an error to search engines
+  const url = `${siteUrl}/products/${product.slug}`;
+  const jsonLd = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      '@id': `${url}#product`,
+      name: product.name,
+      url,
+      sku: product.slug,
+      brand: { '@type': 'Brand', name: product.brand },
+      description: product.summary,
+      category: category?.title,
+      image: [product.image, ...(product.gallery ?? [])].filter(Boolean).map((i) => `${siteUrl}${i}`),
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Products', item: `${siteUrl}/products` },
+        ...(category ? [{ '@type': 'ListItem', position: 2, name: category.title, item: `${siteUrl}/products?category=${category.slug}` }] : []),
+        { '@type': 'ListItem', position: category ? 3 : 2, name: product.name, item: url },
+      ],
+    },
+  ];
 
   return (
     <div className="bg-canvas pb-20 pt-20 md:pb-0">
