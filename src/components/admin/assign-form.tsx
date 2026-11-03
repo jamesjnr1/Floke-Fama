@@ -12,7 +12,7 @@ export function AssignForm({ ticket, engineers }: { ticket: string; engineers: {
     <form action={action} className="flex flex-wrap items-center gap-2">
       <input type="hidden" name="ticket" value={ticket} />
       <label className="sr-only" htmlFor={`assign-${ticket}`}>Engineer for {ticket}</label>
-      <select id={`assign-${ticket}`} name="engineer" required defaultValue="" className="h-9 rounded-lg border border-line bg-white px-2 text-[0.875rem]">
+      <select id={`assign-${ticket}`} name="engineer" required defaultValue="" className="h-9 w-full min-w-0 max-w-[14rem] rounded-lg border border-line bg-white px-2 text-[0.875rem]">
         <option value="" disabled>Choose an engineer…</option>
         {engineers.map((e) => (
           <option key={e.email} value={e.email}>{e.name}</option>

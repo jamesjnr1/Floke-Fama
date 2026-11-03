@@ -133,7 +133,8 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
     <div className="min-h-svh bg-[#e9eeeb] p-3 pt-[calc(var(--banner)+12px)] text-ink md:p-4 md:pt-[calc(var(--banner)+16px)]">
       <div className="mx-auto flex max-w-[1600px] gap-4">
         {/* Sidebar */}
-        <aside className="sticky top-[calc(var(--banner)+16px)] hidden h-[calc(100svh-var(--banner)-2rem)] w-64 shrink-0 flex-col rounded-[1.75rem] bg-white p-5 shadow-[0_1px_2px_rgb(16_25_30/0.04)] lg:flex">
+        {/* As tall as the screen; on a short screen (a laptop with the notice strip showing) it scrolls, so nothing in it is cut off */}
+        <aside className="sticky top-[calc(var(--banner)+16px)] hidden h-[calc(100svh-var(--banner)-2rem)] w-64 shrink-0 flex-col overflow-y-auto overscroll-contain rounded-[1.75rem] bg-white p-5 shadow-[0_1px_2px_rgb(16_25_30/0.04)] [scrollbar-width:thin] lg:flex">
           <Link href="/admin" className="flex items-center gap-2 px-2 pt-1">
             <LogoMark className="size-9" />
             <LogoWordmark className="h-[19px] text-brand-800" />
@@ -164,7 +165,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             </form>
           </div>
 
-          <div className="relative mt-auto overflow-hidden rounded-2xl bg-[radial-gradient(120%_90%_at_10%_0%,#0d7a4b_0%,#06482a_55%,#032a19_100%)] p-5 text-white">
+          <div className="relative mt-auto shrink-0 overflow-hidden rounded-2xl bg-[radial-gradient(120%_90%_at_10%_0%,#0d7a4b_0%,#06482a_55%,#032a19_100%)] p-5 text-white">
             <div aria-hidden className="absolute -right-10 -top-10 size-36 rounded-full border border-white/10" />
             <div aria-hidden className="absolute -right-4 top-6 size-24 rounded-full border border-white/10" />
             <span className="grid size-9 place-items-center rounded-full bg-white/10"><Icon name="fi-rr-download" /></span>
@@ -1233,7 +1234,7 @@ function Facts({ rows }: { rows: [string, React.ReactNode][] }) {
 
 function TicketTable({ tickets, assetOf }: { tickets: AdminData['desk']['tickets']; assetOf: (id: string) => AdminData['desk']['assets'][number] | undefined }) {
   return (
-    <Table head={['Request', 'Opened', 'Equipment', 'Hospital', 'Priority', 'Status', 'Engineer', 'Rating']} empty={!tickets.length}>
+    <Table head={['Request', 'Opened', 'Equipment', 'Hospital', 'Priority', 'Status', 'Engineer', 'Rating']} empty={!tickets.length} wide>
       {tickets.map((t) => {
         const a = assetOf(t.assetId);
         return (
@@ -1520,7 +1521,7 @@ function Waiting({ data, now }: { data: AdminData; now: number }) {
               <td className="font-medium">{a?.facility ?? '—'}</td>
               <td>{a ? tidy(a.name) : '—'}</td>
               <td className={cn('whitespace-nowrap', late && 'font-semibold text-signal-700')}>{since(t.openedAt, now)}</td>
-              <td className="whitespace-nowrap">{t.contactPhone ? <a href={`tel:${t.contactPhone.replace(/[^\d+]/g, '')}`} className="keep font-medium text-brand-700 hover:underline">{t.contactPhone}</a> : '—'}</td>
+              <td className="whitespace-nowrap">{t.contactPhone ? <a href={`tel:${telOf(t.contactPhone)}`} className="keep font-medium text-brand-700 hover:underline">{showPhone(t.contactPhone)}</a> : '—'}</td>
               <td><AssignForm ticket={t.id} engineers={engineers} /></td>
             </tr>
           );
