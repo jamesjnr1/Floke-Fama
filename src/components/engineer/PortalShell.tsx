@@ -369,7 +369,7 @@ function Portal({ user, products, practice, demo = false }: { user: { name: stri
       )}
 
         {/* Header */}
-        <header className="sticky top-[var(--banner)] z-30 flex h-[76px] items-center gap-3 border-b border-line bg-paper px-4 md:px-10">
+        <header className="sticky top-[var(--banner)] z-30 flex h-[76px] items-center gap-1 border-b sm:gap-2 lg:gap-3 border-line bg-paper px-3 sm:px-4 md:px-10">
           <Link href="/" className="flex items-center gap-2 lg:hidden" aria-label="Flokefama home"><LogoMark /></Link>
           <div className="min-w-0 flex-1">
             <p className="hidden truncate text-xs text-ink-3 sm:block">Flokefama Service <span className="text-ink-3/50">/</span> Engineer portal</p>
@@ -385,7 +385,7 @@ function Portal({ user, products, practice, demo = false }: { user: { name: stri
           {themeButton}
           <button type="button" onClick={startTour} aria-label="Take the tour" title="Take the tour" className="grid size-10 shrink-0 place-items-center rounded-md text-lg text-ink transition hover:bg-mist lg:hidden"><Icon name="fi-rr-interrogation" /></button>
           <span data-tour="bell" className="inline-flex"><Notifications tone="light" items={mine} onRead={(id) => rawDispatch({ type: 'read', id })} onReadAll={() => rawDispatch({ type: 'readAll', audience: 'engineer' })} onOpen={onNotification} /></span>
-          <span className="hidden items-center gap-3 border-l border-line pl-4 md:flex">
+          <span className="hidden items-center gap-3 border-l border-line pl-4 lg:flex">
             <UserAvatar src={photo.url} className="size-9 bg-brand-600 text-base text-white" />
             <span className="leading-tight">
               <span className="block text-sm font-medium text-ink">{me}</span>

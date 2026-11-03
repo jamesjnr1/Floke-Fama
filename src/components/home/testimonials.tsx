@@ -6,6 +6,7 @@ import { Reveal } from '@/components/motion/reveal';
 import { useSite } from '@/components/site-provider';
 import Image from 'next/image';
 import { UserRound } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 /**
  * The reviewer's photo (Studio: Site content → Home → Testimonials → Photo), or a placeholder until one is added.
@@ -14,7 +15,7 @@ function Portrait({ photo, name, sizes, small }: { photo?: string; name: string;
   if (photo) return <Image src={photo} alt={small ? '' : name} fill sizes={sizes} className="object-cover object-top" />;
   return (
     <span aria-hidden={small || undefined} role={small ? undefined : 'img'} aria-label={small ? undefined : `${name}: photo coming soon`} className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-[linear-gradient(160deg,#e8f3ec,#d3e7db)] text-brand-800/50">
-      <UserRound className={small ? 'size-7' : 'size-24'} strokeWidth={1.25} />
+      <UserRound className={small ? 'size-7' : 'size-12 md:size-24'} strokeWidth={1.25} />
       {!small && <span className="text-sm font-medium text-brand-800/70">Photo coming soon</span>}
     </span>
   );
@@ -52,7 +53,7 @@ export function Testimonials() {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.4 }}
-                  className="relative aspect-[4/5] max-h-[380px] w-full md:aspect-auto md:max-h-none md:min-h-[420px]"
+                  className={cn('relative w-full md:aspect-auto md:max-h-none md:min-h-[420px]', t.photo ? 'aspect-[4/5] max-h-[380px]' : 'aspect-[16/7] max-h-[170px]')}
                 >
                   <Portrait photo={t.photo} name={t.name} sizes="(min-width: 768px) 380px, 100vw" />
                 </motion.div>

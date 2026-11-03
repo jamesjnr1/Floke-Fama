@@ -42,7 +42,7 @@ export function LoginForm({ next, notice, area }: { next?: string; notice?: stri
             </button>
           </span>
         </label>
-        <div className="-mt-1 flex items-center justify-between gap-3">
+        <div className="-mt-1 flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
           <label className="flex items-center gap-2.5 whitespace-nowrap text-sm text-ink-2" title="Stay signed in on this device for 30 days. Not on shared computers.">
             <input type="checkbox" name="keep" className="size-4 accent-[#007a4d]" /> Keep me signed in
           </label>

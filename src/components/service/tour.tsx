@@ -58,11 +58,28 @@ export function useTour(id: string, steps: TourStep[], { ready, auto = true, who
       /* storage unavailable: don't hold them in the tour on every visit */
     }
     if (done || !(visit <= REQUIRED_VISITS)) return;
-    const t = window.setTimeout(() => {
-      setRequired(true);
-      setStep(0);
-    }, 700);
-    return () => window.clearTimeout(t);
+    // The opening (the logo on green, site-intro.tsx) plays first: the tour waits until it has finished
+    const root = document.documentElement;
+    let t = 0;
+    const begin = () => {
+      t = window.setTimeout(() => {
+        setRequired(true);
+        setStep(0);
+      }, 700);
+    };
+    let watch: MutationObserver | null = null;
+    if (root.classList.contains('ff-intro')) {
+      watch = new MutationObserver(() => {
+        if (root.classList.contains('ff-intro')) return;
+        watch?.disconnect();
+        begin();
+      });
+      watch.observe(root, { attributes: true, attributeFilter: ['class'] });
+    } else begin();
+    return () => {
+      watch?.disconnect();
+      window.clearTimeout(t);
+    };
   }, [ready, auto, key, deepLink]);
   const close = useCallback(() => {
     setStep(null);
