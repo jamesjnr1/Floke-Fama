@@ -25,6 +25,15 @@ const grotesk = localFont({ src: './fonts/grotesk.woff2', weight: '400 700', var
 const mona = localFont({ src: './fonts/mona.woff2', weight: '400 700', variable: '--font-mona', display: 'swap' });
 // Inter Black: the FLOKE FAMA lettering on the hero, as in the hero designs
 const inter = localFont({ src: './fonts/inter.woff2', weight: '900', variable: '--font-inter', display: 'swap' });
+// Poppins: the maintenance notice across the top of the page
+const poppins = localFont({
+  src: [
+    { path: './fonts/poppins-400.woff2', weight: '400' },
+    { path: './fonts/poppins-600.woff2', weight: '600' },
+  ],
+  variable: '--font-poppins',
+  display: 'swap',
+});
 // Italic serif for the accent words in page headers
 const serif = localFont({ src: './fonts/serif.woff2', weight: '400', style: 'italic', variable: '--font-instrument', display: 'swap' });
 
@@ -57,7 +66,7 @@ const organizationLd = (contact: Contact) => ({
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const site = await getSite();
   return (
-    <html lang="en-GH" data-banner={site.maintenance.show ? undefined : 'off'} data-patterns={process.env.NEXT_PUBLIC_PATTERNS === 'off' ? 'off' : undefined} className={`${jakarta.variable} ${grotesk.variable} ${serif.variable} ${mona.variable} ${inter.variable}`} suppressHydrationWarning>
+    <html lang="en-GH" data-banner={site.maintenance.show ? undefined : 'off'} data-patterns={process.env.NEXT_PUBLIC_PATTERNS === 'off' ? 'off' : undefined} className={`${jakarta.variable} ${grotesk.variable} ${serif.variable} ${mona.variable} ${inter.variable} ${poppins.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: bootScript }} />
       </head>
