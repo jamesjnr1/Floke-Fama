@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Children, cloneElement, isValidElement } from 'react';
+import { Children, Suspense, cloneElement, isValidElement } from 'react';
 import { Bars, Columns } from '@/components/admin/charts';
 import { LiveRefresh } from '@/components/admin/live-refresh';
 import { LogoMark, PortalLogo } from '@/components/layout/logo';
@@ -26,7 +26,7 @@ import { normalisePhone, smsProvider, smsStatus as smsGatewayStatus } from '@/li
 import { showPhone, telOf } from '@/lib/phone';
 import { TestSmsForm } from '@/components/admin/test-sms-form';
 import { SendMessageForm } from '@/components/admin/send-message-form';
-import { AdminNavLink, AdminNavProvider } from '@/components/admin/admin-nav';
+import { AdminNavLink, AdminNavProvider, AdminPane } from '@/components/admin/admin-nav';
 import { ClearOrdersForm } from '@/components/admin/clear-orders-form';
 import { AssignForm } from '@/components/admin/assign-form';
 import { HospitalTextsForm } from '@/components/admin/hospital-texts-form';
@@ -111,6 +111,9 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
   const now = data.source === 'sample' ? Date.UTC(2026, 9, 19, 12) : Date.now();
 
   const menu = tabs.filter((t) => t.id !== 'system' && allowed(t.id));
+  // The sections drawn on every visit, which the menu switches between in the browser. Database & settings is drawn
+  // only when it is open: it asks the SMS and email services how they are, which shouldn't happen on every visit.
+  const panes = tabs.filter((t) => t.id !== 'system' && allowed(t.id)).map((t) => t.id);
   // A mark on a tab when something there needs a look: red for action, green for news
   const badges: Partial<Record<Tab, { n: number; tone: 'red' | 'green'; title: string }>> = {
     orders: { n: data.orders.filter((o) => o.status === 'awaiting-payment').length, tone: 'red', title: 'new orders to call' },
@@ -134,13 +137,13 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
     cn('relative flex items-center gap-3 rounded-xl px-3.5 py-[clamp(5px,0.9vh,11px)] text-[0.9375rem] font-medium transition', active ? 'bg-white/[0.16] text-white shadow-[inset_3px_0_0_0_#fff]' : 'text-white/80 hover:bg-white/[0.08] hover:text-white');
 
   return (
+    <AdminNavProvider active={tab} panes={panes} fallback={sales ? 'orders' : 'overview'} exact={Object.keys(params).some((k) => k !== 'tab')}>
     <div className="min-h-svh bg-[#e7ebf2] p-3 pt-[calc(var(--banner)+12px)] text-ink md:p-4 md:pt-[calc(var(--banner)+16px)]">
       <div className="mx-auto flex max-w-[1600px] gap-4">
         {/* Sidebar: a deep emerald gradient, darker and richer than the dashboards' flat green, with the console's navy
             touches elsewhere. As tall as the screen with everything in
             view and no scrolling: the space around each row grows with the screen's height (tighter on a laptop with the
             notice strip, roomier on a big screen). Below 820px tall the export card becomes a row under General. */}
-        <AdminNavProvider active={tab}>
         <aside className="sticky top-[calc(var(--banner)+16px)] hidden h-[calc(100svh-var(--banner)-2rem)] w-64 shrink-0 flex-col overflow-y-auto overscroll-contain rounded-[1.75rem] bg-[radial-gradient(140%_70%_at_0%_0%,#0f8a55_0%,#06482a_55%,#032a19_100%)] px-4 py-5 text-white shadow-[0_18px_40px_-24px_rgb(4_56_34/0.75)] [scrollbar-color:rgb(255_255_255/0.35)_transparent] [scrollbar-width:thin] lg:flex">
           <Link href="/admin" className="flex shrink-0 flex-col gap-1.5 px-2">
             <PortalLogo product="Admin" />
@@ -182,7 +185,6 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             </a>
           </div>
         </aside>
-        </AdminNavProvider>
 
         <div className="min-w-0 flex-1 space-y-4">
           {/* Profile bar */}
@@ -217,10 +219,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
           {/* Wraps onto a second line rather than scrolling sideways */}
           <nav aria-label="Admin sections" className="flex flex-wrap gap-1 rounded-2xl bg-[radial-gradient(140%_120%_at_0%_0%,#0f8a55_0%,#06482a_55%,#032a19_100%)] p-2 lg:hidden">
             {tabs.filter((t) => allowed(t.id)).map((t) => (
-              <Link key={t.id} href={href(t.id)} aria-current={t.id === tab ? 'page' : undefined} className={cn(item(t.id === tab), 'relative whitespace-nowrap px-3 py-2')}>
-                <Icon name={t.icon} /> {t.label}
-                {badge(t.id, true)}
-              </Link>
+              <AdminNavLink key={t.id} id={t.id} href={href(t.id)} icon={t.icon} label={t.label} badge={badge(t.id, true)} className="whitespace-nowrap px-3 py-2" />
             ))}
           </nav>
 
@@ -249,23 +248,26 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
               </Notice>
             )}
 
-            {tab === 'overview' && <Overview data={data} now={now} />}
+            {/* Every section is drawn at once (the data is already read for all of them), so the menu switches between
+                them in the browser without waiting for the server. Only the open section gets the address's filters. */}
+            {allowed('overview') && <AdminPane id="overview"><Overview data={data} now={now} /></AdminPane>}
             {/* The overview and the accounts read again every 30 s, so who is on which job stays current */}
             {/* Every tab reads the latest every 30 seconds (not while an engineer is being added, so the form is left alone) */}
             {params.add !== 'engineer' && <LiveRefresh seconds={30} />}
             {demo && <DemoGuide area="admin" />}
-            {tab === 'orders' && <Orders data={data} q={params.q} open={params.order} stage={params.stage} now={now} />}
-            {tab === 'accounts' && (params.account ? <AccountDetail data={data} id={params.account} now={now} /> : <Accounts data={data} q={params.q} role={roles.some((r) => r.id && r.id === params.role) ? params.role : undefined} adding={params.add === 'engineer'} />)}
-            {tab === 'team' && <Team data={data} now={now} demo={demo} />}
-            {tab === 'hospitals' && <Hospitals data={data} q={params.q} code={params.code} adding={params.add === 'hospital' && !demo} demo={demo} />}
-            {tab === 'products' && <Products data={data} />}
-            {tab === 'service' && <Service data={data} now={now} />}
-            {tab === 'texts' && <Texts data={data} now={now} to={params.to} message={params.message} />}
-            {tab === 'system' && <System data={data} phone={session.phone} />}
+            {allowed('orders') && <AdminPane id="orders">{tab === 'orders' ? <Orders data={data} q={params.q} open={params.order} stage={params.stage} now={now} /> : <Orders data={data} now={now} />}</AdminPane>}
+            {allowed('accounts') && <AdminPane id="accounts">{tab !== 'accounts' ? <Accounts data={data} adding={false} /> : params.account ? <AccountDetail data={data} id={params.account} now={now} /> : <Accounts data={data} q={params.q} role={roles.some((r) => r.id && r.id === params.role) ? params.role : undefined} adding={params.add === 'engineer'} />}</AdminPane>}
+            {allowed('team') && <AdminPane id="team"><Team data={data} now={now} demo={demo} /></AdminPane>}
+            {allowed('hospitals') && <AdminPane id="hospitals">{tab === 'hospitals' ? <Hospitals data={data} q={params.q} code={params.code} adding={params.add === 'hospital' && !demo} demo={demo} /> : <Hospitals data={data} adding={false} demo={demo} />}</AdminPane>}
+            {allowed('products') && <AdminPane id="products"><Products data={data} /></AdminPane>}
+            {allowed('service') && <AdminPane id="service"><Service data={data} now={now} /></AdminPane>}
+            {allowed('texts') && <AdminPane id="texts"><Suspense fallback={<p className="text-ink-3">Loading text messages…</p>}>{tab === 'texts' ? <Texts data={data} now={now} to={params.to} message={params.message} /> : <Texts data={data} now={now} />}</Suspense></AdminPane>}
+            {tab === 'system' && <AdminPane id="system"><System data={data} phone={session.phone} /></AdminPane>}
           </main>
         </div>
       </div>
     </div>
+    </AdminNavProvider>
   );
 }
 
@@ -309,47 +311,6 @@ function Panel({ title, children, className, action }: { title: string; children
       </div>
       {children}
     </section>
-  );
-}
-
-/**
- * What visitors did, from the site's own records (no cookies, nothing sent to anyone else): the last 30 days against
- * the 30 before. Visits and pages viewed are in Vercel → Analytics.
- */
-function Conversions({ data, now }: { data: AdminData; now: number }) {
-  const DAY_MS = 864e5;
-  const engineers = new Set(data.accounts.filter((a) => a.role === 'engineer').map((a) => a.name));
-  const count = (times: string[], from: number, to: number) => times.filter((t) => { const x = Date.parse(t); return x >= now - from * DAY_MS && x < now - to * DAY_MS; }).length;
-  const rows = [
-    { label: 'Hospitals registered', icon: 'fi-rr-hospital', times: data.accounts.filter((a) => a.role === 'client').map((a) => a.createdAt) },
-    { label: 'Orders placed', icon: 'fi-rr-shopping-cart', times: data.orders.map((o) => o.placedAt) },
-    { label: 'Service requests from hospitals', icon: 'fi-rr-clipboard-list', times: data.desk.tickets.filter((t) => t.kind !== 'installation' && t.requestedBy && !['Service schedule', 'Flokefama sales'].includes(t.requestedBy) && !engineers.has(t.requestedBy)).map((t) => t.openedAt) },
-    { label: 'Enquiries from the Support page', icon: 'fi-rr-headset', times: data.supportRequests.filter((r) => r.topic !== 'demo').map((r) => r.at) },
-    { label: 'Demonstrations asked for', icon: 'fi-rr-play-circle', times: data.supportRequests.filter((r) => r.topic === 'demo').map((r) => r.at) },
-  ].map((r) => ({ ...r, now: count(r.times, 30, 0), before: count(r.times, 60, 30) }));
-  return (
-    <Panel title="Conversions" action={<span className="text-[0.875rem] text-ink-3">Last 30 days, against the 30 before</span>}>
-      <ul className="-mt-1 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-        {rows.map((r) => {
-          const diff = r.now - r.before;
-          return (
-            <li key={r.label} className="rounded-2xl bg-[#f5f7fb] px-4 py-3.5">
-              <p className="flex items-center gap-2 text-[0.875rem] font-medium text-ink-2"><Icon name={r.icon} className="text-ink-3" /> {r.label}</p>
-              <p className="mt-1.5 flex items-baseline gap-2">
-                <span className="font-mono text-[1.75rem] font-medium text-ink">{r.now}</span>
-                <span className={cn('text-[0.8125rem] font-medium', diff > 0 ? 'text-brand-700' : diff < 0 ? 'text-signal-700' : 'text-ink-3')}>
-                  {diff > 0 ? `▲ ${diff}` : diff < 0 ? `▼ ${-diff}` : 'no change'}
-                </span>
-              </p>
-            </li>
-          );
-        })}
-      </ul>
-      <p className="mt-4 text-[0.8125rem] text-ink-3">
-        Counted from the site’s own records: no cookies, nothing sent elsewhere. Visits and the pages people view are in{' '}
-        <a href="https://vercel.com/jamesjnr1s-projects/floke-fama/analytics" target="_blank" rel="noopener noreferrer" className="font-medium text-brand-700 underline">Vercel → Analytics</a>.
-      </p>
-    </Panel>
   );
 }
 
@@ -496,10 +457,6 @@ function Overview({ data, now }: { data: AdminData; now: number }) {
         <Mini tone="green" label="Equipment under care" value={data.desk.assets.length} note={`${dueSoon.length} due for calibration`} />
         <Mini tone="amber" label="Service rating" value={rated.length ? `${(rated.reduce((n, t) => n + (t.rating ?? 0), 0) / rated.length).toFixed(1)}/5` : '—'} note={`${rated.length} rated visits`} />
         <Mini tone="blue" label="Phones with alerts on" value={data.pushSubscriptions} note="Push subscribers" />
-      </div>
-
-      <div className="mt-4">
-        <Conversions data={data} now={now} />
       </div>
 
       <div className="mt-4">
