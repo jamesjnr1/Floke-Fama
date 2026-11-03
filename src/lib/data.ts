@@ -5,6 +5,7 @@ import * as seed from '@/data/seed';
 import { queries, sanity } from '@/lib/sanity';
 import type { Category, EventItem, Metric, Milestone, Product } from '@/lib/types';
 import { categoryOf, newCategorySlugs, retiredCategorySlugs } from '@/lib/categories';
+import { tidyProduct } from '@/lib/product-names';
 
 /**
  * Content access layer. Reads from Sanity when configured, otherwise from the seed.
@@ -30,8 +31,11 @@ export const getCategories = cache(async () => {
   // The earlier categories may still be in the Studio after the import; their products now sit in the new ones
   return newCategorySlugs.every((s) => cms.some((c) => c.slug === s)) ? cms.filter((c) => !retiredCategorySlugs.includes(c.slug)) : seed.categories;
 });
-const recategorise = (p: Product): Product => ({ ...p, category: categoryOf(p.slug, p.category) });
-export const getProducts = cache(async () => (await fromCms<Product[]>(queries.products, seed.products)).map(recategorise));
+const recategorise = (p: Product): Product => tidyProduct({ ...p, category: categoryOf(p.slug, p.category) });
+// Featured first, then A to Z by the name as shown (the Studio sorts by its own names, some still in the old style)
+export const getProducts = cache(async () =>
+  (await fromCms<Product[]>(queries.products, seed.products)).map(recategorise).sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured)) || a.name.localeCompare(b.name, 'en', { numeric: true })),
+);
 export const getMetrics = cache(() => fromCms<Metric[]>(queries.metrics, seed.metrics));
 /** News, Blog & Press, newest first. */
 export const getArticles = cache(() => fromCms<Article[]>(queries.articles, seedArticles));

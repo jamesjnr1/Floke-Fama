@@ -1,5 +1,6 @@
 'use client';
 
+import { listingLabel } from '@/lib/product-names';
 import Link from 'next/link';
 import { helpHref, orderHref } from '@/lib/links';
 import { Badge } from '@/components/ui/badge';
@@ -47,7 +48,7 @@ export function SpecTabs({ product, categoryTitle }: { product: Product; categor
           {[
             { label: 'Brand', value: product.brand },
             ...(categoryTitle ? [{ label: 'Category', value: categoryTitle }] : []),
-            ...(product.types?.length ? [{ label: 'Listed under', value: product.types.join(', ') }] : []),
+            ...(product.types?.length ? [{ label: 'Listed under', value: product.types.map(listingLabel).join(', ') }] : []),
             ...product.specs,
           ].map((s) => (
             <div key={s.label} className="grid grid-cols-[1fr_1.4fr] gap-6 px-5 py-4 text-sm">
@@ -135,7 +136,7 @@ export function SpecHeader({ product, categoryTitle }: { product: Product; categ
       {product.types?.length ? (
         <ul className="mt-6 flex flex-wrap gap-2" aria-label="Listed under">
           {product.types.map((t) => (
-            <li key={t}><Badge tone="green">{t}</Badge></li>
+            <li key={t}><Badge tone="green">{listingLabel(t)}</Badge></li>
           ))}
         </ul>
       ) : null}

@@ -1,5 +1,6 @@
 'use client';
 
+import { listingLabel } from '@/lib/product-names';
 import Link from 'next/link';
 import { helpHref } from '@/lib/links';
 import { useRouter } from 'next/navigation';
@@ -149,8 +150,8 @@ export function Catalog({ products, categories, typeList }: {
         <p className="flex flex-wrap items-center gap-2">
           <span><span className="font-medium text-ink">{visible.length}</span> {visible.length === 1 ? 'product' : 'products'}{category ? ` in ${catBySlug.get(category)?.title}` : ''}</span>
           {type && (
-            <button type="button" onClick={() => setType(null)} className="inline-flex items-center gap-1.5 rounded-[4px] bg-brand-50 px-2.5 py-1 text-xs font-semibold text-brand-700 hover:bg-brand-100" aria-label={`Remove filter: ${type}`}>
-              {type} <Icon name="fi-rr-cross-small" />
+            <button type="button" onClick={() => setType(null)} className="inline-flex items-center gap-1.5 rounded-[4px] bg-brand-50 px-2.5 py-1 text-xs font-semibold text-brand-700 hover:bg-brand-100" aria-label={`Remove filter: ${listingLabel(type)}`}>
+              {listingLabel(type)} <Icon name="fi-rr-cross-small" />
             </button>
           )}
         </p>
@@ -200,7 +201,7 @@ export function Catalog({ products, categories, typeList }: {
                 onClick={() => pickType(t)}
                 className="flex w-full items-center justify-between gap-3 rounded-2xl border border-line bg-paper px-4 py-3 text-left text-sm text-ink transition hover:border-brand-300 hover:bg-brand-50"
               >
-                <span>{t}</span>
+                <span>{listingLabel(t)}</span>
                 <span className="shrink-0 text-xs text-ink-3">{n} {n === 1 ? 'product' : 'products'}</span>
               </button>
             </li>

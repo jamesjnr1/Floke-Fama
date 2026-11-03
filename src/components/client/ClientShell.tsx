@@ -33,8 +33,6 @@ import { isOpen, nextTicketId, useServiceStore, type Action, type Notification }
 import { cn } from '@/lib/utils';
 import { CONSUMABLES } from '@/lib/categories';
 
-/** "AUTO HEAMATOLOGY ANALYZER BC5150" → "Auto Heamatology Analyzer BC5150" (model codes stay upper case). */
-const tidyName = (n: string) => n.split(/(\s+|[()])/).map((w) => (/\d/.test(w) ? w.toUpperCase() : w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())).join('');
 
 type View = 'overview' | 'requests' | 'equipment' | 'certificates' | 'orders' | 'profile';
 const nav: { id: View; label: string; icon: string }[] = [
@@ -134,7 +132,7 @@ export function ClientShell({ user, products, demo = false, profile: savedProfil
       if (state.purchases?.includes(o.reference)) continue;
       const items = o.items.flatMap((x) => {
         const p = products.find((c) => c.slug === x.slug);
-        return p && p.category !== CONSUMABLES ? [{ slug: p.slug, name: tidyName(p.name), brand: p.brand, image: p.image, qty: x.qty, install: needsInstallation(p) }] : [];
+        return p && p.category !== CONSUMABLES ? [{ slug: p.slug, name: p.name, brand: p.brand, image: p.image, qty: x.qty, install: needsInstallation(p) }] : [];
       });
       rawDispatch({ type: 'purchase', order: o.reference, facility, items });
     }
