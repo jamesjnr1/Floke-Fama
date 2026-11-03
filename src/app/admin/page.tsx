@@ -128,20 +128,22 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
   };
   const href = (id: Tab) => (id === 'overview' ? '/admin' : `/admin?tab=${id}`);
   const item = (active: boolean) =>
-    cn('flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-[0.9375rem] font-medium transition', active ? 'bg-brand-50 text-brand-800 shadow-[inset_0_0_0_1px_rgb(0_122_77/0.12)]' : 'text-ink-3 hover:bg-[#f1f4f2] hover:text-ink');
+    cn('flex items-center gap-3 rounded-xl px-3.5 py-1.5 text-[0.875rem] font-medium leading-5 transition [@media(min-height:1040px)]:py-2.5 [@media(min-height:1040px)]:text-[0.9375rem]', active ? 'bg-brand-50 text-brand-800 shadow-[inset_0_0_0_1px_rgb(0_122_77/0.12)]' : 'text-ink-3 hover:bg-[#f1f4f2] hover:text-ink');
 
   return (
     <div className="min-h-svh bg-[#e9eeeb] p-3 pt-[calc(var(--banner)+12px)] text-ink md:p-4 md:pt-[calc(var(--banner)+16px)]">
       <div className="mx-auto flex max-w-[1600px] gap-4">
         {/* Sidebar */}
-        {/* As tall as the screen; on a short screen (a laptop with the notice strip showing) it scrolls, so nothing in it is cut off */}
-        <aside className="sticky top-[calc(var(--banner)+16px)] hidden h-[calc(100svh-var(--banner)-2rem)] w-64 shrink-0 flex-col overflow-y-auto overscroll-contain rounded-[1.75rem] bg-white p-5 shadow-[0_1px_2px_rgb(16_25_30/0.04)] [scrollbar-width:thin] lg:flex">
+        {/* As tall as the screen, with everything in view: on a shorter screen (below 1040px, e.g. any laptop with the
+            notice strip showing) the rows and spaces are tighter and the export card smaller. Only a very short window
+            (under about 690px) scrolls, so nothing is ever cut off */}
+        <aside className="sticky top-[calc(var(--banner)+16px)] hidden h-[calc(100svh-var(--banner)-2rem)] w-64 shrink-0 flex-col overflow-y-auto overscroll-contain rounded-[1.75rem] bg-white p-4 shadow-[0_1px_2px_rgb(16_25_30/0.04)] [scrollbar-width:thin] lg:flex [@media(min-height:1040px)]:p-5">
           <Link href="/admin" className="flex items-center gap-2 px-2 pt-1">
             <LogoMark className="size-9" />
             <LogoWordmark className="h-[19px] text-brand-800" />
           </Link>
-          <p className="mt-9 px-3.5 text-[0.8125rem] font-semibold tracking-[0.08em] text-ink-3">MENU</p>
-          <nav aria-label="Admin sections" className="mt-2 space-y-1">
+          <p className="mt-5 px-3.5 text-[0.75rem] font-semibold tracking-[0.08em] text-ink-3 [@media(min-height:1040px)]:mt-9 [@media(min-height:1040px)]:text-[0.8125rem]">MENU</p>
+          <nav aria-label="Admin sections" className="mt-1.5 space-y-0.5 [@media(min-height:1040px)]:mt-2 [@media(min-height:1040px)]:space-y-1">
             {menu.map((t) => (
               <Link key={t.id} href={href(t.id)} aria-current={t.id === tab ? 'page' : undefined} className={item(t.id === tab)}>
                 <Icon name={t.icon} className={t.id === tab ? 'text-brand-600' : ''} /> {t.label}
@@ -149,8 +151,8 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
               </Link>
             ))}
           </nav>
-          <p className="mt-8 px-3.5 text-[0.8125rem] font-semibold tracking-[0.08em] text-ink-3">GENERAL</p>
-          <div className="mt-2 space-y-1">
+          <p className="mt-4 px-3.5 text-[0.75rem] font-semibold tracking-[0.08em] text-ink-3 [@media(min-height:1040px)]:mt-8 [@media(min-height:1040px)]:text-[0.8125rem]">GENERAL</p>
+          <div className="mt-1.5 space-y-0.5 [@media(min-height:1040px)]:mt-2 [@media(min-height:1040px)]:space-y-1">
             {!sales && !demo && (
               <Link href={href('system')} aria-current={tab === 'system' ? 'page' : undefined} className={item(tab === 'system')}>
                 <Icon name="fi-rr-database" className={tab === 'system' ? 'text-brand-600' : ''} /> Database &amp; settings
@@ -166,13 +168,16 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             </form>
           </div>
 
-          <div className="relative mt-auto shrink-0 overflow-hidden rounded-2xl bg-[radial-gradient(120%_90%_at_10%_0%,#0d7a4b_0%,#06482a_55%,#032a19_100%)] p-5 text-white">
+          {/* Shorter screens: the icon beside the heading, no sentence, a smaller button */}
+          <div className="relative mt-auto shrink-0 overflow-hidden rounded-2xl bg-[radial-gradient(120%_90%_at_10%_0%,#0d7a4b_0%,#06482a_55%,#032a19_100%)] p-3.5 text-white [@media(min-height:1040px)]:p-5">
             <div aria-hidden className="absolute -right-10 -top-10 size-36 rounded-full border border-white/10" />
             <div aria-hidden className="absolute -right-4 top-6 size-24 rounded-full border border-white/10" />
-            <span className="grid size-9 place-items-center rounded-full bg-white/10"><Icon name="fi-rr-download" /></span>
-            <p className="mt-4 text-lg font-semibold leading-tight">Export your data</p>
-            <p className="mt-1 text-[0.875rem] text-white/70">Every order as a spreadsheet, ready for Excel.</p>
-            <a href="/api/admin/export?table=orders" className="mt-4 flex h-11 items-center justify-center rounded-xl bg-white text-[0.9375rem] font-semibold text-brand-800 transition hover:bg-brand-50">
+            <div className="flex items-center gap-2.5 [@media(min-height:1040px)]:block">
+              <span className="grid size-8 shrink-0 place-items-center rounded-full bg-white/10 [@media(min-height:1040px)]:size-9"><Icon name="fi-rr-download" /></span>
+              <p className="text-base font-semibold leading-tight [@media(min-height:1040px)]:mt-4 [@media(min-height:1040px)]:text-lg">Export your data</p>
+            </div>
+            <p className="mt-1 hidden text-[0.875rem] text-white/70 [@media(min-height:1040px)]:block">Every order as a spreadsheet, ready for Excel.</p>
+            <a href="/api/admin/export?table=orders" className="mt-3 flex h-9 items-center justify-center rounded-xl bg-white text-[0.875rem] font-semibold text-brand-800 transition hover:bg-brand-50 [@media(min-height:1040px)]:mt-4 [@media(min-height:1040px)]:h-11 [@media(min-height:1040px)]:text-[0.9375rem]">
               Download orders
             </a>
           </div>

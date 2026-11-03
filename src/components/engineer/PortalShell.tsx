@@ -285,14 +285,15 @@ function Portal({ user, products, practice, demo = false }: { user: { name: stri
   return (
     <div className="eng-page flex min-h-svh pt-[var(--banner)] text-ink">
       {/* Sidebar */}
-      {/* As tall as the screen; on a short screen (a laptop with the notice strip showing) it scrolls, so Sign out is never out of reach */}
+      {/* As tall as the screen, with everything in view: on a shorter screen (below 900px, e.g. a laptop with the
+          notice strip showing) the rows and spaces are tighter. Only a very short window scrolls, so nothing is cut off */}
       <aside className="eng-rail sticky top-[var(--banner)] hidden h-[calc(100svh-var(--banner))] w-[264px] shrink-0 flex-col overflow-y-auto overscroll-contain [scrollbar-color:rgb(255_255_255/0.35)_transparent] [scrollbar-width:thin] text-white lg:flex">
         {/* The portal's logo, with the dashboard's name under it; the opening lands its big logo on this one */}
-        <Link href="/" aria-label="Flokefama home" className="flex h-[76px] flex-col justify-center gap-1 border-b border-white/15 px-5">
+        <Link href="/" aria-label="Flokefama home" className="flex h-[76px] shrink-0 flex-col justify-center gap-1 border-b border-white/15 px-5">
           <PortalLogo product="Service" target />
           <span className="pl-[36px] text-[0.75rem] font-medium tracking-[0.02em] text-white/70">Engineer dashboard</span>
         </Link>
-        <div className="flex items-center gap-3 px-6 py-6">
+        <div className="flex shrink-0 items-center gap-3 px-6 py-2.5 [@media(min-height:900px)]:py-6">
           <button onClick={() => setChangingPhoto(true)} title="Change your photo" aria-label="Change your photo" className="shrink-0 rounded-full">
             <UserAvatar src={photo.url} className="size-10 bg-white text-lg text-[#006b42]" />
           </button>
@@ -302,7 +303,7 @@ function Portal({ user, products, practice, demo = false }: { user: { name: stri
           </span>
         </div>
         <nav aria-label="Engineer portal" data-tour="nav" className="px-3">
-          <p className="px-3 pb-2 text-[0.8125rem] font-semibold uppercase tracking-[0.14em] text-white/60">Menu</p>
+          <p className="px-3 pb-1 text-[0.75rem] font-semibold uppercase tracking-[0.14em] text-white/60 [@media(min-height:900px)]:pb-2 [@media(min-height:900px)]:text-[0.8125rem]">Menu</p>
           <ul className="space-y-0.5">
             {nav.map((n) => {
               const on = view === n.id;
@@ -313,7 +314,7 @@ function Portal({ user, products, practice, demo = false }: { user: { name: stri
                     data-tour={n.id === 'guide' ? 'guide' : undefined}
                     onClick={() => setView(n.id)}
                     aria-current={on ? 'page' : undefined}
-                    className={cn('relative flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm transition', on ? 'bg-white/[0.16] font-semibold text-white' : 'text-white/80 hover:bg-white/[0.08] hover:text-white')}
+                    className={cn('relative flex w-full items-center gap-3 rounded-md px-3 py-1.5 text-sm transition [@media(min-height:900px)]:py-2.5', on ? 'bg-white/[0.16] font-semibold text-white' : 'text-white/80 hover:bg-white/[0.08] hover:text-white')}
                   >
                     {on && <motion.span layoutId="eng-rail" className="absolute inset-y-2 left-0 w-[3px] rounded-r-[2px] bg-white" />}
                     <Icon name={n.icon} className={on ? 'text-white' : 'text-white/70'} />
@@ -325,13 +326,13 @@ function Portal({ user, products, practice, demo = false }: { user: { name: stri
             })}
           </ul>
         </nav>
-        <div className="px-6 pt-6">
-          <button data-tour="log-fault" onClick={logFault} className="flex h-11 w-full items-center justify-center gap-2 rounded-md bg-white text-sm font-semibold text-[#006b42] shadow-[0_10px_24px_-14px_rgb(0_0_0/0.5)] transition hover:bg-[#eefaf3]">
+        <div className="px-6 pt-3 [@media(min-height:900px)]:pt-6">
+          <button data-tour="log-fault" onClick={logFault} className="flex h-10 w-full items-center justify-center gap-2 rounded-md bg-white text-sm font-semibold [@media(min-height:900px)]:h-11 text-[#006b42] shadow-[0_10px_24px_-14px_rgb(0_0_0/0.5)] transition hover:bg-[#eefaf3]">
             <Icon name="fi-rr-plus" /> Log equipment fault
           </button>
         </div>
-        <div className="mt-auto border-t border-white/15 px-6 py-5 text-[0.8125rem]">
-          <div className="space-y-2.5">
+        <div className="mt-auto border-t border-white/15 px-6 py-3 text-[0.8125rem] [@media(min-height:900px)]:py-5">
+          <div className="space-y-1 [@media(min-height:900px)]:space-y-2.5">
             <a href={contact.phoneHref} className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-phone-call" /> {contact.phone}</a>
             {!demo && <AlertsSwitch className="text-white/80 hover:text-white" />}
             {/* Practice with sample jobs (kept on this device), or back to the real ones */}
