@@ -54,7 +54,7 @@ export function EngineerProfile({ name, email, phone, region }: { name: string; 
                 <option value="">Choose where you work</option>
                 {regions.map((r) => <option key={r} value={r}>{r}</option>)}
               </select>
-              <span className="text-xs text-ink-3">Urgent jobs in your region come to you first.</span>
+              <span className="text-xs text-ink-3">Every engineer gets a text about urgent jobs. One nobody takes quickly goes to an engineer in the hospital’s region.</span>
               {e.region && <span role="alert" className="text-xs text-signal-700">{e.region}</span>}
             </label>
             {e.form && <p role="alert" className="text-sm text-signal-700">{e.form}</p>}
