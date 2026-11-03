@@ -231,7 +231,7 @@ function ProductCard({ product, category, wide }: { product: Product; category?:
           {product.brand}
           {product.newArrival && <span className="rounded-[4px] bg-signal px-2 py-0.5 text-xs font-semibold uppercase tracking-[0.06em] text-white">New</span>}
         </p>
-        <h2 className="mt-1 line-clamp-2 text-sm font-semibold leading-snug tracking-tight text-ink sm:text-base">{product.name}</h2>
+        <h2 className="mt-1 line-clamp-2 text-sm font-semibold leading-snug tracking-tight text-ink [overflow-wrap:anywhere] sm:text-base">{product.name}</h2>
       </div>
     </Link>
     </div>

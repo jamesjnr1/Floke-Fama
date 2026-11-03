@@ -338,7 +338,7 @@ function Csv({ table, label = 'Download CSV', codes }: { table: string; label?: 
  * A table that always fits, with no sideways scrolling: on wide screens its columns share the width and long text
  * wraps; below that each row becomes a card, every value under its column's name.
  */
-function Table({ head, children, empty }: { head: string[]; children: React.ReactNode; empty?: boolean }) {
+function Table({ head, children, empty, wide = false }: { head: string[]; children: React.ReactNode; empty?: boolean; /** Many columns: rows become cards below a wide screen (1280px), not only below 1024px. */ wide?: boolean }) {
   // Each cell carries its column's name, shown above the value when rows stack as cards
   const rows = Children.map(children, (row) => {
     if (!isValidElement<{ children?: React.ReactNode }>(row)) return row;
@@ -348,23 +348,34 @@ function Table({ head, children, empty }: { head: string[]; children: React.Reac
     );
     return cloneElement(row, {}, cells);
   });
+  // Class names written out in full for each width, so Tailwind finds them
+  const stacked = wide
+    ? {
+        table: 'max-xl:block',
+        thead: 'max-xl:hidden',
+        body: [
+          'max-xl:block xl:[&_td]:px-4 xl:[&_td]:py-3.5',
+          'max-xl:[&_tr]:block max-xl:[&_tr]:px-5 max-xl:[&_tr]:py-4 max-xl:[&_td]:block max-xl:[&_td]:py-1.5',
+          "max-xl:[&_td]:before:block max-xl:[&_td]:before:text-[0.75rem] max-xl:[&_td]:before:font-semibold max-xl:[&_td]:before:uppercase max-xl:[&_td]:before:tracking-[0.06em] max-xl:[&_td]:before:text-ink-3 max-xl:[&_td]:before:content-[attr(data-label)]",
+        ],
+      }
+    : {
+        table: 'max-lg:block',
+        thead: 'max-lg:hidden',
+        body: [
+          'max-lg:block lg:[&_td]:px-3 lg:[&_td]:py-3.5 xl:[&_td]:px-5',
+          // Cards on phones and tablets: one per row, each value labelled
+          'max-lg:[&_tr]:block max-lg:[&_tr]:px-5 max-lg:[&_tr]:py-4 max-lg:[&_td]:block max-lg:[&_td]:py-1.5',
+          "max-lg:[&_td]:before:block max-lg:[&_td]:before:text-[0.75rem] max-lg:[&_td]:before:font-semibold max-lg:[&_td]:before:uppercase max-lg:[&_td]:before:tracking-[0.06em] max-lg:[&_td]:before:text-ink-3 max-lg:[&_td]:before:content-[attr(data-label)]",
+        ],
+      };
   return (
     <div className={card}>
-      <table className="w-full text-left text-[0.9375rem] max-lg:block [&_td]:whitespace-normal [&_td_*]:whitespace-normal [&_td]:break-words [&_td.keep]:whitespace-nowrap [&_td_.keep]:whitespace-nowrap">
-        <thead className="text-[0.875rem] text-ink-3 max-lg:hidden">
-          <tr className="border-b border-[#edf1ef]">{head.map((h) => <th key={h} className="px-3 py-4 font-medium xl:px-5">{h}</th>)}</tr>
+      <table className={cn('w-full text-left text-[0.9375rem] [&_td]:whitespace-normal [&_td_*]:whitespace-normal [&_td]:break-words [&_td.keep]:whitespace-nowrap [&_td_.keep]:whitespace-nowrap', stacked.table)}>
+        <thead className={cn('text-[0.875rem] text-ink-3', stacked.thead)}>
+          <tr className="border-b border-[#edf1ef]">{head.map((h) => <th key={h} className={cn('py-4 font-medium', wide ? 'px-4' : 'px-3 xl:px-5')}>{h}</th>)}</tr>
         </thead>
-        <tbody
-          className={cn(
-            'divide-y divide-[#edf1ef] max-lg:block [&_tr:hover]:bg-[#fafbfa]',
-            'lg:[&_td]:px-3 lg:[&_td]:py-3.5 xl:[&_td]:px-5',
-            // Cards on phones and tablets: one per row, each value labelled
-            'max-lg:[&_tr]:block max-lg:[&_tr]:px-5 max-lg:[&_tr]:py-4 max-lg:[&_td]:block max-lg:[&_td]:py-1.5',
-            "max-lg:[&_td]:before:block max-lg:[&_td]:before:text-[0.75rem] max-lg:[&_td]:before:font-semibold max-lg:[&_td]:before:uppercase max-lg:[&_td]:before:tracking-[0.06em] max-lg:[&_td]:before:text-ink-3 max-lg:[&_td]:before:content-[attr(data-label)]",
-          )}
-        >
-          {rows}
-        </tbody>
+        <tbody className={cn('divide-y divide-[#edf1ef] [&_tr:hover]:bg-[#fafbfa]', ...stacked.body)}>{rows}</tbody>
       </table>
       {empty && <p className="px-4 py-10 text-center text-ink-3">Nothing to show.</p>}
     </div>
@@ -1410,7 +1421,7 @@ function Performance({ data, now }: { data: AdminData; now: number }) {
     <>
       <h2 className="mb-1 mt-8 text-lg font-semibold">Engineer performance · last 90 days</h2>
       <p className="mb-3 text-[0.9375rem] text-ink-3">Response: from the request to the engineer taking it. Time to fix: from the request to resolved. Distance: what engineers enter when they resolve a job.</p>
-      <Table head={['Engineer', 'Jobs done', 'Preventive', 'Faults', 'Installations', 'Repairs', 'Open', 'Avg response', 'Avg time to fix', 'Distance', 'Rating']} empty={!rows.length}>
+      <Table head={['Engineer', 'Jobs done', 'Preventive', 'Faults', 'Installations', 'Repairs', 'Open', 'Avg response', 'Avg time to fix', 'Distance', 'Rating']} empty={!rows.length} wide>
         {rows.map((r) => (
           <tr key={r.name}>
             <td className="font-medium">{r.name}</td>

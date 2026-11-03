@@ -12,14 +12,17 @@ export type ResolvedDepartment = Omit<Department, 'groups'> & { groups: { title:
 type Packages = { tier: string; models: string[]; samples: string[] }[];
 type Disciplines = { name: string; tests: string }[];
 
-/** A product on white, its photo shown whole; shop products open their page. */
+/**
+ * A product on white, its photo shown whole; shop products open their page. Phones: the photo beside the text (one per
+ * row), so the text has room; wider: the photo above.
+ */
 function Card({ it }: { it: ResolvedItem }) {
   const body = (
     <>
-      <span className="relative block aspect-[4/3] overflow-hidden bg-white">
-        <Image src={it.image} alt={it.name} fill sizes="(min-width: 1024px) 280px, 50vw" className={cn('transition-transform duration-500 group-hover:scale-[1.04]', it.photo ? 'object-cover' : 'object-contain p-4 mix-blend-multiply')} />
+      <span className="relative block aspect-square w-[36%] shrink-0 overflow-hidden bg-white sm:aspect-[4/3] sm:w-auto">
+        <Image src={it.image} alt={it.name} fill sizes="(min-width: 1024px) 280px, (min-width: 640px) 50vw, 36vw" className={cn('transition-transform duration-500 group-hover:scale-[1.04]', it.photo ? 'object-cover' : 'object-contain p-4 mix-blend-multiply')} />
       </span>
-      <span className="block border-t border-line p-4">
+      <span className="block min-w-0 flex-1 border-l border-line p-3.5 sm:border-l-0 sm:border-t sm:p-4">
         <span className="block text-[0.8125rem] font-semibold uppercase tracking-[0.06em] text-brand-700">{it.label}</span>
         <span className="mt-1 block text-lg font-bold leading-snug tracking-[-0.01em] text-ink group-hover:text-brand-700">{it.name}</span>
         {it.text && <span className="no-justify mt-1 block text-[0.9375rem] leading-relaxed text-ink-3">{it.text}</span>}
@@ -34,7 +37,7 @@ function Card({ it }: { it: ResolvedItem }) {
   );
   return (
     <li className="border border-line bg-paper transition-colors hover:border-brand-600">
-      {it.href ? <Link href={it.href} className="group block h-full">{body}</Link> : <div className="group h-full">{body}</div>}
+      {it.href ? <Link href={it.href} className="group flex h-full sm:block">{body}</Link> : <div className="group flex h-full sm:block">{body}</div>}
     </li>
   );
 }
@@ -77,7 +80,7 @@ export function DepartmentTabs({ departments, packages, disciplines }: { departm
                 ))}
               </ul>
             )}
-            <ul className={cn('mt-5 grid grid-cols-2 gap-3 md:gap-4', g.items.length === 1 ? 'md:max-w-sm md:grid-cols-1' : 'lg:grid-cols-4')}>
+            <ul className={cn('mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 md:gap-4', g.items.length === 1 ? 'md:max-w-sm md:grid-cols-1' : 'lg:grid-cols-4')}>
               {g.items.map((it) => <Card key={it.name} it={it} />)}
             </ul>
           </div>

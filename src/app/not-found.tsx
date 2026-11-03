@@ -9,9 +9,9 @@ export default function NotFound() {
       <Navbar />
       <main id="main" className="grid min-h-[80svh] place-items-center bg-canvas px-5 pt-24 text-center">
         <div>
-          <h1 className="display text-5xl md:text-7xl">Page not found.</h1>
+          <h1 className="display text-[2.5rem] sm:text-5xl md:text-7xl">Page not found.</h1>
           <p className="mx-auto mt-4 max-w-md text-ink-3">This page doesn’t exist or has moved. Try the catalogue or the homepage.</p>
-          <div className="mt-8 flex justify-center gap-3">
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Button asChild arrow="right"><Link href="/products">Browse products</Link></Button>
             <Button asChild variant="outline"><Link href="/">Home</Link></Button>
           </div>
