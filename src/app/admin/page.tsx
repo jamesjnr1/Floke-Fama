@@ -120,7 +120,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
     const b = badges[id];
     if (!b?.n) return null;
     return (
-      <span title={`${b.n} ${b.title}`} className={cn('relative rounded-full px-2 py-0.5 text-[0.75rem] font-bold tabular-nums', phone ? 'ml-1' : 'ml-auto', b.tone === 'red' ? 'bg-signal text-white' : phone ? 'bg-brand-600 text-white' : 'bg-white text-brand-800')}>
+      <span title={`${b.n} ${b.title}`} className={cn('relative rounded-full px-2 py-0.5 text-[0.75rem] font-bold tabular-nums', phone ? 'ml-1' : 'ml-auto', b.tone === 'red' ? 'bg-signal text-white' : phone ? 'bg-brand-600 text-white' : 'bg-white text-[#1f3157]')}>
         {b.n}
         <span className="sr-only"> {b.title}</span>
       </span>
@@ -131,12 +131,13 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
     cn('relative flex items-center gap-3 rounded-xl px-3.5 py-[clamp(5px,0.9vh,11px)] text-[0.9375rem] font-medium transition', active ? 'bg-white/[0.16] text-white shadow-[inset_3px_0_0_0_#fff]' : 'text-white/80 hover:bg-white/[0.08] hover:text-white');
 
   return (
-    <div className="min-h-svh bg-[#e9eeeb] p-3 pt-[calc(var(--banner)+12px)] text-ink md:p-4 md:pt-[calc(var(--banner)+16px)]">
+    <div className="min-h-svh bg-[#e7ebf2] p-3 pt-[calc(var(--banner)+12px)] text-ink md:p-4 md:pt-[calc(var(--banner)+16px)]">
       <div className="mx-auto flex max-w-[1600px] gap-4">
-        {/* Sidebar: Flokefama green, like the hospital and engineer dashboards. As tall as the screen with everything in
+        {/* Sidebar: deep navy, the admin console's own colour (the hospital and engineer dashboards are green), so it is
+            never mistaken for them. As tall as the screen with everything in
             view and no scrolling: the space around each row grows with the screen's height (tighter on a laptop with the
             notice strip, roomier on a big screen). Below 820px tall the export card becomes a row under General. */}
-        <aside className="sticky top-[calc(var(--banner)+16px)] hidden h-[calc(100svh-var(--banner)-2rem)] w-64 shrink-0 flex-col overflow-y-auto overscroll-contain rounded-[1.75rem] bg-[linear-gradient(180deg,#00804f_0%,#006b42_55%,#005a38_100%)] px-4 py-5 text-white shadow-[0_18px_40px_-24px_rgb(4_56_34/0.7)] [scrollbar-color:rgb(255_255_255/0.35)_transparent] [scrollbar-width:thin] lg:flex">
+        <aside className="sticky top-[calc(var(--banner)+16px)] hidden h-[calc(100svh-var(--banner)-2rem)] w-64 shrink-0 flex-col overflow-y-auto overscroll-contain rounded-[1.75rem] bg-[linear-gradient(180deg,#1f3157_0%,#172646_55%,#101b33_100%)] px-4 py-5 text-white shadow-[0_18px_40px_-24px_rgb(16_27_51/0.75)] [scrollbar-color:rgb(255_255_255/0.35)_transparent] [scrollbar-width:thin] lg:flex">
           <Link href="/admin" className="flex shrink-0 flex-col gap-1.5 px-2">
             <PortalLogo product="Admin" />
             <span className="pl-[36px] text-[0.75rem] font-medium tracking-[0.02em] text-white/75">Admin console</span>
@@ -179,7 +180,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
               <p className="text-base font-semibold leading-tight [@media(min-height:1040px)]:mt-4 [@media(min-height:1040px)]:text-lg">Export your data</p>
             </div>
             <p className="mt-1 hidden text-[0.875rem] text-white/75 [@media(min-height:1040px)]:block">Every order as a spreadsheet, ready for Excel.</p>
-            <a href="/api/admin/export?table=orders" className="mt-3 flex h-9 items-center justify-center rounded-xl bg-white text-[0.875rem] font-semibold text-brand-800 transition hover:bg-brand-50 [@media(min-height:1040px)]:mt-4 [@media(min-height:1040px)]:h-11 [@media(min-height:1040px)]:text-[0.9375rem]">
+            <a href="/api/admin/export?table=orders" className="mt-3 flex h-9 items-center justify-center rounded-xl bg-white text-[0.875rem] font-semibold text-[#1f3157] transition hover:bg-[#e8edf7] [@media(min-height:1040px)]:mt-4 [@media(min-height:1040px)]:h-11 [@media(min-height:1040px)]:text-[0.9375rem]">
               Download orders
             </a>
           </div>
@@ -191,12 +192,12 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             <Link href="/admin" className="flex items-center gap-2 lg:hidden">
               <LogoMark className="size-8" />
             </Link>
-            <UserAvatar className="size-11 rounded-full bg-[linear-gradient(135deg,#0d7a4b,#04331f)] text-lg text-white" />
+            <UserAvatar className="size-11 rounded-full bg-[linear-gradient(135deg,#2a4275,#101b33)] text-lg text-white" />
             <div className="min-w-0">
               <p className="truncate font-semibold">{session.name}</p>
               <p className="truncate text-[0.875rem] text-ink-3">{session.email}</p>
             </div>
-            <span className="hidden shrink-0 items-center gap-1.5 rounded-full bg-[#e6f4ec] px-3 py-1 text-[0.8125rem] font-semibold text-brand-800 sm:inline-flex">
+            <span className="hidden shrink-0 items-center gap-1.5 rounded-full bg-[#e8edf7] px-3 py-1 text-[0.8125rem] font-semibold text-[#1f3157] sm:inline-flex">
               <Icon name="fi-rr-shield-check" /> {sales ? 'Sales console' : 'Admin console'}
             </span>
             <p className="ml-auto hidden items-center gap-2 whitespace-nowrap text-[0.875rem] text-ink-3 xl:flex" title="This page updates by itself every 30 seconds">
@@ -225,7 +226,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             ))}
           </nav>
 
-          <main className="rounded-[1.75rem] bg-[#f6f8f7] p-5 md:p-8">
+          <main className="rounded-[1.75rem] bg-[#f5f7fb] p-5 md:p-8">
             {data.source === 'off' && (
               <Notice tone="warn">
                 The database (Appwrite) isn’t connected, so there is nothing to show yet. Add APPWRITE_ENDPOINT, APPWRITE_PROJECT_ID and APPWRITE_API_KEY in Vercel, then run <code>npm run appwrite:setup</code>. See <Link href="/admin?tab=system" className="font-semibold underline">Database &amp; settings</Link>.
@@ -388,11 +389,11 @@ function Table({ head, children, empty, wide = false }: { head: string[]; childr
   return (
     <div className={card}>
       <table className={cn('w-full text-left text-[0.9375rem] [&_td]:whitespace-normal [&_td_*]:whitespace-normal [&_td]:break-words [&_td.keep]:whitespace-nowrap [&_td_.keep]:whitespace-nowrap', stacked.table)}>
-        {/* A soft green header row, so a table reads as one block on the page */}
-        <thead className={cn('text-[0.8125rem] font-semibold uppercase tracking-[0.05em] text-[#2f5b45]', stacked.thead)}>
-          <tr className="bg-[#eef6f1] [&>th:first-child]:rounded-tl-[1.25rem] [&>th:last-child]:rounded-tr-[1.25rem]">{head.map((h) => <th key={h} className={cn('py-3.5', wide ? 'px-4' : 'px-3 xl:px-5')}>{h}</th>)}</tr>
+        {/* A soft navy header row (the console's colour), so a table reads as one block on the page */}
+        <thead className={cn('text-[0.8125rem] font-semibold uppercase tracking-[0.05em] text-[#2a3d63]', stacked.thead)}>
+          <tr className="bg-[#edf1f8] [&>th:first-child]:rounded-tl-[1.25rem] [&>th:last-child]:rounded-tr-[1.25rem]">{head.map((h) => <th key={h} className={cn('py-3.5', wide ? 'px-4' : 'px-3 xl:px-5')}>{h}</th>)}</tr>
         </thead>
-        <tbody className={cn('divide-y divide-[#edf1ef] [&_tr:hover]:bg-[#f7fbf8]', ...stacked.body)}>{rows}</tbody>
+        <tbody className={cn('divide-y divide-[#edf0f5] [&_tr:hover]:bg-[#f7f9fc]', ...stacked.body)}>{rows}</tbody>
       </table>
       {empty && <p className="px-4 py-10 text-center text-ink-3">Nothing to show.</p>}
     </div>
