@@ -14,7 +14,7 @@ import { LogoMark, LogoWordmark } from '@/components/layout/logo';
  * - Skipped for visitors whose device asks for reduced motion; any click, tap, scroll or key ends it at once (the
  *   overlay takes that first tap, so it never lands on a link underneath).
  * - The decision is made before the page is painted (introScript, in the layout), so nothing flashes; if JavaScript
- *   fails, the overlay clears itself after 4 seconds (globals.css, ff-intro-failsafe).
+ *   fails, the overlay clears itself after 5.5 seconds (globals.css, ff-intro-failsafe).
  * - NEXT_PUBLIC_INTRO=off switches it off.
  */
 /** The visitor's last activity in this area, for "back after 30 minutes away". */
@@ -26,8 +26,13 @@ const touchFor = (key: string) => () => {
   }
 };
 
-const HOLD = 1100; // the logo rests in the middle (counted from when the overlay first appeared)
-const RISE = 850; // the logo rises into the header
+// The logo rests in the middle for HOLD, counted from when the green first appeared, so a slow first load (the page
+// loading behind the green) doesn't add to it. A refresh loads quickly, so this is what it shows then: long enough
+// to see the logo, the same as a first open (Nov 2026: 1.1s felt rushed on a computer's refresh). At least MIN_REST
+// after the page is ready, even after a slow load, so the logo never rises the moment it can.
+const HOLD = 1800;
+const MIN_REST = 400;
+const RISE = 1000; // the logo rises into the header
 
 /**
  * `storageKey`: the area's counts (website, hospital dashboard, engineer dashboard). `target`: where the big logo lands
@@ -104,7 +109,7 @@ export function SiteIntro({ storageKey = 'ff-intro', target: targetSelector = 'h
         fade.onfinish = finish;
       }
       if (bg) animations.push(bg.animate([{ opacity: 1 }, { opacity: 0 }], { duration: RISE * 0.8, delay: RISE * 0.2, easing: 'ease-in-out', fill: 'forwards' }));
-    }, Math.max(150, HOLD - (performance.now() - shown)));
+    }, Math.max(MIN_REST, HOLD - (performance.now() - shown)));
 
     return () => {
       window.clearTimeout(timer);
