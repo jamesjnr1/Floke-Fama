@@ -285,7 +285,8 @@ function Portal({ user, products, practice, demo = false }: { user: { name: stri
   return (
     <div className="eng-page flex min-h-svh pt-[var(--banner)] text-ink">
       {/* Sidebar */}
-      <aside className="eng-rail sticky top-[var(--banner)] hidden h-[calc(100svh-var(--banner))] w-[264px] shrink-0 flex-col text-white lg:flex">
+      {/* As tall as the screen; on a short screen (a laptop with the notice strip showing) it scrolls, so Sign out is never out of reach */}
+      <aside className="eng-rail sticky top-[var(--banner)] hidden h-[calc(100svh-var(--banner))] w-[264px] shrink-0 flex-col overflow-y-auto overscroll-contain [scrollbar-color:rgb(255_255_255/0.35)_transparent] [scrollbar-width:thin] text-white lg:flex">
         {/* The portal's logo, with the dashboard's name under it; the opening lands its big logo on this one */}
         <Link href="/" aria-label="Flokefama home" className="flex h-[76px] flex-col justify-center gap-1 border-b border-white/15 px-5">
           <PortalLogo product="Service" target />
