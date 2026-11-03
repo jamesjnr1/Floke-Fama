@@ -132,7 +132,7 @@ const sections: Section[] = [
     steps: [
       'Jobs done, by type: preventive maintenance, faults, installations and repairs.',
       'Average response: from the request to you pressing Assign to me. Take jobs quickly.',
-      'Keep your region and phone number right on My profile: urgent jobs in your region come to you first, by text.',
+      'Keep your region and phone number right on My profile: every engineer gets a text about urgent jobs, and one nobody takes quickly is given to an engineer in the hospital’s region.',
       'Average time to fix: from the request to Resolve.',
       'Distance travelled: the km you enter when you resolve. Enter them every time.',
       'Ratings: the stars hospitals give each visit.',

@@ -848,7 +848,7 @@ async function Team({ data, now, demo }: { data: AdminData; now: number; demo?: 
       <Heading
         hint={<>Send the invite link to engineers anywhere in the country (WhatsApp is easiest). They register themselves with their name, phone, email, region and a password. Each registration waits here until you approve it, so a forwarded link can’t let a stranger in. Approved engineers get a text and sign in at /engineer/login. Make head gives an engineer (the head of the engineering department) the power to give any job to any engineer from their portal; they also get the texts about urgent jobs nobody has taken.</>}
         title="Engineers"
-        lead={`${engineers.length} engineer${engineers.length === 1 ? '' : 's'} on the system${pending.length ? `, ${pending.length} waiting for your approval` : ''}. The region is used to send urgent jobs to the nearest engineer.`}
+        lead={`${engineers.length} engineer${engineers.length === 1 ? '' : 's'} on the system${pending.length ? `, ${pending.length} waiting for your approval` : ''}. Every engineer gets a text about urgent jobs; one nobody takes quickly is given to an engineer in the hospital’s region.`}
         action={<Csv table="accounts" />}
       />
       <Panel title="Invite engineers" className="mb-6">

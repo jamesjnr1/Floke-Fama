@@ -58,7 +58,7 @@ export function JoinForm({ code }: { code: string }) {
           <option value="" disabled>Choose where you work</option>
           {regions.map((r) => <option key={r} value={r}>{r}</option>)}
         </select>
-        <span className="text-sm text-ink-3">Urgent jobs in your region come to you first.</span>
+        <span className="text-sm text-ink-3">Every engineer gets a text about urgent jobs. One nobody takes quickly goes to an engineer in the hospital’s region.</span>
         {err('region')}
       </label>
       <label className="grid gap-1.5">
