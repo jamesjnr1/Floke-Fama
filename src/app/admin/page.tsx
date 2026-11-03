@@ -26,6 +26,8 @@ import { normalisePhone, smsProvider, smsStatus as smsGatewayStatus } from '@/li
 import { showPhone, telOf } from '@/lib/phone';
 import { TestSmsForm } from '@/components/admin/test-sms-form';
 import { SendMessageForm } from '@/components/admin/send-message-form';
+import { AdminNavLink, AdminNavProvider } from '@/components/admin/admin-nav';
+import { ClearOrdersForm } from '@/components/admin/clear-orders-form';
 import { AssignForm } from '@/components/admin/assign-form';
 import { HospitalTextsForm } from '@/components/admin/hospital-texts-form';
 import { CALIBRATION_NOTICE_DAYS, CHECK_IN_DAYS, calibrationText, checkInText, clientTextsAuto, hospitalsToText, messageTemplates, upcomingClientTexts } from '@/lib/client-sms';
@@ -137,6 +139,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             touches elsewhere. As tall as the screen with everything in
             view and no scrolling: the space around each row grows with the screen's height (tighter on a laptop with the
             notice strip, roomier on a big screen). Below 820px tall the export card becomes a row under General. */}
+        <AdminNavProvider active={tab}>
         <aside className="sticky top-[calc(var(--banner)+16px)] hidden h-[calc(100svh-var(--banner)-2rem)] w-64 shrink-0 flex-col overflow-y-auto overscroll-contain rounded-[1.75rem] bg-[radial-gradient(140%_70%_at_0%_0%,#0f8a55_0%,#06482a_55%,#032a19_100%)] px-4 py-5 text-white shadow-[0_18px_40px_-24px_rgb(4_56_34/0.75)] [scrollbar-color:rgb(255_255_255/0.35)_transparent] [scrollbar-width:thin] lg:flex">
           <Link href="/admin" className="flex shrink-0 flex-col gap-1.5 px-2">
             <PortalLogo product="Admin" />
@@ -144,19 +147,12 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
           </Link>
           <p className="mt-[clamp(14px,3vh,34px)] px-3.5 pb-1.5 text-[0.75rem] font-semibold uppercase tracking-[0.14em] text-white/60">Menu</p>
           <nav aria-label="Admin sections" className="space-y-0.5">
-            {menu.map((t) => (
-              <Link key={t.id} href={href(t.id)} aria-current={t.id === tab ? 'page' : undefined} className={item(t.id === tab)}>
-                <Icon name={t.icon} className={t.id === tab ? 'text-white' : 'text-white/70'} /> {t.label}
-                {badge(t.id)}
-              </Link>
-            ))}
+            {menu.map((t) => <AdminNavLink key={t.id} id={t.id} href={href(t.id)} icon={t.icon} label={t.label} badge={badge(t.id)} />)}
           </nav>
           <p className="mt-[clamp(14px,3vh,34px)] px-3.5 pb-1.5 text-[0.75rem] font-semibold uppercase tracking-[0.14em] text-white/60">General</p>
           <div className="space-y-0.5">
             {!sales && !demo && (
-              <Link href={href('system')} aria-current={tab === 'system' ? 'page' : undefined} className={item(tab === 'system')}>
-                <Icon name="fi-rr-database" className={tab === 'system' ? 'text-white' : 'text-white/70'} /> Database &amp; settings
-              </Link>
+              <AdminNavLink id="system" href={href('system')} icon="fi-rr-database" label="Database & settings" />
             )}
             <a href="/api/admin/export?table=orders" className={cn(item(false), '[@media(min-height:820px)]:hidden')}>
               <Icon name="fi-rr-download" className="text-white/70" /> Export orders (Excel)
@@ -185,6 +181,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             </a>
           </div>
         </aside>
+        </AdminNavProvider>
 
         <div className="min-w-0 flex-1 space-y-4">
           {/* Profile bar */}
@@ -217,7 +214,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
 
           {/* Sections on phones and tablets */}
           {/* Wraps onto a second line rather than scrolling sideways */}
-          <nav aria-label="Admin sections" className="flex flex-wrap gap-1 rounded-2xl bg-white p-2 lg:hidden">
+          <nav aria-label="Admin sections" className="flex flex-wrap gap-1 rounded-2xl bg-[radial-gradient(140%_120%_at_0%_0%,#0f8a55_0%,#06482a_55%,#032a19_100%)] p-2 lg:hidden">
             {tabs.filter((t) => allowed(t.id)).map((t) => (
               <Link key={t.id} href={href(t.id)} aria-current={t.id === tab ? 'page' : undefined} className={cn(item(t.id === tab), 'relative whitespace-nowrap px-3 py-2')}>
                 <Icon name={t.icon} /> {t.label}
@@ -1808,6 +1805,11 @@ async function System({ data, phone }: { data: AdminData; phone?: string }) {
           </ul>
         </Panel>
       </div>
+      {data.source === 'live' && (
+        <Panel title="Clear test orders" className="mt-4 border border-[#f3c9cd]">
+          <ClearOrdersForm orders={data.orders.length} />
+        </Panel>
+      )}
     </>
   );
 }

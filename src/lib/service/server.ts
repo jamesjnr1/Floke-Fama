@@ -555,3 +555,32 @@ export async function registerPurchase(s: SessionUser, order: string, items: Ext
     }
   }
 }
+
+/**
+ * Admin console → Database & settings → Clear test orders: removes what test orders added to the service desk. The
+ * equipment an order booked for installation (it names the order), its installation job, and equipment that went
+ * straight into service from it (the same product, at the same hospital, recorded within 15 minutes of the order,
+ * still "on the delivery note"), with the notifications about them. Nothing else on the desk is touched.
+ */
+export async function removeOrderEquipment(orders: { reference: string; placedAt: string; facility?: string; slugs: string[] }[]) {
+  if (!appwrite || !orders.length) return { assets: 0, tickets: 0 };
+  const desk = await loadDesk();
+  const refs = new Set(orders.map((o) => o.reference));
+  const fromOrder = (a: Asset) => {
+    if (a.installation?.order) return refs.has(a.installation.order);
+    if (a.serial !== 'On the delivery note' || !a.productSlug) return false;
+    return orders.some(
+      (o) => o.slugs.includes(a.productSlug!) && Math.abs(Date.parse(a.installed) - Date.parse(o.placedAt)) < 15 * 60_000 && (!o.facility || facilityKey(o.facility) === facilityKey(a.facility)),
+    );
+  };
+  const assets = new Set(desk.assets.filter(fromOrder).map((a) => a.id));
+  const tickets = new Set(desk.tickets.filter((t) => assets.has(t.assetId) || (t.kind === 'installation' && [...refs].some((r) => t.description.includes(`order ${r}`)))).map((t) => t.id));
+  const notes = desk.notifications.filter((n) => (n.assetId && assets.has(n.assetId)) || (n.ticketId && tickets.has(n.ticketId))).map((n) => n.id);
+  cached = null;
+  const del = (tableId: string, ids: Iterable<string>) => Promise.all([...ids].map((rowId) => appwrite!.tables.deleteRow({ databaseId: DATABASE_ID, tableId, rowId }).catch((e) => { if ((e as { code?: number }).code !== 404) throw e; })));
+  await del(tableOf.notifications, notes);
+  await del(tableOf.tickets, tickets);
+  await del(tableOf.assets, assets);
+  cached = null;
+  return { assets: assets.size, tickets: tickets.size };
+}
