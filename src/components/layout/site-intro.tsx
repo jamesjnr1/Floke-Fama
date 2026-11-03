@@ -11,8 +11,8 @@ import { LogoMark, LogoWordmark } from '@/components/layout/logo';
  *
  * - When the site is opened, on every third refresh, and after 30 minutes away (introScript); on the public site only
  *   (app/(site)/layout.tsx), never in the portals or admin.
- * - Skipped for visitors whose device asks for reduced motion; any click, tap, scroll or key ends it at once (the
- *   overlay takes that first tap, so it never lands on a link underneath).
+ * - Skipped for visitors whose device asks for reduced motion; a click, tap or key ends it at once (the overlay takes
+ *   that first tap, so it never lands on a link underneath). Scrolling doesn't (see skip).
  * - The decision is made before the page is painted (introScript, in the layout), so nothing flashes; if JavaScript
  *   fails, the overlay clears itself after 5.5 seconds (globals.css, ff-intro-failsafe).
  * - NEXT_PUBLIC_INTRO=off switches it off.
@@ -73,15 +73,20 @@ export function SiteIntro({ storageKey = 'ff-intro', target: targetSelector = 'h
       animations.forEach((a) => a.cancel());
       if (target) target.style.visibility = '';
       root.classList.remove('ff-intro');
-      for (const ev of ['pointerdown', 'keydown', 'wheel', 'touchstart'] as const) window.removeEventListener(ev, skip);
+      window.removeEventListener('pointerdown', skip);
+      window.removeEventListener('keydown', skip);
     };
-    // A click, tap, scroll or key: fade out quickly
-    const skip = () => {
+    // Only a real click, tap or key ends it. Not scrolling: a laptop's touchpad sends small scroll events on its own (a
+    // resting finger, a scroll still coasting from before the refresh), which cut the opening short (Nov 2026). Not a
+    // held key repeating, or Ctrl, Shift, Alt or Cmd alone (still down from the refresh shortcut)
+    const skip = (e: Event) => {
+      if (e instanceof KeyboardEvent && (e.repeat || ['Control', 'Shift', 'Alt', 'Meta', 'F5'].includes(e.key))) return;
       if (done) return;
       animations.forEach((a) => a.pause());
       el.animate([{ opacity: getComputedStyle(el).opacity }, { opacity: 0 }], { duration: 180, fill: 'forwards' }).onfinish = finish;
     };
-    for (const ev of ['pointerdown', 'keydown', 'wheel', 'touchstart'] as const) window.addEventListener(ev, skip, { passive: true });
+    window.addEventListener('pointerdown', skip, { passive: true });
+    window.addEventListener('keydown', skip, { passive: true });
     // The header logo stays hidden until the big one lands on it
     if (target) target.style.visibility = 'hidden';
 
