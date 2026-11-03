@@ -21,10 +21,16 @@ export interface Facility {
   contactName?: string;
   phone?: string;
   email?: string;
+  /** Kept by the hospital itself (its dashboard → Hospital profile): the kind of facility, its town, its GhanaPost
+   *  digital address, and when it last updated them */
+  type?: string;
+  town?: string;
+  gps?: string;
+  updatedAt?: string;
   createdAt: string;
   createdBy?: string;
 }
-type Details = Partial<Pick<Facility, 'region' | 'address' | 'contactName' | 'phone' | 'email'>>;
+type Details = Partial<Pick<Facility, 'region' | 'address' | 'contactName' | 'phone' | 'email' | 'type' | 'town' | 'gps' | 'updatedAt'>>;
 type Row = Models.Row & { key: string; name: string; status: string; data: string };
 
 const PREFIX = 'FLK-H';
@@ -122,7 +128,7 @@ export async function updateFacility(code: string, patch: Details & { status?: F
   const row = await appwrite.tables.getRow<Row>({ databaseId: DATABASE_ID, tableId: TABLES.facilities, rowId: code });
   const current = fromRow(row);
   const { status, ...details } = patch;
-  const merged = { region: current.region, address: current.address, contactName: current.contactName, phone: current.phone, email: current.email, createdBy: current.createdBy, ...clip(details) };
+  const merged = { region: current.region, address: current.address, contactName: current.contactName, phone: current.phone, email: current.email, type: current.type, town: current.town, gps: current.gps, updatedAt: current.updatedAt, createdBy: current.createdBy, ...clip(details) };
   await appwrite.tables.updateRow({ databaseId: DATABASE_ID, tableId: TABLES.facilities, rowId: code, data: { status: status ?? current.status, data: JSON.stringify(merged) } });
   cache = null;
 }

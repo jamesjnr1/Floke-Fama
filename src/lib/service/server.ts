@@ -9,8 +9,8 @@ import { canonicalFacility } from '@/lib/service/facilities';
 import { supportDetails, type SupportInput } from '@/lib/support-schema';
 import { categoryOf } from '@/lib/categories';
 import { listTeam, teamCached, type TeamMember } from '@/lib/engineer-team';
-import { ensureFacility } from '@/lib/facility-registry';
-import { regionInText } from '@/lib/regions';
+import { ensureFacility, findFacility, listFacilities } from '@/lib/facility-registry';
+import { regionInText, regions, type Region } from '@/lib/regions';
 import { createSeed, facilityKey, looksIvd, reducer, serviceInterval, type Action, type Actor, type Asset, type Notification, type ServiceState, type Ticket, assetIdPattern } from '@/lib/service/desk';
 
 /**
@@ -367,6 +367,7 @@ export async function autoAssignStale(desk?: ServiceState, force = false): Promi
     // Only engineers a text can reach: one who isn't told wouldn't know the job is theirs
     const team = (await listTeam()).filter((m) => !m.pending && normalisePhone(m.phone));
     if (!team.length) return 0;
+    const facilities = await listFacilities().catch(() => []);
     for (let attempt = 0; ; attempt++) {
       const before = await loadDesk();
       const jobs = due(before);
@@ -376,7 +377,9 @@ export async function autoAssignStale(desk?: ServiceState, force = false): Promi
       let after = before;
       for (const t of jobs) {
         const a = before.assets.find((x) => x.id === t.assetId);
-        const region = regionInText(a?.facility, a?.location);
+        // The region the hospital gave in its profile; otherwise read from its name and the machine's location
+        const given = findFacility(facilities, a?.facility)?.region;
+        const region: Region | undefined = (regions as readonly string[]).includes(given ?? '') ? (given as Region) : regionInText(a?.facility, a?.location);
         const free = team.filter((m) => !t.declined?.includes(m.name));
         if (!free.length) continue;
         const local = region ? free.filter((m) => m.region === region) : [];

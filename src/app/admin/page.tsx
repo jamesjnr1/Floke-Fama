@@ -2,14 +2,14 @@ import Link from 'next/link';
 import { Children, cloneElement, isValidElement } from 'react';
 import { Bars, Columns } from '@/components/admin/charts';
 import { LiveRefresh } from '@/components/admin/live-refresh';
-import { LogoMark, LogoWordmark } from '@/components/layout/logo';
+import { LogoMark, PortalLogo } from '@/components/layout/logo';
 import { Hint } from '@/components/ui/hint';
 import { Icon } from '@/components/ui/icon';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { removeEngineer, saveOrderNote, setOrderStatus } from '@/lib/admin/actions';
 import { approveEngineer, declineEngineer, setHeadEngineer } from '@/lib/engineer-actions';
 import { setHospitalStatus } from '@/lib/admin/hospital-actions';
-import { AddHospitalLoginForm, EditHospitalForm, RegisterHospitalForm } from '@/components/admin/hospital-forms';
+import { AddHospitalLoginForm, RegisterHospitalForm } from '@/components/admin/hospital-forms';
 import { headByEmail } from '@/lib/auth/users';
 import { newInviteCode } from '@/lib/engineer-team';
 import { isHeadOrganisation, regionOfOrganisation, regions } from '@/lib/regions';
@@ -120,7 +120,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
     const b = badges[id];
     if (!b?.n) return null;
     return (
-      <span title={`${b.n} ${b.title}`} className={cn('relative rounded-full px-2 py-0.5 text-[0.75rem] font-bold tabular-nums text-white', phone ? 'ml-1' : 'ml-auto', b.tone === 'red' ? 'bg-signal' : 'bg-brand-600')}>
+      <span title={`${b.n} ${b.title}`} className={cn('relative rounded-full px-2 py-0.5 text-[0.75rem] font-bold tabular-nums', phone ? 'ml-1' : 'ml-auto', b.tone === 'red' ? 'bg-signal text-white' : phone ? 'bg-brand-600 text-white' : 'bg-white text-brand-800')}>
         {b.n}
         <span className="sr-only"> {b.title}</span>
       </span>
@@ -128,55 +128,57 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
   };
   const href = (id: Tab) => (id === 'overview' ? '/admin' : `/admin?tab=${id}`);
   const item = (active: boolean) =>
-    cn('flex items-center gap-3 rounded-xl px-3.5 py-1.5 text-[0.875rem] font-medium leading-5 transition [@media(min-height:1040px)]:py-2.5 [@media(min-height:1040px)]:text-[0.9375rem]', active ? 'bg-brand-50 text-brand-800 shadow-[inset_0_0_0_1px_rgb(0_122_77/0.12)]' : 'text-ink-3 hover:bg-[#f1f4f2] hover:text-ink');
+    cn('relative flex items-center gap-3 rounded-xl px-3.5 py-[clamp(5px,0.9vh,11px)] text-[0.9375rem] font-medium transition', active ? 'bg-white/[0.16] text-white shadow-[inset_3px_0_0_0_#fff]' : 'text-white/80 hover:bg-white/[0.08] hover:text-white');
 
   return (
     <div className="min-h-svh bg-[#e9eeeb] p-3 pt-[calc(var(--banner)+12px)] text-ink md:p-4 md:pt-[calc(var(--banner)+16px)]">
       <div className="mx-auto flex max-w-[1600px] gap-4">
-        {/* Sidebar */}
-        {/* As tall as the screen, with everything in view: on a shorter screen (below 1040px, e.g. any laptop with the
-            notice strip showing) the rows and spaces are tighter and the export card smaller. Only a very short window
-            (under about 690px) scrolls, so nothing is ever cut off */}
-        <aside className="sticky top-[calc(var(--banner)+16px)] hidden h-[calc(100svh-var(--banner)-2rem)] w-64 shrink-0 flex-col overflow-y-auto overscroll-contain rounded-[1.75rem] bg-white p-4 shadow-[0_1px_2px_rgb(16_25_30/0.04)] [scrollbar-width:thin] lg:flex [@media(min-height:1040px)]:p-5">
-          <Link href="/admin" className="flex items-center gap-2 px-2 pt-1">
-            <LogoMark className="size-9" />
-            <LogoWordmark className="h-[19px] text-brand-800" />
+        {/* Sidebar: Flokefama green, like the hospital and engineer dashboards. As tall as the screen with everything in
+            view and no scrolling: the space around each row grows with the screen's height (tighter on a laptop with the
+            notice strip, roomier on a big screen). Below 820px tall the export card becomes a row under General. */}
+        <aside className="sticky top-[calc(var(--banner)+16px)] hidden h-[calc(100svh-var(--banner)-2rem)] w-64 shrink-0 flex-col overflow-y-auto overscroll-contain rounded-[1.75rem] bg-[linear-gradient(180deg,#00804f_0%,#006b42_55%,#005a38_100%)] px-4 py-5 text-white shadow-[0_18px_40px_-24px_rgb(4_56_34/0.7)] [scrollbar-color:rgb(255_255_255/0.35)_transparent] [scrollbar-width:thin] lg:flex">
+          <Link href="/admin" className="flex shrink-0 flex-col gap-1.5 px-2">
+            <PortalLogo product="Admin" />
+            <span className="pl-[36px] text-[0.75rem] font-medium tracking-[0.02em] text-white/75">Admin console</span>
           </Link>
-          <p className="mt-5 px-3.5 text-[0.75rem] font-semibold tracking-[0.08em] text-ink-3 [@media(min-height:1040px)]:mt-9 [@media(min-height:1040px)]:text-[0.8125rem]">MENU</p>
-          <nav aria-label="Admin sections" className="mt-1.5 space-y-0.5 [@media(min-height:1040px)]:mt-2 [@media(min-height:1040px)]:space-y-1">
+          <p className="mt-[clamp(14px,3vh,34px)] px-3.5 pb-1.5 text-[0.75rem] font-semibold uppercase tracking-[0.14em] text-white/60">Menu</p>
+          <nav aria-label="Admin sections" className="space-y-0.5">
             {menu.map((t) => (
               <Link key={t.id} href={href(t.id)} aria-current={t.id === tab ? 'page' : undefined} className={item(t.id === tab)}>
-                <Icon name={t.icon} className={t.id === tab ? 'text-brand-600' : ''} /> {t.label}
+                <Icon name={t.icon} className={t.id === tab ? 'text-white' : 'text-white/70'} /> {t.label}
                 {badge(t.id)}
               </Link>
             ))}
           </nav>
-          <p className="mt-4 px-3.5 text-[0.75rem] font-semibold tracking-[0.08em] text-ink-3 [@media(min-height:1040px)]:mt-8 [@media(min-height:1040px)]:text-[0.8125rem]">GENERAL</p>
-          <div className="mt-1.5 space-y-0.5 [@media(min-height:1040px)]:mt-2 [@media(min-height:1040px)]:space-y-1">
+          <p className="mt-[clamp(14px,3vh,34px)] px-3.5 pb-1.5 text-[0.75rem] font-semibold uppercase tracking-[0.14em] text-white/60">General</p>
+          <div className="space-y-0.5">
             {!sales && !demo && (
               <Link href={href('system')} aria-current={tab === 'system' ? 'page' : undefined} className={item(tab === 'system')}>
-                <Icon name="fi-rr-database" className={tab === 'system' ? 'text-brand-600' : ''} /> Database &amp; settings
+                <Icon name="fi-rr-database" className={tab === 'system' ? 'text-white' : 'text-white/70'} /> Database &amp; settings
               </Link>
             )}
+            <a href="/api/admin/export?table=orders" className={cn(item(false), '[@media(min-height:820px)]:hidden')}>
+              <Icon name="fi-rr-download" className="text-white/70" /> Export orders (Excel)
+            </a>
             <Link href="/admin/password" className={item(false)}>
-              <Icon name="fi-rr-lock" /> Change password
+              <Icon name="fi-rr-lock" className="text-white/70" /> Change password
             </Link>
             <form action={adminLogout}>
               <button className={cn(item(false), 'w-full')}>
-                <Icon name="fi-rr-sign-out-alt" /> Sign out
+                <Icon name="fi-rr-sign-out-alt" className="text-white/70" /> Sign out
               </button>
             </form>
           </div>
 
-          {/* Shorter screens: the icon beside the heading, no sentence, a smaller button */}
-          <div className="relative mt-auto shrink-0 overflow-hidden rounded-2xl bg-[radial-gradient(120%_90%_at_10%_0%,#0d7a4b_0%,#06482a_55%,#032a19_100%)] p-3.5 text-white [@media(min-height:1040px)]:p-5">
+          {/* Every order as a spreadsheet: a card on taller screens (smaller below 1040px), a row under General below 820px */}
+          <div className="relative mt-auto hidden shrink-0 overflow-hidden rounded-2xl border border-white/15 bg-white/[0.08] p-3.5 [@media(min-height:820px)]:block [@media(min-height:1040px)]:p-5">
             <div aria-hidden className="absolute -right-10 -top-10 size-36 rounded-full border border-white/10" />
             <div aria-hidden className="absolute -right-4 top-6 size-24 rounded-full border border-white/10" />
             <div className="flex items-center gap-2.5 [@media(min-height:1040px)]:block">
-              <span className="grid size-8 shrink-0 place-items-center rounded-full bg-white/10 [@media(min-height:1040px)]:size-9"><Icon name="fi-rr-download" /></span>
+              <span className="grid size-8 shrink-0 place-items-center rounded-full bg-white/15 [@media(min-height:1040px)]:size-9"><Icon name="fi-rr-download" /></span>
               <p className="text-base font-semibold leading-tight [@media(min-height:1040px)]:mt-4 [@media(min-height:1040px)]:text-lg">Export your data</p>
             </div>
-            <p className="mt-1 hidden text-[0.875rem] text-white/70 [@media(min-height:1040px)]:block">Every order as a spreadsheet, ready for Excel.</p>
+            <p className="mt-1 hidden text-[0.875rem] text-white/75 [@media(min-height:1040px)]:block">Every order as a spreadsheet, ready for Excel.</p>
             <a href="/api/admin/export?table=orders" className="mt-3 flex h-9 items-center justify-center rounded-xl bg-white text-[0.875rem] font-semibold text-brand-800 transition hover:bg-brand-50 [@media(min-height:1040px)]:mt-4 [@media(min-height:1040px)]:h-11 [@media(min-height:1040px)]:text-[0.9375rem]">
               Download orders
             </a>
@@ -194,6 +196,9 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
               <p className="truncate font-semibold">{session.name}</p>
               <p className="truncate text-[0.875rem] text-ink-3">{session.email}</p>
             </div>
+            <span className="hidden shrink-0 items-center gap-1.5 rounded-full bg-[#e6f4ec] px-3 py-1 text-[0.8125rem] font-semibold text-brand-800 sm:inline-flex">
+              <Icon name="fi-rr-shield-check" /> {sales ? 'Sales console' : 'Admin console'}
+            </span>
             <p className="ml-auto hidden items-center gap-2 whitespace-nowrap text-[0.875rem] text-ink-3 xl:flex" title="This page updates by itself every 30 seconds">
               <span aria-hidden className="relative flex size-2">
                 <span className="absolute inline-flex size-full animate-ping rounded-full bg-brand-500 opacity-60 motion-reduce:animate-none" />
@@ -308,26 +313,29 @@ function Panel({ title, children, className, action }: { title: string; children
   );
 }
 
-/** A figure; `feature` is the green card that leads the row. */
-function Stat({ label, value, note, href, feature }: { label: string; value: string | number; note?: string; href: string; feature?: boolean }) {
+/** The colours of the overview's figures, so the row reads at a glance (the same fills as the hospital dashboard). */
+const statFill = {
+  green: 'bg-[radial-gradient(130%_120%_at_0%_0%,#0f8a55_0%,#06482a_55%,#032a19_100%)] shadow-[0_14px_30px_-16px_rgb(4_56_34/0.75)]',
+  blue: 'bg-[radial-gradient(130%_120%_at_0%_0%,#3a7fc0_0%,#2c6aa3_50%,#1d4c7a_100%)] shadow-[0_14px_30px_-16px_rgb(29_76_122/0.7)]',
+  teal: 'bg-[radial-gradient(130%_120%_at_0%_0%,#139aa3_0%,#0d7e86_50%,#08585e_100%)] shadow-[0_14px_30px_-16px_rgb(8_88_94/0.7)]',
+  violet: 'bg-[radial-gradient(130%_120%_at_0%_0%,#7565c4_0%,#5f4fb0_50%,#43378a_100%)] shadow-[0_14px_30px_-16px_rgb(67_55_138/0.7)]',
+} as const;
+
+/** A figure on a coloured card. */
+function Stat({ label, value, note, href, tone = 'green' }: { label: string; value: string | number; note?: string; href: string; tone?: keyof typeof statFill }) {
   return (
-    <Link
-      href={href}
-      className={cn(
-        'group relative flex flex-col overflow-hidden rounded-[1.25rem] p-5 transition hover:-translate-y-0.5',
-        feature ? 'bg-[radial-gradient(130%_120%_at_0%_0%,#0f8a55_0%,#06482a_55%,#032a19_100%)] text-white shadow-[0_12px_30px_-14px_rgb(4_56_34/0.7)]' : `${card} text-ink`,
-      )}
-    >
-      <span className="flex items-start justify-between gap-3">
+    <Link href={href} className={cn('group relative flex flex-col overflow-hidden rounded-[1.25rem] p-5 text-white transition hover:-translate-y-0.5 hover:brightness-110', statFill[tone])}>
+      <div aria-hidden className="pointer-events-none absolute -right-8 -top-8 size-28 rounded-full border border-white/15" />
+      <span className="relative flex items-start justify-between gap-3">
         <span className="text-[1.0625rem] font-medium">{label}</span>
-        <span className={cn('grid size-9 shrink-0 place-items-center rounded-full transition group-hover:rotate-45', feature ? 'bg-white text-brand-800' : 'border border-line text-ink-2')}>
+        <span className="grid size-9 shrink-0 place-items-center rounded-full bg-white/95 text-ink transition group-hover:rotate-45">
           <Icon name="fi-rr-arrow-up-right" className="text-[0.8125rem]" />
         </span>
       </span>
-      <span className="mt-4 text-[2.75rem] font-semibold leading-none tracking-[-0.03em] tabular-nums">{typeof value === 'number' ? value.toLocaleString() : value}</span>
+      <span className="relative mt-4 font-mono text-[2.75rem] font-medium leading-none tracking-[-0.02em]">{typeof value === 'number' ? value.toLocaleString() : value}</span>
       {note && (
-        <span className={cn('mt-4 flex items-center gap-2 text-[0.875rem]', feature ? 'text-white/80' : 'text-ink-3')}>
-          <Icon name="fi-rr-arrow-trend-up" className={feature ? 'text-brand-300' : 'text-brand-600'} /> {note}
+        <span className="relative mt-4 flex items-center gap-2 text-[0.875rem] text-white/85">
+          <Icon name="fi-rr-arrow-trend-up" /> {note}
         </span>
       )}
     </Link>
@@ -380,10 +388,11 @@ function Table({ head, children, empty, wide = false }: { head: string[]; childr
   return (
     <div className={card}>
       <table className={cn('w-full text-left text-[0.9375rem] [&_td]:whitespace-normal [&_td_*]:whitespace-normal [&_td]:break-words [&_td.keep]:whitespace-nowrap [&_td_.keep]:whitespace-nowrap', stacked.table)}>
-        <thead className={cn('text-[0.875rem] text-ink-3', stacked.thead)}>
-          <tr className="border-b border-[#edf1ef]">{head.map((h) => <th key={h} className={cn('py-4 font-medium', wide ? 'px-4' : 'px-3 xl:px-5')}>{h}</th>)}</tr>
+        {/* A soft green header row, so a table reads as one block on the page */}
+        <thead className={cn('text-[0.8125rem] font-semibold uppercase tracking-[0.05em] text-[#2f5b45]', stacked.thead)}>
+          <tr className="bg-[#eef6f1] [&>th:first-child]:rounded-tl-[1.25rem] [&>th:last-child]:rounded-tr-[1.25rem]">{head.map((h) => <th key={h} className={cn('py-3.5', wide ? 'px-4' : 'px-3 xl:px-5')}>{h}</th>)}</tr>
         </thead>
-        <tbody className={cn('divide-y divide-[#edf1ef] [&_tr:hover]:bg-[#fafbfa]', ...stacked.body)}>{rows}</tbody>
+        <tbody className={cn('divide-y divide-[#edf1ef] [&_tr:hover]:bg-[#f7fbf8]', ...stacked.body)}>{rows}</tbody>
       </table>
       {empty && <p className="px-4 py-10 text-center text-ink-3">Nothing to show.</p>}
     </div>
@@ -437,16 +446,16 @@ function Overview({ data, now }: { data: AdminData; now: number }) {
       <Heading title="Dashboard" lead="Who registers, who buys and what the service desk is doing. Figures update on every visit." />
       <WebsiteRequestsNotice data={data} />
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Stat feature href="/admin?tab=orders" label="Orders" value={data.orders.length} note={`${data.orders.filter((o) => o.placedAt > since(30)).length} in the last 30 days`} />
-        <Stat href="/admin?tab=accounts" label="Hospital accounts" value={clients.length} note={`${clients.filter((a) => a.createdAt > since(30)).length} new in the last 30 days`} />
-        <Stat href="/admin?tab=accounts" label="Hospitals that bought" value={buyers.size} note={clients.length ? `${Math.round((buyers.size / clients.length) * 100)}% of accounts` : 'No accounts yet'} />
-        <Stat href="/admin?tab=products" label="Items ordered" value={data.orders.reduce((n, o) => n + units(o), 0)} note={`${data.orders.filter((o) => o.status === 'awaiting-payment').length} new orders to call`} />
+        <Stat tone="green" href="/admin?tab=orders" label="Orders" value={data.orders.length} note={`${data.orders.filter((o) => o.placedAt > since(30)).length} in the last 30 days`} />
+        <Stat tone="blue" href="/admin?tab=accounts" label="Hospital accounts" value={clients.length} note={`${clients.filter((a) => a.createdAt > since(30)).length} new in the last 30 days`} />
+        <Stat tone="teal" href="/admin?tab=accounts" label="Hospitals that bought" value={buyers.size} note={clients.length ? `${Math.round((buyers.size / clients.length) * 100)}% of accounts` : 'No accounts yet'} />
+        <Stat tone="violet" href="/admin?tab=products" label="Items ordered" value={data.orders.reduce((n, o) => n + units(o), 0)} note={`${data.orders.filter((o) => o.status === 'awaiting-payment').length} new orders to call`} />
       </div>
       <div className="mt-4 grid grid-cols-2 gap-4 xl:grid-cols-4">
-        <Mini label="Open service requests" value={open.length} note={`${open.filter((t) => t.priority === 'critical').length} critical`} />
-        <Mini label="Equipment under care" value={data.desk.assets.length} note={`${dueSoon.length} due for calibration`} />
-        <Mini label="Service rating" value={rated.length ? `${(rated.reduce((n, t) => n + (t.rating ?? 0), 0) / rated.length).toFixed(1)}/5` : '—'} note={`${rated.length} rated visits`} />
-        <Mini label="Phones with alerts on" value={data.pushSubscriptions} note="Push subscribers" />
+        <Mini tone="red" label="Open service requests" value={open.length} note={`${open.filter((t) => t.priority === 'critical').length} critical`} />
+        <Mini tone="green" label="Equipment under care" value={data.desk.assets.length} note={`${dueSoon.length} due for calibration`} />
+        <Mini tone="amber" label="Service rating" value={rated.length ? `${(rated.reduce((n, t) => n + (t.rating ?? 0), 0) / rated.length).toFixed(1)}/5` : '—'} note={`${rated.length} rated visits`} />
+        <Mini tone="blue" label="Phones with alerts on" value={data.pushSubscriptions} note="Push subscribers" />
       </div>
 
       <div className="mt-4">
@@ -510,12 +519,21 @@ function Overview({ data, now }: { data: AdminData; now: number }) {
   );
 }
 
-function Mini({ label, value, note }: { label: string; value: string | number; note: string }) {
+/** A smaller figure on a soft tint (its colour's dot and figure match). */
+const miniTint = {
+  red: { bg: 'bg-[#fdeff0]', dot: 'bg-[#c53340]', fig: 'text-[#9b1d2a]' },
+  green: { bg: 'bg-[#e8f5ee]', dot: 'bg-[#0b7a4b]', fig: 'text-[#08613b]' },
+  amber: { bg: 'bg-[#fdf4e2]', dot: 'bg-[#c98a00]', fig: 'text-[#8a5c00]' },
+  blue: { bg: 'bg-[#e9f1fa]', dot: 'bg-[#2c6aa3]', fig: 'text-[#1d4c7a]' },
+  violet: { bg: 'bg-[#f0eefa]', dot: 'bg-[#5f4fb0]', fig: 'text-[#43378a]' },
+} as const;
+function Mini({ label, value, note, tone = 'green' }: { label: string; value: string | number; note: string; tone?: keyof typeof miniTint }) {
+  const t = miniTint[tone];
   return (
-    <div className={cn(card, 'px-5 py-4')}>
-      <p className="text-[0.875rem] text-ink-3">{label}</p>
+    <div className={cn('rounded-[1.25rem] px-5 py-4', t.bg)}>
+      <p className="flex items-center gap-2 text-[0.875rem] font-medium text-ink-2"><span aria-hidden className={cn('size-2 rounded-full', t.dot)} /> {label}</p>
       <p className="mt-1 flex items-baseline gap-2">
-        <span className="text-[1.75rem] font-semibold tracking-[-0.02em] tabular-nums">{typeof value === 'number' ? value.toLocaleString() : value}</span>
+        <span className={cn('font-mono text-[1.75rem] font-medium tracking-[-0.02em]', t.fig)}>{typeof value === 'number' ? value.toLocaleString() : value}</span>
         <span className="text-[0.8125rem] text-ink-3">{note}</span>
       </p>
     </div>
@@ -747,12 +765,13 @@ function OrderDetail({ o, who, live, now, move }: { o: SavedOrder; who: { name: 
 }
 
 const roleLabel = (r: string) => (r === 'client' ? 'Hospital' : r === 'engineer' ? 'Engineer' : r === 'sales' ? 'Sales' : 'Admin');
+/** The groups of accounts, each with its icon and its own colour (its count, when chosen). */
 const roles = [
-  { id: '', label: 'All' },
-  { id: 'client', label: 'Hospitals' },
-  { id: 'engineer', label: 'Engineers' },
-  { id: 'admin', label: 'Admins' },
-  { id: 'sales', label: 'Sales' },
+  { id: '', label: 'All', icon: 'fi-rr-users', count: 'bg-ink text-white' },
+  { id: 'client', label: 'Hospitals', icon: 'fi-rr-hospital', count: 'bg-[#2c6aa3] text-white' },
+  { id: 'engineer', label: 'Engineers', icon: 'fi-rr-user-gear', count: 'bg-[#0b7a4b] text-white' },
+  { id: 'admin', label: 'Admins', icon: 'fi-rr-shield-check', count: 'bg-[#5f4fb0] text-white' },
+  { id: 'sales', label: 'Sales', icon: 'fi-rr-shopping-cart', count: 'bg-[#c98a00] text-white' },
 ];
 
 function Accounts({ data, q, role, adding }: { data: AdminData; q?: string; role?: string; adding?: boolean }) {
@@ -782,17 +801,28 @@ function Accounts({ data, q, role, adding }: { data: AdminData; q?: string; role
         </Panel>
       )}
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap gap-2">
-          {roles.map((r) => (
-            <Link
-              key={r.id}
-              href={`/admin?tab=accounts${r.id ? `&role=${r.id}` : ''}${q ? `&q=${encodeURIComponent(q)}` : ''}`}
-              className={cn('rounded-xl border px-3.5 py-2 text-[0.9375rem] font-medium', (role ?? '') === r.id ? 'border-brand-600 bg-brand-50 text-brand-800' : 'border-line bg-white hover:border-ink/30')}
-            >
-              {r.label} <span className="tabular-nums text-ink-3">{r.id ? data.accounts.filter((a) => a.role === r.id).length : data.accounts.length}</span>
-            </Link>
-          ))}
-        </div>
+        {/* One tab bar: each group with its icon and count; the chosen one raised, in its colour; empty groups quieter */}
+        <nav aria-label="Account groups" className="flex max-w-full gap-1 overflow-x-auto rounded-2xl bg-[#e3ebe6] p-1.5 [scrollbar-width:none]">
+          {roles.map((r) => {
+            const n = r.id ? data.accounts.filter((a) => a.role === r.id).length : data.accounts.length;
+            const on = (role ?? '') === r.id;
+            return (
+              <Link
+                key={r.id}
+                href={`/admin?tab=accounts${r.id ? `&role=${r.id}` : ''}${q ? `&q=${encodeURIComponent(q)}` : ''}`}
+                aria-current={on ? 'page' : undefined}
+                className={cn(
+                  'flex shrink-0 items-center gap-2 rounded-xl px-3.5 py-2 text-[0.9375rem] font-medium transition',
+                  on ? 'bg-white text-ink shadow-[0_1px_2px_rgb(16_25_30/0.06),0_6px_16px_-8px_rgb(16_25_30/0.25)]' : n ? 'text-ink-2 hover:bg-white/60 hover:text-ink' : 'text-ink-3/80 hover:bg-white/50',
+                )}
+              >
+                <Icon name={r.icon} className={cn('text-[0.95em]', on ? 'text-ink' : 'text-ink-3')} />
+                {r.label}
+                <span className={cn('min-w-6 rounded-full px-1.5 py-px text-center font-mono text-[0.75rem] font-semibold', on ? r.count : n ? 'bg-white/80 text-ink-2' : 'bg-transparent text-ink-3/70')}>{n}</span>
+              </Link>
+            );
+          })}
+        </nav>
         <SearchBox tab="accounts" q={q} placeholder="Name, hospital, email, phone…" extra={{ role }} />
       </div>
       <Table head={['Hospital / organisation', 'Contact', 'Phone', 'Role', 'Registered', role === 'engineer' ? 'Now' : 'Orders', '']} empty={!list.length}>
@@ -815,7 +845,7 @@ function Accounts({ data, q, role, adding }: { data: AdminData; q?: string; role
                   </span>
                 </span>
               </td>
-              <td className="whitespace-nowrap">{a.phone ? showPhone(a.phone) : '—'}</td>
+              <td className="keep whitespace-nowrap">{a.phone ? showPhone(a.phone) : '—'}</td>
               <td><Badge tone={a.role === 'client' ? 'neutral' : 'good'}>{roleLabel(a.role)}</Badge></td>
               <td className="whitespace-nowrap">{fmt(a.createdAt)}</td>
               <td className="tabular-nums">{a.role === 'engineer' ? <JobBadge job={job} /> : orders.length}</td>
@@ -986,10 +1016,10 @@ function AccountDetail({ data, id, now }: { data: AdminData; id: string; now: nu
           </Panel>
         </div>
         <div className="mt-4 grid grid-cols-2 gap-4 xl:grid-cols-4">
-          <Mini label="Jobs assigned" value={jobs.length} note="all time" />
-          <Mini label="Open" value={jobs.length - done.length} note="not yet resolved" />
-          <Mini label="Resolved" value={done.length} note="jobs closed" />
-          <Mini label="Rating" value={rated.length ? `${(rated.reduce((n, t) => n + (t.rating ?? 0), 0) / rated.length).toFixed(1)}/5` : '—'} note={`${rated.length} rated`} />
+          <Mini tone="blue" label="Jobs assigned" value={jobs.length} note="all time" />
+          <Mini tone="amber" label="Open" value={jobs.length - done.length} note="not yet resolved" />
+          <Mini tone="green" label="Resolved" value={done.length} note="jobs closed" />
+          <Mini tone="violet" label="Rating" value={rated.length ? `${(rated.reduce((n, t) => n + (t.rating ?? 0), 0) / rated.length).toFixed(1)}/5` : '—'} note={`${rated.length} rated`} />
         </div>
         <h2 className="mb-3 mt-8 text-lg font-semibold">Jobs</h2>
         <TicketTable tickets={jobs} assetOf={assetOf} />
@@ -1037,10 +1067,10 @@ function AccountDetail({ data, id, now }: { data: AdminData; id: string; now: nu
         </Panel>
       </div>
       <div className="mt-4 grid grid-cols-2 gap-4 xl:grid-cols-4">
-        <Mini label="Orders" value={orders.length} note={`last ${fmt(orders[0]?.placedAt)}`} />
-        <Mini label="Items ordered" value={items} note={`${orders.filter((o) => o.status === 'awaiting-payment').length} new`} />
-        <Mini label="Equipment under care" value={assets.length} note={`${assets.filter((x) => x.nextCalibration && x.nextCalibration < new Date(now + 30 * DAY).toISOString()).length} due for calibration`} />
-        <Mini label="Service requests" value={tickets.length} note={`${tickets.filter((t) => t.status !== 'resolved').length} open`} />
+        <Mini tone="blue" label="Orders" value={orders.length} note={`last ${fmt(orders[0]?.placedAt)}`} />
+        <Mini tone="violet" label="Items ordered" value={items} note={`${orders.filter((o) => o.status === 'awaiting-payment').length} new`} />
+        <Mini tone="green" label="Equipment under care" value={assets.length} note={`${assets.filter((x) => x.nextCalibration && x.nextCalibration < new Date(now + 30 * DAY).toISOString()).length} due for calibration`} />
+        <Mini tone="amber" label="Service requests" value={tickets.length} note={`${tickets.filter((t) => t.status !== 'resolved').length} open`} />
       </div>
 
       <h2 className="mb-3 mt-8 text-lg font-semibold">Orders</h2>
@@ -1104,7 +1134,7 @@ function ofHospital(data: AdminData, name: string) {
 function Hospitals({ data, q, code, adding, demo }: { data: AdminData; q?: string; code?: string; adding?: boolean; demo?: boolean }) {
   if (code) return <HospitalDetail data={data} code={code} demo={demo} />;
   const needle = q?.trim().toLowerCase();
-  const list = data.facilities.filter((f) => !needle || [f.code, f.name, f.region, f.address, f.contactName, f.phone, f.email].some((v) => v?.toLowerCase().includes(needle)));
+  const list = data.facilities.filter((f) => !needle || [f.code, f.name, f.region, f.town, f.type, f.gps, f.address, f.contactName, f.phone, f.email].some((v) => v?.toLowerCase().includes(needle)));
   const inactive = data.facilities.filter((f) => f.status === 'inactive').length;
   return (
     <>
@@ -1129,7 +1159,7 @@ function Hospitals({ data, q, code, adding, demo }: { data: AdminData; q?: strin
         </Panel>
       )}
       <div className="mb-4"><SearchBox tab="hospitals" q={q} placeholder="Code, name, region, contact…" /></div>
-      <Table head={['Code', 'Hospital', 'Region', 'Contact', 'Equipment', 'Requests', 'Status']} empty={!list.length}>
+      <Table head={['Code', 'Hospital', 'Location', 'Contact', 'Equipment', 'Requests', 'Status']} empty={!list.length}>
         {list.map((f) => {
           const { assets, tickets } = ofHospital(data, f.name);
           const open = tickets.filter((t) => t.status !== 'resolved').length;
@@ -1137,8 +1167,8 @@ function Hospitals({ data, q, code, adding, demo }: { data: AdminData; q?: strin
             <tr key={f.code}>
               <td className="whitespace-nowrap font-mono font-semibold"><Link href={`/admin?tab=hospitals&code=${encodeURIComponent(f.code)}`} className="hover:text-brand-700">{f.code}</Link></td>
               <td><Link href={`/admin?tab=hospitals&code=${encodeURIComponent(f.code)}`} className="font-medium hover:text-brand-700">{f.name}</Link></td>
-              <td>{f.region ?? <span className="text-ink-3">—</span>}</td>
-              <td>{f.contactName ?? '—'}{f.phone && <span className="block text-[0.8125rem] text-ink-3">{showPhone(f.phone)}</span>}</td>
+              <td>{f.town || f.region ? <>{f.town ?? ''}{f.town && f.region ? ', ' : ''}{f.region ?? ''}</> : <span className="text-[0.875rem] text-ink-3">Profile not filled in</span>}{f.type && <span className="block text-[0.8125rem] text-ink-3">{f.type}</span>}</td>
+              <td>{f.contactName ?? '—'}{f.phone && <span className="keep block whitespace-nowrap text-[0.8125rem] text-ink-3">{showPhone(f.phone)}</span>}</td>
               <td className="tabular-nums">{assets.length}</td>
               <td className="tabular-nums">{tickets.length}{open ? <span className="block text-[0.8125rem] text-ink-3">{open} open</span> : null}</td>
               <td>{f.status === 'inactive' ? <Badge tone="bad">Inactive</Badge> : <Badge tone="good">Active</Badge>}</td>
@@ -1150,7 +1180,7 @@ function Hospitals({ data, q, code, adding, demo }: { data: AdminData; q?: strin
   );
 }
 
-/** One hospital's record: details, logins, equipment and service history; edit it, make it inactive, add logins. */
+/** One hospital's record: its details (kept by the hospital), logins, equipment and service history; make it inactive, add logins. */
 function HospitalDetail({ data, code, demo }: { data: AdminData; code: string; demo?: boolean }) {
   const f = data.facilities.find((x) => x.code === code);
   const back = (
@@ -1183,12 +1213,17 @@ function HospitalDetail({ data, code, demo }: { data: AdminData; code: string; d
           )
         }
       />
-      <div className="grid gap-4 lg:grid-cols-[1fr_1.4fr]">
-        <Panel title="Details">
-          <Facts rows={[['Code', <span key="c" className="font-mono">{f.code}</span>], ['Region', f.region ?? '—'], ['Location and address', f.address ?? '—'], ['Contact person', f.contactName ?? '—'], ['Phone', f.phone ? showPhone(f.phone) : '—'], ['Email', f.email ?? '—']]} />
+      {/* The hospital keeps these up to date itself (its dashboard → Hospital profile); the console only shows them */}
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Panel title="Location">
+          <Facts rows={[['Kind of facility', f.type ?? '—'], ['Region', f.region ?? '—'], ['Town or city', f.town ?? '—'], ['Address and directions', f.address ?? '—'], ['GhanaPost digital address', f.gps ? <span key="g" className="font-mono">{f.gps}</span> : '—']]} />
         </Panel>
-        <Panel title={demo ? 'Edit details (not saved in the demo)' : 'Edit details'}>
-          <EditHospitalForm code={f.code} values={{ region: f.region, address: f.address, contactName: f.contactName, phone: f.phone, email: f.email }} />
+        <Panel title="Contact">
+          <Facts rows={[['Code', <span key="c" className="font-mono">{f.code}</span>], ['Contact person', f.contactName ?? '—'], ['Main phone', f.phone ? <a key="p" href={`tel:${telOf(f.phone)}`} className="text-brand-700 underline">{showPhone(f.phone)}</a> : '—'], ['Email', f.email ? <a key="e" href={`mailto:${f.email}`} className="text-brand-700 underline">{f.email}</a> : '—']]} />
+          <p className="mt-4 flex items-start gap-2 text-[0.875rem] text-ink-3">
+            <Icon name="fi-rr-info" className="mt-0.5 shrink-0" />
+            {f.updatedAt ? `Kept up to date by the hospital in its dashboard (Hospital profile), last on ${fmt(f.updatedAt)}.` : 'The hospital fills these in from its dashboard (Hospital profile). It hasn’t yet.'}
+          </p>
         </Panel>
       </div>
       <Panel title={`Logins (${logins.length})`} className="mt-4">
@@ -1680,9 +1715,9 @@ async function Texts({ data, now, to, message }: { data: AdminData; now: number;
 
       <h2 className="mb-3 text-lg font-semibold">Every text sent</h2>
       <div className="mb-5 grid gap-3 sm:grid-cols-3">
-        <Mini label="Texts in the last 30 days" value={recent.length} note={`to ${recent.reduce((n, m) => n + people(m.to).length, 0)} phones`} />
-        <Mini label="Sent" value={recent.filter((m) => m.status === 'sent').length} note="accepted by the gateway" />
-        <Mini label="Not sent" value={recent.filter((m) => m.status === 'failed').length} note="the reason is shown on each" />
+        <Mini tone="blue" label="Texts in the last 30 days" value={recent.length} note={`to ${recent.reduce((n, m) => n + people(m.to).length, 0)} phones`} />
+        <Mini tone="green" label="Sent" value={recent.filter((m) => m.status === 'sent').length} note="accepted by the gateway" />
+        <Mini tone="red" label="Not sent" value={recent.filter((m) => m.status === 'failed').length} note="the reason is shown on each" />
       </div>
       <Table head={['When', 'About', 'To', 'Message', 'Status']} empty={!data.sms.length}>
         {data.sms.map((m) => (
