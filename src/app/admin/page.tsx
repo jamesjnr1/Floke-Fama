@@ -1234,7 +1234,7 @@ function Facts({ rows }: { rows: [string, React.ReactNode][] }) {
 
 function TicketTable({ tickets, assetOf }: { tickets: AdminData['desk']['tickets']; assetOf: (id: string) => AdminData['desk']['assets'][number] | undefined }) {
   return (
-    <Table head={['Request', 'Opened', 'Equipment', 'Hospital', 'Priority', 'Status', 'Engineer', 'Rating']} empty={!tickets.length}>
+    <Table head={['Request', 'Opened', 'Equipment', 'Hospital', 'Priority', 'Status', 'Engineer', 'Rating']} empty={!tickets.length} wide>
       {tickets.map((t) => {
         const a = assetOf(t.assetId);
         return (
