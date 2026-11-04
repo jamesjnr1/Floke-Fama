@@ -6,7 +6,7 @@ import { LogoMark, PortalLogo } from '@/components/layout/logo';
 import { Hint } from '@/components/ui/hint';
 import { Icon } from '@/components/ui/icon';
 import { UserAvatar } from '@/components/ui/user-avatar';
-import { removeAdmin, removeEngineer, saveOrderNote, setOrderStatus } from '@/lib/admin/actions';
+import { dismissSiteError, removeAdmin, removeEngineer, saveOrderNote, setOrderStatus } from '@/lib/admin/actions';
 import { AddAdminForm } from '@/components/admin/add-admin-form';
 import { AdminPhoneForm } from '@/components/admin/admin-phone-form';
 import { approveEngineer, declineEngineer } from '@/lib/engineer-actions';
@@ -53,7 +53,7 @@ import type { TicketStatus as TicketStatusId } from '@/lib/service/store';
  */
 export const dynamic = 'force-dynamic';
 
-type Tab = 'overview' | 'orders' | 'accounts' | 'hospitals' | 'team' | 'products' | 'service' | 'texts' | 'system';
+type Tab = 'overview' | 'orders' | 'accounts' | 'hospitals' | 'team' | 'products' | 'service' | 'texts' | 'health' | 'system';
 const tabs: { id: Tab; label: string; icon: string }[] = [
   { id: 'overview', label: 'Overview', icon: 'fi-rr-apps' },
   { id: 'orders', label: 'Orders', icon: 'fi-rr-box-open' },
@@ -63,6 +63,7 @@ const tabs: { id: Tab; label: string; icon: string }[] = [
   { id: 'products', label: 'Product demand', icon: 'fi-rr-shopping-cart' },
   { id: 'service', label: 'Service desk', icon: 'fi-rr-tools' },
   { id: 'texts', label: 'Text messages', icon: 'fi-rr-comment' },
+  { id: 'health', label: 'Site health', icon: 'fi-rr-heart-rate' },
   { id: 'system', label: 'Database & settings', icon: 'fi-rr-database' },
 ];
 
@@ -108,7 +109,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
   const demo = Boolean(session.demo);
   // The sales team sees only the sales board and product demand; any other tab opens the sales board
   const sales = session.role === 'sales';
-  const allowed = (id: Tab) => (!sales || id === 'orders' || id === 'products') && !(demo && (id === 'texts' || id === 'system'));
+  const allowed = (id: Tab) => (!sales || id === 'orders' || id === 'products') && !(demo && (id === 'texts' || id === 'health' || id === 'system'));
   const tab: Tab = tabs.some((t) => t.id === params.tab) && allowed(params.tab as Tab) ? (params.tab as Tab) : sales ? 'orders' : 'overview';
   const data = demo ? sampleData() : await loadAdminData();
   const now = data.source === 'sample' ? Date.UTC(2026, 9, 19, 12) : Date.now();
@@ -124,6 +125,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
     accounts: { n: data.accounts.filter((a) => now - Date.parse(a.createdAt) < DAY).length, tone: 'green', title: 'registered in the last 24 hours' },
     team: { n: data.accounts.filter((a) => a.id.startsWith('engp-')).length, tone: 'red', title: 'engineers waiting for your approval' },
     texts: { n: data.sms.filter((m) => m.status === 'failed' && now - Date.parse(m.at) < DAY).length, tone: 'red', title: 'texts not sent in the last 24 hours' },
+    health: { n: data.errors.filter((e) => now - Date.parse(e.lastAt) < DAY).length, tone: 'red', title: 'kinds of error in the last 24 hours' },
   };
   const badge = (id: Tab, phone?: boolean) => {
     const b = badges[id];
@@ -265,6 +267,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             {allowed('products') && <AdminPane id="products"><Products data={data} /></AdminPane>}
             {allowed('service') && <AdminPane id="service"><Service data={data} now={now} /></AdminPane>}
             {allowed('texts') && <AdminPane id="texts">{tab === 'texts' ? <Texts data={data} now={now} to={params.to} message={params.message} /> : <Texts data={data} now={now} />}</AdminPane>}
+            {allowed('health') && <AdminPane id="health"><Health data={data} now={now} /></AdminPane>}
             {tab === 'system' && <AdminPane id="system"><System data={data} phone={session.phone} me={session.sub} /></AdminPane>}
           </main>
         </div>
@@ -1744,6 +1747,116 @@ async function Texts({ data, now, to, message }: { data: AdminData; now: number;
           </tr>
         ))}
       </Table>
+    </>
+  );
+}
+
+/**
+ * Site health: is everything working, what went wrong (every error on the site and the portals, recorded by
+ * lib/monitor.ts), and what's been happening, newest first. Read with the rest of the console every 30 seconds.
+ */
+function Health({ data, now }: { data: AdminData; now: number }) {
+  const day = (iso: string) => now - Date.parse(iso) < DAY;
+  const errorsToday = data.errors.filter((e) => day(e.lastAt));
+  const texts = data.sms.filter((m) => day(m.at) && m.status !== 'sending');
+  const failedTexts = texts.filter((m) => m.status === 'failed');
+  const tablesDown = data.tables.filter((t) => !t.ok);
+  const checks = configChecks();
+  const emailOn = checks.find((c) => /Brevo|email/i.test(c.label))?.ok ?? false;
+  const assetOf = new Map(data.desk.assets.map((a) => [a.id, a]));
+
+  // Everything that happened, newest first
+  type Event = { at: string; icon: string; text: string; tone?: 'bad' | 'good' };
+  const events: Event[] = [
+    ...data.accounts.filter((a) => a.role === 'client').map((a) => ({ at: a.createdAt, icon: 'fi-rr-hospital', text: `${a.organisation || a.name} registered on the website`, tone: 'good' as const })),
+    ...data.accounts.filter((a) => a.role === 'engineer').map((a) => ({ at: a.createdAt, icon: 'fi-rr-user-gear', text: `${a.name} joined as an engineer` })),
+    ...data.orders.map((o) => ({ at: o.placedAt, icon: 'fi-rr-shopping-cart', text: `New order ${o.reference} from ${o.contact?.organisation || o.account}`, tone: 'good' as const })),
+    ...data.supportRequests.map((r) => ({ at: r.at, icon: 'fi-rr-headset', text: `Support page: ${r.type} request from ${r.facility || r.name}` })),
+    ...data.desk.tickets.map((t) => ({ at: t.openedAt, icon: 'fi-rr-tools', text: `Service job ${t.id} opened at ${assetOf.get(t.assetId)?.facility ?? 'a hospital'}` })),
+    ...data.desk.tickets.filter((t) => t.resolvedAt).map((t) => ({ at: t.resolvedAt!, icon: 'fi-rr-check-circle', text: `Service job ${t.id} resolved${t.engineer ? ` by ${t.engineer}` : ''}`, tone: 'good' as const })),
+    ...data.sms.filter((m) => m.status === 'failed').map((m) => ({ at: m.at, icon: 'fi-rr-comment', text: `Text not sent (${smsKind[m.kind] ?? m.kind}): ${m.detail || 'no reason given'}`, tone: 'bad' as const })),
+    ...data.errors.map((e) => ({ at: e.lastAt, icon: 'fi-rr-triangle-warning', text: `Error in ${e.area} (${e.path}): ${e.message}`, tone: 'bad' as const })),
+  ]
+    .filter((e) => e.at && !Number.isNaN(Date.parse(e.at)))
+    .sort((a, b) => b.at.localeCompare(a.at))
+    .slice(0, 40);
+
+  return (
+    <>
+      <Heading
+        title="Site health"
+        lead="Whether everything is working, every error on the website and the portals, and what’s been happening. You get an email when a new error appears, and a report every morning."
+        hint={<>Errors are recorded automatically: on the website, the hospital portal, the engineer portal, this console and the daily background job, and on visitors’ screens. The same error happening many times is one line with a count. Dismiss an error once it’s dealt with; it comes back if it happens again.</>}
+      />
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <Mini tone="green" label="Website" value="Up" note="answering now" />
+        <Mini tone={tablesDown.length ? 'red' : 'green'} label="Database" value={tablesDown.length ? 'Problem' : 'OK'} note={tablesDown.length ? tablesDown.map((t) => t.label).join(', ') : 'every table answers'} />
+        <Mini tone={failedTexts.length ? 'red' : 'green'} label="Texts, last 24 h" value={texts.length - failedTexts.length} note={failedTexts.length ? `sent, ${failedTexts.length} not sent` : 'sent, none failed'} />
+        <Mini tone={errorsToday.length ? 'red' : 'green'} label="Errors, last 24 h" value={errorsToday.length} note={errorsToday.length ? 'kinds of error: see below' : emailOn ? 'all clear' : 'all clear (email alerts off)'} />
+      </div>
+
+      <Panel title={`Errors (last 14 days)`} className="mt-4" action={<span className="text-[0.875rem] text-ink-3">{data.errors.length ? `${data.errors.length} kind${data.errors.length === 1 ? '' : 's'}` : ''}</span>}>
+        {data.errors.length ? (
+          <ul className="-mt-2 divide-y divide-[#edf1ef]">
+            {data.errors.map((e) => (
+              <li key={e.id} className="flex flex-wrap items-start gap-x-6 gap-y-2 py-4">
+                <span className="min-w-0 flex-1 basis-80">
+                  <span className="flex flex-wrap items-center gap-2">
+                    <Badge tone={day(e.lastAt) ? 'bad' : 'neutral'}>{e.area}</Badge>
+                    <span className="font-mono text-[0.8125rem] text-ink-3">{e.path}</span>
+                  </span>
+                  <span className="mt-1.5 block break-words font-medium">{e.message}</span>
+                  <span className="mt-1 block text-[0.8125rem] text-ink-3">
+                    {e.count === 1 ? 'Once' : `${e.count.toLocaleString()} times`} · last {timeFmt.format(new Date(e.lastAt))}{e.count > 1 ? ` · first ${timeFmt.format(new Date(e.firstAt))}` : ''}
+                    {e.source === 'browser' ? ' · on a visitor’s screen' : ''}
+                    {e.digest ? ` · code ${e.digest}` : ''}
+                  </span>
+                </span>
+                <form action={dismissSiteError}>
+                  <input type="hidden" name="id" value={e.id} />
+                  <button className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-line bg-white px-3 text-[0.875rem] font-medium hover:border-ink/40"><Icon name="fi-rr-check" /> Dealt with</button>
+                </form>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="-mt-2 flex items-center gap-2 text-ink-2"><Icon name="fi-rr-check-circle" className="text-brand-600" /> No errors. Everything is running normally.</p>
+        )}
+      </Panel>
+
+      <div className="mt-4 grid gap-4 xl:grid-cols-12">
+        <Panel title="What’s been happening" className="xl:col-span-8" action={<span className="text-[0.875rem] text-ink-3">Latest 40</span>}>
+          {events.length ? (
+            <ul className="-mt-2 divide-y divide-[#edf1ef]">
+              {events.map((e, i) => (
+                <li key={i} className="flex items-start gap-3 py-2.5">
+                  <Icon name={e.icon} className={cn('mt-1 shrink-0', e.tone === 'bad' ? 'text-signal-700' : e.tone === 'good' ? 'text-brand-600' : 'text-ink-3')} />
+                  <span className="min-w-0 flex-1 break-words text-[0.9375rem]">{e.text}</span>
+                  <span className="shrink-0 whitespace-nowrap text-[0.8125rem] text-ink-3">{timeFmt.format(new Date(e.at))}</span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="-mt-2 text-ink-3">Nothing yet.</p>
+          )}
+        </Panel>
+        <Panel title="More detail" className="xl:col-span-4">
+          <ul className="-mt-2 space-y-3 text-[0.9375rem]">
+            {[
+              { href: 'https://vercel.com/jamesjnr1s-projects/floke-fama/analytics', label: 'Visitors and pages viewed', note: 'Vercel → Analytics' },
+              { href: 'https://vercel.com/jamesjnr1s-projects/floke-fama/speed-insights', label: 'Page speed for real visitors', note: 'Vercel → Speed Insights' },
+              { href: 'https://vercel.com/jamesjnr1s-projects/floke-fama/logs', label: 'Live server log (last hour)', note: 'Vercel → Logs' },
+              { href: 'https://search.google.com/search-console', label: 'How Google sees the site', note: 'Google Search Console' },
+              { href: '/api/health', label: 'Status check', note: 'For an uptime monitor: flokefama.com/api/health' },
+            ].map((l) => (
+              <li key={l.href}>
+                <a href={l.href} target="_blank" rel="noopener noreferrer" className="font-semibold text-brand-700 hover:underline">{l.label}</a>
+                <span className="block text-[0.8125rem] text-ink-3">{l.note}</span>
+              </li>
+            ))}
+          </ul>
+        </Panel>
+      </div>
     </>
   );
 }

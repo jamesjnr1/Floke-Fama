@@ -11,6 +11,7 @@ import { accountPictures } from '@/lib/account-photos';
 import { isTableMissing } from '@/lib/appwrite-tables';
 import { listSupportRequests, type SupportRequest } from '@/lib/support-requests';
 import { escalateMinutes, recentSms, smsEnabled, smsProvider, type SmsLogEntry } from '@/lib/sms';
+import { recentErrors, type SiteError } from '@/lib/monitor';
 
 /**
  * Everything the admin console shows, read on the server from Appwrite. Passwords (salt, hash) are never read.
@@ -35,6 +36,8 @@ export interface AdminData {
   pictures: Record<string, string>;
   /** The hospital registry: every hospital with its permanent code (FLK-H001 …). */
   facilities: Facility[];
+  /** Site health: errors on the site and the portals in the last 14 days (lib/monitor.ts), the latest first. */
+  errors: SiteError[];
   tables: TableStatus[];
 }
 
@@ -75,7 +78,7 @@ const errorText = (e: unknown) => (e as Error)?.message?.slice(0, 200) || 'Unkno
 export async function loadAdminData(): Promise<AdminData> {
   if (!appwrite) {
     const sample = process.env.ADMIN_SAMPLE_DATA === 'true' && process.env.VERCEL_ENV !== 'production';
-    return sample ? sampleData() : { source: 'off', accounts: [], orders: [], desk: { assets: [], tickets: [], notifications: [] }, pushSubscriptions: 0, sms: [], supportRequests: [], pictures: {}, facilities: [], tables: [] };
+    return sample ? sampleData() : { source: 'off', accounts: [], orders: [], desk: { assets: [], tickets: [], notifications: [] }, pushSubscriptions: 0, sms: [], supportRequests: [], pictures: {}, facilities: [], errors: [], tables: [] };
   }
 
   const tables: TableStatus[] = [];
@@ -90,7 +93,7 @@ export async function loadAdminData(): Promise<AdminData> {
     }
   };
 
-  const [accounts, orders, push, desk, sms, supportRequests, pictures] = await Promise.all([
+  const [accounts, orders, push, desk, sms, supportRequests, pictures, errors] = await Promise.all([
     track(TABLES.accounts, 'Accounts', async () =>
       (await listAll(TABLES.accounts, [Query.select(['$id', '$createdAt', 'name', 'email', 'organisation', 'phone'])])).map((r) => ({
         id: r.$id,
@@ -127,6 +130,7 @@ export async function loadAdminData(): Promise<AdminData> {
     // Created by the site on the first request, so until then there is simply nothing to list
     track(TABLES.supportRequests, 'Support requests (website form)', () => listSupportRequests().catch((e) => (isTableMissing(e) ? [] : Promise.reject(e)))),
     accountPictures().catch(() => ({}) as Record<string, string>),
+    track(TABLES.siteErrors, 'Site errors (Site health)', () => recentErrors()),
   ]);
 
   // Every hospital already in the system gets its code (once), then the registry is read
@@ -150,6 +154,7 @@ export async function loadAdminData(): Promise<AdminData> {
     sms,
     supportRequests,
     pictures,
+    errors,
     tables,
   };
 }

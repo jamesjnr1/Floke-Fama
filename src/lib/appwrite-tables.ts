@@ -29,6 +29,11 @@ const specs: Record<string, { name: string; columns: Column[]; indexes?: { key: 
     name: 'Attempt limits (sign-in, sign-up, forms)',
     columns: [{ key: 'hits', size: 1000, required: false }],
   },
+  [TABLES.siteErrors]: {
+    name: 'Site errors',
+    columns: [{ key: 'area', size: 32, required: true }, { key: 'lastAt', size: 32, required: true }, { key: 'data', required: true }],
+    indexes: [{ key: 'last_at', columns: ['lastAt'] }],
+  },
   [TABLES.smsLog]: {
     name: 'Text messages',
     columns: [
