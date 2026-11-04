@@ -7,8 +7,9 @@ import { MotionProvider } from '@/components/layout/motion-provider';
 import { MaintenanceBanner } from '@/components/layout/maintenance-banner';
 import { ServiceWorkerRegister } from '@/components/layout/sw-register';
 import { bootScript, revealNowScript } from '@/lib/a11y';
+import { introOn, introPlayer } from '@/lib/intro';
 import { SiteProvider } from '@/components/site-provider';
-import { GoogleTag, TagManager } from '@/components/google-analytics';
+import { GoogleTags } from '@/components/google-analytics';
 import { getSite } from '@/lib/site';
 import { socials } from '@/data/socials';
 import type { Contact } from '@/lib/site-content';
@@ -97,9 +98,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en-GH" data-banner={site.maintenance.show ? undefined : 'off'} data-patterns={process.env.NEXT_PUBLIC_PATTERNS === 'off' ? 'off' : undefined} className={`${jakarta.variable} ${grotesk.variable} ${serif.variable} ${mona.variable} ${inter.variable} ${poppins.variable}`} suppressHydrationWarning>
       <head>
-        <GoogleTag />
-        <TagManager />
+        <GoogleTags />
         <script dangerouslySetInnerHTML={{ __html: bootScript }} />
+        {/* The opening's player (lib/intro.ts): plain JavaScript, so it plays on time and React can't cut it short */}
+        {introOn && <script dangerouslySetInnerHTML={{ __html: introPlayer }} />}
       </head>
       <body className="font-sans">
         <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-brand-600 focus:px-4 focus:py-2 focus:text-white">
