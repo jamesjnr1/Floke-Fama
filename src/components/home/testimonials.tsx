@@ -35,8 +35,9 @@ export function Testimonials() {
     return () => clearTimeout(id);
   }, [active, reduce, testimonials.length]);
 
-  // None in the Studio: no section
-  if (!t) return null;
+  // None in the Studio: no section, only the space it left between Our Purpose and the news (the same as above Our
+  // Purpose), so the two don't touch
+  if (!t) return <div aria-hidden className="h-16 bg-paper md:h-28" />;
   return (
     <section id="testimonials" className="pattern-dots pattern-soft pattern-l scroll-mt-28 bg-paper section-y">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
