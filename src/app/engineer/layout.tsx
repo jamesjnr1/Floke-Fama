@@ -16,8 +16,7 @@ export default function EngineerLayout({ children }: { children: React.ReactNode
   return (
     <>
       <script dangerouslySetInnerHTML={{ __html: "try{if(localStorage.getItem('ff-eng-theme')==='dark')document.documentElement.dataset.engTheme='dark'}catch(e){}" }} />
-      {/* Microsoft Clarity records clicks and scrolling here, never what the screens show */}
-      <div data-clarity-mask="True" className="contents">{children}</div>
+      {children}
     </>
   );
 }
