@@ -16,6 +16,7 @@ import { salesStages, stageLabel } from '@/lib/sales-stages';
 import { sendTestSms, sendWrittenMessage } from '@/lib/sms';
 import { sharedLimited } from '@/lib/shared-limit';
 import { textAllHospitals } from '@/lib/client-sms';
+import { normalisePhone, phoneHint, showPhone } from '@/lib/phone';
 
 /** Reads an order, changes it and writes it back, with a line in its log saying who did what. Admins and the sales team. */
 async function changeOrder(reference: string, change: (o: SavedOrder) => { order: SavedOrder; log?: string } | null) {
@@ -163,6 +164,36 @@ export async function addAdmin(_prev: AddAdminState, form: FormData): Promise<Ad
   console.info(`[admin] ${s.email} added admin ${d.email}`);
   revalidatePath('/admin');
   return { done: { name: d.name, email: d.email, password: d.password } };
+}
+
+export interface AdminPhoneState {
+  error?: string;
+  saved?: string;
+}
+
+/**
+ * Admin console → Database & settings → Admins: an admin's phone number, for the texts admins get (a new engineer
+ * joining, urgent jobs nobody has taken). Any admin can set it for any admin account; empty clears it.
+ */
+export async function setAdminPhone(_prev: AdminPhoneState, form: FormData): Promise<AdminPhoneState> {
+  const s = await getAdminSession();
+  if (s?.role !== 'admin') return { error: 'Please sign in again.' };
+  if (!appwrite) return { error: 'The database isn’t connected.' };
+  const id = String(form.get('id') ?? '');
+  const raw = String(form.get('phone') ?? '').trim().slice(0, 40);
+  if (raw && !normalisePhone(raw)) return { error: phoneHint };
+  const row = await appwrite.tables.getRow<Models.Row & { email?: string }>({ databaseId: DATABASE_ID, tableId: TABLES.accounts, rowId: id }).catch(() => null);
+  if (!row || roleFor(String(row.email ?? ''), row.$id) !== 'admin') return { error: 'That admin account wasn’t found. Refresh the page and try again.' };
+  const phone = raw ? showPhone(raw) : '';
+  try {
+    await appwrite.tables.updateRow({ databaseId: DATABASE_ID, tableId: TABLES.accounts, rowId: id, data: { phone } });
+  } catch (e) {
+    console.error('admin phone not saved', id, e);
+    return { error: 'It couldn’t be saved (the database didn’t answer). Please try again.' };
+  }
+  console.info(`[admin] ${s.email} set the phone of admin ${row.email}`);
+  revalidatePath('/admin');
+  return { saved: phone || 'cleared' };
 }
 
 /** Removes an admin the console added (an `adm-` id). Admins listed in ADMIN_EMAILS are removed in Vercel; no one removes themselves. */

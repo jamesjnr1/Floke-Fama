@@ -8,6 +8,7 @@ import { Icon } from '@/components/ui/icon';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { removeAdmin, removeEngineer, saveOrderNote, setOrderStatus } from '@/lib/admin/actions';
 import { AddAdminForm } from '@/components/admin/add-admin-form';
+import { AdminPhoneForm } from '@/components/admin/admin-phone-form';
 import { approveEngineer, declineEngineer } from '@/lib/engineer-actions';
 import { HeadToggle } from '@/components/admin/head-toggle';
 import { setHospitalStatus } from '@/lib/admin/hospital-actions';
@@ -1761,6 +1762,7 @@ function Admins({ data, me }: { data: AdminData; me: string }) {
                 {a.id === me && <span className="ml-2 rounded-full bg-brand-50 px-2 py-0.5 text-[0.75rem] font-semibold text-brand-800">You</span>}
                 <span className="block text-[0.875rem] text-ink-3">{a.email}</span>
               </span>
+              <AdminPhoneForm key={`${a.id}:${a.phone}`} id={a.id} phone={showPhone(a.phone)} />
               {a.id.startsWith('adm-') && a.id !== me ? (
                 <form action={removeAdmin}>
                   <input type="hidden" name="id" value={a.id} />
