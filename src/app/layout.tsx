@@ -8,7 +8,7 @@ import { MaintenanceBanner } from '@/components/layout/maintenance-banner';
 import { ServiceWorkerRegister } from '@/components/layout/sw-register';
 import { bootScript, revealNowScript } from '@/lib/a11y';
 import { SiteProvider } from '@/components/site-provider';
-import { GoogleTag } from '@/components/google-analytics';
+import { ClarityTag, GoogleTag } from '@/components/google-analytics';
 import { getSite } from '@/lib/site';
 import { socials } from '@/data/socials';
 import type { Contact } from '@/lib/site-content';
@@ -98,6 +98,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang="en-GH" data-banner={site.maintenance.show ? undefined : 'off'} data-patterns={process.env.NEXT_PUBLIC_PATTERNS === 'off' ? 'off' : undefined} className={`${jakarta.variable} ${grotesk.variable} ${serif.variable} ${mona.variable} ${inter.variable} ${poppins.variable}`} suppressHydrationWarning>
       <head>
         <GoogleTag />
+        <ClarityTag />
         <script dangerouslySetInnerHTML={{ __html: bootScript }} />
       </head>
       <body className="font-sans">
