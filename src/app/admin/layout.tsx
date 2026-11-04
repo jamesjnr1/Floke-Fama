@@ -28,7 +28,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <Link href="/" className="mt-6 inline-flex h-11 items-center bg-brand-700 px-5 font-semibold text-white hover:bg-brand-800">Go to the website</Link>
         </div>
       </main>
-      <div className="max-lg:hidden">{children}</div>
+      <div data-clarity-mask="True" className="max-lg:hidden">{children}</div>
     </>
   );
 }
