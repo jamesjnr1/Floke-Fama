@@ -120,7 +120,8 @@ function merge(raw: Raw | null): SiteContent {
     },
     engineering: { ...d.engineering, ...clean({ title: raw.engineering?.title, lead: raw.engineering?.lead }), photos: photos(raw.engineering?.photos) },
     eventAlbums: (raw.eventAlbums ?? []).map((a): EventAlbum => ({ title: a.title ?? '', date: a.date, photos: photos(a.photos) })).filter((a) => a.title && a.photos.length),
-    testimonials: list(raw.testimonials, d.testimonials),
+    // Exactly what the Studio holds: removing every testimonial there removes the section (no built-in examples)
+    testimonials: (raw.testimonials ?? []).filter((t) => t?.quote && t?.name),
     purpose: list(raw.purpose, d.purpose),
     coreValues: list(raw.coreValues, d.coreValues),
     servicesInBrief: list(raw.servicesInBrief, d.servicesInBrief),

@@ -30,10 +30,13 @@ export function Testimonials() {
 
   useEffect(() => {
     if (reduce) return;
+    if (testimonials.length < 2) return;
     const id = setTimeout(() => setActive((i) => (i + 1) % testimonials.length), 8000);
     return () => clearTimeout(id);
   }, [active, reduce, testimonials.length]);
 
+  // None in the Studio: no section
+  if (!t) return null;
   return (
     <section id="testimonials" className="pattern-dots pattern-soft pattern-l scroll-mt-28 bg-paper section-y">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
