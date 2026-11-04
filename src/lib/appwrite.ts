@@ -28,6 +28,8 @@ export const TABLES = {
   facilities: 'facilities',
   /** Shared limits (wrong passwords, sign-ups, forms): one row per key, the times of its recent attempts. */
   rateLimits: 'rate_limits',
+  /** Site health: errors on the site and the portals, one row per kind of error (lib/monitor.ts). */
+  siteErrors: 'site_errors',
 } as const;
 export const BUCKETS = { hospitalLogos: 'hospital-logos' } as const;
 

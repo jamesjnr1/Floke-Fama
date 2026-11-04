@@ -17,6 +17,7 @@ import { sendTestSms, sendWrittenMessage } from '@/lib/sms';
 import { sharedLimited } from '@/lib/shared-limit';
 import { textAllHospitals } from '@/lib/client-sms';
 import { normalisePhone, phoneHint, showPhone } from '@/lib/phone';
+import { dismissError } from '@/lib/monitor';
 
 /** Reads an order, changes it and writes it back, with a line in its log saying who did what. Admins and the sales team. */
 async function changeOrder(reference: string, change: (o: SavedOrder) => { order: SavedOrder; log?: string } | null) {
@@ -316,4 +317,12 @@ export async function sendToHospitals(_prev: HospitalTextState, form: FormData):
   const r = await textAllHospitals(text, `ALL-${new Date().toISOString().slice(0, 10)}`);
   revalidatePath('/admin');
   return { text: r.ok ? '' : text, result: r };
+}
+
+/** Admin console → Site health: takes an error off the list once dealt with (it comes back if it happens again). */
+export async function dismissSiteError(form: FormData) {
+  const s = await getAdminSession();
+  if (s?.role !== 'admin') return;
+  await dismissError(String(form.get('id') ?? '')).catch((e) => console.error('dismiss site error failed', e));
+  revalidatePath('/admin');
 }
