@@ -35,8 +35,9 @@ const chat = {
 /** Google Analytics (components/google-analytics.tsx): Google's documented addresses for the tag and its reports. */
 const ga = {
   script: 'https://*.googletagmanager.com',
-  img: 'https://*.google-analytics.com https://*.googletagmanager.com',
-  connect: 'https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com',
+  img: 'https://*.google-analytics.com https://*.googletagmanager.com https://www.google.com',
+  // www.google.com: Google signals (demographics), which GA4 sends alongside each page view
+  connect: 'https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://www.google.com',
 };
 const baseline = `frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self'${process.env.VERCEL ? '; upgrade-insecure-requests' : ''}`;
 const policy = [
