@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { useEffect, useLayoutEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect } from 'react';
 import { decideIntro } from '@/lib/intro';
 import { LogoMark, LogoWordmark } from '@/components/layout/logo';
 
@@ -12,9 +12,10 @@ import { LogoMark, LogoWordmark } from '@/components/layout/logo';
  * - When the site is opened, on every third refresh, and after 30 minutes away (introScript); on the public site only
  *   (app/(site)/layout.tsx), never in the portals or admin.
  * - Skipped for visitors whose device asks for reduced motion; a click, tap or key ends it at once (the overlay takes
- *   that first tap, so it never lands on a link underneath). Scrolling doesn't (see skip).
- * - The decision is made before the page is painted (introScript, in the layout), so nothing flashes; if JavaScript
- *   fails, the overlay clears itself after 5.5 seconds (globals.css, ff-intro-failsafe).
+ *   that first tap, so it never lands on a link underneath). Scrolling doesn’t.
+ * - The decision is made before the page is painted (introScript, in the layout), so nothing flashes; the animation is
+ *   plain JavaScript in the page (introPlayer, lib/intro.ts), so it plays on time on a slow phone and React can't cut it
+ *   short. If JavaScript fails, the overlay clears itself after 4 seconds (globals.css, ff-intro-failsafe).
  * - NEXT_PUBLIC_INTRO=off switches it off.
  */
 /** The visitor's last activity in this area, for "back after 30 minutes away". */
@@ -26,21 +27,11 @@ const touchFor = (key: string) => () => {
   }
 };
 
-// The logo rests in the middle for HOLD, counted from when the green first appeared, so a slow first load (the page
-// loading behind the green) doesn't add to it. A refresh loads quickly, so this is what it shows then: long enough
-// to see the logo, the same as a first open (Nov 2026: 1.1s felt rushed on a computer's refresh). At least MIN_REST
-// after the page is ready, even after a slow load, so the logo never rises the moment it can.
-const HOLD = 1800;
-const MIN_REST = 400;
-const RISE = 1000; // the logo rises into the header
-
 /**
  * `storageKey`: the area's counts (website, hospital dashboard, engineer dashboard). `target`: where the big logo lands
  * (the first visible match). `logo`: the big logo, a larger copy of the target (default: the website's).
  */
 export function SiteIntro({ storageKey = 'ff-intro', target: targetSelector = 'header [data-intro-target]', logo: bigLogo }: { storageKey?: string; target?: string; logo?: React.ReactNode } = {}) {
-  const overlay = useRef<HTMLDivElement>(null);
-  const logo = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
 
   // Arriving without a page load (after signing in, from a demo link): decide here, before the first paint. After a
@@ -56,87 +47,26 @@ export function SiteIntro({ storageKey = 'ff-intro', target: targetSelector = 'h
     return () => document.removeEventListener('visibilitychange', seen);
   }, [storageKey]);
 
+  // The animation itself is plain JavaScript (introPlayer, lib/intro.ts). The website starts it from the page, right
+  // after its header; the portals (whose sidebar is drawn by the app) and arrivals without a page load start it here.
+  // Starting twice does nothing
   useEffect(() => {
-    const root = document.documentElement;
-    const el = overlay.current;
-    const group = logo.current;
-    if (!root.classList.contains('ff-intro') || !el || !group) return;
-    // From here this handles a click or key (the page's own script did until now)
-    (window as Window & { __ffIntroLive?: boolean }).__ffIntroLive = true;
-    // The logo it lands on: the first visible one, looked up when the rise starts (a portal may draw its sidebar a moment
-    // after loading; the portals' sidebar is hidden on phones, where the logo just fades)
-    const findTarget = () => [...document.querySelectorAll<HTMLElement>(targetSelector)].find((e) => e.getBoundingClientRect().width > 0) ?? null;
-    let target = findTarget();
-    const animations: Animation[] = [];
-    let done = false;
-    const finish = () => {
-      if (done) return;
-      done = true;
-      animations.forEach((a) => a.cancel());
-      if (target) target.style.visibility = '';
-      root.classList.remove('ff-intro');
-      window.removeEventListener('pointerdown', skip);
-      window.removeEventListener('keydown', skip);
-    };
-    // Only a real click, tap or key ends it. Not scrolling: a laptop's touchpad sends small scroll events on its own (a
-    // resting finger, a scroll still coasting from before the refresh), which cut the opening short (Nov 2026). Not a
-    // held key repeating, or Ctrl, Shift, Alt or Cmd alone (still down from the refresh shortcut)
-    const skip = (e: Event) => {
-      if (e instanceof KeyboardEvent && (e.repeat || ['Control', 'Shift', 'Alt', 'Meta', 'F5'].includes(e.key))) return;
-      if (done) return;
-      animations.forEach((a) => a.pause());
-      el.animate([{ opacity: getComputedStyle(el).opacity }, { opacity: 0 }], { duration: 180, fill: 'forwards' }).onfinish = finish;
-    };
-    window.addEventListener('pointerdown', skip, { passive: true });
-    window.addEventListener('keydown', skip, { passive: true });
-    // The header logo stays hidden until the big one lands on it
-    if (target) target.style.visibility = 'hidden';
-
-    // The page may take a moment to become interactive: count the rest from when the overlay first appeared
-    const shown = (window as Window & { __ffIntro?: number }).__ffIntro ?? performance.now();
-    const timer = window.setTimeout(() => {
-      if (done) return;
-      target ??= findTarget();
-      if (target) target.style.visibility = 'hidden';
-      const from = group.getBoundingClientRect();
-      const to = target?.getBoundingClientRect();
-      const bg = el.querySelector<HTMLElement>('[data-intro-bg]');
-      if (to && to.width > 0) {
-        // The big logo is the header logo scaled up: move its top-left corner onto the header logo's and scale down
-        const k = to.width / from.width;
-        const move = group.animate(
-          [{ transform: 'translate(0, 0) scale(1)' }, { transform: `translate(${to.left - from.left}px, ${to.top - from.top}px) scale(${k})` }],
-          { duration: RISE, easing: 'cubic-bezier(0.65, 0, 0.35, 1)', fill: 'forwards' },
-        );
-        animations.push(move);
-        move.onfinish = finish;
-      } else {
-        const fade = group.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 400, fill: 'forwards' });
-        animations.push(fade);
-        fade.onfinish = finish;
-      }
-      if (bg) animations.push(bg.animate([{ opacity: 1 }, { opacity: 0 }], { duration: RISE * 0.8, delay: RISE * 0.2, easing: 'ease-in-out', fill: 'forwards' }));
-    }, Math.max(MIN_REST, HOLD - (performance.now() - shown)));
-
-    return () => {
-      window.clearTimeout(timer);
-      finish();
-    };
+    (window as Window & { __ffIntroPlay?: (target: string) => void }).__ffIntroPlay?.(targetSelector);
   }, [targetSelector]);
 
   return (
-    <div ref={overlay} aria-hidden className="site-intro fixed inset-0 z-[200] items-center justify-center">
+    <div aria-hidden className="site-intro fixed inset-0 z-[200] items-center justify-center">
       <div data-intro-bg className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_40%,#0f7a4a_0%,#0a5a36_45%,#063d25_100%)]" />
       {!bigLogo && (
         /* The header logo (mark 32px, gap 6px, lettering 19px tall) drawn larger: 1.8× on phones, 3× on tablets, 3.75× on
            computers. The move scales it down onto the header logo exactly */
-        <div ref={logo} className="site-intro-logo relative flex origin-top-left items-center gap-[11px] sm:gap-[18px] lg:gap-[22.5px]">
+        <div className="site-intro-logo relative flex origin-top-left items-center gap-[11px] sm:gap-[18px] lg:gap-[22.5px]">
           <LogoMark className="size-[57.6px] sm:size-24 lg:size-[120px]" />
           <LogoWordmark className="h-[34.2px] text-white sm:h-[57px] lg:h-[71.25px]" />
         </div>
       )}
       {bigLogo && (
-        <div ref={logo} className="site-intro-logo relative flex origin-top-left">
+        <div className="site-intro-logo relative flex origin-top-left">
           {bigLogo}
         </div>
       )}

@@ -42,3 +42,24 @@ export function decideIntro(key: string) {
     /* storage blocked: no opening */
   }
 }
+
+/**
+ * Plays the opening, as plain JavaScript in the page: the Flokefama logo rests in the middle of the green for HOLD
+ * (counted from when the green first appeared), then rises onto `target` (the first visible match: the header logo)
+ * while the green fades away. A click, tap or key ends it at once with a short fade.
+ *
+ * Plain JavaScript, not React, on purpose (Nov 2026): run from the page itself as soon as the header is in it, it
+ * plays on time on a slow phone (React only takes over once all the site's code has loaded, seconds later on a slow
+ * connection), and nothing React does (drawing the page again after a mismatch) can cut it short. The whole rise is
+ * scheduled at once, as browser animations with a delay (not a timer), so it starts on time even while the phone is
+ * busy loading the rest of the site. Defined on every
+ * page (app/layout.tsx); started by the website's layout right after its header, and by SiteIntro in the portals.
+ * Plays once per page load; does nothing when the opening isn't due (no .ff-intro on <html>).
+ */
+const HOLD = 1000; // the logo rests in the middle
+const MIN_REST = 250; // at least this long after the page can start it
+const RISE = 700; // the logo rises into the header
+export const introPlayer = `window.__ffIntroPlay=function(sel){try{var w=window,root=document.documentElement;if(w.__ffIntroStarted||!root.classList.contains('ff-intro'))return;var el=document.querySelector('.site-intro'),g=el&&el.querySelector('.site-intro-logo');if(!el||!g||!g.animate)return;w.__ffIntroStarted=1;w.__ffIntroLive=1;var done=0,anims=[];var finish=function(){if(done)return;done=1;anims.forEach(function(a){a.cancel()});root.classList.remove('ff-intro');removeEventListener('pointerdown',skip);removeEventListener('keydown',skip)};var skip=function(e){if(done||(e.type==='keydown'&&(e.repeat||/^(Control|Shift|Alt|Meta|F5)$/.test(e.key))))return;anims.forEach(function(a){a.pause()});el.animate([{opacity:getComputedStyle(el).opacity},{opacity:0}],{duration:180,fill:'forwards'}).onfinish=finish};addEventListener('pointerdown',skip,{passive:true});addEventListener('keydown',skip,{passive:true});var wait=Math.max(${MIN_REST},${HOLD}-(performance.now()-(w.__ffIntro||performance.now()))),t=null,list=document.querySelectorAll(sel);for(var i=0;i<list.length;i++){if(list[i].getBoundingClientRect().width>0){t=list[i];break}}var from=g.getBoundingClientRect(),to=t&&t.getBoundingClientRect(),bg=el.querySelector('[data-intro-bg]'),a;if(to&&to.width>0&&from.width>0){a=g.animate([{transform:'translate(0,0) scale(1)'},{transform:'translate('+(to.left-from.left)+'px,'+(to.top-from.top)+'px) scale('+(to.width/from.width)+')'}],{duration:${RISE},delay:wait,easing:'cubic-bezier(0.65,0,0.35,1)',fill:'both'})}else{a=g.animate([{opacity:1},{opacity:0}],{duration:400,delay:wait,fill:'both'})}anims.push(a);a.onfinish=finish;if(bg)anims.push(bg.animate([{opacity:1},{opacity:0}],{duration:${Math.round(RISE * 0.8)},delay:wait+${Math.round(RISE * 0.2)},easing:'ease-in-out',fill:'both'}))}catch(e){document.documentElement.classList.remove('ff-intro')}};`;
+
+/** Starts the opening from the page itself, right after the element it lands on (see introPlayer). */
+export const introPlayScript = (target: string) => `window.__ffIntroPlay&&window.__ffIntroPlay(${JSON.stringify(target)})`;
