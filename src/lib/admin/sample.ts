@@ -75,6 +75,7 @@ export function sampleData(): AdminData {
 
   return {
     source: 'sample',
+    errors: [],
     accounts: accounts.sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
     orders,
     desk: { assets, tickets, notifications: [] },
