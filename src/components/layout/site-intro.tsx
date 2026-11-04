@@ -15,7 +15,7 @@ import { LogoMark, LogoWordmark } from '@/components/layout/logo';
  *   that first tap, so it never lands on a link underneath). Scrolling doesn’t.
  * - The decision is made before the page is painted (introScript, in the layout), so nothing flashes; the animation is
  *   plain JavaScript in the page (introPlayer, lib/intro.ts), so it plays on time on a slow phone and React can't cut it
- *   short. If JavaScript fails, the overlay clears itself after 4 seconds (globals.css, ff-intro-failsafe).
+ *   short. If JavaScript fails, the overlay clears itself after 4.5 seconds (globals.css, ff-intro-failsafe).
  * - NEXT_PUBLIC_INTRO=off switches it off.
  */
 /** The visitor's last activity in this area, for "back after 30 minutes away". */
