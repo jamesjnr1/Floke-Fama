@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 import { Checkout } from '@/components/sales/checkout';
 import { getProducts } from '@/lib/data';
 
-export const metadata: Metadata = { title: 'Checkout', robots: { index: false } };
+export const metadata: Metadata = { title: 'Request a quote', robots: { index: false } };
 
-/** `?add=slug,slug` (from "Order now"): those products go into the cart. */
+/** `?add=slug,slug` (from "Request a quote"): those products go on the quote list. */
 export default async function CheckoutPage({ searchParams }: { searchParams: Promise<{ add?: string }> }) {
   const { add } = await searchParams;
   const slugs = (add ?? '').split(',').map((s) => s.trim()).filter(Boolean).slice(0, 30);
@@ -16,8 +16,8 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
   return (
     <div className="bg-canvas pb-20 pt-32 md:pb-28 md:pt-36">
       <div className="mx-auto max-w-[1180px] px-5 md:px-10">
-        <h1 className="text-[clamp(2rem,1.4rem+2vw,3rem)] font-bold tracking-[-0.03em] text-ink">Checkout</h1>
-        <p className="mb-8 mt-2 text-ink-3">Send your order and our sales team confirms the price and delivery within one business day. Installation and training are included.</p>
+        <h1 className="text-[clamp(2rem,1.4rem+2vw,3rem)] font-bold tracking-[-0.03em] text-ink">Request a quote</h1>
+        <p className="mb-8 mt-2 text-ink-3">List what you need and send the request. Our sales team sends you a quote with the price and delivery within one business day. Installation and training are included.</p>
         <Checkout adding={adding} />
       </div>
     </div>

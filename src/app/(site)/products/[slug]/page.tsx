@@ -77,7 +77,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                 <p className="text-xs text-ink-3">Priced to your configuration · reply within one business day</p>
               </div>
               <Link href={orderHref(product.slug)} className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-lg bg-brand-600 px-4 text-sm font-medium text-white transition hover:bg-brand-700">
-                Order now
+                Request a quote
               </Link>
             </div>
           </div>

@@ -207,7 +207,7 @@ export function Navbar() {
             href="/checkout"
             className="hidden items-center whitespace-nowrap py-3 text-[1rem] font-medium text-white/90 transition hover:text-white 2xl:text-sm xl:inline-flex"
           >
-            <Icon name="fi-rr-shopping-cart" className="mr-2 text-base" /> Cart
+            <Icon name="fi-rr-shopping-cart" className="mr-2 text-base" /> Quote list
           </Link>
           {user ? (
             /* Signed in: the account menu replaces the portal button */
@@ -251,7 +251,7 @@ export function Navbar() {
                     <div className="p-1.5">
                       {[
                         { href: home, label: homeLabel, icon: 'fi-rr-apps' },
-                        { href: '/checkout', label: 'Cart & checkout', icon: 'fi-rr-shopping-cart' },
+                        { href: '/checkout', label: 'Quote list', icon: 'fi-rr-shopping-cart' },
                       ].map((l) => (
                         <Link key={l.href} role="menuitem" href={l.href} className="flex items-center gap-3 rounded-md px-3 py-2.5 text-sm text-white/80 transition hover:bg-white/[0.06] hover:text-white">
                           <Icon name={l.icon} className="text-white/45" /> {l.label}
@@ -304,7 +304,7 @@ export function Navbar() {
             )}
           >
             <ul className="divide-y divide-white/10">
-              {[...flat, { href: '/checkout', label: 'Cart' }, user ? { href: home, label: homeLabel } : { href: '/login', label: 'Sign in' }].map((item, i) => (
+              {[...flat, { href: '/checkout', label: 'Quote list' }, user ? { href: home, label: homeLabel } : { href: '/login', label: 'Sign in' }].map((item, i) => (
                 <motion.li key={item.href} initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.04 * i }}>
                   <Link
                     href={item.href}

@@ -10,7 +10,10 @@ import { getAdminSession, getConsoleSession } from '@/lib/auth/server';
 import { ADMIN_ID_PREFIX, ENGINEER_ID_PREFIX, roleFor } from '@/lib/auth/users';
 import { Query, type Models } from 'node-appwrite';
 import { forgetTeam } from '@/lib/engineer-team';
-import { assignByAdmin, DeskError, releaseEngineerJobs, removeOrderEquipment } from '@/lib/service/server';
+import { assignByAdmin, DeskError, registerPurchase, releaseEngineerJobs, removeOrderEquipment } from '@/lib/service/server';
+import { catalogue } from '@/data/catalogue';
+import { CONSUMABLES } from '@/lib/categories';
+import { needsInstallation, tidyName } from '@/lib/installation';
 import type { OrderStatus, SavedOrder } from '@/lib/orders';
 import { salesStages, stageLabel } from '@/lib/sales-stages';
 import { sendTestSms, sendWrittenMessage } from '@/lib/sms';
@@ -65,7 +68,28 @@ export async function setOrderStatus(form: FormData) {
   const from = String(form.get('from') ?? '');
   if (!salesStages.some((x) => x.id === status)) return;
   // Moved by someone else since this page was opened: leave it (the page then shows where it is now)
-  await changeOrder(String(form.get('reference') ?? ''), (o) => (o.status === status || (from && o.status !== from) ? null : { order: { ...o, status }, log: `Moved to ${stageLabel(status)}` }));
+  const reference = String(form.get('reference') ?? '');
+  let paidQuote: SavedOrder | null = null;
+  await changeOrder(reference, (o) => {
+    if (o.status === status || (from && o.status !== from)) return null;
+    // A quote request becomes a purchase once it is paid: its equipment then goes on the hospital's list (once)
+    const addEquipment = o.method === 'quote' && !o.equipmentAdded && (status === 'paid' || status === 'processing' || status === 'delivered');
+    if (addEquipment) paidQuote = o;
+    return { order: { ...o, status, ...(addEquipment ? { equipmentAdded: true } : {}) }, log: `Moved to ${stageLabel(status)}` };
+  });
+  if (paidQuote) await addQuoteEquipment(paidQuote).catch((e) => console.error('[orders] equipment not added for', reference, e));
+}
+
+/** The paid quote's equipment (not consumables) on the hospital's list, with installation booked where needed. */
+async function addQuoteEquipment(o: SavedOrder) {
+  const acc = await findAccount(o.account);
+  if (!acc || roleFor(acc.email, acc.id) !== 'client') return;
+  const equipment = o.items.flatMap((x) => {
+    const p = catalogue.find((c) => c.slug === x.slug);
+    return p && p.category !== CONSUMABLES ? [{ slug: p.slug, name: tidyName(p.name), brand: p.brand, image: p.image, qty: x.qty, install: needsInstallation(p) }] : [];
+  });
+  const s = { sub: acc.id, name: acc.name, email: acc.email, role: 'client' as const, facility: acc.organisation || o.contact?.organisation, phone: acc.phone, exp: 0 };
+  await registerPurchase(s, o.reference, equipment);
 }
 
 /** Saves the agreed price (Ghana cedis) and/or adds a note, from the order's page on the sales board. */

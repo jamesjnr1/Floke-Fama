@@ -63,7 +63,7 @@ export function AccessPanel({ next, notice, engineer, initialMode }: {
             ? 'Sign in to the engineer service portal.'
             : mode === 'signin'
               ? 'Sign in to your hospital dashboard: service, equipment, certificates and orders.'
-              : 'One account for your facility: request service, track engineers, order equipment and check out.'}
+              : 'One account for your facility: request service, track engineers and request quotes for equipment.'}
         </p>
 
         {mode === 'signin' ? <LoginForm next={next} notice={notice} /> : <SignupForm next={next} />}
