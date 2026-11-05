@@ -56,7 +56,7 @@ export const dynamic = 'force-dynamic';
 type Tab = 'overview' | 'orders' | 'accounts' | 'hospitals' | 'team' | 'products' | 'service' | 'texts' | 'health' | 'system';
 const tabs: { id: Tab; label: string; icon: string }[] = [
   { id: 'overview', label: 'Overview', icon: 'fi-rr-apps' },
-  { id: 'orders', label: 'Orders', icon: 'fi-rr-box-open' },
+  { id: 'orders', label: 'Quotes', icon: 'fi-rr-box-open' },
   { id: 'accounts', label: 'Accounts', icon: 'fi-rr-users' },
   { id: 'hospitals', label: 'Hospitals', icon: 'fi-rr-hospital' },
   { id: 'team', label: 'Engineers', icon: 'fi-rr-user-gear' },
@@ -78,7 +78,7 @@ const orderStatusLabel = Object.fromEntries(salesStages.map((x) => [x.id, x.labe
 // Only a name written all in capitals (an older order or record) is re-cased; the catalogue's names are already in
 // the house style (lib/product-names.ts), which re-casing would spoil ("pH Meter")
 const tidy = (n: string) => (/[a-z]/.test(n) ? n : n.split(/(\s+|[()])/).map((w) => (/\d/.test(w) ? w.toUpperCase() : w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())).join(''));
-const methodLabel: Record<string, string> = { momo: 'Mobile money', card: 'Card', bank: 'Bank transfer' };
+const methodLabel: Record<string, string> = { quote: 'Agreed after quote', momo: 'Mobile money', card: 'Card', bank: 'Bank transfer' };
 const ticketLabel: Record<string, string> = { new: 'Logged', assigned: 'Assigned', travelling: 'En route', onsite: 'On site', resolved: 'Resolved' };
 const smsKind: Record<string, string> = { website: 'Website fault', urgent: 'Urgent fault', assigned: 'Job given', message: 'Hospital message', escalation: 'Not taken', test: 'Test text', hospitals: 'To all hospitals', checkin: 'Check-in', calibration: 'Calibration reminder', holiday: 'Holiday greeting', update: 'Update to hospital', callback: 'Not called back', written: 'Sent by hand', reopened: 'Reopened', 'engineer-join': 'New engineer', 'engineer-approved': 'Engineer approved', 'head-on': 'Made head', 'head-off': 'No longer head' };
 const smsStatus: Record<string, string> = { sent: 'Sent', logged: 'Recorded only', failed: 'Not sent', sending: 'Sending' };
@@ -120,7 +120,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
   const panes = tabs.filter((t) => t.id !== 'system' && allowed(t.id)).map((t) => t.id);
   // A mark on a tab when something there needs a look: red for action, green for news
   const badges: Partial<Record<Tab, { n: number; tone: 'red' | 'green'; title: string }>> = {
-    orders: { n: data.orders.filter((o) => o.status === 'awaiting-payment').length, tone: 'red', title: 'new orders to call' },
+    orders: { n: data.orders.filter((o) => o.status === 'awaiting-payment').length, tone: 'red', title: 'new quote requests to call' },
     service: { n: data.supportRequests.filter((r) => r.status === 'new' && !r.ticketId).length + data.desk.tickets.filter((t) => t.status === 'new').length, tone: 'red', title: 'new Support page requests and jobs no engineer has taken' },
     accounts: { n: data.accounts.filter((a) => now - Date.parse(a.createdAt) < DAY).length, tone: 'green', title: 'registered in the last 24 hours' },
     team: { n: data.accounts.filter((a) => a.id.startsWith('engp-')).length, tone: 'red', title: 'engineers waiting for your approval' },
@@ -553,7 +553,7 @@ const openStages: OrderStatus[] = ['awaiting-payment', 'called', 'priced', 'paid
 /** What the next step is called on an order's button, by its stage. */
 const nextStep: Partial<Record<OrderStatus, { to: OrderStatus; label: string }>> = {
   'awaiting-payment': { to: 'called', label: 'Mark as called' },
-  called: { to: 'priced', label: 'Price sent' },
+  called: { to: 'priced', label: 'Quote sent' },
   priced: { to: 'paid', label: 'Mark as paid' },
   paid: { to: 'processing', label: 'Start preparing' },
   processing: { to: 'delivered', label: 'Mark as delivered' },
@@ -615,9 +615,9 @@ function Orders({ data, q, open, stage, now }: { data: AdminData; q?: string; op
   return (
     <>
       <Heading
-        hint={<>Every order placed in the shop. Call each new one, agree the price, then press the next step: <b>Mark as called</b> → <b>Price sent</b> → <b>Mark as paid</b> → <b>Start preparing</b> → <b>Mark as delivered</b>. The hospital sees each stage in its dashboard. Open an order to record the amount and notes, or move it to any stage (Lost if it did not go ahead).</>}
+        hint={<>Every quote request from the shop. Call each new one, send the quote, then press the next step: <b>Mark as called</b> → <b>Quote sent</b> → <b>Mark as paid</b> → <b>Start preparing</b> → <b>Mark as delivered</b>. The hospital sees each stage in its dashboard, and its equipment is added when you mark it as paid. Open a request to record the quoted price and notes, or move it to any stage (Lost if it did not go ahead).</>}
         title="Sales board"
-        lead="Call each new order, agree the price, then press the next step. The hospital follows Price sent, Paid, Being prepared and Delivered in its dashboard."
+        lead="Call each new quote request, send the quote, then press the next step. The hospital follows Quote sent, Paid, Being prepared and Delivered in its dashboard."
         action={<div className="flex flex-wrap items-center gap-2"><SearchBox tab="orders" q={q} placeholder="Reference, hospital, product…" extra={{ stage: chosen }} /><Csv table="orders" /></div>}
       />
 
@@ -746,7 +746,7 @@ function OrderDetail({ o, who, live, now, move }: { o: SavedOrder; who: { name: 
           <form action={saveOrderNote} className="space-y-3 rounded-xl border border-line p-4">
             <input type="hidden" name="reference" value={o.reference} />
             <label className="block">
-              <span className="text-[0.875rem] font-medium text-ink-3">Agreed price (GHS)</span>
+              <span className="text-[0.875rem] font-medium text-ink-3">Quoted price (GHS)</span>
               <input name="amount" inputMode="decimal" defaultValue={o.amount ?? ''} placeholder="e.g. 85000" className="mt-1 h-10 w-full rounded-lg border border-line px-3" />
             </label>
             <label className="block">
