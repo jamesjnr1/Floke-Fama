@@ -75,6 +75,17 @@ export function HeroSlides({ intro, media = [], mediaOnly = false }: { intro: Re
   }, [index, slides]);
   const touch = useRef<number | null>(null);
   const go = useCallback((i: number) => setIndex((i + slides.length) % slides.length), [slides.length]);
+  // A slide the visitor chose (arrows, keys, swipe) is read out by screen readers; the automatic changes aren't, so
+  // they don't interrupt (WAI-ARIA carousel pattern)
+  const [announce, setAnnounce] = useState('');
+  const choose = useCallback(
+    (i: number) => {
+      const n = (i + slides.length) % slides.length;
+      setIndex(n);
+      setAnnounce(`Slide ${n + 1} of ${slides.length}: ${slides[n].label}`);
+    },
+    [slides],
+  );
 
   // Dark on the white product slides, white over the photos
   const arrow = cn(
@@ -101,14 +112,24 @@ export function HeroSlides({ intro, media = [], mediaOnly = false }: { intro: Re
       onMouseLeave={() => setHeld(false)}
       onFocus={() => setHeld(true)}
       onBlur={() => setHeld(false)}
+      // The arrow keys move between slides while anything in the hero has the keyboard
+      onKeyDown={(e) => {
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+          e.preventDefault();
+          choose(index + (e.key === 'ArrowRight' ? 1 : -1));
+        }
+      }}
       onTouchStart={(e) => (touch.current = e.touches[0].clientX)}
       onTouchEnd={(e) => {
         if (touch.current === null) return;
         const dx = e.changedTouches[0].clientX - touch.current;
-        if (Math.abs(dx) > 50) go(index + (dx < 0 ? 1 : -1));
+        if (Math.abs(dx) > 50) choose(index + (dx < 0 ? 1 : -1));
         touch.current = null;
       }}
     >
+      <p aria-live="polite" aria-atomic="true" className="sr-only">
+        {announce}
+      </p>
       {/* All slides share one cell, so the hero keeps the height of the tallest; only the current one shows */}
       <div className="grid flex-1 lg:min-h-0">
         {slides.map((s, i) => {
@@ -134,11 +155,11 @@ export function HeroSlides({ intro, media = [], mediaOnly = false }: { intro: Re
 
       {/* Previous and next: bold chevrons at the left and right edges; the first slide has only the one to the right */}
       {index > 0 && (
-        <button type="button" onClick={() => go(index - 1)} aria-label="Previous slide" className={cn(arrow, 'left-1 md:left-4')}>
+        <button type="button" onClick={() => choose(index - 1)} aria-label="Previous slide" className={cn(arrow, 'left-1 md:left-4')}>
           <Chevron className="rotate-90" />
         </button>
       )}
-      <button type="button" onClick={() => go(index + 1)} aria-label="Next slide" className={cn(arrow, 'right-1 md:right-4')}>
+      <button type="button" onClick={() => choose(index + 1)} aria-label="Next slide" className={cn(arrow, 'right-1 md:right-4')}>
         <Chevron className="-rotate-90" />
       </button>
     </div>

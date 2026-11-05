@@ -63,6 +63,7 @@ const csp =
 
 const securityHeaders = [
   { key: 'X-Content-Type-Options', value: 'nosniff' },
+  { key: 'X-DNS-Prefetch-Control', value: 'on' },
   { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
   { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
   { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), payment=(self), usb=(), browsing-topics=()' },
@@ -121,11 +122,18 @@ const nextConfig: NextConfig = {
       { source: '/index.php/my-account/:path*', destination: '/portal', permanent: true },
       { source: '/shop', destination: '/products', permanent: true },
       { source: '/products/mindray-bs-240', destination: '/products?category=in-vitro-diagnostics', permanent: true },
+      // WordPress author pages ("Adminfloke") and the old home page
+      { source: '/index.php/author/:path*', destination: '/events#news', permanent: true },
+      { source: '/author/:path*', destination: '/events#news', permanent: true },
+      { source: '/index.php', destination: '/', permanent: true },
       // Earlier preview URLs
       { source: '/solutions', destination: '/services', permanent: true },
       { source: '/partners', destination: '/#partners', permanent: true },
       { source: '/impact', destination: '/about', permanent: true },
       { source: '/media', destination: '/events', permanent: true },
+      // Any other old WordPress address: the same address without index.php (QA audit, Nov 2026). Last, so the
+      // specific ones above win
+      { source: '/index.php/:path*', destination: '/:path*', permanent: true },
     ];
   },
 };
