@@ -54,7 +54,11 @@ const photoHeaders = ['/about', '/awards', '/services', '/events', '/products', 
 /** Global Header, 72px tall: a full-width dark bar, or the floating glass bar (see navStyle). */
 export function Navbar() {
   const { contact } = useSite();
-  const pathname = usePathname();
+  // Vercel's background rebuild of the saved home page gives it the address /index (its route data reads ["", "index"]),
+  // while the browser knows it as /: the menu drew differently on the server and in the browser, and React threw the
+  // page away and drew it again (React error #418, Nov 2026). Both now count /index as the home page
+  const raw = usePathname();
+  const pathname = raw === '/index' ? '/' : raw;
   const { scrollY } = useScroll();
   const [scrolled, setScrolled] = useState(false);
   const [lightHeroSlide, setLightHeroSlide] = useState(false);

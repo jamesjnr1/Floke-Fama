@@ -15,11 +15,13 @@ export function SignupForm({ next }: { next?: string }) {
   const e = state.errors ?? {};
   const v = state.values ?? {};
 
+  // A field's error, read out with the field (aria-describedby) when someone comes back to it
+  const describe = (name: keyof NonNullable<SignupState['errors']>) => (e[name] ? `signup-${name}-error` : undefined);
   const row = (name: keyof NonNullable<SignupState['errors']>, label: string, input: React.ReactNode) => (
     <label className="grid gap-1.5">
       <span className="text-sm font-medium text-ink-2">{label}</span>
       {input}
-      {e[name] && <span className="text-sm text-signal-700">{e[name]}</span>}
+      {e[name] && <span id={`signup-${name}-error`} className="text-sm text-signal-700">{e[name]}</span>}
     </label>
   );
 
@@ -27,23 +29,23 @@ export function SignupForm({ next }: { next?: string }) {
     <form action={action} noValidate className="mt-8 space-y-4">
       {next && <input type="hidden" name="next" value={next} />}
       <input type="text" name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
-      {row('name', 'Your name (contact person)', <input name="name" autoComplete="name" defaultValue={v.name} aria-invalid={!!e.name} className={field} />)}
-      {row('organisation', 'Hospital or facility name', <input name="organisation" autoComplete="organization" defaultValue={v.organisation} aria-invalid={!!e.organisation} placeholder="e.g. Korle-Bu Teaching Hospital" className={field} />)}
+      {row('name', 'Your name (contact person)', <input name="name" autoComplete="name" defaultValue={v.name} aria-invalid={!!e.name} aria-describedby={describe('name')} className={field} />)}
+      {row('organisation', 'Hospital or facility name', <input name="organisation" autoComplete="organization" defaultValue={v.organisation} aria-invalid={!!e.organisation} aria-describedby={describe('organisation')} placeholder="e.g. Korle-Bu Teaching Hospital" className={field} />)}
       <div className="grid gap-4 sm:grid-cols-2">
-        {row('phone', 'Phone', <input name="phone" type="tel" autoComplete="tel" defaultValue={v.phone} aria-invalid={!!e.phone} placeholder="+233" className={field} />)}
-        {row('email', 'Email', <input name="email" type="email" autoComplete="email" defaultValue={v.email} aria-invalid={!!e.email} placeholder="you@hospital.org" className={field} />)}
+        {row('phone', 'Phone', <input name="phone" type="tel" autoComplete="tel" defaultValue={v.phone} aria-invalid={!!e.phone} aria-describedby={describe('phone')} placeholder="+233" className={field} />)}
+        {row('email', 'Email', <input name="email" type="email" autoComplete="email" defaultValue={v.email} aria-invalid={!!e.email} aria-describedby={describe('email')} placeholder="you@hospital.org" className={field} />)}
       </div>
       {row(
         'password',
         'Password',
         <span className="relative">
-          <input name="password" type={show ? 'text' : 'password'} autoComplete="new-password" aria-invalid={!!e.password} placeholder="At least 8 characters" className={cn(field, 'pr-12')} />
+          <input name="password" type={show ? 'text' : 'password'} autoComplete="new-password" aria-invalid={!!e.password} aria-describedby={describe('password')} placeholder="At least 8 characters" className={cn(field, 'pr-12')} />
           <button type="button" onClick={() => setShow((s) => !s)} aria-label={show ? 'Hide password' : 'Show password'} className="absolute right-2 top-1/2 grid size-9 -translate-y-1/2 place-items-center rounded-lg text-ink-3 hover:bg-mist">
             <Icon name={show ? 'fi-rr-eye-crossed' : 'fi-rr-eye'} />
           </button>
         </span>,
       )}
-      {row('confirm', 'Confirm password', <input name="confirm" type={show ? 'text' : 'password'} autoComplete="new-password" aria-invalid={!!e.confirm} className={field} />)}
+      {row('confirm', 'Confirm password', <input name="confirm" type={show ? 'text' : 'password'} autoComplete="new-password" aria-invalid={!!e.confirm} aria-describedby={describe('confirm')} className={field} />)}
       <label className="flex items-center gap-2.5 text-sm text-ink-2">
         <input type="checkbox" name="keep" className="size-4 accent-[#007a4d]" /> Keep me signed in
       </label>

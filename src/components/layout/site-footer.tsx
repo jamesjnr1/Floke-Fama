@@ -97,7 +97,9 @@ export async function SiteFooter() {
 
         {/* The company name across the full width, in the hero's Inter Black capitals */}
         <div aria-hidden className="@container mb-8 mt-4">
-          <p className="font-wordmark whitespace-nowrap text-[17.5cqw] font-black uppercase leading-[0.8] tracking-[-0.08em] text-[#2d3539]">Floke Fama</p>
+          {/* Drawn by CSS (content: attr), not as text: it is decoration (the page has the real logo and name), so screen
+              readers and contrast checks leave it alone. Lighthouse counted it as low-contrast text (Nov 2026) */}
+          <p data-wordmark="Floke Fama" className="font-wordmark whitespace-nowrap text-[17.5cqw] font-black uppercase leading-[0.8] tracking-[-0.08em] text-[#2d3539] before:content-[attr(data-wordmark)]" />
         </div>
 
         <div className="flex flex-col gap-4 border-t border-white/10 pb-24 pt-4 text-xs text-white/55 lg:flex-row lg:items-center lg:justify-between lg:pb-4">
