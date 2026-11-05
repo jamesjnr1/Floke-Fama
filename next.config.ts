@@ -126,14 +126,21 @@ const nextConfig: NextConfig = {
       { source: '/index.php/author/:path*', destination: '/events#news', permanent: true },
       { source: '/author/:path*', destination: '/events#news', permanent: true },
       { source: '/index.php', destination: '/', permanent: true },
+      // The news has no page of its own: it lives on Events & News (each article stays at /news/<slug>)
+      { source: '/news', destination: '/events#news', permanent: true },
       // Earlier preview URLs
       { source: '/solutions', destination: '/services', permanent: true },
       { source: '/partners', destination: '/#partners', permanent: true },
       { source: '/impact', destination: '/about', permanent: true },
       { source: '/media', destination: '/events', permanent: true },
-      // Any other old WordPress address: the same address without index.php (QA audit, Nov 2026). Last, so the
-      // specific ones above win
-      { source: '/index.php/:path*', destination: '/:path*', permanent: true },
+      // Any other old WordPress address: the same address without index.php (QA audit, Nov 2026). It skips every
+      // address that has its own redirect above: Vercel let a plain catch-all win over them, whatever the order
+      // (about-us, products, categories and careers ended on Page not found)
+      {
+        source: '/index.php/:path((?!(?:shop|product|product-category|category|careers|contact|contact-us|services|about-us|awards|esg|media-centre|my-account|author)(?:/|$)|\\d{4}/).+)',
+        destination: '/:path',
+        permanent: true,
+      },
     ];
   },
 };
