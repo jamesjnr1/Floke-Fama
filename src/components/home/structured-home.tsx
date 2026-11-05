@@ -126,7 +126,7 @@ export function ClosingCta() {
           <p className="no-justify mt-5 max-w-xl text-lg leading-relaxed text-white/80">Choose your equipment and our team confirms price and delivery, with installation, training and support included.</p>
           <div className="mt-9 flex flex-wrap gap-3">
             <Button asChild size="lg" arrow="right" className="bg-white text-brand-800 hover:bg-white/90">
-              <Link href="/products">Order equipment</Link>
+              <Link href="/products">Request a quote</Link>
             </Button>
             <Button asChild size="lg" variant="red" arrow="right">
               <Link href="/support">Contact us</Link>

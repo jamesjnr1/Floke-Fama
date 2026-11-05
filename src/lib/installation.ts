@@ -35,3 +35,6 @@ const INSTALLED_SLUGS = new Set([
 export function needsInstallation(p: ProductLike) {
   return INSTALLED_SLUGS.has(p.slug) || (p.types ?? []).some((t) => INSTALLED_TYPES.has(t));
 }
+
+/** A catalogue name tidied for the hospital's equipment list (Title Case, model numbers in capitals). */
+export const tidyName = (n: string) => n.split(/(\s+|[()])/).map((w) => (/\d/.test(w) ? w.toUpperCase() : w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())).join('');

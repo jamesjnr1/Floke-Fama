@@ -40,7 +40,7 @@ const nav: { id: View; label: string; icon: string }[] = [
   { id: 'requests', label: 'Service requests', icon: 'fi-rr-clipboard-list' },
   { id: 'equipment', label: 'Equipment', icon: 'fi-rr-microscope' },
   { id: 'certificates', label: 'Certificates', icon: 'fi-rr-badge-check' },
-  { id: 'orders', label: 'Orders', icon: 'fi-rr-box-open' },
+  { id: 'orders', label: 'Quotes', icon: 'fi-rr-box-open' },
   { id: 'profile', label: 'Hospital profile', icon: 'fi-rr-hospital' },
 ];
 

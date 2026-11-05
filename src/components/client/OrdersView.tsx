@@ -8,19 +8,19 @@ import { orderStatusLabel, type SavedOrder } from '@/lib/orders';
 import { fmtDate } from '@/lib/service/store';
 import { cn } from '@/lib/utils';
 
-const methodLabel = { momo: 'Mobile Money', card: 'Card', bank: 'Bank transfer' } as const;
+const methodLabel = { quote: 'Quote', momo: 'Mobile Money', card: 'Card', bank: 'Bank transfer' } as const;
 
-/** Orders the facility placed at checkout, with what was ordered and where it is going. */
+/** The facility's quote requests (and older orders), with what was asked for, where it stands and where it is going. */
 export function OrdersView({ orders }: { orders: SavedOrder[] }) {
   const { contact } = useSite();
   if (orders.length === 0)
     return (
       <Card className="grid place-items-center p-10 text-center">
         <span className="grid size-14 place-items-center rounded-lg bg-brand-50 text-2xl text-brand-700"><Icon name="fi-rr-box-open" /></span>
-        <p className="mt-4 text-lg font-semibold text-ink">No orders yet</p>
-        <p className="mt-1 max-w-sm text-sm text-ink-3">Equipment and consumables you check out on the Flokefama shop appear here, with their reference and delivery details.</p>
+        <p className="mt-4 text-lg font-semibold text-ink">No quote requests yet</p>
+        <p className="mt-1 max-w-sm text-sm text-ink-3">Quotes you request on the Flokefama shop appear here, with their reference, where they stand and the price once sales sends it.</p>
         <Link href="/products" className="mt-6 inline-flex h-11 items-center gap-2 rounded-xl bg-brand-600 px-5 text-sm font-semibold text-white hover:bg-brand-700">
-          <Icon name="fi-rr-shopping-cart" /> Shop equipment
+          <Icon name="fi-rr-shopping-cart" /> Browse equipment
         </Link>
       </Card>
     );
@@ -50,10 +50,12 @@ export function OrdersView({ orders }: { orders: SavedOrder[] }) {
             </ul>
             {o.amount !== undefined && (
               <div className="mt-4 rounded-lg bg-brand-50 px-4 py-3 text-sm">
-                <p className="font-semibold text-ink">Price agreed: GHS {o.amount.toLocaleString('en-GB')}</p>
+                <p className="font-semibold text-ink">{o.method === 'quote' ? 'Quoted price' : 'Price agreed'}: GHS {o.amount.toLocaleString('en-GB')}</p>
                 <p className="mt-0.5 text-ink-2">
                   {o.status === 'priced'
-                    ? `Next: pay by ${methodLabel[o.method].toLowerCase()} as our sales team explained. Once it is paid, we prepare and deliver your order.`
+                    ? o.method === 'quote'
+                      ? 'Next: accept the quote and pay as our sales team explained. Once it is paid, we prepare and deliver it.'
+                      : `Next: pay by ${methodLabel[o.method].toLowerCase()} as our sales team explained. Once it is paid, we prepare and deliver your order.`
                     : o.status === 'paid'
                       ? 'Paid, thank you. We are preparing your order.'
                       : o.status === 'processing'

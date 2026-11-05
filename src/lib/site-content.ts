@@ -105,7 +105,7 @@ export function withDerived(c: Omit<Contact, 'phoneHref' | 'whatsapp'> & Partial
 export const defaultFaqs: Faq[] = [] = [
   {
     q: 'How do I get a price?',
-    a: 'Prices depend on the model, configuration, quantity and the service package you choose, so sales confirms the price of every order. Add products to your cart, or press “Order now” on any product, and send the order. A specialist replies within one business day.',
+    a: 'Prices depend on the model, configuration, quantity and the service package you choose, so every price comes as a quote from our sales team. Add products to your quote list, or press “Request a quote” on any product, and send the request. A specialist replies with a quote within one business day.',
     link: { href: '/products', label: 'Browse the shop' },
   },
   {

@@ -302,7 +302,7 @@ export function Overview({ name, facility, assets, tickets, orders, onOpenTicket
               <a href={`mailto:${contact.support}`} className="mt-1 block text-sm text-white/70 hover:text-white">{contact.support}</a>
             </div>
             <div className="grid grid-cols-2 border-t border-white/15 text-sm">
-              <Link href="/products" className="px-6 py-4 text-white/85 transition hover:bg-white/5 hover:text-white">Order equipment →</Link>
+              <Link href="/products" className="px-6 py-4 text-white/85 transition hover:bg-white/5 hover:text-white">Request a quote →</Link>
               <Link href={helpHref('training')} className="border-l border-white/15 px-6 py-4 text-white/85 transition hover:bg-white/5 hover:text-white">Book training →</Link>
             </div>
           </div>

@@ -156,7 +156,7 @@ export function SupportChat({ open, onClose }: { open: boolean; onClose: () => v
     if (has(t, 'install', 'commission', 'setup', 'set up')) return 'installation';
     if (has(t, 'demo', 'demonstration', 'training', 'train')) return 'demo';
     if (has(t, 'price', 'cost', 'quote', 'quotation', 'buy', 'purchase', 'order', 'pay', 'how much'))
-      return { from: 'bot', text: 'Prices depend on the model, quantity and service package, so our sales team confirms every price. Add products to your cart (or press “Order now” on a product) and send the order; a specialist replies within one business day.', links: [{ label: 'Browse the products', href: '/products' }, { label: 'Ask sales on WhatsApp', href: whatsapp('Hello Flokefama, I would like a price for: ') }] };
+      return { from: 'bot', text: 'Prices depend on the model, quantity and service package, so our sales team confirms every price. Add products to your quote list (or press “Request a quote” on a product) and send the request; a specialist replies with a quote within one business day.', links: [{ label: 'Browse the products', href: '/products' }, { label: 'Ask sales on WhatsApp', href: whatsapp('Hello Flokefama, I would like a price for: ') }] };
     if (has(t, 'branch', 'where', 'location', 'address', 'office', 'direction', 'kumasi', 'aflao', 'techiman', 'okaishie', 'korle'))
       return { from: 'bot', text: `Our head office is at ${contact.address}. Branches: ${branches.map((b) => `${b.name}${b.phone ? ` (${b.phone})` : ''}`).join(', ')}.`, links: [{ label: 'Branches and directions', href: '/about#branches' }] };
     if (has(t, 'track', 'status', 'reference', 'portal', 'login', 'sign in', 'account', 'certificate'))

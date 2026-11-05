@@ -42,7 +42,7 @@ export async function BuyingFaq() {
               </li>
             </ul>
             <Link href="/checkout" className="flex items-center justify-center gap-2 bg-cta px-5 py-3.5 text-sm font-semibold text-white transition hover:bg-cta-700">
-              Order now
+              Request a quote
             </Link>
           </div>
         </div>

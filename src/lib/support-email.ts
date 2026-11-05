@@ -52,7 +52,7 @@ export async function emailSupport(subject: string, fields: Record<string, strin
 
 /** A new shop order for the sales team; replies go to the hospital's contact. */
 export const emailSales = (subject: string, fields: Record<string, string>, opts: { phone?: string; replyTo?: string; link?: Extra['link'] }) =>
-  emailSupport(subject, fields, opts.phone, { to: salesRecipients(), replyTo: opts.replyTo, link: opts.link, footer: 'Sent from the shop checkout on the Flokefama website. Sales confirms the price with the hospital.' });
+  emailSupport(subject, fields, opts.phone, { to: salesRecipients(), replyTo: opts.replyTo, link: opts.link, footer: 'A quote request from the shop on the Flokefama website. Sales sends the hospital a quote with the price.' });
 
 /**
  * A live check for the admin console (no email is sent): is the key accepted from this server, and is the sender

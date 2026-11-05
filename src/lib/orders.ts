@@ -10,7 +10,7 @@ import type { CheckoutOrder, PaymentMethod } from '@/lib/payments';
  */
 /**
  * Where an order stands. Sales moves it along on the admin console's board: New (`awaiting-payment`, its original
- * name) → Called → Price sent → Paid → Being prepared → Delivered, or Lost.
+ * name) → Called → Quote sent → Paid → Being prepared → Delivered, or Lost.
  */
 export type OrderStatus = 'awaiting-payment' | 'called' | 'priced' | 'paid' | 'processing' | 'delivered' | 'lost';
 
@@ -28,15 +28,17 @@ export interface SavedOrder {
   contact?: { name: string; organisation: string; phone: string };
   /** The price sales agreed, in Ghana cedis. */
   amount?: number;
+  /** A quote request's equipment has been added to the hospital's list (done when it is first marked as paid). */
+  equipmentAdded?: boolean;
   /** Sales' notes and moves, oldest first. */
   log?: { at: string; by: string; text: string }[];
 }
 
 /** The status as the hospital sees it in its dashboard (sales' own steps read as one "Received"). */
 export const orderStatusLabel: Record<OrderStatus, string> = {
-  'awaiting-payment': 'Received',
-  called: 'Received',
-  priced: 'Price sent',
+  'awaiting-payment': 'Request received',
+  called: 'Request received',
+  priced: 'Quote sent',
   paid: 'Paid',
   processing: 'Being prepared',
   delivered: 'Delivered',

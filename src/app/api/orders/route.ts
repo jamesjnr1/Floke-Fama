@@ -6,7 +6,7 @@ import { getClientSession } from '@/lib/auth/server';
 import { emailSales } from '@/lib/support-email';
 import { siteUrl } from '@/lib/utils';
 import { departmentLabel, timelineLabel, timelines } from '@/lib/order-needs';
-import { needsInstallation } from '@/lib/installation';
+import { needsInstallation, tidyName } from '@/lib/installation';
 import type { SavedOrder } from '@/lib/orders';
 import { registerPurchase } from '@/lib/service/server';
 import { CONSUMABLES } from '@/lib/categories';
@@ -25,8 +25,6 @@ const sameOrigin = (req: NextRequest) => {
   const origin = req.headers.get('origin');
   return !origin || origin === req.nextUrl.origin;
 };
-/** "AUTO HEAMATOLOGY ANALYZER BC5150" → "Auto Heamatology Analyzer BC5150" (model codes stay upper case). */
-const tidyName = (n: string) => n.split(/(\s+|[()])/).map((w) => (/\d/.test(w) ? w.toUpperCase() : w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())).join('');
 
 export async function GET() {
   if (!appwrite) return NextResponse.json({ enabled: false });
@@ -65,7 +63,7 @@ export async function POST(req: NextRequest) {
   } catch {
     return NextResponse.json({ error: 'Invalid order.' }, { status: 400 });
   }
-  if (!/^FF-[A-Z0-9]{4,12}$/.test(o?.reference ?? '') || !['momo', 'card', 'bank'].includes(o.method) || !Array.isArray(o.items) || o.items.length === 0 || o.items.length > 100)
+  if (!/^FF-[A-Z0-9]{4,12}$/.test(o?.reference ?? '') || !['quote', 'momo', 'card', 'bank'].includes(o.method) || !Array.isArray(o.items) || o.items.length === 0 || o.items.length > 100)
     return NextResponse.json({ error: 'Invalid order.' }, { status: 400 });
 
   // Only catalogue items count, with names and installation needs from the catalogue (not from the browser)
@@ -117,8 +115,9 @@ export async function POST(req: NextRequest) {
       onBoard = false;
     });
 
-  // A hospital's purchase becomes its equipment; consumables are skipped
-  if (onBoard && s.role === 'client') {
+  // A hospital's purchase becomes its equipment; consumables are skipped. A quote request is not a purchase yet: its
+  // equipment is added when sales marks it as paid (lib/admin/actions.ts)
+  if (onBoard && s.role === 'client' && order.method !== 'quote') {
     const equipment = items
       .filter(({ p }) => p.category !== CONSUMABLES)
       .map(({ p, qty }) => ({ slug: p.slug, name: tidyName(p.name), brand: p.brand, image: p.image, qty, install: needsInstallation(p) }));
@@ -128,11 +127,11 @@ export async function POST(req: NextRequest) {
   // It is on the admin console's sales board now; sales also gets an email (Brevo) so they know to look
   const momo = (o as { momo?: { network?: unknown } }).momo;
   const lines = order.items.map((i) => ({ name: tidyName(i.name), qty: i.qty }));
-  const payment = (order.method === 'momo' && text(momo?.network, 30)) || { momo: 'Mobile money', card: 'Card', bank: 'Bank transfer' }[order.method];
+  const payment = (order.method === 'momo' && text(momo?.network, 30)) || { quote: 'Agreed with sales after the quote', momo: 'Mobile money', card: 'Card', bank: 'Bank transfer' }[order.method];
   const timeline = timelines.find((t) => t.id === order.needs?.timeline);
   const department = departmentLabel(order.needs?.department);
   const emailed = await emailSales(
-    `${timeline?.id === 'urgent' ? 'URGENT order' : 'New order'} ${order.reference}: ${who.facility}`,
+    `${timeline?.id === 'urgent' ? 'URGENT quote request' : 'New quote request'} ${order.reference}: ${who.facility}`,
     {
       Reference: order.reference,
       Items: lines.map((i) => `• ${i.name} × ${i.qty}`).join('\n'),

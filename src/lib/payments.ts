@@ -4,7 +4,8 @@
  * Mobile Money and cards in Ghana), `startPayment` creates the payment with the provider's API and returns
  * the URL of its secure payment page; the checkout already redirects there.
  */
-export type PaymentMethod = 'momo' | 'card' | 'bank';
+/** 'quote': the shop works on quotes, so payment is agreed with sales after the quote. The others are older orders. */
+export type PaymentMethod = 'quote' | 'momo' | 'card' | 'bank';
 
 export interface CheckoutOrder {
   reference: string;

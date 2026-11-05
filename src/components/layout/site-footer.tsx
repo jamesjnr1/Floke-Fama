@@ -89,7 +89,7 @@ export async function SiteFooter() {
               </li>
             </ul>
             <Link href="/products" className="group mt-2 inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-white underline-offset-4 hover:underline">
-              Order equipment
+              Request a quote
               <ArrowUpRight className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden />
             </Link>
           </div>
