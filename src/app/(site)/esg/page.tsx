@@ -5,6 +5,7 @@ import { SitePageHero } from '@/components/layout/site-page-hero';
 import { Reveal } from '@/components/motion/reveal';
 import { Icon } from '@/components/ui/icon';
 import { csrCommitments, csrProjects, forbes, kpone, type CsrPhoto } from '@/data/csr';
+import { getSite } from '@/lib/site';
 import { cn } from '@/lib/utils';
 
 export const metadata: Metadata = {
@@ -150,6 +151,10 @@ function Overlap({ p }: { p: Project }) {
 }
 
 export default async function EsgPage() {
+  // Kpone Hospital: the built-in photos, then the photos and video added in the Studio
+  const studio = (await getSite()).kpone;
+  const kponePhotos: CsrPhoto[] = [...kpone.photos, ...studio.photos];
+  const kponeVideo = studio.video;
   return (
     <>
       <SitePageHero page="esg" kicker="Corporate Social Responsibility" />
@@ -204,7 +209,7 @@ export default async function EsgPage() {
         </div>
       </section>
 
-      {/* Kpone Hospital: before and after */}
+      {/* Kpone Hospital: the renovated laboratory (a video first when there is one, then a large photo and rows of three) */}
       <section aria-labelledby="kpone" className="pattern-dots pattern-bl border-t border-line bg-paper section-y">
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
           <Reveal className="grid gap-5 lg:grid-cols-12 lg:items-end lg:gap-10">
@@ -214,21 +219,20 @@ export default async function EsgPage() {
             </div>
             <p className="no-justify text-lg leading-relaxed text-ink-3 lg:col-span-5">{kpone.text}</p>
           </Reveal>
-          <div className="mt-10 grid gap-8 lg:grid-cols-2 lg:gap-10">
-            <div>
-              <p className="inline-block bg-signal-700 px-3 py-1.5 text-[0.9375rem] font-bold uppercase tracking-[0.06em] text-white">Before</p>
-              <div className="mt-4 grid grid-cols-2 gap-3">
-                {kpone.before.map((p) => <Shot key={p.src} p={p} sizes="(min-width: 1024px) 300px, 50vw" className="aspect-[7/6]" />)}
-              </div>
-            </div>
-            <div>
-              <p className="inline-block bg-brand-600 px-3 py-1.5 text-[0.9375rem] font-bold uppercase tracking-[0.06em] text-white">After</p>
-              <div className="mt-4 grid grid-cols-6 gap-3">
-                {kpone.after.slice(0, 3).map((p) => <Shot key={p.src} p={p} sizes="(min-width: 1024px) 200px, 33vw" className="col-span-2 aspect-[4/3]" />)}
-                {kpone.after.slice(3, 5).map((p) => <Shot key={p.src} p={p} sizes="(min-width: 1024px) 300px, 50vw" className="col-span-3 aspect-[16/9]" />)}
-                {kpone.after.slice(5).map((p) => <Shot key={p.src} p={p} sizes="(min-width: 1024px) 620px, 100vw" className="col-span-6 aspect-[15/4]" />)}
-              </div>
-            </div>
+          <div className="mt-10 grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4">
+            {kponeVideo && (
+              <video controls preload="none" playsInline poster={kponeVideo.poster} title={`${kpone.title}: video`} className="col-span-2 aspect-video w-full bg-ink object-cover md:col-span-3">
+                <source src={kponeVideo.src} type="video/mp4" />
+              </video>
+            )}
+            {kponePhotos.map((p, i) =>
+              i === 0 && !kponeVideo ? (
+                <Shot key={p.src} p={p} sizes="(min-width: 1280px) 1180px, 100vw" className="col-span-2 aspect-[16/9] md:col-span-3 lg:aspect-[2/1]" />
+              ) : (
+                // On phones (two to a row) an odd last photo takes the whole row
+                <Shot key={p.src} p={p} sizes="(min-width: 768px) 400px, 50vw" className={cn('aspect-[3/2]', i === kponePhotos.length - 1 && (kponePhotos.length - (kponeVideo ? 0 : 1)) % 2 === 1 && 'col-span-2 md:col-span-1')} />
+              ),
+            )}
           </div>
         </div>
       </section>

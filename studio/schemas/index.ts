@@ -447,6 +447,18 @@ export const siteContent = defineType({
       of: [defineArrayMember({ type: 'object', name: 'faq', fields: [defineField({ name: 'q', title: 'Question', type: 'string' }), defineField({ name: 'a', title: 'Answer', type: 'text', rows: 3 }), defineField({ name: 'linkLabel', title: 'Link text (optional)', type: 'string' }), defineField({ name: 'linkHref', title: 'Link address (optional)', type: 'string', description: 'e.g. /quote' })], preview: { select: { title: 'q', subtitle: 'a' } } })],
     }),
     defineField({
+      name: 'kpone',
+      title: 'CSR: Kpone Hospital refurbishment',
+      type: 'object',
+      group: 'esg',
+      description: 'More photos and a video for the Kpone Hospital section of the CSR page. They are added after the four photos already there.',
+      fields: [
+        defineField({ name: 'photos', title: 'More photos', type: 'array', of: [photo], options: { layout: 'grid' }, description: 'Landscape photos look best. Drag to reorder.' }),
+        defineField({ name: 'video', title: 'Video (optional)', type: 'file', options: { accept: 'video/mp4' }, description: 'MP4, under 50 MB. Shown above the photos; visitors press play.' }),
+        defineField({ name: 'videoPoster', title: 'Video cover photo', type: 'image', options: { hotspot: true }, description: 'The still shown before the video plays (landscape).' }),
+      ],
+    }),
+    defineField({
       name: 'esgPillars',
       title: 'ESG pillars',
       type: 'array',

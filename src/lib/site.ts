@@ -18,6 +18,7 @@ const query = `*[_id == "siteContent"][0]{
   heroMedia[]{ caption, label, "image": image.asset->url, "video": video.asset->url }, heroMediaOnly,
   solutions{ kicker, title, highlight, lead, items[]{ title, body, points, href, alt, fit, "image": image.asset->url } },
   engineering{ title, lead, photos[]{ alt, caption, "src": asset->url } },
+  kpone{ photos[]{ alt, caption, "src": asset->url }, "video": video.asset->url, "poster": videoPoster.asset->url },
   "photos": { "whatWeDo": photoWhatWeDo.asset->url, "office": photoOffice.asset->url, "ceo": photoCeo.asset->url },
   eventAlbums[]{ title, date, photos[]{ alt, caption, "src": asset->url } },
   purpose[]{ label, icon, text }, coreValues[]{ title, icon, text }, servicesInBrief[]{ title, icon, text },
@@ -43,6 +44,7 @@ type Raw = Partial<{
   photos: { whatWeDo?: string; office?: string; ceo?: string };
   solutions: Partial<Omit<SiteContent['solutions'], 'items'>> & { items?: (Partial<Solution> & { fit?: string })[] };
   engineering: { title?: string; lead?: string; photos?: RawPhoto[] };
+  kpone: { photos?: RawPhoto[]; video?: string; poster?: string };
   eventAlbums: { title?: string; date?: string; photos?: RawPhoto[] }[];
   testimonials: SiteContent['testimonials'];
   purpose: SiteContent['purpose'];
@@ -119,6 +121,8 @@ function merge(raw: Raw | null): SiteContent {
       ),
     },
     engineering: { ...d.engineering, ...clean({ title: raw.engineering?.title, lead: raw.engineering?.lead }), photos: photos(raw.engineering?.photos) },
+    // The Kpone Hospital section's extra photos and video, after the built-in photos (data/csr.ts)
+    kpone: { photos: photos(raw.kpone?.photos), video: raw.kpone?.video ? { src: raw.kpone.video, poster: raw.kpone.poster } : undefined },
     eventAlbums: (raw.eventAlbums ?? []).map((a): EventAlbum => ({ title: a.title ?? '', date: a.date, photos: photos(a.photos) })).filter((a) => a.title && a.photos.length),
     // Exactly what the Studio holds: removing every testimonial there removes the section (no built-in examples)
     testimonials: (raw.testimonials ?? []).filter((t) => t?.quote && t?.name),
