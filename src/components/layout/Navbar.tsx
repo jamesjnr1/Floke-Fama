@@ -32,7 +32,7 @@ const anchors: NavItem[] = [
   { href: '/services', label: 'Products & Services' },
   { href: '/events', label: 'Events & News' },
   { href: '/products', label: 'Shop' },
-  { href: '/esg', label: 'CSR' },
+  { href: '/csr', label: 'CSR' },
   { href: '/support', label: 'Support' },
 ];
 
@@ -50,7 +50,7 @@ const bar = navStyle === 'bar';
 /** The green home hero runs up behind the menu bar, so the bar is see-through there until the page scrolls. */
 const greenHero = heroStyle === 'modern' || heroStyle === 'feature' || heroStyle === 'collage' || heroStyle === 'spotlight' || heroStyle === 'simple' || heroStyle === 'moving';
 /** Pages that open on a full photo header (PageHero): the bar is see-through over it too, so it takes the photo's colours. */
-const photoHeaders = ['/about', '/awards', '/services', '/events', '/products', '/esg', '/support'];
+const photoHeaders = ['/about', '/awards', '/services', '/events', '/products', '/csr', '/support'];
 /** Global Header, 72px tall: a full-width dark bar, or the floating glass bar (see navStyle). */
 export function Navbar() {
   const { contact } = useSite();
