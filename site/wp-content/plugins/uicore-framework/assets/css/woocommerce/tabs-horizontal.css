@@ -1,0 +1,1 @@
+.woocommerce div.product .woocommerce-tabs ul.tabs{width:100vw;position:relative;left:50%;right:50%;margin-inline-start:-50vw!important;margin-inline-end:-50vw!important;border-bottom:1px solid var(--ui-border-color);justify-content:center}@media (max-width:767px){.woocommerce div.product .woocommerce-tabs ul.tabs{overflow-x:auto;white-space:nowrap}}
