@@ -20,6 +20,7 @@ export const kpone: { title: string; text: string; photos: CsrPhoto[] } = {
   text: 'Comprehensive infrastructure modernisation and diagnostic centre enhancement, carried out to expand access to healthcare and improve the facility for the surrounding community.',
   photos: [
     { src: '/images/csr/kpone-1.webp', alt: 'The renovated Kpone Hospital Laboratory Department, decorated for its opening' },
+    { src: '/images/csr/kpone-handover.webp', alt: 'Flokefama and Kpone Hospital at the handover of the renovated Laboratory Department' },
     { src: '/images/csr/kpone-2.webp', alt: 'Guests at the entrance of the renovated laboratory building' },
     { src: '/images/csr/kpone-3.webp', alt: 'A renovated laboratory room with a worktop, sink and a Mindray BS-240 analyser still in its crate' },
     { src: '/images/csr/kpone-4.webp', alt: 'The renovated reception area with its service window' },
