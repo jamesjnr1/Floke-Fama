@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Icon } from '@/components/ui/icon';
 import type { EventPhoto } from '@/lib/types';
 import { cn } from '@/lib/utils';
@@ -43,8 +44,11 @@ export function EventGallery({ photos, title }: { photos: EventPhoto[]; title: s
   );
 }
 
-/** The full-screen viewer: one photo at a time on black, with its number. */
-function Viewer({ photos, start, title, onClose }: { photos: EventPhoto[]; start: number; title: string; onClose: () => void }) {
+/**
+ * The full-screen viewer: one photo at a time on black, with its number. Also used by the CSR page's galleries. Drawn
+ * straight into the page body, so a section with an animation (which would trap a fixed layer inside it) can't clip it.
+ */
+export function Viewer({ photos, start, title, onClose }: { photos: EventPhoto[]; start: number; title: string; onClose: () => void }) {
   const [i, setI] = useState(start);
   const go = useCallback((d: number) => setI((x) => (x + d + photos.length) % photos.length), [photos.length]);
   const touch = useRef<number | null>(null);
@@ -69,12 +73,12 @@ function Viewer({ photos, start, title, onClose }: { photos: EventPhoto[]; start
 
   const p = photos[i];
   const arrow = 'absolute top-1/2 z-10 grid size-12 -translate-y-1/2 place-items-center rounded-full bg-white/10 text-2xl text-white transition hover:bg-white/25';
-  return (
+  return createPortal(
     <div
       role="dialog"
       aria-modal="true"
       aria-label={`${title}: photos`}
-      className="fixed inset-0 z-[200] flex flex-col bg-black/95"
+      className="fixed inset-0 z-[1000] flex flex-col bg-black"
       onTouchStart={(e) => (touch.current = e.touches[0].clientX)}
       onTouchEnd={(e) => {
         if (touch.current === null) return;
@@ -105,6 +109,7 @@ function Viewer({ photos, start, title, onClose }: { photos: EventPhoto[]; start
         )}
       </div>
       <div className="h-6" />
-    </div>
+    </div>,
+    document.body,
   );
 }
