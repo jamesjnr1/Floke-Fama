@@ -11,12 +11,19 @@ export const csrCommitments = [
 
 export type CsrPhoto = { src: string; alt: string; caption?: string; text?: string };
 
-/** Kpone Hospital: facility renovation and diagnostic centre refurbishment, before and after. */
-export const kpone = {
+/**
+ * Kpone Hospital: the renovated Laboratory Department. More photos and a video are added in the Studio (Site content →
+ * ESG → CSR: Kpone Hospital refurbishment); they come after these.
+ */
+export const kpone: { title: string; text: string; photos: CsrPhoto[] } = {
   title: 'Kpone Hospital refurbishment',
   text: 'Comprehensive infrastructure modernisation and diagnostic centre enhancement, carried out to expand access to healthcare and improve the facility for the surrounding community.',
-  before: [1, 2, 3, 4].map((n): CsrPhoto => ({ src: `/images/csr/kpone-before-${n}.webp`, alt: `Kpone Hospital building before the renovation (${n} of 4)` })),
-  after: [1, 2, 3, 4, 5, 6].map((n): CsrPhoto => ({ src: `/images/csr/kpone-after-${n}.webp`, alt: `Kpone Hospital after the renovation (${n} of 6)` })),
+  photos: [
+    { src: '/images/csr/kpone-1.webp', alt: 'The renovated Kpone Hospital Laboratory Department, decorated for its opening' },
+    { src: '/images/csr/kpone-2.webp', alt: 'Guests at the entrance of the renovated laboratory building' },
+    { src: '/images/csr/kpone-3.webp', alt: 'A renovated laboratory room with a worktop, sink and a Mindray BS-240 analyser still in its crate' },
+    { src: '/images/csr/kpone-4.webp', alt: 'The renovated reception area with its service window' },
+  ],
 };
 
 /** A part of a project: a label, its photos and what they show. */

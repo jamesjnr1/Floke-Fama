@@ -63,6 +63,8 @@ export interface SiteContent {
   heroMediaOnly: boolean;
   solutions: { kicker: string; title: string; highlight: string; lead: string; items: Solution[] };
   engineering: { title: string; lead: string; photos: Photo[] };
+  /** CSR page, Kpone Hospital: photos and a video added in the Studio. */
+  kpone: { photos: Photo[]; video?: { src: string; poster?: string } };
   eventAlbums: EventAlbum[];
   /** Extra numbers hospitals can call, shown on the hospital sign-in page (added by the team in the Studio). */
   signInPhones: { label: string; phone: string }[];
@@ -230,6 +232,7 @@ export const defaultSite: SiteContent = {
   heroMediaOnly: false,
   solutions: defaultSolutions,
   engineering: defaultEngineering,
+  kpone: { photos: [] },
   eventAlbums: [],
   signInPhones: [],
   testimonials: [...seed.testimonials],
