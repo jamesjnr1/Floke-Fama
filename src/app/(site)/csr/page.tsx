@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils';
 export const metadata: Metadata = {
   title: 'Corporate Social Responsibility',
   description: 'How Flokefama gives back: support for healthcare institutions, professional development and communities across Ghana.',
-  alternates: { canonical: '/esg' },
+  alternates: { canonical: '/csr' },
 };
 
 /** A project photo, kept whole in its frame. */

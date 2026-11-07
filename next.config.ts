@@ -117,7 +117,9 @@ const nextConfig: NextConfig = {
       { source: '/index.php/services', destination: '/services', permanent: true },
       { source: '/index.php/about-us', destination: '/about', permanent: true },
       { source: '/index.php/awards', destination: '/awards', permanent: true },
-      { source: '/index.php/esg', destination: '/esg', permanent: true },
+      { source: '/index.php/esg', destination: '/csr', permanent: true },
+      // The page was called ESG; it is CSR now
+      { source: '/esg', destination: '/csr', permanent: true },
       { source: '/index.php/media-centre', destination: '/events#news', permanent: true },
       { source: '/index.php/my-account/:path*', destination: '/portal', permanent: true },
       { source: '/shop', destination: '/products', permanent: true },
