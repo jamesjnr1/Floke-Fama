@@ -29,7 +29,7 @@ const columns = [
     links: [
       { label: 'About', href: '/about' },
       { label: 'Events', href: '/events' },
-      { label: 'CSR', href: '/esg' },
+      { label: 'CSR', href: '/csr' },
       { label: 'Technical support', href: '/support' },
       { label: 'Client portal', href: '/portal' },
     ],
