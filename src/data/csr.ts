@@ -23,6 +23,10 @@ export const kpone: { title: string; text: string; photos: CsrPhoto[] } = {
     { src: '/images/csr/kpone-2.webp', alt: 'Guests at the entrance of the renovated laboratory building' },
     { src: '/images/csr/kpone-3.webp', alt: 'A renovated laboratory room with a worktop, sink and a Mindray BS-240 analyser still in its crate' },
     { src: '/images/csr/kpone-4.webp', alt: 'The renovated reception area with its service window' },
+    { src: '/images/csr/kpone-corridor-1.webp', alt: 'A renovated corridor leading to the laboratory rooms' },
+    { src: '/images/csr/kpone-bench.webp', alt: 'New laboratory equipment in its boxes on a renovated worktop' },
+    { src: '/images/csr/kpone-corridor-2.webp', alt: 'The renovated corridor with new doors and windows' },
+    { src: '/images/csr/kpone-sign.webp', alt: 'The sign: Kpone Hospital Laboratory Department, facility renovated by Flokefama Co. Ltd.' },
   ],
 };
 

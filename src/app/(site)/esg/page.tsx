@@ -219,20 +219,32 @@ export default async function EsgPage() {
             </div>
             <p className="no-justify text-lg leading-relaxed text-ink-3 lg:col-span-5">{kpone.text}</p>
           </Reveal>
-          <div className="mt-10 grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4">
+          <div className="mt-10 grid grid-cols-2 gap-3 md:grid-cols-6 md:gap-4">
             {kponeVideo && (
-              <video controls preload="none" playsInline poster={kponeVideo.poster} title={`${kpone.title}: video`} className="col-span-2 aspect-video w-full bg-ink object-cover md:col-span-3">
+              <video controls preload="none" playsInline poster={kponeVideo.poster} title={`${kpone.title}: video`} className="col-span-2 aspect-video w-full bg-ink object-cover md:col-span-6">
                 <source src={kponeVideo.src} type="video/mp4" />
               </video>
             )}
-            {kponePhotos.map((p, i) =>
-              i === 0 && !kponeVideo ? (
-                <Shot key={p.src} p={p} sizes="(min-width: 1280px) 1180px, 100vw" className="col-span-2 aspect-[16/9] md:col-span-3 lg:aspect-[2/1]" />
-              ) : (
-                // On phones (two to a row) an odd last photo takes the whole row
-                <Shot key={p.src} p={p} sizes="(min-width: 768px) 400px, 50vw" className={cn('aspect-[3/2]', i === kponePhotos.length - 1 && (kponePhotos.length - (kponeVideo ? 0 : 1)) % 2 === 1 && 'col-span-2 md:col-span-1')} />
-              ),
-            )}
+            {kponePhotos.map((p, i) => {
+              // Without a video the first photo is shown large; the rest go three to a row (two on phones). Rows always
+              // end full: one left over takes the whole row, two left over share it.
+              if (i === 0 && !kponeVideo) return <Shot key={p.src} p={p} sizes="(min-width: 1280px) 1180px, 100vw" className="col-span-2 aspect-[16/9] md:col-span-6 lg:aspect-[2/1]" />;
+              const first = kponeVideo ? 0 : 1;
+              const n = kponePhotos.length - first;
+              const k = i - first;
+              const rest = n % 3;
+              const wide = rest === 1 && k === n - 1;
+              const half = rest === 2 && k >= n - 2;
+              const phoneWide = n % 2 === 1 && k === n - 1;
+              return (
+                <Shot
+                  key={p.src}
+                  p={p}
+                  sizes={wide ? '(min-width: 1280px) 1180px, 100vw' : half ? '(min-width: 768px) 600px, 50vw' : '(min-width: 768px) 400px, 50vw'}
+                  className={cn(wide ? 'aspect-[3/2] md:col-span-6 md:aspect-[2/1]' : half ? 'aspect-[3/2] md:col-span-3' : 'aspect-[3/2] md:col-span-2', phoneWide && 'col-span-2')}
+                />
+              );
+            })}
           </div>
         </div>
       </section>
