@@ -25,7 +25,7 @@ import { supportDetails } from '@/lib/support-schema';
 import { LogoMark, PortalLogo } from '@/components/layout/logo';
 import { LiveStatus } from '@/components/service/live-status';
 import { Icon } from '@/components/ui/icon';
-import { useSite } from '@/components/site-provider';
+import { PostHogLogoutForm, useSite } from '@/components/site-provider';
 import { engineerLogout } from '@/lib/auth/actions';
 import { daysUntil, facilityKey, isOpen, suggestedPriority, nextTicketId, useEngineerStore, type Action, type Asset, type Notification, type Ticket } from '@/lib/service/store';
 import { cn } from '@/lib/utils';
@@ -345,9 +345,9 @@ function Portal({ user, products, practice, demo = false }: { user: { name: stri
             <Link href="/" className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-arrow-small-left" /> Flokefama website</Link>
             {!demo && <Link href="/engineer/profile" className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-user" /> My profile</Link>}
             {!demo && <Link href="/engineer/password" className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-lock" /> Change password</Link>}
-            <form action={engineerLogout}>
+            <PostHogLogoutForm action={engineerLogout}>
               <button type="submit" className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-sign-out-alt" /> Sign out</button>
-            </form>
+            </PostHogLogoutForm>
           </div>
         </div>
       </aside>
@@ -395,9 +395,9 @@ function Portal({ user, products, practice, demo = false }: { user: { name: stri
             </span>
           </span>
           {!demo && <Link href="/engineer/profile" aria-label="My profile" className="grid size-10 shrink-0 place-items-center rounded-md text-lg text-ink transition hover:bg-mist lg:hidden"><Icon name="fi-rr-user" /></Link>}
-          <form action={engineerLogout} className="lg:hidden">
+          <PostHogLogoutForm action={engineerLogout} className="lg:hidden">
             <button type="submit" aria-label="Sign out" className="grid size-10 shrink-0 place-items-center rounded-md text-lg text-ink transition hover:bg-mist"><Icon name="fi-rr-sign-out-alt" /></button>
-          </form>
+          </PostHogLogoutForm>
         </header>
 
         {/* Mobile nav */}

@@ -1,4 +1,5 @@
 import { track as vercelTrack } from '@vercel/analytics';
+import posthog from 'posthog-js';
 
 /**
  * Conversion events, so Flokefama can see which pages and products produce enquiries.
@@ -22,6 +23,11 @@ export type ConversionEvent =
 export function track(event: ConversionEvent, props?: Record<string, string | number | boolean>) {
   try {
     vercelTrack(event, props);
+  } catch {
+    // Analytics must never break the page
+  }
+  try {
+    posthog.capture(event, props);
   } catch {
     // Analytics must never break the page
   }

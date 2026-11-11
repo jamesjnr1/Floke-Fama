@@ -2,6 +2,7 @@
 
 import { HospitalCode } from '@/components/service/hospital-code';
 import Link from 'next/link';
+import posthog from 'posthog-js';
 import { motion } from 'motion/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
@@ -25,7 +26,7 @@ import { useTour, type TourStep } from '@/components/service/tour';
 import { restartDemo } from '@/lib/demo';
 import { DemoGuide } from '@/components/demo-guide';
 import { LogoChanger } from '@/components/client/logo-changer';
-import { useSite } from '@/components/site-provider';
+import { PostHogLogoutForm, useSite } from '@/components/site-provider';
 import { logout } from '@/lib/auth/actions';
 import { needsInstallation } from '@/lib/installation';
 import { useOrders } from '@/lib/orders';
@@ -208,9 +209,9 @@ export function ClientShell({ user, products, demo = false, profile: savedProfil
             <button type="button" onClick={tour.start} className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-map-marker" /> Take the tour</button>
             <Link href="/" className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-arrow-small-left" /> Flokefama website</Link>
             {!demo && <Link href="/portal/password" className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-lock" /> Change password</Link>}
-            <form action={logout}>
+            <PostHogLogoutForm action={logout}>
               <button type="submit" className="flex items-center gap-2.5 text-white/80 hover:text-white"><Icon name="fi-rr-sign-out-alt" /> Sign out</button>
-            </form>
+            </PostHogLogoutForm>
           </div>
         </div>
       </aside>
@@ -243,9 +244,9 @@ export function ClientShell({ user, products, demo = false, profile: savedProfil
               <span className="block text-xs text-ink-3">{user.email}</span>
             </span>
           </span>
-          <form action={logout} className="lg:hidden">
+          <PostHogLogoutForm action={logout} className="lg:hidden">
             <button type="submit" aria-label="Sign out" className="grid size-10 shrink-0 place-items-center rounded-md text-lg text-ink transition hover:bg-mist"><Icon name="fi-rr-sign-out-alt" /></button>
-          </form>
+          </PostHogLogoutForm>
         </header>
 
         {/* Mobile nav */}
@@ -298,6 +299,11 @@ export function ClientShell({ user, products, demo = false, profile: savedProfil
         onSubmit={(v) => {
           const id = nextTicketId(state);
           rawDispatch({ type: 'request', ticket: v });
+          try {
+            posthog.capture('service_request_submitted', { priority: v.priority });
+          } catch {
+            // Analytics must never change the result of a service request.
+          }
           toast.success(`Request ${id} submitted`, { description: `We’re assigning the nearest engineer. Follow every step here; we’ll also text ${v.contactPhone}.` });
           setTicketId(id);
           setView('requests');

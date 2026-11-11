@@ -24,6 +24,7 @@ const appwriteOrigin = (() => {
 const storage = ` https://*.appwrite.io${appwriteOrigin}`;
 // Vercel's preview toolbar (preview deployments only, never production)
 const preview = process.env.VERCEL_ENV === 'preview' ? ' https://vercel.live' : '';
+const posthog = process.env.NEXT_PUBLIC_POSTHOG_KEY ? ' https://*.posthog.com' : '';
 const chat = {
   script: 'https://code.tidio.co https://embed.tawk.to https://*.tawk.to',
   connect: 'https://*.tidio.co wss://*.tidio.co https://*.tidiochat.com https://uploads.tidio.com https://*.tawk.to wss://*.tawk.to',
@@ -42,11 +43,11 @@ const ga = {
 const baseline = `frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self'${process.env.VERCEL ? '; upgrade-insecure-requests' : ''}`;
 const policy = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' ${chat.script} ${ga.script} https://cdn.jsdelivr.net${preview}${process.env.NODE_ENV === 'development' ? " 'unsafe-eval'" : ''}`,
+  `script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' ${chat.script} ${ga.script} https://cdn.jsdelivr.net${posthog}${preview}${process.env.NODE_ENV === 'development' ? " 'unsafe-eval'" : ''}`,
   `style-src 'self' 'unsafe-inline' https://*.tawk.to${preview}`,
   `img-src 'self' data: blob: https://cdn.sanity.io${storage} ${chat.img} ${ga.img}${preview}`,
   `font-src 'self' data: ${chat.font}${preview}`,
-  `connect-src 'self' https://cdn.sanity.io https://cdn.jsdelivr.net ${chat.connect} ${ga.connect}${algolia}${preview}${preview ? ' wss://ws-us3.pusher.com' : ''}`,
+  `connect-src 'self' https://cdn.sanity.io https://cdn.jsdelivr.net ${chat.connect} ${ga.connect}${posthog}${algolia}${preview}${preview ? ' wss://ws-us3.pusher.com' : ''}`,
   `media-src 'self' blob: https://cdn.sanity.io ${chat.media}`,
   `frame-src 'self' ${chat.frame}${preview}`,
   "worker-src 'self' blob:",
