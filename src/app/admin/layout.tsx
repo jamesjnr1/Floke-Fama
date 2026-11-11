@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { LogoMark } from '@/components/layout/logo';
 import { siteUrl } from '@/lib/utils';
 import type { Metadata } from 'next';
+import { PostHogIdentity } from '@/components/site-provider';
+import { getConsoleSession } from '@/lib/auth/server';
 
 /** Its own tab icon (the round mark on green with a chart), told apart from the site and the engineer portal. */
 export const metadata: Metadata = {
@@ -17,9 +19,11 @@ export const metadata: Metadata = {
  * The admin console is an application shell: no marketing header or footer. It is for computers only: on phones and
  * small tablets (below 1024 px) every page, the sign-in included, says to open it on a computer instead.
  */
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+  const session = await getConsoleSession(true);
   return (
     <>
+      <PostHogIdentity user={session ? { id: session.sub, email: session.email, name: session.name, role: session.role, facility: session.facility } : null} />
       <main className="grid min-h-svh place-items-center bg-[#eef2f0] px-6 text-center lg:hidden">
         <div className="max-w-sm">
           <LogoMark className="mx-auto size-12" />

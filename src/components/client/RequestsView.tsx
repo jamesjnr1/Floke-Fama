@@ -1,6 +1,7 @@
 'use client';
 
 import { AnimatePresence, motion } from 'motion/react';
+import posthog from 'posthog-js';
 import { useRef, useState } from 'react';
 import { EngineerFace } from '@/components/service/engineer-photos';
 import { Card, inputClass, statusBar, statusStyle, tag, urgency } from '@/components/client/ui';
@@ -168,6 +169,11 @@ function Detail({ ticket: t, asset, dispatch }: { ticket: Ticket; asset?: Asset;
                 e.preventDefault();
                 if (!rating) return;
                 dispatch({ type: 'rate', id: t.id, rating, feedback: feedback.trim() || undefined });
+                try {
+                  posthog.capture('service_request_rated', { rating });
+                } catch {
+                  // Analytics must never change the submitted rating.
+                }
               }}
               className="rounded-lg border border-line p-4"
             >
@@ -242,6 +248,11 @@ function Reopen({ ticket: t, dispatch }: { ticket: Ticket; dispatch: (a: Action)
         e.preventDefault();
         if (!reason.trim()) return;
         dispatch({ type: 'reopen', id: t.id, reason: reason.trim() });
+        try {
+          posthog.capture('service_request_reopened');
+        } catch {
+          // Analytics must never change the reopened request.
+        }
         setOpen(false);
         setReason('');
       }}

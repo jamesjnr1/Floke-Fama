@@ -6,6 +6,7 @@ import { LogoMark, PortalLogo } from '@/components/layout/logo';
 import { Hint } from '@/components/ui/hint';
 import { Icon } from '@/components/ui/icon';
 import { UserAvatar } from '@/components/ui/user-avatar';
+import { PostHogLogoutForm } from '@/components/site-provider';
 import { dismissSiteError, removeAdmin, removeEngineer, saveOrderNote, setOrderStatus } from '@/lib/admin/actions';
 import { AddAdminForm } from '@/components/admin/add-admin-form';
 import { AdminPhoneForm } from '@/components/admin/admin-phone-form';
@@ -169,11 +170,11 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             <Link href="/admin/password" className={item(false)}>
               <Icon name="fi-rr-lock" className="text-white/70" /> Change password
             </Link>
-            <form action={adminLogout}>
+            <PostHogLogoutForm action={adminLogout}>
               <button className={cn(item(false), 'w-full')}>
                 <Icon name="fi-rr-sign-out-alt" className="text-white/70" /> Sign out
               </button>
-            </form>
+            </PostHogLogoutForm>
           </div>
 
           {/* Every order as a spreadsheet: a card on taller screens (smaller below 1040px), a row under General below 820px */}
@@ -215,9 +216,9 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             <p className="hidden items-center gap-2 rounded-xl bg-[#f1f4f2] px-4 py-2.5 text-[0.9375rem] text-ink-2 md:ml-auto md:flex xl:ml-0">
               <Icon name="fi-rr-calendar" className="text-brand-600" /> {dateFmt.format(new Date(now))}
             </p>
-            <form action={adminLogout} className="ml-auto md:ml-0 lg:hidden">
+            <PostHogLogoutForm action={adminLogout} className="ml-auto md:ml-0 lg:hidden">
               <button className="h-10 whitespace-nowrap rounded-xl border border-line px-4 text-[0.9375rem] font-medium">Sign out</button>
-            </form>
+            </PostHogLogoutForm>
           </header>
 
           {/* Sections on phones and tablets */}

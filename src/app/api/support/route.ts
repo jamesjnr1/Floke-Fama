@@ -7,6 +7,7 @@ import { autoBookVisit } from '@/lib/service/server';
 import { clientIp } from '@/lib/rate-limit';
 import { sharedLimited } from '@/lib/shared-limit';
 import { requestTypes, supportDetails, supportSchema, supportSubject } from '@/lib/support-schema';
+import { emitPostHogLog } from '@/instrumentation';
 
 /**
  * Technical support requests from the Support page (Report a fault and the rest). Saved for the admin console
@@ -73,5 +74,12 @@ export async function POST(request: Request) {
   // Not delivered (nothing configured, or every channel failed): the visitor sends it themselves by email or
   // WhatsApp, pre-filled, so the request is never lost
   const delivered = Boolean(saved) || results.some((r) => r.status === 'fulfilled' && r.value);
+  emitPostHogLog('support request delivery completed', {
+    event: 'support_request_delivery_completed',
+    request_type: data.type,
+    stored: Boolean(saved),
+    delivered,
+    auto_booked: Boolean(job),
+  });
   return NextResponse.json({ delivered, reference: saved ?? undefined, job });
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import posthog from 'posthog-js';
 import { toast } from 'sonner';
 import { Icon } from '@/components/ui/icon';
 import { useSite } from '@/components/site-provider';
@@ -69,6 +70,11 @@ export function SupportForm() {
       const json = (await res.json().catch(() => ({}))) as { delivered?: boolean; reference?: string; job?: string; error?: string };
       if (!res.ok) throw new Error(json.error);
       setResult({ delivered: json.delivered === true, data: parsed.data, reference: json.reference, job: json.job });
+      try {
+        posthog.capture('support_request_submitted', { request_type: parsed.data.type });
+      } catch {
+        // Analytics must never change the result of a support request.
+      }
       if (json.delivered) toast.success('Request sent', { description: 'Our support team will contact you shortly.' });
     } catch (error) {
       toast.error('We couldn’t send your request', { description: (error as Error).message || `Please call ${contact.phone}.` });

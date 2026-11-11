@@ -8,7 +8,7 @@ import { Logo } from '@/components/layout/logo';
 import { NavDropdown, type MenuChild } from '@/components/layout/nav-dropdown';
 import { HospitalMark } from '@/components/ui/hospital-mark';
 import { Icon } from '@/components/ui/icon';
-import { useSite } from '@/components/site-provider';
+import { PostHogLogoutForm, useSite } from '@/components/site-provider';
 import { logout } from '@/lib/auth/actions';
 import { roleHome } from '@/lib/auth/session';
 import { heroStyle } from '@/lib/hero-style';
@@ -258,11 +258,11 @@ export function Navbar() {
                         </Link>
                       ))}
                     </div>
-                    <form action={logout} className="border-t border-white/[0.08] p-1.5">
+                    <PostHogLogoutForm action={logout} className="border-t border-white/[0.08] p-1.5">
                       <button role="menuitem" type="submit" className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-left text-sm text-white/80 transition hover:bg-white/[0.06] hover:text-white">
                         <Icon name="fi-rr-sign-out-alt" className="text-white/45" /> Sign out
                       </button>
-                    </form>
+                    </PostHogLogoutForm>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -317,12 +317,12 @@ export function Navbar() {
               ))}
             </ul>
             {user && (
-              <form action={logout} className="mt-4">
+              <PostHogLogoutForm action={logout} className="mt-4">
                 <button type="submit" className="flex w-full items-center justify-between rounded-[4px] border border-white/10 p-4 text-left text-white">
                   <span><span className="block font-semibold">{user.name}</span><span className="text-sm text-white/65">Sign out</span></span>
                   <Icon name="fi-rr-sign-out-alt" className="text-brand-300" />
                 </button>
-              </form>
+              </PostHogLogoutForm>
             )}
             <a href={contact.phoneHref} className="mt-auto flex items-center gap-3 rounded-[4px] border border-white/10 p-4 font-mono text-sm text-white">
               <Icon name="fi-rr-phone-call" className="text-brand-400" /> {contact.phone}

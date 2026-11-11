@@ -6,6 +6,7 @@ import { applyAction, autoAssignStale, DeskError, loadDesk, teamFor, visibleTo }
 import { escalateStale } from '@/lib/sms';
 import { facilityCodes } from '@/lib/facility-registry';
 import { facilityKey } from '@/lib/service/desk';
+import { emitPostHogLog } from '@/instrumentation';
 
 /**
  * The shared service desk (Appwrite). GET returns what the signed-in account may see; POST applies one action
@@ -68,7 +69,13 @@ export async function POST(req: NextRequest) {
   if (!action || !TYPES.has(action.type)) return NextResponse.json({ error: 'Invalid request.' }, { status: 400 });
 
   try {
-    return NextResponse.json({ state: await applyAction(s, action) }, { headers: noStore });
+    const state = await applyAction(s, action);
+    emitPostHogLog('service desk action completed', {
+      event: 'service_desk_action_completed',
+      action_type: action.type,
+      actor_role: s.role,
+    });
+    return NextResponse.json({ state }, { headers: noStore });
   } catch (e) {
     if (e instanceof DeskError) return NextResponse.json({ error: e.message }, { status: e.status });
     console.error('service desk: action failed', action.type, e);

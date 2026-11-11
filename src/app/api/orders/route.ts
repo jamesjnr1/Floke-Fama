@@ -10,6 +10,8 @@ import { needsInstallation, tidyName } from '@/lib/installation';
 import type { SavedOrder } from '@/lib/orders';
 import { registerPurchase } from '@/lib/service/server';
 import { CONSUMABLES } from '@/lib/categories';
+import { captureServerEvent } from '@/lib/posthog-server';
+import { emitPostHogLog } from '@/instrumentation';
 
 /**
  * A hospital's orders (Appwrite table `orders`, one row per order, keyed by its reference). GET lists the
@@ -151,5 +153,14 @@ export async function POST(req: NextRequest) {
   ).then((sent) => Boolean(sent), (e) => (console.error('[orders] sales email not sent', e), false));
   // Sales has it when it's on the sales board, or at least in their inbox; otherwise the checkout asks the hospital to send it
   const sales = onBoard || Boolean(emailed);
+  const itemCount = order.items.reduce((count, item) => count + item.qty, 0);
+  emitPostHogLog('order delivery completed', {
+    event: 'order_delivery_completed',
+    sales_received: sales,
+    sales_board_saved: onBoard,
+    item_count: itemCount,
+    payment_method: order.method,
+  });
+  if (sales) await captureServerEvent(s.sub, 'quote_request_submitted', { item_count: itemCount, payment_method: order.method });
   return NextResponse.json({ order, sales }, { headers: noStore });
 }
