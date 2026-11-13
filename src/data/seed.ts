@@ -19,7 +19,7 @@ export const categories: Category[] = [
     short: 'IVD',
     description: 'Biochemistry and haematology analysers, microscopes and laboratory equipment, with matched reagents and controls.',
     icon: 'fi-rr-microscope',
-    image: '/images/products/auto-haematology-analyzer-bc3000plus.webp',
+    image: '/images/categories/in-vitro-diagnostics.webp',
   },
   {
     slug: 'surgical-theatre',
@@ -27,7 +27,7 @@ export const categories: Category[] = [
     short: 'Surgical',
     description: 'Theatre beds and lights, diathermy, suction and sterilisation for operating theatres.',
     icon: 'fi-rr-scalpel',
-    image: '/images/products/theatre-bed-3.webp',
+    image: '/images/categories/surgical-theatre.webp',
   },
   {
     slug: 'medical-equipment',
@@ -35,7 +35,7 @@ export const categories: Category[] = [
     short: 'Medical',
     description: 'Patient monitors, defibrillators, ultrasound, respiratory care, beds and clinical furniture.',
     icon: 'fi-rr-heart-rate',
-    image: '/images/products/patient-monitor-comen.webp',
+    image: '/images/categories/medical-equipment.webp',
   },
   {
     slug: 'medical-consumables',
@@ -44,7 +44,7 @@ export const categories: Category[] = [
     description: 'A continuous, reliable supply of reagents, cuvettes, lamps and disposables.',
     icon: 'fi-rr-syringe',
     // Original Mindray reagents (from the Flokefama brochure, page 7); never a single product's photo (a lamp)
-    image: '/images/solutions/mindray-reagents.webp',
+    image: '/images/categories/medical-consumables.webp',
     noProductPhoto: true,
   },
   {
@@ -53,7 +53,7 @@ export const categories: Category[] = [
     short: 'Rapid tests',
     description: 'Point-of-care meters, urine analysers and rapid diagnostic tests for fast answers at the bedside.',
     icon: 'fi-rr-test-tube',
-    image: '/images/products/onetouch-select-plus-metre.webp',
+    image: '/images/categories/rapid-diagnostics.webp',
   },
 ];
 

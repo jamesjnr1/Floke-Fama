@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { orderHref } from '@/lib/links';
+import { RequestQuoteLink } from '@/components/sales/request-quote-link';
 import { AddToQuote } from '@/components/sales/add-to-quote';
 import { Icon } from '@/components/ui/icon';
 import type { Category, Product } from '@/lib/types';
@@ -75,9 +75,9 @@ export function MobileQuoteBar({ product }: { product: Product }) {
       {/* pl-20 leaves room bottom-left for Tawk.to's bubble; Tidio's, larger, sits above the bar (lib/live-chat.ts) */}
       <div className="flex items-center gap-3">
         <AddToQuote item={{ slug: product.slug, name: product.name, brand: product.brand, image: product.image }} compact className="size-12 shrink-0 sm:size-12" />
-        <Link href={orderHref(product.slug)} className="flex h-12 flex-1 items-center justify-center gap-2 rounded-lg bg-brand-600 text-sm font-medium text-white">
+        <RequestQuoteLink item={{ slug: product.slug, name: product.name, brand: product.brand, image: product.image }} className="flex h-12 flex-1 items-center justify-center gap-2 rounded-lg bg-brand-600 text-sm font-medium text-white">
           Request a quote
-        </Link>
+        </RequestQuoteLink>
       </div>
     </div>
   );

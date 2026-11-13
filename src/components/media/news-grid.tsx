@@ -16,7 +16,7 @@ export async function NewsGrid() {
     <section id="news" className="pattern-dots pattern-tr scroll-mt-28 bg-paper section-y">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <h2 className="display text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">News, Blog &amp; Press</h2>
-        <NewsMore initial={6}>
+        <NewsMore initial={3}>
           {articles.map((a) => (
             <li key={a.slug}>
               <Link href={`/news/${a.slug}`} className="group block">

@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useSite } from '@/components/site-provider';
-import { headerImagePhoneSrc, headerImageSrc } from '@/lib/header-image';
+import { codeHeaders, headerImagePhoneSrc, headerImageSrc } from '@/lib/header-image';
 
 /**
  * Once the first page has loaded and the browser is idle, fetch the other pages' header photos in the
@@ -14,7 +14,7 @@ export function HeaderPreload() {
   useEffect(() => {
     const conn = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection;
     if (conn?.saveData || /2g/.test(conn?.effectiveType ?? '')) return;
-    const urls = [...new Set(Object.values(pageHeaders).map((h) => h.image).filter((x): x is string => Boolean(x)))].map(matchMedia('(max-width: 767px)').matches ? headerImagePhoneSrc : headerImageSrc);
+    const urls = [...new Set([...Object.values(pageHeaders).map((h) => h.image), ...codeHeaders].filter((x): x is string => Boolean(x)))].map(matchMedia('(max-width: 767px)').matches ? headerImagePhoneSrc : headerImageSrc);
     const run = () => urls.forEach((u) => { new Image().src = u; });
     const idle = window.requestIdleCallback ?? ((cb: () => void) => window.setTimeout(cb, 1500));
     const id = idle(run);
