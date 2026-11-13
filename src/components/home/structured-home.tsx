@@ -95,7 +95,8 @@ export function PurposeCards() {
   return (
     <section aria-labelledby="purpose-title" className="bg-paper pt-16 md:pt-28">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
-        <Reveal className="mx-auto max-w-2xl text-center">
+        {/* Left-aligned like the home page's other headings */}
+        <Reveal className="max-w-2xl">
           <Chip>Our purpose</Chip>
           <h2 id="purpose-title" className="display mt-4 text-[clamp(2rem,1.2rem+2.2vw,2.75rem)] text-ink">
             Why we do what we do
@@ -119,7 +120,7 @@ export function ClosingCta() {
     <section aria-labelledby="closing-cta" className={`relative isolate overflow-hidden ${green} text-white`}>
       <Rings />
       <div className="mx-auto grid max-w-[1280px] items-center gap-12 px-5 pt-16 md:px-10 md:pt-24 lg:grid-cols-[1fr_1.1fr] lg:pt-0">
-        <Reveal className="lg:py-24">
+        <Reveal className="pb-16 md:pb-0 lg:py-24">
           <h2 id="closing-cta" className="display text-[clamp(2.25rem,1.4rem+2.6vw,3.5rem)] text-white">
             Equip your facility with Ghana’s No.1 healthcare company<span className="text-signal">.</span>
           </h2>
@@ -133,7 +134,8 @@ export function ClosingCta() {
             </Button>
           </div>
         </Reveal>
-        <Reveal delay={0.08} className="grid grid-cols-3 items-end gap-3 self-end">
+        {/* Not on phones: the band ends with the buttons, straight above the footer */}
+        <Reveal delay={0.08} className="hidden grid-cols-3 items-end gap-3 self-end md:grid">
           {products.map((p, i) => (
             <div key={p.src} className={`relative bg-white ${i === 1 ? 'h-[260px] md:h-[340px]' : 'h-[200px] md:h-[260px]'}`}>
               <Image src={p.src} alt={p.alt} fill sizes="(min-width: 1024px) 220px, 33vw" className="object-contain p-4 md:p-6" />
