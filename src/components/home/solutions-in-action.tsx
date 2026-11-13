@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Reveal } from '@/components/motion/reveal';
+import { useSite } from '@/components/site-provider';
 import { Icon } from '@/components/ui/icon';
 import { prefersReducedMotion } from '@/lib/a11y';
 
@@ -32,6 +33,8 @@ const saveData = () => {
  * cover frame and press play themselves.
  */
 export function SolutionsInAction({ layout = 'wide', plain = false }: { layout?: 'wide' | 'feature'; /** No background pattern (the structured home page) */ plain?: boolean }) {
+  // Its title and line from the Studio (Site content → Home)
+  const { text } = useSite();
   const video = useRef<HTMLVideoElement>(null);
   const [current, setCurrent] = useState(0);
   const [load, setLoad] = useState(false);
@@ -119,10 +122,10 @@ export function SolutionsInAction({ layout = 'wide', plain = false }: { layout?:
           <Reveal>
             <p className="label">See us at work</p>
             <h2 id="in-action-title" className="display mt-3 text-[clamp(2rem,1.2rem+2.4vw,3rem)] text-ink">
-              Healthcare Solutions in Action
+              {text.home.videoTitle}
             </h2>
             <p className="no-justify mt-5 text-lg leading-relaxed text-ink-3">
-              From our laboratories and warehouse in Accra to hospitals across Ghana and West Africa: see how Flokefama supplies, installs and maintains the equipment that keeps care running.
+              {text.home.videoLead}
             </p>
             <Link href="/about#ceo" className="group mt-7 inline-flex items-center gap-2 bg-brand-700 px-5 py-3 font-semibold text-white transition-colors hover:bg-brand-800">
               A message from our CEO
@@ -146,7 +149,7 @@ export function SolutionsInAction({ layout = 'wide', plain = false }: { layout?:
         {!watching && (
           <div className="flex flex-col items-center px-5 py-6 text-center sm:absolute sm:inset-0 sm:justify-end sm:bg-[linear-gradient(180deg,transparent_40%,rgb(0_0_0/0.65)_100%)] sm:py-0 sm:pb-10 md:pb-16">
             <h2 id="in-action-title" className="text-[clamp(1.75rem,1.1rem+2vw,3rem)] font-bold leading-tight tracking-[-0.02em] !text-white [text-shadow:0_2px_16px_rgb(0_0_0/0.4)]">
-              Healthcare Solutions in Action
+              {text.home.videoTitle}
             </h2>
             <button type="button" onClick={watch} className="mt-4 inline-flex items-center gap-2 text-lg font-medium text-white transition-opacity hover:opacity-80">
               Watch video <Icon name="fi-rr-play-circle" className="text-xl" />
