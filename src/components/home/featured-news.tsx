@@ -5,26 +5,7 @@ import { Reveal } from '@/components/motion/reveal';
 import { Icon } from '@/components/ui/icon';
 import { getArticles } from '@/lib/data';
 import type { Article } from '@/data/articles';
-
-/** A story that opens another page of the site instead of a news article. */
-type Story = Article & { href?: string };
-
-/**
- * The Kpone Hospital laboratory renovation (handed over on 9 November 2026), first: it opens its section on the CSR
- * page, where the Citi Newsroom story is linked too.
- */
-const kpone: Story = {
-  slug: 'kpone-hospital-laboratory-renovation',
-  title: 'Flokefama renovates and hands over the Laboratory Department at Kpone Hospital',
-  date: '2026-11-09',
-  categories: ['News'],
-  excerpt: 'The renovated Laboratory Department at Kpone Hospital, handed over by Flokefama.',
-  image: { src: '/images/csr/kpone-1.webp', alt: 'The renovated Kpone Hospital Laboratory Department', width: 1080, height: 720 },
-  blocks: [],
-  source: 'https://www.citinewsroom.com/2026/11/flokefama-renovates-hands-over-laboratory-department-at-kpone-hospital/',
-  href: '/csr#kpone',
-};
-const hrefOf = (a: Story) => a.href ?? `/news/${a.slug}`;
+import { kponeStory as kpone, storyHref as hrefOf, type Story } from '@/data/site-stories';
 
 /** The stories after it: the Forbes Africa feature, the Mindray IVD awards and the University of Ghana partnership. */
 const featured = [
