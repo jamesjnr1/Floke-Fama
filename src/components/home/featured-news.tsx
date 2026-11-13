@@ -1,4 +1,4 @@
-import Image from 'next/image';
+import { NewsPhoto } from '@/components/media/news-photo';
 import Link from 'next/link';
 import { formatDate } from '@/components/media/news-grid';
 import { Reveal } from '@/components/motion/reveal';
@@ -39,7 +39,7 @@ const ReadMore = () => (
 );
 const Photo = ({ a, ratio, sizes }: { a: Story; ratio: string; sizes: string }) => (
   <span className={`relative block overflow-hidden bg-mist ${ratio}`}>
-    {a.image && <Image src={a.image.src} alt="" fill sizes={sizes} className="object-cover transition-transform duration-700 ease-out-expo group-hover:scale-[1.03]" />}
+    {a.image && <NewsPhoto image={a.image} sizes={sizes} />}
     <NewBadge story={a} />
   </span>
 );
