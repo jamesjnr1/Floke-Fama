@@ -101,7 +101,7 @@ const dateParts = (iso: string) => {
 };
 
 /**
- * Events as a calendar of green cards: a picture on the left (a placeholder until the event photos arrive), then the
+ * Events as a calendar of cards: a picture on the left (a placeholder until the event photos arrive), then the
  * time, the event and a short description, and the date on the right (month, day, year).
  */
 function EventGrid({ events, past = false }: { events: EventItem[]; past?: boolean }) {
@@ -117,26 +117,26 @@ function EventGrid({ events, past = false }: { events: EventItem[]; past?: boole
               <Link
                 href={`/events/${e.id}`}
                 aria-label={`${e.title}, ${longDate(e.date)}`}
-                className={cn('group grid grid-cols-[minmax(0,1fr)_auto] gap-4 rounded-lg bg-[linear-gradient(110deg,#0b5a3a_0%,#0b4a31_55%,#083d29_100%)] p-4 text-white transition hover:shadow-[0_24px_48px_-28px_rgb(6_40_26/0.75)] hover:brightness-110 sm:gap-6 md:gap-8 md:p-5', e.cover && 'sm:grid-cols-[9rem_minmax(0,1fr)_auto] md:grid-cols-[13rem_minmax(0,1fr)_auto]')}
+                className={cn('group grid grid-cols-[minmax(0,1fr)_auto] gap-4 rounded-lg border border-line bg-paper p-4 transition hover:border-ink/25 hover:shadow-[0_20px_40px_-32px_rgb(11_21_16/0.4)] sm:gap-6 md:gap-8 md:p-5', e.cover && 'sm:grid-cols-[9rem_minmax(0,1fr)_auto] md:grid-cols-[13rem_minmax(0,1fr)_auto]')}
               >
                 {/* The event's cover photo, when there is one */}
                 {e.cover ? (
-                  <span className="relative col-span-2 block aspect-[16/9] overflow-hidden bg-white/10 sm:col-span-1 sm:aspect-[4/3.6]">
+                  <span className="relative col-span-2 block aspect-[16/9] overflow-hidden bg-mist sm:col-span-1 sm:aspect-[4/3.6]">
                     <Image src={e.cover} alt="" fill sizes="(min-width: 768px) 13rem, (min-width: 640px) 9rem, 100vw" className="object-cover transition-transform duration-700 group-hover:scale-[1.04]" />
                   </span>
                 ) : null}
                 <span className="flex min-w-0 flex-col justify-center py-1">
-                  <span className="flex items-center gap-2 text-[0.9375rem] text-white/85"><Icon name="fi-rr-clock" className="shrink-0 text-white/70" /> {e.time}</span>
-                  <span className="mt-2 text-[clamp(1.25rem,1.1rem+0.5vw,1.625rem)] font-bold leading-snug tracking-[-0.02em] text-white">{e.title}</span>
-                  <span className="no-justify mt-2 line-clamp-2 text-base leading-relaxed text-white/80">{e.body}</span>
-                  <span className="mt-3 flex items-center gap-2 text-sm text-white/75">
+                  <span className="flex items-center gap-2 text-[0.9375rem] text-ink-2"><Icon name="fi-rr-clock" className="shrink-0 text-ink-3" /> {e.time}</span>
+                  <span className="mt-2 text-[clamp(1.25rem,1.1rem+0.5vw,1.625rem)] font-bold leading-snug tracking-[-0.02em] text-ink">{e.title}</span>
+                  <span className="no-justify mt-2 line-clamp-2 text-base leading-relaxed text-ink-3">{e.body}</span>
+                  <span className="mt-3 flex items-center gap-2 text-sm text-ink-3">
                     <Icon name="fi-rr-marker" className="shrink-0" /> <span className="truncate">{e.venue}</span>
                   </span>
                 </span>
-                <span className="flex min-w-[5.5rem] flex-col items-center justify-center border-l border-white/20 pl-4 text-center sm:pl-6 md:min-w-[8rem] md:pl-8">
-                  <span className="text-lg text-white/85 md:text-2xl">{d.month}</span>
-                  <span className={cn('text-[2.75rem] font-bold leading-none tracking-[-0.03em] md:text-[3.75rem]', !past && i === 0 ? 'text-[#f5bb12]' : 'text-white')}>{d.day}</span>
-                  <span className="text-lg text-white/85 md:text-2xl">{d.year}</span>
+                <span className="flex min-w-[5.5rem] flex-col items-center justify-center border-l border-line pl-4 text-center sm:pl-6 md:min-w-[8rem] md:pl-8">
+                  <span className="text-lg text-ink-2 md:text-2xl">{d.month}</span>
+                  <span className={cn('text-[2.75rem] font-bold leading-none tracking-[-0.03em] md:text-[3.75rem]', !past && i === 0 ? 'text-signal' : 'text-ink')}>{d.day}</span>
+                  <span className="text-lg text-ink-2 md:text-2xl">{d.year}</span>
                 </span>
               </Link>
             </Reveal>
