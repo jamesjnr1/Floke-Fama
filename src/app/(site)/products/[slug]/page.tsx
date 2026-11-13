@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { RequestQuoteLink } from '@/components/sales/request-quote-link';
+import { ScrollToTop } from '@/components/products/scroll-to-top';
 import { notFound } from 'next/navigation';
 import { BuyAssurance, MobileQuoteBar, RelatedProducts, relatedProducts } from '@/components/products/product-extras';
 import { ProductGallery } from '@/components/products/product-gallery';
@@ -63,6 +64,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
   return (
     <div className="bg-canvas pb-20 pt-20 md:pb-0">
+      <ScrollToTop />
       <div className="mx-auto max-w-[1280px] px-5 py-10 md:px-10 md:py-16">
         <Link href="/products" className="inline-flex items-center gap-2 text-sm text-ink-3 hover:text-ink">
           <Icon name="fi-rr-arrow-small-left" /> Back to catalogue
