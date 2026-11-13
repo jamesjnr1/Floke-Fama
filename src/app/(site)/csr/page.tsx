@@ -151,6 +151,51 @@ function Overlap({ p }: { p: Project }) {
   );
 }
 
+/** The three areas the CSR projects are grouped in, in page order. */
+const areas = [
+  { id: 'building-innovation', n: '01', title: 'Building innovation', lead: 'Renovating and building hospital facilities: laboratories, sterile services and blood banks.', projects: ['Kpone Hospital', 'Pentecost Hospital', 'Korle Bu Teaching Hospital'] },
+  { id: 'equipment-donation', n: '02', title: 'Equipment donation', lead: 'Medical equipment donated to hospitals, from neonatal incubators to specialised equipment.', projects: ['University of Ghana Medical Centre', 'The Trust Hospital'] },
+  { id: 'news-and-other-areas', n: '03', title: 'News & other areas', lead: 'Recognition for our work, and programmes beyond the hospital walls.', projects: ['Forbes Africa', 'Women in engineering'] },
+];
+type Area = (typeof areas)[number];
+
+/** Under the opening section: the three areas as links to their place on the page. */
+function CsrAreas() {
+  return (
+    <nav aria-label="Our CSR areas" className="border-t border-line bg-paper py-10 md:py-14">
+      <ul className="mx-auto grid max-w-[1280px] gap-3 px-5 md:grid-cols-3 md:gap-4 md:px-10">
+        {areas.map((a) => (
+          <li key={a.id}>
+            <a href={`#${a.id}`} className="group flex h-full flex-col border border-line bg-canvas p-6 transition-colors hover:border-brand-600 md:p-7">
+              <span className="text-[0.9375rem] font-semibold tabular-nums text-brand-700">{a.n}</span>
+              <span className="mt-2 text-xl font-bold tracking-[-0.01em] text-ink group-hover:text-brand-700 md:text-2xl">{a.title}</span>
+              <span className="no-justify mt-2 text-[0.9375rem] leading-relaxed text-ink-3">{a.projects.join(' · ')}</span>
+              <span className="mt-auto inline-flex items-center gap-1 pt-4 text-[0.9375rem] font-semibold text-brand-700">
+                See projects <Icon name="fi-rr-arrow-small-down" />
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+}
+
+/** The band that opens an area: its number, name and what it covers. */
+function AreaHead({ area }: { area: Area }) {
+  return (
+    <section id={area.id} aria-labelledby={`${area.id}-title`} className="scroll-mt-24 bg-brand-700 py-12 text-white md:py-16">
+      <div className="mx-auto flex max-w-[1280px] flex-col gap-3 px-5 md:flex-row md:items-end md:justify-between md:gap-10 md:px-10">
+        <div>
+          <p className="text-[0.9375rem] font-semibold uppercase tracking-[0.08em] text-white/70">{area.n} · Our CSR</p>
+          <h2 id={`${area.id}-title`} className="display mt-2 text-[clamp(2rem,1.2rem+2.6vw,3.25rem)] text-white">{area.title}</h2>
+        </div>
+        <p className="no-justify max-w-md text-lg leading-relaxed text-white/80">{area.lead}</p>
+      </div>
+    </section>
+  );
+}
+
 export default async function EsgPage() {
   // Kpone Hospital: the built-in photos, then the photos and video added in the Studio
   const studio = (await getSite()).kpone;
@@ -180,6 +225,42 @@ export default async function EsgPage() {
         </div>
       </section>
 
+      {/* The three areas of our CSR (the IT team's review, Nov 2026), each a heading band with its projects under it */}
+      <CsrAreas />
+
+      <AreaHead area={areas[0]} />
+      {/* Kpone Hospital: the renovated laboratory (a video first when there is one, then a large photo and rows of three) */}
+      <section aria-labelledby="kpone" className="pattern-dots pattern-bl border-t border-line bg-paper section-y">
+        <div className="mx-auto max-w-[1280px] px-5 md:px-10">
+          <Reveal className="grid gap-5 lg:grid-cols-12 lg:items-end lg:gap-10">
+            <div className="lg:col-span-7">
+              <p className="text-[0.9375rem] font-semibold uppercase tracking-[0.08em] text-brand-700">Facility renovation</p>
+              <h2 id="kpone" className="display mt-2 text-[clamp(2rem,1.2rem+2.4vw,3rem)]">{kpone.title}</h2>
+            </div>
+            <p className="no-justify text-lg leading-relaxed text-ink-3 lg:col-span-5">{kpone.text}</p>
+          </Reveal>
+          <div className="mt-10">
+            <KponeGallery photos={kponePhotos} video={kponeVideo} title={kpone.title} />
+          </div>
+        </div>
+      </section>
+
+      <section aria-label={byId('pentecost').title} className="pattern-grid pattern-tr border-t border-line bg-canvas section-y">
+        <div className="mx-auto max-w-[1280px] px-5 md:px-10"><Phases p={byId('pentecost')} /></div>
+      </section>
+      <section aria-label={byId('korle-bu').title} className="pattern-dots pattern-br border-t border-line bg-paper pt-16 md:pt-24 lg:pt-28">
+        <div className="mx-auto max-w-[1280px] px-5 pb-16 md:px-10 md:pb-4"><Feature p={byId('korle-bu')} /></div>
+      </section>
+
+      <AreaHead area={areas[1]} />
+      <section aria-label={byId('ugmc').title} className="pattern-grid pattern-tr border-t border-line bg-canvas pt-16 md:pt-24 lg:pt-28">
+        <div className="mx-auto max-w-[1280px] px-5 pb-16 md:px-10 md:pb-4"><Feature p={byId('ugmc')} flip /></div>
+      </section>
+      <section aria-label={byId('trust-hospital').title} className="pattern-cross border-t border-line bg-paper section-y">
+        <div className="mx-auto max-w-[1280px] px-5 md:px-10"><Overlap p={byId('trust-hospital')} /></div>
+      </section>
+
+      <AreaHead area={areas[2]} />
       {/* Recognition by Forbes Africa */}
       <section aria-labelledby="forbes" className="bg-midnight text-white section-y">
         {/* The heading across the top; under it the Forbes Africa Ghana 2026 cover on the left and the three points on the
@@ -210,35 +291,6 @@ export default async function EsgPage() {
         </div>
       </section>
 
-      {/* Kpone Hospital: the renovated laboratory (a video first when there is one, then a large photo and rows of three) */}
-      <section aria-labelledby="kpone" className="pattern-dots pattern-bl border-t border-line bg-paper section-y">
-        <div className="mx-auto max-w-[1280px] px-5 md:px-10">
-          <Reveal className="grid gap-5 lg:grid-cols-12 lg:items-end lg:gap-10">
-            <div className="lg:col-span-7">
-              <p className="text-[0.9375rem] font-semibold uppercase tracking-[0.08em] text-brand-700">Facility renovation</p>
-              <h2 id="kpone" className="display mt-2 text-[clamp(2rem,1.2rem+2.4vw,3rem)]">{kpone.title}</h2>
-            </div>
-            <p className="no-justify text-lg leading-relaxed text-ink-3 lg:col-span-5">{kpone.text}</p>
-          </Reveal>
-          <div className="mt-10">
-            <KponeGallery photos={kponePhotos} video={kponeVideo} title={kpone.title} />
-          </div>
-        </div>
-      </section>
-
-      {/* The other projects, each laid out in its own way */}
-      <section aria-label={byId('pentecost').title} className="pattern-grid pattern-tr border-t border-line bg-canvas section-y">
-        <div className="mx-auto max-w-[1280px] px-5 md:px-10"><Phases p={byId('pentecost')} /></div>
-      </section>
-      <section aria-label={byId('korle-bu').title} className="pattern-dots pattern-br border-t border-line bg-paper pt-16 md:pt-24 lg:pt-28">
-        <div className="mx-auto max-w-[1280px] px-5 pb-16 md:px-10 md:pb-4"><Feature p={byId('korle-bu')} /></div>
-      </section>
-      <section aria-label={byId('ugmc').title} className="pattern-grid pattern-tr border-t border-line bg-canvas pt-16 md:pt-24 lg:pt-28">
-        <div className="mx-auto max-w-[1280px] px-5 pb-16 md:px-10 md:pb-4"><Feature p={byId('ugmc')} flip /></div>
-      </section>
-      <section aria-label={byId('trust-hospital').title} className="pattern-cross border-t border-line bg-paper section-y">
-        <div className="mx-auto max-w-[1280px] px-5 md:px-10"><Overlap p={byId('trust-hospital')} /></div>
-      </section>
       <section aria-label={byId('engineering').title} className="pattern-dots pattern-br border-t border-line bg-canvas pt-16 md:pt-24 lg:pt-28">
         <div className="mx-auto max-w-[1280px] px-5 pb-16 md:px-10 md:pb-4"><Feature p={byId('engineering')} /></div>
       </section>

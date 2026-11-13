@@ -139,7 +139,7 @@ export function SolutionsInAction({ layout = 'wide', plain = false }: { layout?:
   }
 
   return (
-    <section id="highlight-video" aria-labelledby="in-action-title" className={`${plain ? 'pb-16 md:pb-28 ' : 'pattern-grid '}scroll-mt-16 bg-paper pt-16 md:pt-32`}>
+    <section id="highlight-video" aria-labelledby="in-action-title" className={`${plain ? 'pt-12 md:pt-16 ' : 'pattern-grid pt-16 md:pt-32 '}scroll-mt-16 bg-paper`}>
       <div className="relative isolate overflow-hidden bg-black">
         {/* The whole frame on every screen; on phones the title sits under the film instead of on it */}
         {player('block aspect-[1024/436] w-full object-cover')}

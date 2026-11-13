@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { PageHero } from '@/components/layout/page-hero';
+import { SUPPORT_HEADER } from '@/lib/header-image';
 import { SupportForm } from '@/components/support/support-form';
 import { Icon } from '@/components/ui/icon';
 import { getSite } from '@/lib/site';
@@ -34,7 +35,7 @@ export default async function SupportPage() {
       <PageHero
         title={<>Technical <em>support</em></>}
         lead="Installation, maintenance, troubleshooting and repairs by Flokefama’s own engineers."
-        image="/images/headers/team-engineers.webp"
+        image={SUPPORT_HEADER}
         position="50% 40%"
         veil="strong"
       />
