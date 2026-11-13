@@ -136,7 +136,7 @@ function Phases({ p }: { p: Project }) {
 
 /** The three areas the CSR projects are grouped in, in page order, each with a photo for its card. */
 const areas = [
-  { id: 'building-innovation', n: '01', title: 'Building innovation', lead: 'Renovating and building hospital facilities: laboratories, sterile services and blood banks.', projects: ['Kpone Hospital', 'Pentecost Hospital', 'Korle Bu Teaching Hospital'], image: '/images/csr/kpone-1.webp', position: '50% 55%' },
+  { id: 'building-renovation', n: '01', title: 'Building renovation', lead: 'Renovating and building hospital facilities: laboratories, sterile services and blood banks.', projects: ['Kpone Hospital', 'Pentecost Hospital', 'Korle Bu Teaching Hospital'], image: '/images/csr/kpone-1.webp', position: '50% 55%' },
   { id: 'equipment-donation', n: '02', title: 'Equipment donation', lead: 'Medical equipment donated to hospitals, from neonatal incubators to specialised equipment.', projects: ['University of Ghana Medical Centre', 'The Trust Hospital'], image: '/images/csr/ugmc-incubator-donation.webp' },
   { id: 'news-and-other-areas', n: '03', title: 'News & other areas', lead: 'Recognition for our work, and programmes beyond the hospital walls.', projects: ['Forbes Africa', 'Women in engineering'], image: '/images/forbes-africa-2026.webp', position: '50% 30%' },
 ];
