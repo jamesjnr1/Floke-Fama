@@ -15,8 +15,10 @@ export type CsrPhoto = { src: string; alt: string; caption?: string; text?: stri
  * Kpone Hospital: the renovated Laboratory Department. More photos and a video are added in the Studio (Site content →
  * ESG → CSR: Kpone Hospital refurbishment); they come after these.
  */
-export const kpone: { title: string; text: string; photos: CsrPhoto[] } = {
+export const kpone: { title: string; text: string; handedOver: string; press: { outlet: string; href: string }; photos: CsrPhoto[] } = {
   title: 'Kpone Hospital refurbishment',
+  handedOver: '9 November 2026',
+  press: { outlet: 'Citi Newsroom', href: 'https://www.citinewsroom.com/2026/11/flokefama-renovates-hands-over-laboratory-department-at-kpone-hospital/' },
   text: 'Comprehensive infrastructure modernisation and diagnostic centre enhancement, carried out to expand access to healthcare and improve the facility for the surrounding community.',
   photos: [
     { src: '/images/csr/kpone-1.webp', alt: 'The renovated Kpone Hospital Laboratory Department, decorated for its opening' },

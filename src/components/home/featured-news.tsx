@@ -6,7 +6,27 @@ import { Icon } from '@/components/ui/icon';
 import { getArticles } from '@/lib/data';
 import type { Article } from '@/data/articles';
 
-/** The stories that lead: the Forbes Africa feature, the Mindray IVD awards and the University of Ghana partnership. */
+/** A story that opens another page of the site instead of a news article. */
+type Story = Article & { href?: string };
+
+/**
+ * The Kpone Hospital laboratory renovation (handed over on 9 November 2026), first: it opens its section on the CSR
+ * page, where the Citi Newsroom story is linked too.
+ */
+const kpone: Story = {
+  slug: 'kpone-hospital-laboratory-renovation',
+  title: 'Flokefama renovates and hands over the Laboratory Department at Kpone Hospital',
+  date: '2026-11-09',
+  categories: ['News'],
+  excerpt: 'The renovated Laboratory Department at Kpone Hospital, handed over by Flokefama.',
+  image: { src: '/images/csr/kpone-1.webp', alt: 'The renovated Kpone Hospital Laboratory Department', width: 1080, height: 720 },
+  blocks: [],
+  source: 'https://www.citinewsroom.com/2026/11/flokefama-renovates-hands-over-laboratory-department-at-kpone-hospital/',
+  href: '/csr#kpone',
+};
+const hrefOf = (a: Story) => a.href ?? `/news/${a.slug}`;
+
+/** The stories after it: the Forbes Africa feature, the Mindray IVD awards and the University of Ghana partnership. */
 const featured = [
   'flokefama-featured-in-forbes-africa-driving-healthcare-excellence-across-ghana',
   'a-milestone-for-ghana-flokefama-sweeps-prestigious-mindray-ivd-awards',
@@ -35,7 +55,7 @@ const ReadMore = () => (
     Read more <Icon name="fi-rr-arrow-small-right" className="text-signal transition-transform group-hover:translate-x-0.5" />
   </span>
 );
-const Photo = ({ a, ratio, sizes }: { a: Article; ratio: string; sizes: string }) => (
+const Photo = ({ a, ratio, sizes }: { a: Story; ratio: string; sizes: string }) => (
   <span className={`relative block overflow-hidden bg-mist ${ratio}`}>
     {a.image && <Image src={a.image.src} alt="" fill sizes={sizes} className="object-cover transition-transform duration-700 ease-out-expo group-hover:scale-[1.03]" />}
   </span>
@@ -50,7 +70,7 @@ const Heading = () => (
 export async function FeaturedNews({ layout = chosen }: { layout?: NewsLayout }) {
   const articles = await getArticles();
   const picked = featured.map((s) => articles.find((a) => a.slug === s)).filter((a): a is Article => Boolean(a));
-  const stories = [...picked, ...articles.filter((a) => !picked.includes(a))].slice(0, 3);
+  const stories: Story[] = [kpone, ...picked, ...articles.filter((a) => !picked.includes(a))].slice(0, 3);
   if (!stories.length) return null;
   const [lead, ...rest] = stories;
 
@@ -79,7 +99,7 @@ export async function FeaturedNews({ layout = chosen }: { layout?: NewsLayout })
             {stories.map((a, i) => (
               <li key={a.slug}>
                 <Reveal delay={i * 0.05}>
-                  <Link href={`/news/${a.slug}`} className="group grid items-center gap-5 bg-canvas p-4 transition-colors hover:bg-brand-50 sm:grid-cols-[220px_1fr] sm:gap-6">
+                  <Link href={hrefOf(a)} className="group grid items-center gap-5 bg-canvas p-4 transition-colors hover:bg-brand-50 sm:grid-cols-[220px_1fr] sm:gap-6">
                     <Photo a={a} ratio="aspect-[4/3]" sizes="(min-width: 640px) 220px, 100vw" />
                     <span className="block py-1">
                       <span className="block text-sm text-ink-3">{formatDate(a.date)}</span>
@@ -98,7 +118,7 @@ export async function FeaturedNews({ layout = chosen }: { layout?: NewsLayout })
     body = (
       <>
         <Reveal className="mt-10 md:mt-12">
-          <Link href={`/news/${lead.slug}`} className="group grid overflow-hidden bg-canvas md:grid-cols-2">
+          <Link href={hrefOf(lead)} className="group grid overflow-hidden bg-canvas md:grid-cols-2">
             <Photo a={lead} ratio="aspect-[16/10] md:aspect-auto md:min-h-[380px]" sizes="(min-width: 768px) 600px, 100vw" />
             <span className="flex flex-col justify-center p-7 md:p-12">
               <span className="block text-sm text-ink-3">{formatDate(lead.date)}</span>
@@ -112,7 +132,7 @@ export async function FeaturedNews({ layout = chosen }: { layout?: NewsLayout })
           {rest.map((a, i) => (
             <li key={a.slug}>
               <Reveal delay={(i + 1) * 0.05} className="h-full">
-                <Link href={`/news/${a.slug}`} className="group flex h-full flex-col bg-canvas p-7 transition-colors hover:bg-brand-50">
+                <Link href={hrefOf(a)} className="group flex h-full flex-col bg-canvas p-7 transition-colors hover:bg-brand-50">
                   <span className="block text-sm text-ink-3">{formatDate(a.date)}</span>
                   <span className="mt-2 block text-lg font-bold leading-snug tracking-[-0.015em] text-ink group-hover:text-brand-700">{a.title.trim()}</span>
                   <ReadMore />
@@ -127,7 +147,7 @@ export async function FeaturedNews({ layout = chosen }: { layout?: NewsLayout })
     body = (
       <div className="mt-10 grid gap-8 md:mt-12 lg:grid-cols-[1.35fr_1fr] lg:gap-10">
         <Reveal>
-          <Link href={`/news/${lead.slug}`} className="group block">
+          <Link href={hrefOf(lead)} className="group block">
             <Photo a={lead} ratio="aspect-[16/10]" sizes="(min-width: 1024px) 680px, 100vw" />
             <span className="mt-5 block text-sm text-ink-3">{formatDate(lead.date)}</span>
             <span className="mt-2 block text-2xl font-bold leading-snug tracking-[-0.02em] text-ink group-hover:text-brand-700 md:text-[1.75rem]">{lead.title.trim()}</span>
@@ -139,7 +159,7 @@ export async function FeaturedNews({ layout = chosen }: { layout?: NewsLayout })
           {rest.map((a, i) => (
             <li key={a.slug}>
               <Reveal delay={(i + 1) * 0.06}>
-                <Link href={`/news/${a.slug}`} className="group block">
+                <Link href={hrefOf(a)} className="group block">
                   <Photo a={a} ratio="aspect-[16/9]" sizes="(min-width: 1024px) 480px, 100vw" />
                   <span className="mt-4 block text-sm text-ink-3">{formatDate(a.date)}</span>
                   <span className="mt-1.5 block text-lg font-bold leading-snug tracking-[-0.015em] text-ink group-hover:text-brand-700">{a.title.trim()}</span>
@@ -157,7 +177,7 @@ export async function FeaturedNews({ layout = chosen }: { layout?: NewsLayout })
         {stories.map((a, i) => (
           <li key={a.slug}>
             <Reveal delay={i * 0.05} className="h-full">
-              <Link href={`/news/${a.slug}`} className="group flex h-full flex-col">
+              <Link href={hrefOf(a)} className="group flex h-full flex-col">
                 <Photo a={a} ratio="aspect-[4/3]" sizes="(min-width: 768px) 400px, 100vw" />
                 <span className="mt-5 block text-sm text-ink-3">{formatDate(a.date)}</span>
                 <span className="mt-2 block text-xl font-bold leading-snug tracking-[-0.02em] text-ink group-hover:text-brand-700">{a.title.trim()}</span>

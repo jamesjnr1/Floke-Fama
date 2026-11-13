@@ -195,10 +195,16 @@ export default async function EsgPage() {
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
           <Reveal className="grid gap-5 lg:grid-cols-12 lg:items-end lg:gap-10">
             <div className="lg:col-span-7">
-              <p className="text-[0.9375rem] font-semibold uppercase tracking-[0.08em] text-brand-700">Facility renovation</p>
-              <h2 id="kpone" className="display mt-2 text-[clamp(2rem,1.2rem+2.4vw,3rem)]">{kpone.title}</h2>
+              <p className="text-[0.9375rem] font-semibold uppercase tracking-[0.08em] text-brand-700">Facility renovation · Handed over {kpone.handedOver}</p>
+              {/* Featured news on the home page opens the page here (#kpone), clear of the menu bar */}
+              <h2 id="kpone" className="display mt-2 scroll-mt-[calc(var(--banner)+9.5rem)] text-[clamp(2rem,1.2rem+2.4vw,3rem)]">{kpone.title}</h2>
             </div>
-            <p className="no-justify text-lg leading-relaxed text-ink-3 lg:col-span-5">{kpone.text}</p>
+            <div className="lg:col-span-5">
+              <p className="no-justify text-lg leading-relaxed text-ink-3">{kpone.text}</p>
+              <a href={kpone.press.href} target="_blank" rel="noopener noreferrer" className="mt-5 inline-flex items-center gap-1.5 text-lg font-semibold text-brand-700 hover:text-brand-800">
+                Read the story on {kpone.press.outlet} <Icon name="fi-rr-arrow-small-right" className="-rotate-45" />
+              </a>
+            </div>
           </Reveal>
           <div className="mt-10">
             <KponeGallery photos={kponePhotos} video={kponeVideo} title={kpone.title} />
