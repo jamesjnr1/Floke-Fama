@@ -7,6 +7,7 @@ import { KponeGallery } from '@/components/csr/kpone-gallery';
 import { Reveal } from '@/components/motion/reveal';
 import { Icon } from '@/components/ui/icon';
 import { csrCommitments, csrProjects, forbes, kpone, type CsrPhoto } from '@/data/csr';
+import { kponeStory } from '@/data/site-stories';
 import { getSite } from '@/lib/site';
 import { cn } from '@/lib/utils';
 
@@ -214,9 +215,14 @@ export default async function EsgPage() {
           {/* Under the photos: when it was handed over, and the press story */}
           <div className="mt-6 flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-t border-line pt-6">
             <p className="text-[0.9375rem] font-semibold uppercase tracking-[0.08em] text-ink-3">Handed over {kpone.handedOver}</p>
-            <a href={kpone.press.href} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-lg font-semibold text-brand-700 hover:text-brand-800">
-              Read the story on {kpone.press.outlet} <Icon name="fi-rr-arrow-small-right" className="-rotate-45" />
-            </a>
+            <span className="flex flex-wrap items-center gap-x-6 gap-y-2">
+              <Link href={`/news/${kponeStory.slug}`} className="inline-flex items-center gap-1.5 text-lg font-semibold text-brand-700 hover:text-brand-800">
+                Read the full story <Icon name="fi-rr-arrow-small-right" />
+              </Link>
+              <a href={kpone.press.href} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-lg font-semibold text-brand-700 hover:text-brand-800">
+                On {kpone.press.outlet} <Icon name="fi-rr-arrow-small-right" className="-rotate-45" />
+              </a>
+            </span>
           </div>
         </div>
       </section>

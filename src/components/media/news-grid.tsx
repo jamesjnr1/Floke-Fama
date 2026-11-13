@@ -1,9 +1,9 @@
-import Image from 'next/image';
+import { NewsPhoto } from '@/components/media/news-photo';
 import Link from 'next/link';
 import { Icon } from '@/components/ui/icon';
 import { NewsMore } from '@/components/media/news-more';
 import { getArticles } from '@/lib/data';
-import { kponeStory, storyHref } from '@/data/site-stories';
+import { storyHref, withSiteStories } from '@/data/site-stories';
 import { NewBadge } from '@/components/media/new-badge';
 
 export const formatDate = (iso: string) => new Date(`${iso}T12:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -14,7 +14,7 @@ export const formatDate = (iso: string) => new Date(`${iso}T12:00:00Z`).toLocale
  */
 export async function NewsGrid() {
   // The Kpone Hospital renovation (Nov 2026) first: it opens its section on the CSR page
-  const articles = [kponeStory, ...(await getArticles()).filter((a) => a.slug !== kponeStory.slug)];
+  const articles = withSiteStories(await getArticles());
   return (
     <section id="news" className="pattern-dots pattern-tr scroll-mt-28 bg-paper section-y">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
@@ -26,7 +26,7 @@ export async function NewsGrid() {
                 <div className="relative aspect-[25/24] overflow-hidden bg-mist">
                   <NewBadge story={a} />
                   {a.image && (
-                    <Image src={a.image.src} alt="" fill sizes="(min-width: 1024px) 400px, (min-width: 768px) 50vw, 84vw" className="object-cover transition-transform duration-700 ease-out-expo group-hover:scale-[1.03]" />
+                    <NewsPhoto image={a.image} sizes="(min-width: 1024px) 400px, (min-width: 768px) 50vw, 84vw" />
                   )}
                 </div>
                 <h3 className="mt-5 text-xl font-medium leading-snug tracking-[-0.015em] text-ink md:text-2xl">{a.title}</h3>

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
+import { NewsPhoto } from '@/components/media/news-photo';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ReadingProgress, ShareButtons } from '@/components/media/article-chrome';
@@ -8,7 +9,11 @@ import { formatDate } from '@/components/media/news-grid';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import type { Article } from '@/data/articles';
-import { getArticles } from '@/lib/data';
+import { getArticles as getStudioArticles } from '@/lib/data';
+import { withSiteStories } from '@/data/site-stories';
+
+/** Every news article: the Studio's, with the site's own stories (Kpone Hospital) first. */
+const getArticles = async () => withSiteStories(await getStudioArticles());
 import { siteUrl, jsonLdHtml } from '@/lib/utils';
 
 // New posts published in Sanity get a page on first visit; existing ones are built ahead of time.
@@ -163,7 +168,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                 <Link href={`/news/${r.slug}`} className="group flex h-full flex-col overflow-hidden border border-line bg-paper transition duration-500 hover:-translate-y-1 hover:shadow-[0_30px_60px_-30px_rgb(11_21_16/0.35)]">
                   {r.image && (
                     <div className="relative aspect-[16/10] overflow-hidden bg-mist">
-                      <Image src={r.image.src} alt="" fill sizes="(min-width: 768px) 33vw, 100vw" className="object-cover object-top transition-transform duration-1000 ease-out-expo group-hover:scale-105" />
+                      <NewsPhoto image={r.image} sizes="(min-width: 768px) 33vw, 100vw" className="object-top" />
                     </div>
                   )}
                   <div className="flex flex-1 flex-col p-5">
