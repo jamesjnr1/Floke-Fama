@@ -23,6 +23,10 @@ import './globals.css';
  * browsers never contact Google for it.
  */
 const jakarta = localFont({ src: './fonts/jakarta.woff2', weight: '400 800', variable: '--font-jakarta', display: 'swap' });
+// Two exceptions kept by request: Inter Black for the big FLOKE FAMA lettering (hero and footer), and the italic serif
+// for the accent words in page headers
+const inter = localFont({ src: './fonts/inter.woff2', weight: '900', variable: '--font-inter', display: 'swap' });
+const serif = localFont({ src: './fonts/serif.woff2', weight: '400', style: 'italic', variable: '--font-instrument', display: 'swap' });
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -80,7 +84,7 @@ const websiteLd = () => ({
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const site = await getSite();
   return (
-    <html lang="en-GH" data-banner={site.maintenance.show ? undefined : 'off'} data-patterns={process.env.NEXT_PUBLIC_PATTERNS === 'off' ? 'off' : undefined} className={jakarta.variable} suppressHydrationWarning>
+    <html lang="en-GH" data-banner={site.maintenance.show ? undefined : 'off'} data-patterns={process.env.NEXT_PUBLIC_PATTERNS === 'off' ? 'off' : undefined} className={`${jakarta.variable} ${inter.variable} ${serif.variable}`} suppressHydrationWarning>
       <head>
         <GoogleTags />
         <script dangerouslySetInnerHTML={{ __html: bootScript }} />

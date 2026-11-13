@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { SitePageHero } from '@/components/layout/site-page-hero';
+import { CsrAreaNav } from '@/components/csr/area-nav';
 import { KponeGallery } from '@/components/csr/kpone-gallery';
 import { Reveal } from '@/components/motion/reveal';
 import { Icon } from '@/components/ui/icon';
@@ -61,6 +62,7 @@ const Points = ({ points }: { points?: string[] }) =>
 /**
  * A large photo with the story over it and the next part in a card overlapping its corner (Korle Bu). `flip` puts the
  * story and the card on the other side (UGMC); extra parts follow as cards in a row under the card (women in engineering).
+ * The Trust Hospital uses it too.
  */
 function Feature({ p, flip }: { p: Project; flip?: boolean }) {
   const [main, second, ...rest] = p.groups;
@@ -88,10 +90,13 @@ function Feature({ p, flip }: { p: Project; flip?: boolean }) {
         // The next parts as cards overlapping the photo's lower edge: one card on the far side, or a row of cards
         <div className={cn('mt-8 grid gap-6 md:mt-4 md:-translate-y-20', rest.length ? 'md:grid-cols-2' : cn('md:w-[60%]', flip ? 'md:mr-auto' : 'md:ml-auto'))}>
           {[...rest, second].map((g) => (
-            <figure key={g.caption} className="grid items-center gap-5 border border-line bg-paper p-4 md:grid-cols-[1fr_1.1fr] md:p-5 md:shadow-[0_24px_48px_-24px_rgb(10_16_20/0.35)]">
-              <div className={cn('grid gap-2', g.photos.length > 1 && 'grid-cols-2')}>
-                {g.photos.map((ph) => <Shot key={ph.src} p={ph} sizes="(min-width: 768px) 360px, 100vw" className={g.photos.length > 1 ? 'aspect-square' : 'aspect-[4/3]'} />)}
-              </div>
+            // A part without photos (Industry collaboration) is a text card
+            <figure key={g.caption} className={cn('grid items-center gap-5 border border-line bg-paper p-4 md:p-5 md:shadow-[0_24px_48px_-24px_rgb(10_16_20/0.35)]', g.photos.length ? 'md:grid-cols-[1fr_1.1fr]' : 'md:px-8')}>
+              {g.photos.length > 0 && (
+                <div className={cn('grid gap-2', g.photos.length > 1 && 'grid-cols-2')}>
+                  {g.photos.map((ph) => <Shot key={ph.src} p={ph} sizes="(min-width: 768px) 360px, 100vw" className={g.photos.length > 1 ? 'aspect-square' : 'aspect-[4/3]'} />)}
+                </div>
+              )}
               <figcaption>
                 <p className="text-[0.9375rem] font-semibold uppercase tracking-[0.08em] text-brand-700">{g.caption}</p>
                 <p className="no-justify mt-2 text-[1.0625rem] leading-relaxed text-ink-3">{g.text}</p>
@@ -129,62 +134,18 @@ function Phases({ p }: { p: Project }) {
   );
 }
 
-/** The Trust Hospital: the story on the left, the two photos overlapping on the right. */
-function Overlap({ p }: { p: Project }) {
-  const [a, b] = p.groups;
-  return (
-    <div className="grid gap-12 lg:grid-cols-12 lg:items-center lg:gap-16">
-      <Reveal className="lg:col-span-5">
-        <Head p={p} />
-        {[a, b].map((g) => (
-          <div key={g.caption} className="mt-7">
-            <h3 className="text-xl font-bold tracking-[-0.01em] text-ink">{g.caption}</h3>
-            <p className="no-justify mt-1.5 text-lg leading-relaxed text-ink-3">{g.text}</p>
-          </div>
-        ))}
-      </Reveal>
-      <Reveal delay={0.06} className="relative lg:col-span-7 lg:pb-24">
-        <Shot p={a.photos[0]} sizes="(min-width: 1024px) 560px, 100vw" className="aspect-[4/3] lg:w-[78%]" />
-        <Shot p={b.photos[0]} sizes="(min-width: 1024px) 380px, 100vw" className="mt-4 aspect-[4/3] border-[6px] border-paper lg:absolute lg:bottom-0 lg:right-0 lg:mt-0 lg:w-[52%] lg:shadow-[0_24px_48px_-24px_rgb(10_16_20/0.4)]" />
-      </Reveal>
-    </div>
-  );
-}
-
-/** The three areas the CSR projects are grouped in, in page order. */
+/** The three areas the CSR projects are grouped in, in page order, each with a photo for its card. */
 const areas = [
-  { id: 'building-innovation', n: '01', title: 'Building innovation', lead: 'Renovating and building hospital facilities: laboratories, sterile services and blood banks.', projects: ['Kpone Hospital', 'Pentecost Hospital', 'Korle Bu Teaching Hospital'] },
-  { id: 'equipment-donation', n: '02', title: 'Equipment donation', lead: 'Medical equipment donated to hospitals, from neonatal incubators to specialised equipment.', projects: ['University of Ghana Medical Centre', 'The Trust Hospital'] },
-  { id: 'news-and-other-areas', n: '03', title: 'News & other areas', lead: 'Recognition for our work, and programmes beyond the hospital walls.', projects: ['Forbes Africa', 'Women in engineering'] },
+  { id: 'building-innovation', n: '01', title: 'Building innovation', lead: 'Renovating and building hospital facilities: laboratories, sterile services and blood banks.', projects: ['Kpone Hospital', 'Pentecost Hospital', 'Korle Bu Teaching Hospital'], image: '/images/csr/kpone-1.webp', position: '50% 55%' },
+  { id: 'equipment-donation', n: '02', title: 'Equipment donation', lead: 'Medical equipment donated to hospitals, from neonatal incubators to specialised equipment.', projects: ['University of Ghana Medical Centre', 'The Trust Hospital'], image: '/images/csr/ugmc-incubator-donation.webp' },
+  { id: 'news-and-other-areas', n: '03', title: 'News & other areas', lead: 'Recognition for our work, and programmes beyond the hospital walls.', projects: ['Forbes Africa', 'Women in engineering'], image: '/images/forbes-africa-2026.webp', position: '50% 30%' },
 ];
 type Area = (typeof areas)[number];
-
-/** Under the opening section: the three areas as links to their place on the page. */
-function CsrAreas() {
-  return (
-    <nav aria-label="Our CSR areas" className="border-t border-line bg-paper py-10 md:py-14">
-      <ul className="mx-auto grid max-w-[1280px] gap-3 px-5 md:grid-cols-3 md:gap-4 md:px-10">
-        {areas.map((a) => (
-          <li key={a.id}>
-            <a href={`#${a.id}`} className="group flex h-full flex-col border border-line bg-canvas p-6 transition-colors hover:border-brand-600 md:p-7">
-              <span className="text-[0.9375rem] font-semibold tabular-nums text-brand-700">{a.n}</span>
-              <span className="mt-2 text-xl font-bold tracking-[-0.01em] text-ink group-hover:text-brand-700 md:text-2xl">{a.title}</span>
-              <span className="no-justify mt-2 text-[0.9375rem] leading-relaxed text-ink-3">{a.projects.join(' · ')}</span>
-              <span className="mt-auto inline-flex items-center gap-1 pt-4 text-[0.9375rem] font-semibold text-brand-700">
-                See projects <Icon name="fi-rr-arrow-small-down" />
-              </span>
-            </a>
-          </li>
-        ))}
-      </ul>
-    </nav>
-  );
-}
 
 /** The band that opens an area: its number, name and what it covers. */
 function AreaHead({ area }: { area: Area }) {
   return (
-    <section id={area.id} aria-labelledby={`${area.id}-title`} className="scroll-mt-24 bg-brand-700 py-12 text-white md:py-16">
+    <section id={area.id} aria-labelledby={`${area.id}-title`} className="scroll-mt-[calc(var(--banner)+4.5rem)] bg-brand-700 py-12 text-white md:py-16">
       <div className="mx-auto flex max-w-[1280px] flex-col gap-3 px-5 md:flex-row md:items-end md:justify-between md:gap-10 md:px-10">
         <div>
           <p className="text-[0.9375rem] font-semibold uppercase tracking-[0.08em] text-white/70">{area.n} · Our CSR</p>
@@ -226,7 +187,7 @@ export default async function EsgPage() {
       </section>
 
       {/* The three areas of our CSR (the IT team's review, Nov 2026), each a heading band with its projects under it */}
-      <CsrAreas />
+      <CsrAreaNav areas={areas} />
 
       <AreaHead area={areas[0]} />
       {/* Kpone Hospital: the renovated laboratory (a video first when there is one, then a large photo and rows of three) */}
@@ -256,8 +217,8 @@ export default async function EsgPage() {
       <section aria-label={byId('ugmc').title} className="pattern-grid pattern-tr border-t border-line bg-canvas pt-16 md:pt-24 lg:pt-28">
         <div className="mx-auto max-w-[1280px] px-5 pb-16 md:px-10 md:pb-4"><Feature p={byId('ugmc')} flip /></div>
       </section>
-      <section aria-label={byId('trust-hospital').title} className="pattern-cross border-t border-line bg-paper section-y">
-        <div className="mx-auto max-w-[1280px] px-5 md:px-10"><Overlap p={byId('trust-hospital')} /></div>
+      <section aria-label={byId('trust-hospital').title} className="pattern-dots pattern-br border-t border-line bg-paper pt-16 md:pt-24 lg:pt-28">
+        <div className="mx-auto max-w-[1280px] px-5 pb-16 md:px-10 md:pb-4"><Feature p={byId('trust-hospital')} /></div>
       </section>
 
       <AreaHead area={areas[2]} />
