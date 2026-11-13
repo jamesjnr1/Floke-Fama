@@ -2,7 +2,8 @@
 
 import { listingLabel } from '@/lib/product-names';
 import Link from 'next/link';
-import { helpHref, orderHref } from '@/lib/links';
+import { helpHref } from '@/lib/links';
+import { RequestQuoteLink } from '@/components/sales/request-quote-link';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { AddToQuote } from '@/components/sales/add-to-quote';
@@ -148,7 +149,7 @@ export function SpecActions({ product }: { product: Product }) {
   return (
     <div className="flex flex-wrap gap-3">
       <Button asChild arrow="up-right">
-        <Link href={orderHref(product.slug)}>Request a quote</Link>
+        <RequestQuoteLink item={{ slug: product.slug, name: product.name, brand: product.brand, image: product.image }}>Request a quote</RequestQuoteLink>
       </Button>
       <AddToQuote item={{ slug: product.slug, name: product.name, brand: product.brand, image: product.image }} />
       <Link href={helpHref('demo', { equipment: product.name })} className="inline-flex h-12 items-center px-2 text-sm font-medium text-brand-700 underline-offset-4 hover:underline">

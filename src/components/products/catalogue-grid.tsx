@@ -41,7 +41,7 @@ export async function CatalogueGrid() {
               <Link href={`/products?category=${c.slug}`} className="group flex h-full flex-col overflow-hidden rounded-lg border border-line bg-paper transition hover:border-ink/20">
                 <div className="relative aspect-[16/10] bg-[#F5F7F6]">
                   {c.image ? (
-                    <Image src={c.image} alt="" fill sizes="(min-width: 1024px) 400px, (min-width: 640px) 50vw, 100vw" className="object-contain p-8 mix-blend-multiply transition-transform duration-500 group-hover:scale-[1.03]" />
+                    <Image src={c.image} alt="" fill sizes="(min-width: 1024px) 400px, (min-width: 640px) 50vw, 100vw" className="object-contain p-5 mix-blend-multiply transition-transform duration-500 group-hover:scale-[1.03]" />
                   ) : (
                     // No photo yet (set one on the category in the Studio): a quiet placeholder
                     <span className="absolute inset-0 grid place-items-center">

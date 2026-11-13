@@ -9,16 +9,13 @@
    Company red      #DC2430 · the logo-dot accents, Contact buttons, Vision block (white text on it)
    ========================================================================== */
 @theme {
-  /* Plus Jakarta Sans is the main typeface; Space Grotesk (the `font-mono` utility) sets small labels and figures. */
+  /* One typeface everywhere: Plus Jakarta Sans. The other font names below are kept so existing classes still work. */
   --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-grotesk), ui-sans-serif, system-ui, sans-serif;
-  --font-serif: var(--font-instrument), ui-serif, Georgia, serif;
-  /* Mona Sans: the menu bar only (the typeface of the menu in the Dribbble reference) */
-  --font-nav: var(--font-mona), var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
-  /* Inter Black: the FLOKE FAMA lettering on the hero */
-  --font-wordmark: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  /* The maintenance notice */
-  --font-notice: var(--font-poppins), var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-nav: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-wordmark: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-notice: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
 
   /* Text sizes one step up from Tailwind's defaults, so everything stays readable */
   --text-xs: 0.875rem;
@@ -266,8 +263,8 @@ select:not([multiple]):not([size]) {
 }
 
 /*
- * Faint background patterns for light sections, so the site isn't plain white: a fine grid, a dot field or small
- * medical crosses, fading out from one corner, with a soft green light. Turned off with NEXT_PUBLIC_PATTERNS=off.
+ * Faint background patterns for light sections, so the site isn't plain white: a fine grid or a dot field, fading out
+ * from one corner, with a soft green light. Turned off with NEXT_PUBLIC_PATTERNS=off.
  */
 .pattern-grid,
 .pattern-dots,
@@ -304,9 +301,8 @@ select:not([multiple]):not([size]) {
   background-image: radial-gradient(rgb(11 61 42 / 0.2) 1.2px, transparent 1.7px);
   background-size: 22px 22px;
 }
-.pattern-cross::before {
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='44' height='44'><path d='M22 17v10M17 22h10' stroke='%230b3d2a' stroke-opacity='0.17' stroke-width='1.4' stroke-linecap='round'/></svg>");
-}
+/* The small medical crosses (plus signs) are gone (the IT team's review, Nov 2026): a .pattern-cross section keeps only
+   the soft green light. */
 .pattern-tr { --pattern-at: 100% 0%; }
 .pattern-bl { --pattern-at: 0% 100%; }
 .pattern-br { --pattern-at: 100% 100%; }
