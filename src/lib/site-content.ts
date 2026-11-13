@@ -4,6 +4,7 @@
  * content from src/data/seed.ts, used for anything Sanity leaves empty (and when Sanity isn't connected).
  * Shared by the server loader (lib/site.ts) and the browser (components/site-provider.tsx).
  */
+import { defaultPageText, type PageText } from '@/lib/page-text';
 import type { NoticeColour } from '@/lib/notice';
 import * as seed from '../data/seed';
 
@@ -65,6 +66,8 @@ export interface SiteContent {
   engineering: { title: string; lead: string; photos: Photo[] };
   /** CSR page, Kpone Hospital: photos and a video added in the Studio. */
   kpone: { photos: Photo[]; video?: { src: string; poster?: string } };
+  /** The wording of the home, About, Support and CSR pages and the footer (lib/page-text.ts). */
+  text: PageText;
   eventAlbums: EventAlbum[];
   /** Extra numbers hospitals can call, shown on the hospital sign-in page (added by the team in the Studio). */
   signInPhones: { label: string; phone: string }[];
@@ -233,6 +236,7 @@ export const defaultSite: SiteContent = {
   solutions: defaultSolutions,
   engineering: defaultEngineering,
   kpone: { photos: [] },
+  text: defaultPageText,
   eventAlbums: [],
   signInPhones: [],
   testimonials: [...seed.testimonials],

@@ -61,6 +61,8 @@ export interface Product {
 
 export interface Metric {
   label: string;
+  /** A shorter label for the home page's figures band (Studio: Figures). */
+  homeLabel?: string;
   value: number;
   prefix?: string;
   suffix?: string;

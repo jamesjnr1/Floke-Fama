@@ -26,7 +26,6 @@ function Shot({ p, sizes, className }: { p: CsrPhoto; sizes: string; className?:
 }
 
 type Project = (typeof csrProjects)[number];
-const byId = (id: string) => csrProjects.find((p) => p.id === id)!;
 
 /** The label and title every project starts with; `light` on dark backgrounds. */
 function Head({ p, light, className }: { p: Project; light?: boolean; className?: string }) {
@@ -158,8 +157,16 @@ function AreaHead({ area }: { area: Area }) {
 }
 
 export default async function EsgPage() {
+  const site = await getSite();
   // Kpone Hospital: the built-in photos, then the photos and video added in the Studio
-  const studio = (await getSite()).kpone;
+  const studio = site.kpone;
+  // The wording: the Studio's where it set something (Site content → CSR), the page's own otherwise
+  const t = site.text.csr;
+  const projects = csrProjects.map((p) => ({ ...p, ...t.projects[p.id] }));
+  const byId = (id: string) => projects.find((p) => p.id === id)!;
+  const kponeText = { label: 'Facility renovation', title: kpone.title, text: kpone.text, ...t.projects.kpone };
+  const commitments = t.commitments ?? csrCommitments;
+  const forbesText = { label: t.forbes?.label ?? forbes.label, title: t.forbes?.title ?? forbes.title, points: t.forbes?.points ?? forbes.points };
   const kponePhotos: CsrPhoto[] = [...kpone.photos, ...studio.photos];
   const kponeVideo = studio.video;
   return (
@@ -170,11 +177,11 @@ export default async function EsgPage() {
       <section className="pattern-cross pattern-tr bg-canvas section-y">
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
           <Reveal className="grid gap-5 lg:grid-cols-12 lg:items-end lg:gap-10">
-            <h2 className="display text-[clamp(2rem,1.2rem+2.8vw,3.25rem)] lg:col-span-7">Giving back to the people behind Ghana’s healthcare</h2>
-            <p className="no-justify text-lg leading-relaxed text-ink-3 lg:col-span-5">Our work does not end with supplying equipment. We invest in hospitals, in the next generation of professionals and in communities.</p>
+            <h2 className="display text-[clamp(2rem,1.2rem+2.8vw,3.25rem)] lg:col-span-7">{t.introTitle}</h2>
+            <p className="no-justify text-lg leading-relaxed text-ink-3 lg:col-span-5">{t.introLead}</p>
           </Reveal>
           <ul className="mt-12 grid gap-px border border-line bg-line md:grid-cols-3">
-            {csrCommitments.map((c) => (
+            {commitments.map((c) => (
               <li key={c.label} className="bg-paper p-7 lg:p-9">
                 <Icon name={c.icon} className="text-3xl text-brand-600" />
                 <p className="mt-5 text-[0.9375rem] font-semibold uppercase tracking-[0.08em] text-brand-700">{c.label}</p>
@@ -195,14 +202,14 @@ export default async function EsgPage() {
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
           <Reveal className="grid gap-5 lg:grid-cols-12 lg:items-end lg:gap-10">
             <div className="lg:col-span-7">
-              <p className="text-[0.9375rem] font-semibold uppercase tracking-[0.08em] text-brand-700">Facility renovation</p>
+              <p className="text-[0.9375rem] font-semibold uppercase tracking-[0.08em] text-brand-700">{kponeText.label}</p>
               {/* Featured news on the home page opens the page here (#kpone), clear of the menu bar */}
-              <h2 id="kpone" className="display mt-2 scroll-mt-[calc(var(--banner)+9.5rem)] text-[clamp(2rem,1.2rem+2.4vw,3rem)]">{kpone.title}</h2>
+              <h2 id="kpone" className="display mt-2 scroll-mt-[calc(var(--banner)+9.5rem)] text-[clamp(2rem,1.2rem+2.4vw,3rem)]">{kponeText.title}</h2>
             </div>
-            <p className="no-justify text-lg leading-relaxed text-ink-3 lg:col-span-5">{kpone.text}</p>
+            <p className="no-justify text-lg leading-relaxed text-ink-3 lg:col-span-5">{kponeText.text}</p>
           </Reveal>
           <div className="mt-10">
-            <KponeGallery photos={kponePhotos} video={kponeVideo} title={kpone.title} />
+            <KponeGallery photos={kponePhotos} video={kponeVideo} title={kponeText.title} />
           </div>
           {/* Under the photos: when it was handed over, and the press story */}
           <div className="mt-6 flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-t border-line pt-6">
@@ -236,8 +243,8 @@ export default async function EsgPage() {
             right, running from the top of the cover to its foot */}
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
           <Reveal className="max-w-4xl">
-            <p className="text-[0.9375rem] font-semibold uppercase tracking-[0.08em] text-brand-300">{forbes.label}</p>
-            <h2 id="forbes" className="mt-3 text-[clamp(1.875rem,1.2rem+2vw,2.75rem)] font-bold leading-[1.12] tracking-[-0.03em] text-white">{forbes.title}</h2>
+            <p className="text-[0.9375rem] font-semibold uppercase tracking-[0.08em] text-brand-300">{forbesText.label}</p>
+            <h2 id="forbes" className="mt-3 text-[clamp(1.875rem,1.2rem+2vw,2.75rem)] font-bold leading-[1.12] tracking-[-0.03em] text-white">{forbesText.title}</h2>
           </Reveal>
           <div className="mt-10 grid gap-6 lg:grid-cols-[0.8fr_1.2fr] lg:gap-10">
             <Reveal>
@@ -248,7 +255,7 @@ export default async function EsgPage() {
             {/* On large screens the cover sets the row's height and the three points share it exactly */}
             <div className="relative">
             <ul className="grid gap-4 lg:absolute lg:inset-0 lg:grid-rows-3">
-              {forbes.points.map((p) => (
+              {forbesText.points.map((p) => (
                 <li key={p.title} className="flex flex-col justify-center bg-white/[0.06] p-6 md:px-8">
                   <h3 className="text-xl font-semibold text-white md:text-2xl">{p.title}</h3>
                   <p className="no-justify mt-2 text-lg leading-relaxed text-white/75">{p.text}</p>
