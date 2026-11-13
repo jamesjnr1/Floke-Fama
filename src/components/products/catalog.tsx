@@ -108,7 +108,7 @@ export function Catalog({ products, categories, typeList }: {
 
   return (
     <LayoutGroup>
-      <div className="sticky top-28 z-30 -mx-5 border-b border-line bg-canvas px-5 py-4 md:-mx-10 md:px-10">
+      <div className="sticky top-[calc(var(--banner)+72px)] z-30 -mx-5 border-b border-line bg-canvas px-5 py-4 md:-mx-10 md:px-10">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center xl:block">
           <label className="relative block sm:w-72 sm:shrink-0 xl:hidden">
             <span className="sr-only">Category</span>

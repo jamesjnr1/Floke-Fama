@@ -9,15 +9,16 @@
    Company red      #DC2430 · the logo-dot accents, Contact buttons, Vision block (white text on it)
    ========================================================================== */
 @theme {
-  /* Plus Jakarta Sans everywhere, except the two marked below. The other font names point at it. */
-  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  /* Poppins for the site's text; the menu bar, the header italics and the big FLOKE FAMA lettering keep their own */
+  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
   /* Kept: the italic serif for the accent words in page headers */
   --font-serif: var(--font-instrument), ui-serif, Georgia, serif;
+  /* Kept: Plus Jakarta Sans for the menu bar */
   --font-nav: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
   /* Kept: Inter Black for the big FLOKE FAMA lettering on the hero and in the footer */
   --font-wordmark: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-notice: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-notice: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
 
   /* Text sizes one step up from Tailwind's defaults, so everything stays readable */
   --text-xs: 0.875rem;
