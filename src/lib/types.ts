@@ -32,6 +32,8 @@ export interface CompatibilityRow {
 
 export interface Product {
   slug: string;
+  /** When it was added in the Studio: “New” in the shop for a month after (lib/new-label.ts). */
+  createdAt?: string;
   name: string;
   brand: string;
   category: string;
@@ -82,6 +84,8 @@ export interface Milestone {
 
 export interface EventItem {
   id: string;
+  /** When it was added in the Studio: “New” in the events list for a month after. */
+  createdAt?: string;
   title: string;
   /** Local date, YYYY-MM-DD: decides Upcoming or Past. */
   date: string;

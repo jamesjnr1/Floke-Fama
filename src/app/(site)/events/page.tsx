@@ -7,6 +7,7 @@ import { Reveal } from '@/components/motion/reveal';
 import { Icon } from '@/components/ui/icon';
 import { getEvents } from '@/lib/data';
 import { longDate } from '@/lib/events';
+import { isNewSince } from '@/lib/new-label';
 import type { EventItem } from '@/lib/types';
 import { cn, siteUrl, jsonLdHtml } from '@/lib/utils';
 import { PhotoGallery } from '@/components/media/photo-gallery';
@@ -126,7 +127,11 @@ function EventGrid({ events, past = false }: { events: EventItem[]; past?: boole
                   </span>
                 ) : null}
                 <span className="flex min-w-0 flex-col justify-center py-1">
-                  <span className="flex items-center gap-2 text-[0.9375rem] text-ink-2"><Icon name="fi-rr-clock" className="shrink-0 text-ink-3" /> {e.time}</span>
+                  <span className="flex items-center gap-2 text-[0.9375rem] text-ink-2">
+                    <Icon name="fi-rr-clock" className="shrink-0 text-ink-3" /> {e.time}
+                    {/* Added in the Studio in the last month */}
+                    {isNewSince(e.createdAt) && <span className="ml-1 bg-signal px-2 py-0.5 text-[0.6875rem] font-bold uppercase tracking-[0.08em] text-white">New</span>}
+                  </span>
                   <span className="mt-2 text-[clamp(1.25rem,1.1rem+0.5vw,1.625rem)] font-bold leading-snug tracking-[-0.02em] text-ink">{e.title}</span>
                   <span className="no-justify mt-2 line-clamp-2 text-base leading-relaxed text-ink-3">{e.body}</span>
                   <span className="mt-3 flex items-center gap-2 text-sm text-ink-3">
