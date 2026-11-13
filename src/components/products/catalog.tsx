@@ -9,6 +9,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { ProductVisual } from '@/components/products/product-visual';
 import { AddToQuote } from '@/components/sales/add-to-quote';
 import { Icon } from '@/components/ui/icon';
+import { isNewSince } from '@/lib/new-label';
 import { localSearch, searchProducts, searchProvider } from '@/lib/search';
 import type { Category, Product } from '@/lib/types';
 import { legacyCategoryLink } from '@/lib/categories';
@@ -231,7 +232,7 @@ function ProductCard({ product, category, wide }: { product: Product; category?:
       <div className="px-2.5 pb-3 pt-3 sm:px-3.5 sm:pb-4">
         <p className="flex items-center gap-2 text-xs font-medium text-ink-3">
           {product.brand}
-          {product.newArrival && <span className="rounded-[4px] bg-signal px-2 py-0.5 text-xs font-semibold uppercase tracking-[0.06em] text-white">New</span>}
+          {isNewSince(product.createdAt) && <span className="rounded-[4px] bg-signal px-2 py-0.5 text-xs font-semibold uppercase tracking-[0.06em] text-white">New</span>}
         </p>
         <h2 className="mt-1 line-clamp-2 text-sm font-semibold leading-snug tracking-tight text-ink [overflow-wrap:anywhere] sm:text-base">{product.name}</h2>
       </div>

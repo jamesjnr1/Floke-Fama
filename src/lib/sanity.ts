@@ -19,7 +19,7 @@ export const sanity: SanityClient | null = projectId
   : null;
 
 const productFields = `
-  "slug": slug.current, name, brand, "category": category->slug.current, summary,
+  "slug": slug.current, "createdAt": _createdAt, name, brand, "category": category->slug.current, summary,
   "image": image.asset->url, "gallery": gallery[].asset->url, highlights, specs[]{label, value}, specsVerified,
   compatibility[]{item, status, note}, documents[]{title, kind, "url": file.asset->url},
   tags, featured, newArrival, types, description, highlightsSource, source
@@ -43,7 +43,7 @@ export const queries = {
   products: `*[_type == "product"] | order(featured desc, name asc){ ${productFields} }`,
   product: `*[_type == "product" && slug.current == $slug][0]{ ${productFields} }`,
   metrics: `*[_type == "metric"] | order(order asc){ label, homeLabel, value, prefix, suffix, caption }`,
-  events: `*[_type == "event"] | order(date desc){ "id": slug.current, title, date, start, end, time, venue, body, more, theme, guests, price, "image": image.asset->url, "imageWidth": image.asset->metadata.dimensions.width, "imageHeight": image.asset->metadata.dimensions.height, "alt": image.alt, "cover": cover.asset->url, "photos": photos[defined(asset)]{ "src": asset->url, alt, caption } }`,
+  events: `*[_type == "event"] | order(date desc){ "id": slug.current, "createdAt": _createdAt, title, date, start, end, time, venue, body, more, theme, guests, price, "image": image.asset->url, "imageWidth": image.asset->metadata.dimensions.width, "imageHeight": image.asset->metadata.dimensions.height, "alt": image.alt, "cover": cover.asset->url, "photos": photos[defined(asset)]{ "src": asset->url, alt, caption } }`,
   // News: Sanity's blocks are mapped back to the site's own article format
   articles: `*[_type == "article"] | order(date desc){ ${articleFields} }`,
   milestones: `*[_type == "milestone"] | order(order asc){ "id": _id, kicker, title, body, date, "image": image.asset->url, icon, href }`,
