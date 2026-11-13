@@ -11,7 +11,7 @@ function Runs({ runs }: { runs: Run[] }) {
         let node: React.ReactNode = r.t;
         if (r.i) node = <em>{node}</em>;
         if (r.b) node = <strong className="font-semibold text-ink">{node}</strong>;
-        if (r.href) node = <a href={r.href} target="_blank" rel="noopener noreferrer" className="font-medium text-brand-700 underline decoration-brand-300 underline-offset-4 hover:decoration-brand-600">{node}</a>;
+        if (r.href) node = <a href={r.href} {...(/^https?:/.test(r.href) ? { target: '_blank', rel: 'noopener noreferrer' } : {})} className="font-medium text-brand-700 underline decoration-brand-300 underline-offset-4 hover:decoration-brand-600">{node}</a>;
         return <span key={i}>{node}</span>;
       })}
     </>
