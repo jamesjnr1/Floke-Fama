@@ -5,6 +5,7 @@ import { Reveal } from '@/components/motion/reveal';
 import { Icon } from '@/components/ui/icon';
 import { getArticles } from '@/lib/data';
 import type { Article } from '@/data/articles';
+import { NewBadge } from '@/components/media/new-badge';
 import { kponeStory as kpone, storyHref as hrefOf, type Story } from '@/data/site-stories';
 
 /** The stories after it: the Forbes Africa feature, the Mindray IVD awards and the University of Ghana partnership. */
@@ -39,6 +40,7 @@ const ReadMore = () => (
 const Photo = ({ a, ratio, sizes }: { a: Story; ratio: string; sizes: string }) => (
   <span className={`relative block overflow-hidden bg-mist ${ratio}`}>
     {a.image && <Image src={a.image.src} alt="" fill sizes={sizes} className="object-cover transition-transform duration-700 ease-out-expo group-hover:scale-[1.03]" />}
+    <NewBadge story={a} />
   </span>
 );
 const Heading = () => (
