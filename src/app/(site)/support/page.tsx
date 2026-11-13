@@ -84,13 +84,13 @@ export default async function SupportPage() {
 
           <ul className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             <li className="rounded-2xl bg-midnight p-8 text-white md:col-span-2 md:p-10">
-              <span className="grid size-12 place-items-center rounded-lg bg-brand-600 text-xl text-white"><Icon name="fi-rr-settings" /></span>
+              <Icon name="fi-rr-settings" className="text-[2rem] text-brand-300" />
               <h3 className="mt-8 text-2xl font-semibold tracking-[-0.01em] text-white">Installation &amp; calibration</h3>
               <p className="no-justify mt-3 max-w-xl text-lg leading-relaxed text-white/80">Every system is installed, commissioned and calibrated by our engineers, and your team is trained to use it before we hand over.</p>
             </li>
             {services.map((s) => (
               <li key={s.title} className="rounded-2xl border border-line bg-paper p-8">
-                <span className="grid size-12 place-items-center rounded-lg bg-brand-50 text-xl text-brand-700"><Icon name={s.icon} /></span>
+                <Icon name={s.icon} className="text-[2rem] text-brand-700" />
                 <h3 className="mt-8 text-xl font-semibold tracking-[-0.01em] text-ink">{s.title}</h3>
                 <p className="no-justify mt-2.5 text-lg leading-relaxed text-ink-3">{s.text}</p>
               </li>
