@@ -11,7 +11,8 @@ export const isNew = (a: Story, now = Date.now()) => isNewSince(a.date, now);
 export const storyHref = (a: Story) => a.href ?? `/news/${a.slug}`;
 
 const CITI = 'https://www.citinewsroom.com/2026/11/flokefama-renovates-hands-over-laboratory-department-at-kpone-hospital/';
-const photo = (name: string, alt: string, width: number, height: number) => ({ type: 'img' as const, src: `/images/csr/${name}.webp`, alt, width, height });
+/** A photo of the renovated laboratory, without a caption under it. */
+const photo = (name: string, width: number, height: number) => ({ type: 'img' as const, src: `/images/csr/${name}.webp`, alt: 'Kpone Hospital Laboratory Department, renovated by Flokefama', width, height, caption: false });
 
 /**
  * The Kpone Hospital laboratory renovation, handed over on 9 November 2026: a news article of its own (/news/…), first
@@ -39,7 +40,7 @@ export const kponeStory: Story = {
       type: 'p',
       runs: [{ t: 'The project was carried out to strengthen healthcare delivery and improve diagnostic services at the hospital. A modern laboratory helps doctors make timely clinical decisions and supports quality care for every patient who comes through its doors.' }],
     },
-    photo('kpone-handover', 'Flokefama and Kpone Hospital at the handover of the renovated Laboratory Department', 1080, 1052),
+    photo('kpone-handover', 1080, 1052),
     { type: 'h', text: 'Giving back to the community' },
     {
       type: 'p',
@@ -51,10 +52,10 @@ export const kponeStory: Story = {
       type: 'p',
       runs: [{ t: 'The renovation brought the department’s reception, corridors and laboratory rooms up to date, with new worktops, doors and windows, ready for modern diagnostic equipment.' }],
     },
-    photo('kpone-4', 'The renovated reception area with its service window', 1080, 718),
-    photo('kpone-corridor-1', 'A renovated corridor leading to the laboratory rooms', 1080, 720),
-    photo('kpone-3', 'A renovated laboratory room with a worktop and sink', 1080, 720),
-    photo('kpone-sign', 'The sign: Kpone Hospital Laboratory Department, facility renovated by Flokefama Co. Ltd.', 1080, 540),
+    photo('kpone-4', 1080, 718),
+    photo('kpone-corridor-1', 1080, 720),
+    photo('kpone-3', 1080, 720),
+    photo('kpone-sign', 1080, 540),
     { type: 'h', text: 'At the handover' },
     {
       type: 'p',
@@ -70,7 +71,7 @@ export const kponeStory: Story = {
       type: 'p',
       runs: [{ t: 'Flokefama thanks the health authorities, the Kpone-Katamanso Municipal Assembly, the management of Kpone Hospital and all its partners for their collaboration on the project.' }],
     },
-    photo('kpone-2', 'Guests at the entrance of the renovated laboratory building', 1080, 720),
+    photo('kpone-2', 1080, 720),
     {
       type: 'p',
       runs: [
