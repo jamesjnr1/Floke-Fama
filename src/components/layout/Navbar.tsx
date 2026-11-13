@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from 'motion/react';
 import { useEffect, useState } from 'react';
 import { Logo } from '@/components/layout/logo';
@@ -59,6 +59,14 @@ export function Navbar() {
   // page away and drew it again (React error #418, Nov 2026). Both now count /index as the home page
   const raw = usePathname();
   const pathname = raw === '/index' ? '/' : raw;
+  const router = useRouter();
+  // Every page in the menu, those inside the Company dropdown included, is fetched in the background once this page is
+  // idle, so a click shows it at once (links in a closed dropdown aren't on screen, so Next.js didn't fetch them ahead)
+  useEffect(() => {
+    const idle = window.requestIdleCallback ?? ((cb: () => void) => window.setTimeout(cb, 1200));
+    const id = idle(() => [...new Set([...flat.map((i) => i.href), '/checkout'])].forEach((href) => router.prefetch(href)));
+    return () => (window.cancelIdleCallback ?? window.clearTimeout)(id);
+  }, [router]);
   const { scrollY } = useScroll();
   const [scrolled, setScrolled] = useState(false);
   const [lightHeroSlide, setLightHeroSlide] = useState(false);
