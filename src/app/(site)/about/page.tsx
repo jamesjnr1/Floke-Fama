@@ -96,10 +96,9 @@ export default async function AboutPage() {
       {/* Core values */}
       <section id="values" className="pattern-cross pattern-bl scroll-mt-28 bg-canvas section-y">
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
-          {/* The heading on the left and its text on the right, as in the site's other sections */}
-          <Reveal className="grid gap-5 lg:grid-cols-12 lg:items-end lg:gap-10">
-            <h2 className="display text-[clamp(2rem,1.2rem+2.8vw,3.5rem)] text-ink lg:col-span-7">{text.about.valuesTitle}</h2>
-            <p className="no-justify text-lg leading-relaxed text-ink-3 lg:col-span-5">{text.about.valuesLead}</p>
+          <Reveal>
+            <h2 className="display max-w-3xl text-[clamp(2rem,1.2rem+2.8vw,3.5rem)] text-ink">{text.about.valuesTitle}</h2>
+            <p className="mt-4 max-w-2xl leading-relaxed text-ink-2">{text.about.valuesLead}</p>
           </Reveal>
           <CoreValues />
         </div>
