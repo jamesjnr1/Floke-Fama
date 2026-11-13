@@ -1,7 +1,10 @@
 import type { Article } from '@/data/articles';
 
 /** A news story that opens another page of the site instead of a news article. */
-export type Story = Article & { href?: string };
+export type Story = Article & { href?: string; /** Shows a red “New” label on its photo until this day (YYYY-MM-DD). */ newUntil?: string };
+
+/** Whether a story still carries its “New” label. */
+export const isNew = (a: Story, now = Date.now()) => Boolean(a.newUntil && now < Date.parse(`${a.newUntil}T00:00:00Z`));
 
 /** Where a story opens: its own page, or its news article. */
 export const storyHref = (a: Story) => a.href ?? `/news/${a.slug}`;
@@ -20,4 +23,6 @@ export const kponeStory: Story = {
   blocks: [],
   source: 'https://www.citinewsroom.com/2026/11/flokefama-renovates-hands-over-laboratory-department-at-kpone-hospital/',
   href: '/csr#kpone',
+  // “New” for a month after the handover
+  newUntil: '2026-12-09',
 };
