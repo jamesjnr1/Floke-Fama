@@ -13,6 +13,7 @@ import { localSearch, searchProducts, searchProvider } from '@/lib/search';
 import type { Category, Product } from '@/lib/types';
 import { legacyCategoryLink } from '@/lib/categories';
 import { cn } from '@/lib/utils';
+import { shopLead } from '@/data/shop-lead';
 
 /**
  * Interactive B2B catalogue: category switching and keystroke search morph the grid in place
@@ -173,9 +174,9 @@ export function Catalog({ products, categories, typeList }: {
               transition={{ duration: 0.5, delay: Math.min(i, 8) * 0.03, ease: [0.16, 1, 0.3, 1] }}
               // Off-screen cards skip rendering until they near the viewport (smoother scrolling through ~90 products);
               // the clip margin leaves room for the hover lift and shadow.
-              className={cn('[content-visibility:auto] [contain-intrinsic-size:auto_380px] [overflow-clip-margin:48px]', p.featured && !category && !query && i === 0 && 'col-span-2')}
+              className={cn('[content-visibility:auto] [contain-intrinsic-size:auto_380px] [overflow-clip-margin:48px]', i === 0 && !category && !query && (p.slug === shopLead[0] || p.featured) && 'col-span-2')}
             >
-              <ProductCard product={p} category={catBySlug.get(p.category)} wide={Boolean(p.featured && !category && !query && i === 0)} />
+              <ProductCard product={p} category={catBySlug.get(p.category)} wide={Boolean(i === 0 && !category && !query && (p.slug === shopLead[0] || p.featured))} />
             </motion.li>
           ))}
         </AnimatePresence>
