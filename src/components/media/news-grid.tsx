@@ -4,6 +4,7 @@ import { Icon } from '@/components/ui/icon';
 import { NewsMore } from '@/components/media/news-more';
 import { getArticles } from '@/lib/data';
 import { kponeStory, storyHref } from '@/data/site-stories';
+import { NewBadge } from '@/components/media/new-badge';
 
 export const formatDate = (iso: string) => new Date(`${iso}T12:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 
@@ -23,6 +24,7 @@ export async function NewsGrid() {
             <li key={a.slug}>
               <Link href={storyHref(a)} className="group block">
                 <div className="relative aspect-[25/24] overflow-hidden bg-mist">
+                  <NewBadge story={a} />
                   {a.image && (
                     <Image src={a.image.src} alt="" fill sizes="(min-width: 1024px) 400px, (min-width: 768px) 50vw, 84vw" className="object-cover transition-transform duration-700 ease-out-expo group-hover:scale-[1.03]" />
                   )}
