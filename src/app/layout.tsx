@@ -22,19 +22,7 @@ import './globals.css';
  * Latin, from Google Fonts, SIL Open Font License), so a build never depends on Google Fonts answering and visitors'
  * browsers never contact Google for it.
  */
-// Poppins: the site's text (Nov 2026)
-const poppins = localFont({
-  src: [
-    { path: './fonts/poppins-400.woff2', weight: '400' },
-    { path: './fonts/poppins-500.woff2', weight: '500' },
-    { path: './fonts/poppins-600.woff2', weight: '600' },
-    { path: './fonts/poppins-700.woff2', weight: '700' },
-    { path: './fonts/poppins-800.woff2', weight: '800' },
-  ],
-  variable: '--font-poppins',
-  display: 'swap',
-});
-// Plus Jakarta Sans: the menu bar
+// Plus Jakarta Sans: the site's text and the menu bar
 const jakarta = localFont({ src: './fonts/jakarta.woff2', weight: '400 800', variable: '--font-jakarta', display: 'swap' });
 // Two exceptions kept by request: Inter Black for the big FLOKE FAMA lettering (hero and footer), and the italic serif
 // for the accent words in page headers
@@ -97,7 +85,7 @@ const websiteLd = () => ({
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const site = await getSite();
   return (
-    <html lang="en-GH" data-banner={site.maintenance.show ? undefined : 'off'} data-patterns={process.env.NEXT_PUBLIC_PATTERNS === 'off' ? 'off' : undefined} className={`${poppins.variable} ${jakarta.variable} ${inter.variable} ${serif.variable}`} suppressHydrationWarning>
+    <html lang="en-GH" data-banner={site.maintenance.show ? undefined : 'off'} data-patterns={process.env.NEXT_PUBLIC_PATTERNS === 'off' ? 'off' : undefined} className={`${jakarta.variable} ${inter.variable} ${serif.variable}`} suppressHydrationWarning>
       <head>
         <GoogleTags />
         <script dangerouslySetInnerHTML={{ __html: bootScript }} />
