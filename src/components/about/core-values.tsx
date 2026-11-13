@@ -15,7 +15,7 @@ export function CoreValues() {
   const { coreValues } = useSite();
   const [active, setActive] = useState(0);
   return (
-    <div className="mt-12 flex flex-col gap-4 lg:h-[440px] lg:flex-row xl:h-[420px]" role="tablist" aria-label="Core values">
+    <div className="mt-12 flex flex-col gap-3 lg:h-[360px] lg:flex-row xl:h-[330px]" role="tablist" aria-label="Core values">
       {coreValues.map((v, i) => {
         const on = i === active;
         return (
@@ -38,20 +38,20 @@ export function CoreValues() {
               name={v.icon}
               className={cn('pointer-events-none absolute -bottom-8 -right-6 -z-10 text-[13rem] transition-colors duration-500', on ? 'text-brand-600/[0.07]' : 'text-brand-600/[0.04]')}
             />
-            <div className="flex h-full flex-col p-7 md:p-10 lg:p-8 xl:p-10">
+            <div className="flex h-full flex-col p-6 md:p-8 lg:p-5 xl:p-7">
               <div className={cn('flex gap-5', on ? 'items-center' : 'items-center lg:flex-col lg:items-start')}>
                 <span className={cn('grid size-14 shrink-0 place-items-center rounded-2xl text-2xl transition-colors duration-500', on ? 'bg-brand-600 text-white' : 'bg-brand-50 text-brand-700')}>
                   <Icon name={v.icon} />
                 </span>
-                <h3 className={cn('whitespace-nowrap font-bold uppercase tracking-[0.06em] text-ink', on ? 'text-2xl md:text-3xl xl:text-4xl' : 'text-2xl lg:text-sm lg:tracking-[0.02em] xl:text-base')}>{v.title}</h3>
+                <h3 className={cn('whitespace-nowrap font-bold uppercase tracking-[0.06em] text-ink', on ? 'text-2xl md:text-4xl' : 'text-2xl lg:text-sm lg:tracking-[0.02em] xl:text-base')}>{v.title}</h3>
               </div>
               {/* Fixed width, so the text does not re-wrap while the panel widens: narrower than the open panel at every
-                  screen width (22rem from 1024px, 30rem from 1280px) with room to spare on every side, so none of it is cut off */}
+                  screen width (24rem from 1024px, 33rem from 1280px), so none of it is cut off */}
               <p
                 id={`value-${i}`}
                 role="tabpanel"
                 className={cn(
-                  'mt-8 text-lg leading-relaxed text-ink-2 md:text-xl lg:w-[22rem] lg:text-lg lg:transition-opacity xl:w-[30rem] xl:text-[1.1875rem]',
+                  'mt-6 text-lg leading-relaxed text-ink-2 md:text-xl lg:w-[24rem] lg:text-lg lg:transition-opacity xl:w-[33rem] xl:text-[1.3125rem]',
                   on ? 'lg:opacity-100 lg:delay-200 lg:duration-500' : 'lg:pointer-events-none lg:opacity-0 lg:duration-150',
                 )}
               >
