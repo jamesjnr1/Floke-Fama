@@ -36,10 +36,13 @@ export function PageHero({
   return (
     <section className="relative isolate grid min-h-[34rem] place-items-center overflow-hidden bg-[#10191e] text-center text-white md:min-h-[min(47.5rem,92svh)]">
       <div aria-hidden className="absolute inset-0 -z-10">
-        {/* Phones get the smaller copy of the photo */}
+        {/* Phones get the smaller copy of the photo. Each screen size fetches only its own copy, first thing (React puts
+            these two links in the page's head); `priority` would have made phones fetch the large copy as well. */}
+        <link rel="preload" as="image" href={headerImagePhoneSrc(image)} media="(max-width: 767px)" fetchPriority="high" />
+        <link rel="preload" as="image" href={headerImageSrc(image)} media="(min-width: 768px)" fetchPriority="high" />
         <picture>
           <source media="(max-width: 767px)" srcSet={headerImagePhoneSrc(image)} />
-          <Image src={headerImageSrc(image)} alt="" fill priority unoptimized className={flip ? '-scale-x-100 object-cover' : 'object-cover'} style={{ objectPosition: position }} />
+          <Image src={headerImageSrc(image)} alt="" fill loading="eager" fetchPriority="high" unoptimized className={flip ? '-scale-x-100 object-cover' : 'object-cover'} style={{ objectPosition: position }} />
         </picture>
         {/* Light veil, as on youversion.com: the photo stays vivid; a little deeper behind the menu and the title */}
         {veil === 'strong' ? (

@@ -18,27 +18,11 @@ import '@/styles/uicons/uicons.css';
 import './globals.css';
 
 /*
- * The fonts are kept in the site (src/app/fonts, Latin, from Google Fonts; all under the SIL Open Font License), so a
- * build never depends on Google Fonts answering, and visitors' browsers never contact Google for them.
- * Plus Jakarta Sans: the main typeface (headings, body, navigation, the hero). Space Grotesk: small labels and figures.
+ * One typeface across the site (the IT team's review, Nov 2026): Plus Jakarta Sans, kept in the site (src/app/fonts,
+ * Latin, from Google Fonts, SIL Open Font License), so a build never depends on Google Fonts answering and visitors'
+ * browsers never contact Google for it.
  */
 const jakarta = localFont({ src: './fonts/jakarta.woff2', weight: '400 800', variable: '--font-jakarta', display: 'swap' });
-const grotesk = localFont({ src: './fonts/grotesk.woff2', weight: '400 700', variable: '--font-grotesk', display: 'swap' });
-// Mona Sans: the menu bar only
-const mona = localFont({ src: './fonts/mona.woff2', weight: '400 700', variable: '--font-mona', display: 'swap' });
-// Inter Black: the FLOKE FAMA lettering on the hero, as in the hero designs
-const inter = localFont({ src: './fonts/inter.woff2', weight: '900', variable: '--font-inter', display: 'swap' });
-// Poppins: the maintenance notice across the top of the page
-const poppins = localFont({
-  src: [
-    { path: './fonts/poppins-400.woff2', weight: '400' },
-    { path: './fonts/poppins-600.woff2', weight: '600' },
-  ],
-  variable: '--font-poppins',
-  display: 'swap',
-});
-// Italic serif for the accent words in page headers
-const serif = localFont({ src: './fonts/serif.woff2', weight: '400', style: 'italic', variable: '--font-instrument', display: 'swap' });
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -96,7 +80,7 @@ const websiteLd = () => ({
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const site = await getSite();
   return (
-    <html lang="en-GH" data-banner={site.maintenance.show ? undefined : 'off'} data-patterns={process.env.NEXT_PUBLIC_PATTERNS === 'off' ? 'off' : undefined} className={`${jakarta.variable} ${grotesk.variable} ${serif.variable} ${mona.variable} ${inter.variable} ${poppins.variable}`} suppressHydrationWarning>
+    <html lang="en-GH" data-banner={site.maintenance.show ? undefined : 'off'} data-patterns={process.env.NEXT_PUBLIC_PATTERNS === 'off' ? 'off' : undefined} className={jakarta.variable} suppressHydrationWarning>
       <head>
         <GoogleTags />
         <script dangerouslySetInnerHTML={{ __html: bootScript }} />

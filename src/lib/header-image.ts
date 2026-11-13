@@ -8,6 +8,13 @@ export const headerImageSrc = (src: string) =>
   src.startsWith('https://cdn.sanity.io/') ? `${src}${src.includes('?') ? '&' : '?'}w=2000&fm=webp&q=72` : src;
 
 /**
+ * Header photos set in a page's own code, not in the Studio's page headers (so `pageHeaders` doesn't list them): the
+ * Support page's. The background preload fetches them too, so that tab's header is ready when it is clicked.
+ */
+export const SUPPORT_HEADER = '/images/headers/team-engineers.webp';
+export const codeHeaders = [SUPPORT_HEADER];
+
+/**
  * Header photos that also come as a phone copy (`-m.webp`, at most 1000 px tall and more compressed), made with
  * `npm run header-images`. Phones show and preload that copy: a third to an eighth of the size.
  */
