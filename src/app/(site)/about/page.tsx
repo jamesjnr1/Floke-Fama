@@ -12,6 +12,7 @@ import { SitePageHero } from '@/components/layout/site-page-hero';
 import { Reveal } from '@/components/motion/reveal';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
+import { Rich } from '@/components/ui/rich';
 import { brochureUrl } from '@/data/seed';
 import { getSite } from '@/lib/site';
 
@@ -24,7 +25,7 @@ export const metadata: Metadata = {
 };
 
 export default async function AboutPage() {
-  const { ceo, photos } = await getSite();
+  const { ceo, photos, text } = await getSite();
   return (
     <>
       <SitePageHero page="about" />
@@ -34,18 +35,16 @@ export default async function AboutPage() {
         {/* The heading across the top; under it the text and actions on the left, the head-office photo larger on the right, both starting on the same line */}
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
           <Reveal>
-            <h2 className="display max-w-[24ch] text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">Redefining healthcare delivery in Ghana and across Africa.</h2>
+            <h2 className="display max-w-[24ch] text-[clamp(2rem,1.2rem+2.8vw,3.5rem)]">{text.about.introTitle}</h2>
           </Reveal>
           <div className="mt-10 grid gap-10 lg:mt-12 lg:grid-cols-12 lg:items-start lg:gap-16">
             <Reveal className="lg:col-span-5">
               <div className="space-y-4 text-lg leading-relaxed text-ink-3">
-                <p>
-                  <strong className="font-semibold text-ink">FLOKEFAMA LIMITED</strong>, founded in 2008, is a registered company specializing in delivering world-class healthcare equipment across Ghana and West Africa.
-                </p>
-                <p>
-                  With a strong presence in both the private and public sectors, we represent diverse medical equipment manufacturers, bringing innovative technology to our clients and contributing significantly to the development of healthcare in the markets we serve.
-                </p>
-                <p>As a trusted healthcare solutions provider and a Ghana Club 100 company, we focus on standardization, accessibility, and innovation in healthcare systems.</p>
+                {text.about.introParagraphs.map((p) => (
+                  <p key={p}>
+                    <Rich text={p} strong="font-semibold text-ink" />
+                  </p>
+                ))}
               </div>
               <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
                 <Button asChild className="w-full justify-between"><a href={brochureUrl} download>Download Our Brochure <Icon name="fi-rr-download" /></a></Button>
@@ -55,7 +54,7 @@ export default async function AboutPage() {
             <Reveal delay={0.1} className="lg:col-span-7">
               <figure className="relative aspect-[4/3] overflow-hidden bg-midnight">
                 <Image src={photos.office} alt="Inside the Flokefama head office: the ‘Together we do great things’ wall" fill sizes="(min-width: 1024px) 60vw, 100vw" className="object-cover" />
-                <figcaption className="absolute bottom-4 left-4 bg-paper/90 px-3 py-1.5 text-xs font-medium text-ink backdrop-blur">Head office · Santa Maria, Accra</figcaption>
+                <figcaption className="absolute bottom-4 left-4 bg-paper/90 px-3 py-1.5 text-xs font-medium text-ink backdrop-blur">{text.about.officeCaption}</figcaption>
               </figure>
             </Reveal>
           </div>
@@ -99,8 +98,8 @@ export default async function AboutPage() {
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
           {/* The heading on the left and its text on the right, as in the site's other sections */}
           <Reveal className="grid gap-5 lg:grid-cols-12 lg:items-end lg:gap-10">
-            <h2 className="display text-[clamp(2rem,1.2rem+2.8vw,3.5rem)] text-ink lg:col-span-7">The principles that define who we are.</h2>
-            <p className="no-justify text-lg leading-relaxed text-ink-3 lg:col-span-5">At Flokefama Limited, our success is built on a strong foundation of core values that guide every aspect of our operations. These principles define who we are, how we work, and the impact we strive to make in the healthcare industry.</p>
+            <h2 className="display text-[clamp(2rem,1.2rem+2.8vw,3.5rem)] text-ink lg:col-span-7">{text.about.valuesTitle}</h2>
+            <p className="no-justify text-lg leading-relaxed text-ink-3 lg:col-span-5">{text.about.valuesLead}</p>
           </Reveal>
           <CoreValues />
         </div>
