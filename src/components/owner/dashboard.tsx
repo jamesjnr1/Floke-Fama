@@ -16,7 +16,7 @@ import { cn } from '@/lib/utils';
 type Live = { at: number; live: Visit[]; recent: Visit[] };
 type Health = { database: 'ok' | 'down' | 'not set up'; databaseMs: number; texts: boolean; email: boolean; version: string; deployedMessage: string; region: string };
 type Totals = Pick<DaySummary, 'visits' | 'visitors' | 'views' | 'secs' | 'bounces' | 'enquiries'>;
-type Stats = { at: number; days: number; health: Health; errors: SiteError[]; summary: DaySummary; previous: Totals; series: { day: string; visits: number; visitors: number; views: number; enquiries: number }[] };
+type Stats = { at: number; days: number; health: Health; errors: SiteError[]; summary: DaySummary; previous: Totals; series: { day: string; visits: number; visitors: number; views: number; enquiries: number }[]; google?: { connected: boolean; days: number } };
 
 const RANGES = [
   { days: 1, label: 'Today' },
@@ -543,7 +543,10 @@ export function Dashboard({ name }: { name: string }) {
         {/* Figures */}
         <div className="flex items-baseline justify-between pt-4">
           <h2 className="text-xl font-bold tracking-[-0.02em]">{rangeLabel === 'Today' ? 'Today' : `The last ${rangeLabel}`}</h2>
-          <p className="text-[0.8125rem] text-ink-3">Staff visits are left out · Ghana time</p>
+          <p className="text-[0.8125rem] text-ink-3">
+            {stats?.google?.days ? `${stats.google.days} ${stats.google.days === 1 ? 'day is' : 'days are'} from Google Analytics (before the monitor started) · ` : stats && !stats.google?.connected && days > 1 ? 'Google Analytics is not connected, so days before the monitor started are empty · ' : ''}
+            Staff visits are left out · Ghana time
+          </p>
         </div>
         <div className="grid grid-cols-3 gap-4 xl:grid-cols-6">
           <Figure icon={<Activity className="size-4" />} tone="green" label="Visits" value={s ? n(s.visits) : '–'} now={s?.visits} before={prev?.visits} />

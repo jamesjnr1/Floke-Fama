@@ -3,6 +3,7 @@ import { Query } from 'node-appwrite';
 import { appwrite, DATABASE_ID, TABLES } from '@/lib/appwrite';
 import { recentErrors } from '@/lib/monitor';
 import { hasMonitorToken, isOwner } from '@/lib/owner/auth';
+import { gaConfigured } from '@/lib/pulse/ga';
 import { daySummaries, isLive, latestVisits } from '@/lib/pulse/server';
 import { merge } from '@/lib/pulse/types';
 import { smsEnabled } from '@/lib/sms';
@@ -53,6 +54,8 @@ export async function GET(req: NextRequest) {
         at: now, days, health: status, errors, summary,
         previous: { visits: before.visits, visitors: before.visitors, views: before.views, secs: before.secs, bounces: before.bounces, enquiries: before.enquiries },
         series: current.map((d) => ({ day: d.day, visits: d.visits, visitors: d.visitors, views: d.views, enquiries: d.enquiries })),
+        // The earliest day in the period that is the monitor's own (days before it are Google Analytics')
+        google: { connected: gaConfigured(), days: current.filter((d) => d.from === 'ga' && d.visits > 0).length },
       },
       { headers: noStore },
     );

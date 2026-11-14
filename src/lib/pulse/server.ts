@@ -2,6 +2,7 @@ import 'server-only';
 import { Query, type Models } from 'node-appwrite';
 import { appwrite, DATABASE_ID, isNotFound, TABLES } from '@/lib/appwrite';
 import { isTableMissing, withTable } from '@/lib/appwrite-tables';
+import { gaConfigured, gaDays } from '@/lib/pulse/ga';
 import { emptyDay, merge, summarise, VITALS, type DaySummary, type Device, type PulseBatch, type PulseItem, type Visit, type Vital, type Who } from '@/lib/pulse/types';
 
 /**
@@ -187,7 +188,30 @@ export async function daySummaries(n: number, now = Date.now()): Promise<DaySumm
       await withTable(TABLES.visitDays, () => appwrite!.tables.upsertRow({ databaseId: DATABASE_ID, tableId: TABLES.visitDays, rowId: `d${day}`, data: { day, data: JSON.stringify(sum) } })).catch((e) => console.error('[pulse] day summary not saved:', (e as Error)?.message ?? e));
     } else out.push(emptyDay(day));
   }
-  return out;
+  return fromGoogle(out, t);
+}
+
+const saveDay = (sum: DaySummary) =>
+  withTable(TABLES.visitDays, () => appwrite!.tables.upsertRow({ databaseId: DATABASE_ID, tableId: TABLES.visitDays, rowId: `d${sum.day}`, data: { day: sum.day, data: JSON.stringify(sum) } })).catch((e) => console.error('[pulse] day summary not saved:', (e as Error)?.message ?? e));
+
+/**
+ * The days the monitor has nothing for (before it was switched on) filled from Google Analytics, once: each is
+ * saved, marked as Google's, so Google is asked only for days not yet fetched. Today is always the monitor's own.
+ */
+async function fromGoogle(days: DaySummary[], t: string): Promise<DaySummary[]> {
+  if (!gaConfigured() || !appwrite) return days;
+  const missing = days.filter((d) => d.day < t && !d.from && d.visits === 0 && d.staff === 0);
+  if (!missing.length) return days;
+  try {
+    const google = await gaDays(missing[0].day, missing[missing.length - 1].day);
+    const filled = missing.map((d) => google.get(d.day) ?? { ...d, from: 'ga' as const });
+    for (let i = 0; i < filled.length; i += 10) await Promise.all(filled.slice(i, i + 10).map(saveDay));
+    const byDay = new Map(filled.map((d) => [d.day, d]));
+    return days.map((d) => byDay.get(d.day) ?? d);
+  } catch (e) {
+    console.error('[pulse] Google Analytics not read:', (e as Error)?.message ?? e);
+    return days;
+  }
 }
 
 /** Deletes visits older than 30 days (their days are summarised first). Run by the daily job. */
