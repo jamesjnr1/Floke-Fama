@@ -60,6 +60,8 @@ export const ENQUIRIES = ['quote_submitted', 'quote_list_request', 'demo_submitt
 type Counts = Record<string, number>;
 export interface DaySummary {
   day: string;
+  /** 'ga': this day is from Google Analytics (before the monitor was switched on), not the monitor's own records. */
+  from?: 'ga';
   visits: number;
   visitors: number;
   newVisitors: number;
@@ -188,6 +190,7 @@ function trim(d: DaySummary): DaySummary {
 export function merge(days: DaySummary[]): DaySummary {
   const out = emptyDay(days.length ? `${days[0].day}..${days[days.length - 1].day}` : '');
   for (const d of days) {
+    if (d.from === 'ga' && d.visits) out.from = 'ga';
     for (const k of ['visits', 'visitors', 'newVisitors', 'views', 'secs', 'bounces', 'enquiries', 'staff'] as const) out[k] += d[k] ?? 0;
     d.hours?.forEach((n, h) => (out.hours[h] += n));
     d.viewHours?.forEach((n, h) => (out.viewHours[h] += n));
