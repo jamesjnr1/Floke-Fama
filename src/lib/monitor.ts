@@ -5,6 +5,7 @@ import { appwrite, DATABASE_ID, isNotFound, TABLES } from '@/lib/appwrite';
 import { isTableMissing, withTable } from '@/lib/appwrite-tables';
 import { emailSupport, supportEmailConfigured } from '@/lib/support-email';
 import { siteUrl } from '@/lib/utils';
+import { ownerMailOn, sendOwnerMail } from '@/lib/owner/email';
 
 /**
  * Site health: every error on the website and the portals is recorded here, so the admin console (Site health) shows
@@ -86,6 +87,29 @@ export async function recordError(input: { message: string; path: string; source
 }
 
 async function alertByEmail(err: SiteError, first: boolean) {
+  // With MONITOR_REPORT_TO set the alert is the site's manager's alone, from the site monitor; the admins' plain one stops
+  if (ownerMailOn()) {
+    await sendOwnerMail({
+      subject: `${first ? 'New error' : 'Error still happening'} on the Flokefama site: ${err.area}`,
+      kicker: new Intl.DateTimeFormat('en-GB', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit', timeZone: 'Africa/Accra' }).format(new Date()),
+      heading: first ? 'Something just went wrong on the site' : 'An error is still happening',
+      intro: 'Copy it from the site monitor and paste it to Claude to have it fixed.',
+      status: { kind: 'alert', text: err.message },
+      sections: [
+        {
+          title: 'Details',
+          rows: [
+            ['Where', `${err.area} · ${err.path}`],
+            ['How often', first ? 'First time' : `${err.count} times since ${new Date(err.firstAt).toUTCString().slice(5, 22)}`],
+            ['Seen', err.source === 'browser' ? 'On a visitor’s screen' : 'On the server'],
+            ...(err.digest ? [['Code (for Vercel logs)', err.digest] as [string, string]] : []),
+          ],
+        },
+      ],
+      footer: 'From the Flokefama site monitor. You get at most one email every 6 hours about the same error.',
+    });
+    return;
+  }
   const to = recipients();
   if (!to.length || !supportEmailConfigured()) return;
   await emailSupport(

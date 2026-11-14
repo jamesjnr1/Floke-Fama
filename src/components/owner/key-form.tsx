@@ -24,7 +24,7 @@ function Backdrop({ children }: { children: ReactNode }) {
   );
 }
 
-/** The dashboard's door: the owner's key, once per browser every 30 days. */
+/** The dashboard's door: the manager's key, once per browser every 30 days. */
 export function KeyForm({ ready }: { ready: boolean }) {
   const [state, action, pending] = useActionState<UnlockState, FormData>(unlock, {});
   return (
@@ -43,7 +43,7 @@ export function KeyForm({ ready }: { ready: boolean }) {
             </button>
           </>
         ) : (
-          <p className="mt-6 rounded-xl bg-mist p-4 text-sm leading-relaxed text-ink-2">Not switched on yet: add <strong>OWNER_KEY</strong> (12 or more characters) in Vercel → Settings → Environment Variables, then redeploy.</p>
+          <p className="mt-6 rounded-xl bg-mist p-4 text-sm leading-relaxed text-ink-2">Not switched on yet: add <strong>MONITOR_KEY</strong> (12 or more characters) in Vercel → Settings → Environment Variables, then redeploy.</p>
         )}
       </form>
     </Backdrop>

@@ -9,7 +9,7 @@ import { sourceOf, vitalLimits, type DaySummary, type PageHit, type Visit, type 
 import { cn } from '@/lib/utils';
 
 /**
- * The owner's dashboard: who is on the site now and what they are doing, the period's figures against the period
+ * The site monitor: who is on the site now and what they are doing, the period's figures against the period
  * before, where visitors come from and what they look at, page speed, the site's health and its errors.
  * The live part is read again every 8 seconds, the figures every 2 minutes, both only while this tab is in front.
  */
@@ -312,7 +312,7 @@ const vitalNames: Record<Vital, { name: string; what: string }> = {
 const vitalValue = (k: Vital, v: number) => (k === 'CLS' ? v.toFixed(2) : v >= 1000 ? `${(v / 1000).toFixed(1)}s` : `${Math.round(v)}ms`);
 
 /* ---------- the dashboard ---------- */
-export function Dashboard() {
+export function Dashboard({ name }: { name: string }) {
   const [days, setDays] = useState(1);
   const [live, setLive] = useState<Live | null>(null);
   const [stats, setStats] = useState<Stats | null>(null);
@@ -324,7 +324,7 @@ export function Dashboard() {
   daysRef.current = days;
 
   const read = useCallback(async <T,>(query: string): Promise<T | null> => {
-    const res = await fetch(`/api/owner/data?${query}`, { cache: 'no-store', credentials: 'same-origin' });
+    const res = await fetch(`/api/monitor/data?${query}`, { cache: 'no-store', credentials: 'same-origin' });
     if (res.status === 401) {
       location.reload();
       return null;
@@ -481,7 +481,7 @@ export function Dashboard() {
 
         <div className="mx-auto flex max-w-[1500px] items-end justify-between gap-10 px-8 pt-10">
           <div>
-            <p className="text-sm font-semibold text-brand-300">{greeting}. This is flokefama.com right now.</p>
+            <p className="text-sm font-semibold text-brand-300">{greeting}, {name}. This is flokefama.com right now.</p>
             <div className="mt-5 flex items-end gap-6">
               <p className="bg-[linear-gradient(180deg,#ffffff_30%,#9fe0bf)] bg-clip-text text-[7rem] font-extrabold leading-[0.8] tracking-[-0.05em] tabular-nums text-transparent">{live ? publicOnline.length : '–'}</p>
               <div className="pb-1">

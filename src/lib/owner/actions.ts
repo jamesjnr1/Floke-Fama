@@ -8,9 +8,9 @@ import { clearAttempts, overLimit, recordAttempt } from '@/lib/shared-limit';
 
 export type UnlockState = { error?: string };
 
-/** Opens the dashboard with the owner's key: five wrong tries from one connection lock it for 15 minutes. */
+/** Opens the dashboard with the manager's key: five wrong tries from one connection lock it for 15 minutes. */
 export async function unlock(_prev: UnlockState, form: FormData): Promise<UnlockState> {
-  if (!ownerConfigured()) return { error: 'The dashboard has not been switched on yet (OWNER_KEY is not set in Vercel).' };
+  if (!ownerConfigured()) return { error: 'The dashboard has not been switched on yet (MONITOR_KEY is not set in Vercel).' };
   const ip = ((await headers()).get('x-forwarded-for') ?? '').split(',')[0].trim() || 'unknown';
   const limit = `owner:${ip}`;
   if (await overLimit(limit, 5, 15 * 60_000)) return { error: 'Too many wrong tries. Wait 15 minutes and try again.' };
@@ -20,12 +20,12 @@ export async function unlock(_prev: UnlockState, form: FormData): Promise<Unlock
   }
   await clearAttempts(limit);
   await signInOwner();
-  redirect('/owner');
+  redirect('/monitor');
 }
 
 export async function lock() {
   await signOutOwner();
-  redirect('/owner');
+  redirect('/monitor');
 }
 
 /** Clears an error from the list once it is dealt with (it comes back if it happens again). */

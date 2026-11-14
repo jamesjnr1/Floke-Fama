@@ -7,7 +7,7 @@ import type { PulseItem } from '@/lib/pulse/types';
 
 /**
  * The site monitor's script: tells /api/pulse which pages a visitor opens, how long they stay, what they do (quote
- * requests, calls, searches, downloads, links out) and how fast the pages felt, so the owner's dashboard (/owner)
+ * requests, calls, searches, downloads, links out) and how fast the pages felt, so the site monitor (/monitor)
  * can show the site live. A visitor is a random code kept in their browser: no name, no email, no cookies.
  * Reports are sent a few at a time, one request after another, and never hold a page up or break it.
  */
@@ -112,7 +112,7 @@ export function pulseEvent(n: string, v?: string) {
 
 export function Pulse() {
   const pathname = usePathname();
-  const off = pathname.startsWith('/owner');
+  const off = pathname.startsWith('/monitor');
 
   useReportWebVitals((m) => {
     if (off || !['LCP', 'INP', 'CLS', 'TTFB', 'FCP'].includes(m.name)) return;

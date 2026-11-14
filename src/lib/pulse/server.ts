@@ -6,7 +6,7 @@ import { emptyDay, merge, summarise, VITALS, type DaySummary, type Device, type 
 
 /**
  * The site monitor's records (see lib/pulse/types.ts): saving what browsers report, and reading it back for the
- * owner's dashboard. Everything here is quiet about failure: recording a visit must never break or slow a page.
+ * manager's dashboard. Everything here is quiet about failure: recording a visit must never break or slow a page.
  */
 const MAX_PAGES = 80;
 const MAX_EVENTS = 100;
