@@ -10,6 +10,7 @@ import { bootScript, revealNowScript } from '@/lib/a11y';
 import { introOn, introPlayer } from '@/lib/intro';
 import { SiteProvider } from '@/components/site-provider';
 import { GoogleTags } from '@/components/google-analytics';
+import { Pulse } from '@/components/pulse';
 import { getSite } from '@/lib/site';
 import { socials } from '@/data/socials';
 import type { Contact } from '@/lib/site-content';
@@ -111,6 +112,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           }}
         />
         <ServiceWorkerRegister />
+        {/* The site monitor (the owner's dashboard, /owner): on the live site only, so tests and previews aren't counted */}
+        {(process.env.VERCEL_ENV === 'production' || process.env.PULSE_TEST === 'on') && process.env.PULSE !== 'off' && <Pulse />}
         {/* Vercel Web Analytics: only on Vercel, where its script is served */}
         {process.env.VERCEL && <Analytics />}
         {/* Vercel Speed Insights: track Core Web Vitals */}

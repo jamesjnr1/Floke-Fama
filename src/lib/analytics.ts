@@ -1,4 +1,5 @@
 import { track as vercelTrack } from '@vercel/analytics';
+import { pulseEvent } from '@/components/pulse';
 
 /**
  * Conversion events, so Flokefama can see which pages and products produce enquiries.
@@ -21,6 +22,9 @@ export type ConversionEvent =
 
 export function track(event: ConversionEvent, props?: Record<string, string | number | boolean>) {
   try {
+    // The owner's dashboard (/owner) too, with the product or page it was about
+    const about = props?.product ?? props?.kind ?? props?.items;
+    pulseEvent(event, about === undefined ? undefined : String(about));
     vercelTrack(event, props);
   } catch {
     // Analytics must never break the page
