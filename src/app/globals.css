@@ -380,3 +380,5 @@ html.ff-intro .site-intro-logo {
 .owner-page .tabular-nums,
 .owner-page .num,
 .owner-page svg text { font-family: var(--font-grotesk), var(--font-jakarta), sans-serif; font-feature-settings: 'tnum'; }
+/* The site's pages justify their paragraphs; the monitor's short notes read better ragged */
+.owner-page p { text-align: start !important; }
