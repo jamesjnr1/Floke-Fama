@@ -112,7 +112,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           }}
         />
         <ServiceWorkerRegister />
-        {/* The site monitor (the owner's dashboard, /owner): on the live site only, so tests and previews aren't counted */}
+        {/* The site monitor (the site monitor, /monitor): on the live site only, so tests and previews aren't counted */}
         {(process.env.VERCEL_ENV === 'production' || process.env.PULSE_TEST === 'on') && process.env.PULSE !== 'off' && <Pulse />}
         {/* Vercel Web Analytics: only on Vercel, where its script is served */}
         {process.env.VERCEL && <Analytics />}

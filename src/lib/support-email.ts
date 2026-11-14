@@ -50,6 +50,19 @@ export async function emailSupport(subject: string, fields: Record<string, strin
   return true;
 }
 
+/** Sends a ready-made HTML email (the site's manager's site monitor emails, lib/owner/email.ts). False when email isn't set up. */
+export async function sendHtmlEmail(mail: { to: string[]; subject: string; html: string; text: string; senderName?: string }) {
+  if (!supportEmailConfigured() || !mail.to.length) return false;
+  const res = await fetch(`${api()}/smtp/email`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'api-key': key()! },
+    body: JSON.stringify({ sender: { name: mail.senderName ?? 'Flokefama website', email: sender() }, to: mail.to.map((email) => ({ email })), subject: mail.subject, htmlContent: mail.html, textContent: mail.text }),
+    signal: AbortSignal.timeout(10_000),
+  });
+  if (!res.ok) throw new Error(`Brevo responded ${res.status}: ${(await res.text().catch(() => '')).slice(0, 200)}`);
+  return true;
+}
+
 /** A new shop order for the sales team; replies go to the hospital's contact. */
 export const emailSales = (subject: string, fields: Record<string, string>, opts: { phone?: string; replyTo?: string; link?: Extra['link'] }) =>
   emailSupport(subject, fields, opts.phone, { to: salesRecipients(), replyTo: opts.replyTo, link: opts.link, footer: 'A quote request from the shop on the Flokefama website. Sales sends the hospital a quote with the price.' });

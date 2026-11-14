@@ -4,17 +4,17 @@ import { cookies } from 'next/headers';
 import { signPayload, verifyPayload } from '@/lib/auth/session';
 
 /**
- * The owner's dashboard (/owner) is for one person: whoever holds OWNER_KEY (set in Vercel, 12+ characters). It has
+ * The site monitor (/monitor) is for one person: whoever holds MONITOR_KEY (set in Vercel, 12+ characters). It has
  * nothing to do with the admin console's accounts: no admin, engineer or hospital can open it. Entering the key
- * signs this browser in for 30 days (a signed, HttpOnly cookie). Without OWNER_KEY the dashboard is closed to all.
+ * signs this browser in for 30 days (a signed, HttpOnly cookie). Without MONITOR_KEY the dashboard is closed to all.
  *
  * MONITOR_TOKEN (optional, 24+ characters) lets a monitoring assistant read the site's health, errors and totals
- * (never the visitors) from /api/owner/data?view=report with `Authorization: Bearer <token>`.
+ * (never the visitors) from /api/monitor/data?view=report with `Authorization: Bearer <token>`.
  */
 export const OWNER_COOKIE = 'ff_owner';
 const DAYS = 30;
 
-const key = () => process.env.OWNER_KEY?.trim() ?? '';
+const key = () => (process.env.MONITOR_KEY ?? process.env.OWNER_KEY)?.trim() ?? '';
 export const ownerConfigured = () => key().length >= 12;
 
 const same = (a: string, b: string) => {
@@ -25,7 +25,7 @@ const same = (a: string, b: string) => {
 
 export const keyMatches = (given: string) => ownerConfigured() && same(given.trim(), key());
 
-/** Is this browser signed in as the owner? */
+/** Is this browser signed in as the site's manager? */
 export async function isOwner() {
   if (!ownerConfigured()) return false;
   const jar = await cookies();
@@ -48,3 +48,6 @@ export function hasMonitorToken(req: Request) {
   const token = process.env.MONITOR_TOKEN?.trim() ?? '';
   return token.length >= 24 && same(req.headers.get('authorization') ?? '', `Bearer ${token}`);
 }
+
+/** What the dashboard and its emails call the site's manager (MONITOR_NAME, else Jonathan). */
+export const ownerName = () => (process.env.MONITOR_NAME ?? process.env.OWNER_NAME)?.trim().slice(0, 40) || 'Jonathan';
