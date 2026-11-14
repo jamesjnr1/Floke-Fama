@@ -184,7 +184,7 @@ function Trend({ points }: { points: { label: string; visits: number; views: num
       <div className="mb-3 flex items-center gap-5 text-[0.8125rem] text-ink-3">
         <span className="flex items-center gap-1.5"><span className="size-2.5 rounded-full bg-[#12a871]" /> Pages opened</span>
         <span className="flex items-center gap-1.5"><span className="size-2.5 rounded-full bg-[#075056]" /> Visits</span>
-        <span className="ml-auto rounded-full bg-mist px-3 py-1 font-semibold text-ink-2">{p ? `${p.label} · ${n(p.visits)} visits · ${n(p.views)} pages` : 'Move over the chart for a day’s figures'}</span>
+        <span className="num ml-auto rounded-full bg-mist px-3 py-1 font-semibold text-ink-2">{p ? `${p.label} · ${n(p.visits)} visits · ${n(p.views)} pages` : 'Move over the chart for a day’s figures'}</span>
       </div>
       <svg viewBox={`0 0 ${W} ${H}`} className="h-64 w-full" role="img" aria-label="Visits and pages opened over the period" onMouseLeave={() => setHover(null)}>
         <defs>
@@ -292,7 +292,7 @@ function VisitRow({ v, now, live }: { v: Visit; now: number; live?: boolean }) {
           </span>
         </span>
         <span className="hidden shrink-0 text-right text-[0.8125rem] text-ink-3 sm:block">
-          <span className="flex items-center justify-end gap-1.5 font-medium text-ink-2"><DeviceIcon device={v.device} className="size-3.5" /> {v.pages.length} {v.pages.length === 1 ? 'page' : 'pages'} · {duration(v.secs)}</span>
+          <span className="num flex items-center justify-end gap-1.5 font-medium text-ink-2"><DeviceIcon device={v.device} className="size-3.5" /> {v.pages.length} {v.pages.length === 1 ? 'page' : 'pages'} · {duration(v.secs)}</span>
           <span>{live ? sourceOf(v) : ago(Date.parse(v.lastAt), now)}</span>
         </span>
         <ChevronDown className={cn('size-4 shrink-0 text-ink-3 transition-transform', open && 'rotate-180')} />
@@ -606,7 +606,7 @@ export function Dashboard() {
                       <span className="bg-[#e0a52b]" style={{ width: `${rate(row.n - row.good - row.poor, row.n)}%` }} />
                       <span className="bg-signal" style={{ width: `${rate(row.poor, row.n)}%` }} />
                     </div>
-                    <p className="mt-2 text-xs text-ink-3">{rate(row.good, row.n)}% good · {n(row.n)} visits · {k}</p>
+                    <p className="num mt-2 text-xs text-ink-3">{rate(row.good, row.n)}% good · {n(row.n)} visits · {k}</p>
                   </div>
                 );
               })}
@@ -628,7 +628,7 @@ export function Dashboard() {
                     <p className="mt-0.5 text-[0.8125rem] text-ink-3">{e.area} · {e.path} · {e.source === 'browser' ? 'on a visitor’s screen' : 'on the server'}</p>
                   </div>
                   <p className="shrink-0 text-right text-[0.8125rem] text-ink-3">
-                    <span className="block font-semibold text-ink-2">{n(e.count)} {e.count === 1 ? 'time' : 'times'}</span>
+                    <span className="num block font-semibold text-ink-2">{n(e.count)} {e.count === 1 ? 'time' : 'times'}</span>
                     last {ago(Date.parse(e.lastAt), now)}
                   </p>
                   <div className="flex shrink-0 gap-2">

@@ -375,3 +375,8 @@ html.ff-intro .site-intro-logo {
     visibility: hidden;
   }
 }
+
+/* ---------- Owner's dashboard (/owner): figures in Space Grotesk, the rest in Plus Jakarta Sans ---------- */
+.owner-page .tabular-nums,
+.owner-page .num,
+.owner-page svg text { font-family: var(--font-grotesk), var(--font-jakarta), sans-serif; font-feature-settings: 'tnum'; }
