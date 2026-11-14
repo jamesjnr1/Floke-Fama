@@ -22,7 +22,7 @@ export type ConversionEvent =
 
 export function track(event: ConversionEvent, props?: Record<string, string | number | boolean>) {
   try {
-    // The owner's dashboard (/owner) too, with the product or page it was about
+    // The site monitor (/monitor) too, with the product or page it was about
     const about = props?.product ?? props?.kind ?? props?.items;
     pulseEvent(event, about === undefined ? undefined : String(about));
     vercelTrack(event, props);

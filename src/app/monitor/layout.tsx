@@ -1,7 +1,7 @@
 import localFont from 'next/font/local';
 
 /*
- * The owner's dashboard sets its figures in Space Grotesk (kept in the site: src/app/fonts, Latin, SIL Open Font
+ * The site monitor sets its figures in Space Grotesk (kept in the site: src/app/fonts, Latin, SIL Open Font
  * License) and everything else in the site's Plus Jakarta Sans. Any number marked `tabular-nums` or `num` gets it
  * (globals.css, .owner-page).
  */

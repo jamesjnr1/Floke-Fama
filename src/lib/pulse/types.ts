@@ -1,5 +1,5 @@
 /**
- * Site monitor ("pulse"): what the owner's dashboard (/owner) shows. A visit is one person's time on the site, from
+ * Site monitor ("pulse"): what the site monitor (/monitor) shows. A visit is one person's time on the site, from
  * the first page until 30 minutes without activity; a day summary is a day's visits added up, kept after the visits
  * themselves are deleted (30 days). No names, emails or IP addresses of the public are kept: a visitor is a random
  * code, with the country and city Vercel reports. Signed-in users (hospitals, staff) show by name.

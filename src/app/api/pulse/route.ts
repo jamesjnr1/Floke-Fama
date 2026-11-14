@@ -5,8 +5,8 @@ import type { Who } from '@/lib/pulse/types';
 import { clientIp, limited } from '@/lib/rate-limit';
 
 /**
- * Where the site's own script (components/pulse.tsx) reports what a visitor is doing, for the owner's dashboard
- * (/owner): pages opened, time spent, actions and page speed. The address the report comes from is used only to
+ * Where the site's own script (components/pulse.tsx) reports what a visitor is doing, for the site monitor
+ * (/monitor): pages opened, time spent, actions and page speed. The address the report comes from is used only to
  * limit how many one connection can send; it is not stored. Search engines and testing tools are left out.
  */
 export const dynamic = 'force-dynamic';

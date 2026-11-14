@@ -9,7 +9,7 @@ import { smsEnabled } from '@/lib/sms';
 import { supportEmailConfigured } from '@/lib/support-email';
 
 /**
- * The owner's dashboard reads everything from here (signed in at /owner):
+ * The site monitor reads everything from here (signed in at /monitor):
  *   ?view=live            who is on the site now and who just left (asked every few seconds)
  *   ?view=stats&days=7    the totals for the period, the days before it for comparison, health and errors
  *   ?view=report          health, errors and totals only, no visitors: also open to MONITOR_TOKEN
