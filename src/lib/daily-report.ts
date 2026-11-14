@@ -52,12 +52,12 @@ export async function sendDailyReport(now = Date.now()) {
       intro: y ? `Yesterday flokefama.com had ${y.visits.toLocaleString('en-GB')} visit${y.visits === 1 ? '' : 's'} and ${y.enquiries.toLocaleString('en-GB')} enquir${y.enquiries === 1 ? 'y' : 'ies'}. Here is the last 24 hours.` : 'Here is the last 24 hours on flokefama.com.',
       status: problems.length ? { kind: 'alert', text: `${problems.length} thing${problems.length === 1 ? '' : 's'} to look at`, items: problems } : { kind: 'ok', text: 'Everything is working' },
       tiles: [
-        { label: 'Visits yesterday', value: (y?.visits ?? 0).toLocaleString('en-GB'), note: `${(y?.visitors ?? 0).toLocaleString('en-GB')} visitors, ${(y?.newVisitors ?? 0).toLocaleString('en-GB')} new`, tone: 'green' },
-        { label: 'Pages opened', value: (y?.views ?? 0).toLocaleString('en-GB'), note: y?.visits ? `${mins(y.secs / y.visits)} per visit` : undefined, tone: 'blue' },
-        { label: 'Enquiries', value: (y?.enquiries ?? 0).toLocaleString('en-GB'), note: 'Quotes, demos, chat', tone: 'red' },
-        { label: 'Orders', value: String(orders.length), note: 'Last 24 hours', tone: 'teal' },
-        { label: 'New hospitals', value: String(hospitals.length), note: engineers.length ? `${engineers.length} new engineer${engineers.length === 1 ? '' : 's'}` : 'Last 24 hours', tone: 'violet' },
-        { label: 'Service jobs', value: String(opened.length), note: `${resolved.length} resolved, ${waiting.length} waiting`, tone: 'amber' },
+        { label: 'Visits yesterday', value: (y?.visits ?? 0).toLocaleString('en-GB'), note: `${(y?.visitors ?? 0).toLocaleString('en-GB')} visitors, ${(y?.newVisitors ?? 0).toLocaleString('en-GB')} new` },
+        { label: 'Pages opened', value: (y?.views ?? 0).toLocaleString('en-GB'), note: y?.visits ? `${mins(y.secs / y.visits)} per visit` : undefined },
+        { label: 'Enquiries', value: (y?.enquiries ?? 0).toLocaleString('en-GB'), note: 'Quotes, demos, chat' },
+        { label: 'Orders', value: String(orders.length), note: 'Last 24 hours' },
+        { label: 'New hospitals', value: String(hospitals.length), note: engineers.length ? `${engineers.length} new engineer${engineers.length === 1 ? '' : 's'}` : 'Last 24 hours' },
+        { label: 'Service jobs', value: String(opened.length), note: `${resolved.length} resolved, ${waiting.length} waiting` },
       ],
       sections: [
         { title: 'Most opened pages yesterday', rows: y ? Object.entries(y.pages).sort((a, b) => b[1].v - a[1].v).slice(0, 6).map(([path, r]): [string, string] => [r.t ? `${r.t} (${path})` : path, r.v.toLocaleString('en-GB')]) : [], empty: 'No visits recorded yesterday.' },
