@@ -4,6 +4,7 @@ import { clientDaily, clientTextsAuto } from '@/lib/client-sms';
 import { appwrite } from '@/lib/appwrite';
 import { clearSaveLocks, loadDesk, scheduleMaintenance } from '@/lib/service/server';
 import { sendDailyReport } from '@/lib/daily-report';
+import { pruneVisits } from '@/lib/pulse/server';
 
 /**
  * The daily check: opens preventive maintenance jobs for machines due within two weeks (the engineering department's
@@ -25,6 +26,8 @@ export async function GET(req: NextRequest) {
   // Preventive maintenance jobs open whether or not texts are switched on
   const scheduled = appwrite ? await scheduleMaintenance().catch((e) => (console.error('[cron] maintenance schedule:', e), 0)) : 0;
   if (appwrite) await clearSaveLocks().catch((e) => console.error('[cron] save marks:', e));
+  // The site monitor: yesterday is added up, and visits older than 30 days are deleted
+  if (appwrite) await pruneVisits().catch((e) => console.error('[cron] site monitor:', e));
   // The morning report to the admins (lib/daily-report.ts); a test run with ?on= doesn't send it
   const report = req.nextUrl.searchParams.get('on') ? null : await sendDailyReport().catch((e) => (console.error('[cron] daily report:', e), { sent: false }));
   if (!clientTextsAuto) return NextResponse.json({ enabled: false, scheduled, report });
