@@ -30,6 +30,10 @@ export const TABLES = {
   rateLimits: 'rate_limits',
   /** Site health: errors on the site and the portals, one row per kind of error (lib/monitor.ts). */
   siteErrors: 'site_errors',
+  /** Site monitor (lib/pulse): one row per visit to the site, kept 30 days. */
+  visits: 'visits',
+  /** Site monitor: one row per day, that day's visits added up (kept for good). */
+  visitDays: 'visit_days',
 } as const;
 export const BUCKETS = { hospitalLogos: 'hospital-logos' } as const;
 

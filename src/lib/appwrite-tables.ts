@@ -34,6 +34,16 @@ const specs: Record<string, { name: string; columns: Column[]; indexes?: { key: 
     columns: [{ key: 'area', size: 32, required: true }, { key: 'lastAt', size: 32, required: true }, { key: 'data', required: true }],
     indexes: [{ key: 'last_at', columns: ['lastAt'] }],
   },
+  [TABLES.visits]: {
+    name: 'Site monitor: visits',
+    columns: [{ key: 'day', size: 10, required: true }, { key: 'lastAt', size: 32, required: true }, { key: 'data', required: true }],
+    indexes: [{ key: 'day', columns: ['day'] }, { key: 'last_at', columns: ['lastAt'] }],
+  },
+  [TABLES.visitDays]: {
+    name: 'Site monitor: days',
+    columns: [{ key: 'day', size: 10, required: true }, { key: 'data', required: true }],
+    indexes: [{ key: 'day', columns: ['day'] }],
+  },
   [TABLES.smsLog]: {
     name: 'Text messages',
     columns: [

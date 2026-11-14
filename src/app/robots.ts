@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
   // console's sign-in page, which may be indexed (the console behind it never is).
   if (!allowIndexing) return { rules: { userAgent: '*', allow: '/admin/login', disallow: '/' } };
   return {
-    rules: { userAgent: '*', allow: ['/', '/admin/login'], disallow: ['/admin', '/portal', '/engineer', '/login', '/api/', '/offline'] },
+    rules: { userAgent: '*', allow: ['/', '/admin/login'], disallow: ['/admin', '/portal', '/engineer', '/login', '/api/', '/offline', '/owner'] },
     sitemap: `${siteUrl}/sitemap.xml`,
   };
 }
