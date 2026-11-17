@@ -53,8 +53,8 @@ export const roleAreas: { prefix: string; role: Role }[] = [
   { prefix: '/admin', role: 'admin' },
 ];
 
-/** Pages that need a signed-in user of any role. */
-export const signedInAreas = ['/checkout'];
+/** Pages that need a signed-in user of any role (none now: anyone can request a quote, signed in or not). */
+export const signedInAreas: string[] = [];
 
 /** Where a role may be sent after signing in: anywhere on the site except another role's area. */
 export function nextFor(role: Role, next: string | null) {
