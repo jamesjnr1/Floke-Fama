@@ -124,9 +124,7 @@ export async function POST(req: NextRequest) {
   }
 
   // Straight to Flokefama: an email to info@flokefama.com and a text to the company line (lib/quote-mail.ts)
-  const momo = (o as { momo?: { network?: unknown } }).momo;
-  const payment = (order.method === 'momo' && text(momo?.network, 30)) || { quote: 'Agreed with sales after the quote', momo: 'Mobile money', card: 'Card', bank: 'Bank transfer' }[order.method];
-  const emailed = await deliverQuote(order, who, { onBoard, payment });
+  const emailed = await deliverQuote(order, who, { onBoard });
   // Sales has it when it's on the sales board, or at least in their inbox; otherwise the checkout asks the hospital to send it
   const sales = onBoard || Boolean(emailed);
   return NextResponse.json({ order, sales }, { headers: noStore });
