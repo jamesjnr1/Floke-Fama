@@ -205,6 +205,22 @@ export async function textPerson(kind: string, ref: string, phone: string, text:
   await send(kind, ref, [phone], text);
 }
 
+/** The company line: every new quote request is texted here at once (QUOTE_SMS_TO, comma-separated, to change it). */
+const companyLine = () => (process.env.QUOTE_SMS_TO?.trim() || '+233533392863').split(',');
+
+/** A short text to the company line about a quote request that just came in. Never throws; waits 6 seconds at most. */
+export async function textQuote(q: { reference: string; facility: string; name: string; phone: string; items: { name: string; qty: number }[]; urgent?: boolean }) {
+  if (!smsEnabled) return;
+  try {
+    const count = q.items.reduce((n, i) => n + i.qty, 0);
+    const first = q.items.slice(0, 2).map((i) => `${plain(i.name, 28)} x${i.qty}`).join(', ') + (q.items.length > 2 ? ` +${q.items.length - 2} more` : '');
+    const text = `${q.urgent ? 'URGENT quote' : 'New quote'} ${q.reference} from ${plain(q.facility, 40)}: ${count} item${count === 1 ? '' : 's'} (${first}). Call ${plain(q.name, 30)} on ${plain(q.phone, 20)}. Details in support@flokefama.com.`;
+    await Promise.race([send('quote', q.reference, companyLine(), text), new Promise((ok) => setTimeout(ok, 6000))]);
+  } catch (e) {
+    console.error('sms: quote not texted', e);
+  }
+}
+
 /* ---------- what ---------- */
 
 const where = (t: Ticket, s: ServiceState) => {
