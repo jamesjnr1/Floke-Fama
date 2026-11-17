@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } fro
 import { LogoMark, LogoWordmark } from '@/components/layout/logo';
 import { clearError, lock } from '@/lib/owner/actions';
 import type { SiteError } from '@/lib/monitor';
-import { sourceOf, vitalLimits, type DaySummary, type PageHit, type Visit, type VisitEvent, type Vital } from '@/lib/pulse/types';
+import { isNoiseError, sourceOf, vitalLimits, type DaySummary, type PageHit, type Visit, type VisitEvent, type Vital } from '@/lib/pulse/types';
 import { cn } from '@/lib/utils';
 
 /**
@@ -232,7 +232,7 @@ function Trend({ points }: { points: { label: string; visits: number; views: num
 /** A visit's pages and actions in the order they happened. */
 function Journey({ v }: { v: Visit }) {
   const start = Date.parse(v.startedAt);
-  const steps: { at: number; page?: PageHit; event?: VisitEvent }[] = [...v.pages.map((p) => ({ at: p.at, page: p })), ...v.events.map((e) => ({ at: e.at, event: e }))].sort((a, b) => a.at - b.at);
+  const steps: { at: number; page?: PageHit; event?: VisitEvent }[] = [...v.pages.map((p) => ({ at: p.at, page: p })), ...v.events.filter((e) => !(e.n === 'js_error' && isNoiseError(e.v))).map((e) => ({ at: e.at, event: e }))].sort((a, b) => a.at - b.at);
   return (
     <div className="mt-1 rounded-2xl bg-[linear-gradient(180deg,#f4f8f9,#eef5f3)] p-5 ring-1 ring-line/60">
       <dl className="mb-4 grid grid-cols-2 gap-x-6 gap-y-2 text-[0.8125rem] sm:grid-cols-4">
@@ -384,7 +384,7 @@ export function Dashboard({ name }: { name: string }) {
     for (const v of [...(live?.live ?? []), ...(live?.recent ?? [])]) {
       const start = Date.parse(v.startedAt);
       for (const p of v.pages) items.push({ at: start + p.at * 1000, v, text: `opened ${pageName(p.p, p.t)}`, action: false });
-      for (const e of v.events) items.push({ at: start + e.at * 1000, v, text: eventName(e.n).toLowerCase(), detail: e.v, action: true });
+      for (const e of v.events) if (!(e.n === 'js_error' && isNoiseError(e.v))) items.push({ at: start + e.at * 1000, v, text: eventName(e.n).toLowerCase(), detail: e.v, action: true });
     }
     return items.sort((a, b) => b.at - a.at).slice(0, 30);
   }, [live]);
