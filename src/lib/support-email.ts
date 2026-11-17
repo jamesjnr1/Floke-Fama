@@ -4,7 +4,7 @@ import 'server-only';
  * Support requests by email, through Brevo (brevo.com, free for up to 300 emails a day). Set BREVO_API_KEY
  * (Brevo → SMTP & API → API keys) and the sender, BREVO_SENDER_EMAIL: an address confirmed in Brevo → Senders
  * (one click in a confirmation email, no website or DNS changes). Requests go to SUPPORT_EMAIL_TO, and shop
- * orders to SALES_EMAIL_TO (comma-separated; default: SUPPORT_EMAIL_TO, then the sender). Without the key this does
+ * quote requests to support@flokefama.com (QUOTE_EMAIL_TO to change it). Without the key this does
  * nothing and returns false.
  */
 const key = () => process.env.BREVO_API_KEY?.trim();
@@ -12,7 +12,9 @@ const api = () => (process.env.BREVO_API_URL?.trim() || 'https://api.brevo.com/v
 const sender = () => process.env.BREVO_SENDER_EMAIL?.trim();
 const list = (v: string | undefined) => (v ?? '').split(',').map((e) => e.trim()).filter(Boolean);
 const recipients = () => list(process.env.SUPPORT_EMAIL_TO?.trim() || sender());
-const salesRecipients = () => list(process.env.SALES_EMAIL_TO?.trim() || process.env.SUPPORT_EMAIL_TO?.trim() || sender());
+/** Every quote request (and demonstration request) goes to support@flokefama.com; QUOTE_EMAIL_TO only to change that address. */
+export const QUOTE_EMAIL = 'support@flokefama.com';
+const salesRecipients = () => list(process.env.QUOTE_EMAIL_TO?.trim() || QUOTE_EMAIL);
 
 export const supportEmailConfigured = () => Boolean(key() && sender());
 
