@@ -32,6 +32,8 @@ export interface SavedOrder {
   equipmentAdded?: boolean;
   /** When it was emailed to info@flokefama.com (lib/quote-mail.ts). */
   supportSentAt?: string;
+  /** The inbox it was emailed to then (a quote that went to an earlier address is sent once more to the new one). */
+  sentTo?: string;
   /** Sales' notes and moves, oldest first. */
   log?: { at: string; by: string; text: string }[];
 }
