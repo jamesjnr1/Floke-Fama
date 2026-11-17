@@ -7,7 +7,6 @@ import { departmentLabel, timelineLabel } from '@/lib/order-needs';
 import type { SavedOrder } from '@/lib/orders';
 import { textQuote } from '@/lib/sms';
 import { emailSales, quoteInbox, supportEmailConfigured } from '@/lib/support-email';
-import { siteUrl } from '@/lib/utils';
 
 /**
  * Every quote request reaches Flokefama by itself: an email to info@flokefama.com and a text to the company line,
@@ -77,7 +76,7 @@ export async function deliverQuote(o: SavedOrder, who: Who, opts: { late?: boole
       Email: who.email,
       ...(opts.late ? { Sent: `${new Date(o.placedAt).toUTCString()} (forwarded now)` } : {}),
     },
-    opts.onBoard === false ? { phone: who.phone, replyTo: who.email } : { phone: who.phone, replyTo: who.email, link: { href: `${siteUrl}/admin?tab=orders&order=${o.reference}`, label: 'Open it on the sales board' } },
+    { phone: who.phone, replyTo: who.email },
   ).then((sent) => Boolean(sent), (e) => (console.error('[quotes] email to support not sent', o.reference, e), false));
   await texted;
   if (emailed) await markSent(o.reference, new Date().toISOString());

@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 /** What the console holds, shown beside the form so staff know they are in the right place. */
 const inside = [
-  { icon: 'fi-rr-box-open', title: 'Orders', body: 'Every order, from payment to delivery.' },
+  { icon: 'fi-rr-box-open', title: 'Quote requests', body: 'Who asked for a quote, and for what.' },
   { icon: 'fi-rr-users', title: 'Accounts', body: 'Who registers and who buys.' },
   { icon: 'fi-rr-shopping-cart', title: 'Product demand', body: 'What hospitals order most.' },
   { icon: 'fi-rr-tools', title: 'Service desk', body: 'Requests, engineers and calibrations.' },
