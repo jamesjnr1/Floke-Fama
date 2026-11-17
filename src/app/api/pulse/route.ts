@@ -1,4 +1,5 @@
-import { NextResponse, type NextRequest } from 'next/server';
+import { after, NextResponse, type NextRequest } from 'next/server';
+import { catchUpQuotes } from '@/lib/quote-mail';
 import { ADMIN_COOKIE, ENGINEER_COOKIE, SESSION_COOKIE, verifySession } from '@/lib/auth/session';
 import { ingest, isBot, parseBatch } from '@/lib/pulse/server';
 import type { Who } from '@/lib/pulse/types';
@@ -44,6 +45,8 @@ export async function POST(req: NextRequest) {
   }
   const batch = parseBatch(raw);
   if (!batch || !batch.items.length) return new NextResponse(null, { status: 400 });
+  // While people use the site, any quote that hasn't reached support@flokefama.com yet is sent (at most every 10 minutes)
+  after(() => catchUpQuotes().then(() => undefined));
   await ingest(batch, { ua, country: header(req, 'x-vercel-ip-country'), region: header(req, 'x-vercel-ip-country-region'), city: header(req, 'x-vercel-ip-city'), who: await whoIs(req) });
   return new NextResponse(null, { status: 204 });
 }
