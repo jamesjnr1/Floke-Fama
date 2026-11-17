@@ -3,10 +3,8 @@ import { Query, type Models } from 'node-appwrite';
 import { catalogue } from '@/data/catalogue';
 import { appwrite, DATABASE_ID, isNotFound, TABLES } from '@/lib/appwrite';
 import { getClientSession } from '@/lib/auth/server';
-import { emailSales } from '@/lib/support-email';
-import { textQuote } from '@/lib/sms';
-import { siteUrl } from '@/lib/utils';
-import { departmentLabel, timelineLabel, timelines } from '@/lib/order-needs';
+import { deliverQuote } from '@/lib/quote-mail';
+import { departmentLabel, timelines } from '@/lib/order-needs';
 import { needsInstallation, tidyName } from '@/lib/installation';
 import type { SavedOrder } from '@/lib/orders';
 import { registerPurchase } from '@/lib/service/server';
@@ -125,34 +123,10 @@ export async function POST(req: NextRequest) {
     await registerPurchase(s, order.reference, equipment);
   }
 
-  // It is on the admin console's sales board now; sales also gets an email (Brevo) so they know to look
+  // Straight to Flokefama: an email to support@flokefama.com and a text to the company line (lib/quote-mail.ts)
   const momo = (o as { momo?: { network?: unknown } }).momo;
-  const lines = order.items.map((i) => ({ name: tidyName(i.name), qty: i.qty }));
   const payment = (order.method === 'momo' && text(momo?.network, 30)) || { quote: 'Agreed with sales after the quote', momo: 'Mobile money', card: 'Card', bank: 'Bank transfer' }[order.method];
-  const timeline = timelines.find((t) => t.id === order.needs?.timeline);
-  const department = departmentLabel(order.needs?.department);
-  // Every quote: an email to support@flokefama.com and a text to the company line, side by side
-  const texted = textQuote({ reference: order.reference, facility: who.facility, name: who.name, phone: who.phone, items: lines, urgent: timeline?.id === 'urgent' });
-  const emailed = await emailSales(
-    `${timeline?.id === 'urgent' ? 'URGENT quote request' : 'New quote request'} ${order.reference}: ${who.facility}`,
-    {
-      Reference: order.reference,
-      Items: lines.map((i) => `• ${i.name} × ${i.qty}`).join('\n'),
-      ...(department ? { Department: department } : {}),
-      Needed: timelineLabel(order.needs?.timeline) ?? '',
-      ...(order.needs?.notes ? { Notes: order.needs.notes } : {}),
-      Payment: payment,
-      'Deliver to': [order.address, order.region].filter(Boolean).join(', '),
-      Name: who.name,
-      'Hospital or lab': who.facility,
-      Phone: who.phone,
-      Email: who.email,
-    },
-    onBoard
-      ? { phone: who.phone, replyTo: who.email, link: { href: `${siteUrl}/admin?tab=orders&order=${order.reference}`, label: 'Open it on the sales board' } }
-      : { phone: who.phone, replyTo: who.email },
-  ).then((sent) => Boolean(sent), (e) => (console.error('[orders] sales email not sent', e), false));
-  await texted;
+  const emailed = await deliverQuote(order, who, { onBoard, payment });
   // Sales has it when it's on the sales board, or at least in their inbox; otherwise the checkout asks the hospital to send it
   const sales = onBoard || Boolean(emailed);
   return NextResponse.json({ order, sales }, { headers: noStore });

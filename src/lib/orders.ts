@@ -30,6 +30,8 @@ export interface SavedOrder {
   amount?: number;
   /** A quote request's equipment has been added to the hospital's list (done when it is first marked as paid). */
   equipmentAdded?: boolean;
+  /** When it was emailed to support@flokefama.com (lib/quote-mail.ts). */
+  supportSentAt?: string;
   /** Sales' notes and moves, oldest first. */
   log?: { at: string; by: string; text: string }[];
 }

@@ -82,8 +82,8 @@ export async function SiteFooter() {
                 </a>
               </li>
               <li>
-                <a href={`mailto:${contact.info}`} className="flex items-start gap-2 whitespace-nowrap transition-colors hover:text-white">
-                  <Mail className="mt-0.5 size-4 shrink-0 text-white/50" aria-hidden /> {contact.info}
+                <a href={`mailto:${contact.support}`} className="flex items-start gap-2 whitespace-nowrap transition-colors hover:text-white">
+                  <Mail className="mt-0.5 size-4 shrink-0 text-white/50" aria-hidden /> {contact.support}
                 </a>
               </li>
             </ul>
