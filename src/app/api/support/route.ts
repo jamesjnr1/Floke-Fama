@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { pushToEngineers } from '@/lib/push';
 import { smsWebsiteFault } from '@/lib/sms';
-import { emailSales, emailSupport } from '@/lib/support-email';
+import { emailSupport } from '@/lib/support-email';
 import { saveSupportRequest, setSupportStatus } from '@/lib/support-requests';
 import { autoBookVisit } from '@/lib/service/server';
 import { clientIp } from '@/lib/rate-limit';
@@ -53,16 +53,6 @@ export async function POST(request: Request) {
       'Phone': data.phone,
       ...Object.fromEntries(supportDetails(data)),
     }, data.phone),
-    // A demonstration is a sales lead: the sales inbox hears about it too
-    data.type === 'assistance' && data.topic === 'demo'
-      ? emailSales(`Demonstration request: ${data.facility} - ${supportSubject(data)}${ref}`, {
-          ...(saved ? { 'Reference': saved } : {}),
-          'Name': data.name,
-          'Hospital or lab': data.facility,
-          'Phone': data.phone,
-          ...Object.fromEntries(supportDetails(data)),
-        }, { phone: data.phone })
-      : Promise.resolve(false),
     // Engineers hear about it on their phones: a text for a fault, a portal alert for every request
     saved ? smsWebsiteFault({ reference: saved, job, ...data }).then(() => false) : Promise.resolve(false),
     saved
