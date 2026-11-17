@@ -6,7 +6,7 @@ import { LogoMark, PortalLogo } from '@/components/layout/logo';
 import { Hint } from '@/components/ui/hint';
 import { Icon } from '@/components/ui/icon';
 import { UserAvatar } from '@/components/ui/user-avatar';
-import { dismissSiteError, removeAdmin, removeEngineer, saveOrderNote, setOrderStatus } from '@/lib/admin/actions';
+import { dismissSiteError, removeAdmin, removeEngineer } from '@/lib/admin/actions';
 import { AddAdminForm } from '@/components/admin/add-admin-form';
 import { AdminPhoneForm } from '@/components/admin/admin-phone-form';
 import { approveEngineer, declineEngineer } from '@/lib/engineer-actions';
@@ -38,9 +38,6 @@ import { supportDetails, supportSubject } from '@/lib/support-schema';
 import { adminLogout } from '@/lib/auth/actions';
 import { requireConsole } from '@/lib/auth/server';
 import { catalogue } from '@/data/catalogue';
-import type { OrderStatus, SavedOrder } from '@/lib/orders';
-import { salesStages } from '@/lib/sales-stages';
-import { departments, timelines } from '@/lib/order-needs';
 import { cn } from '@/lib/utils';
 import { statusStyle } from '@/components/client/ui';
 import { facilityKey, visitStatus } from '@/lib/service/desk';
@@ -53,10 +50,9 @@ import type { TicketStatus as TicketStatusId } from '@/lib/service/store';
  */
 export const dynamic = 'force-dynamic';
 
-type Tab = 'overview' | 'orders' | 'accounts' | 'hospitals' | 'team' | 'products' | 'service' | 'texts' | 'health' | 'system';
+type Tab = 'overview' | 'accounts' | 'hospitals' | 'team' | 'products' | 'service' | 'texts' | 'health' | 'system';
 const tabs: { id: Tab; label: string; icon: string }[] = [
   { id: 'overview', label: 'Overview', icon: 'fi-rr-apps' },
-  { id: 'orders', label: 'Quotes', icon: 'fi-rr-box-open' },
   { id: 'accounts', label: 'Accounts', icon: 'fi-rr-users' },
   { id: 'hospitals', label: 'Hospitals', icon: 'fi-rr-hospital' },
   { id: 'team', label: 'Engineers', icon: 'fi-rr-user-gear' },
@@ -73,12 +69,9 @@ const timeFmt = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short
 const clockFmt = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Africa/Accra' });
 const fmt = (iso: string | undefined) => (iso ? dateFmt.format(new Date(iso)) : '—');
 const units = (o: { items: { qty: number }[] }) => o.items.reduce((n, i) => n + i.qty, 0);
-// Kept here: '@/lib/orders' is a browser module, so its constants can't be read on the server
-const orderStatusLabel = Object.fromEntries(salesStages.map((x) => [x.id, x.label])) as Record<OrderStatus, string>;
 // Only a name written all in capitals (an older order or record) is re-cased; the catalogue's names are already in
 // the house style (lib/product-names.ts), which re-casing would spoil ("pH Meter")
 const tidy = (n: string) => (/[a-z]/.test(n) ? n : n.split(/(\s+|[()])/).map((w) => (/\d/.test(w) ? w.toUpperCase() : w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())).join(''));
-const methodLabel: Record<string, string> = { quote: 'Agreed after quote', momo: 'Mobile money', card: 'Card', bank: 'Bank transfer' };
 const ticketLabel: Record<string, string> = { new: 'Logged', assigned: 'Assigned', travelling: 'En route', onsite: 'On site', resolved: 'Resolved' };
 const smsKind: Record<string, string> = { website: 'Website fault', urgent: 'Urgent fault', assigned: 'Job given', message: 'Hospital message', escalation: 'Not taken', test: 'Test text', hospitals: 'To all hospitals', checkin: 'Check-in', calibration: 'Calibration reminder', holiday: 'Holiday greeting', update: 'Update to hospital', callback: 'Not called back', written: 'Sent by hand', reopened: 'Reopened', 'engineer-join': 'New engineer', 'engineer-approved': 'Engineer approved', 'head-on': 'Made head', 'head-off': 'No longer head' };
 const smsStatus: Record<string, string> = { sent: 'Sent', logged: 'Recorded only', failed: 'Not sent', sending: 'Sending' };
@@ -107,10 +100,10 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
   const params = await searchParams;
   // The demo (lib/demo.ts): sample data, and nothing that reads or sends real things (texts, settings)
   const demo = Boolean(session.demo);
-  // The sales team sees only the sales board and product demand; any other tab opens the sales board
+  // The sales team sees only product demand
   const sales = session.role === 'sales';
-  const allowed = (id: Tab) => (!sales || id === 'orders' || id === 'products') && !(demo && (id === 'texts' || id === 'health' || id === 'system'));
-  const tab: Tab = tabs.some((t) => t.id === params.tab) && allowed(params.tab as Tab) ? (params.tab as Tab) : sales ? 'orders' : 'overview';
+  const allowed = (id: Tab) => (!sales || id === 'products') && !(demo && (id === 'texts' || id === 'health' || id === 'system'));
+  const tab: Tab = tabs.some((t) => t.id === params.tab) && allowed(params.tab as Tab) ? (params.tab as Tab) : sales ? 'products' : 'overview';
   const data = demo ? sampleData() : await loadAdminData();
   const now = data.source === 'sample' ? Date.UTC(2026, 9, 19, 12) : Date.now();
 
@@ -120,7 +113,6 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
   const panes = tabs.filter((t) => t.id !== 'system' && allowed(t.id)).map((t) => t.id);
   // A mark on a tab when something there needs a look: red for action, green for news
   const badges: Partial<Record<Tab, { n: number; tone: 'red' | 'green'; title: string }>> = {
-    orders: { n: data.orders.filter((o) => o.status === 'awaiting-payment').length, tone: 'red', title: 'new quote requests to call' },
     service: { n: data.supportRequests.filter((r) => r.status === 'new' && !r.ticketId).length + data.desk.tickets.filter((t) => t.status === 'new').length, tone: 'red', title: 'new Support page requests and jobs no engineer has taken' },
     accounts: { n: data.accounts.filter((a) => now - Date.parse(a.createdAt) < DAY).length, tone: 'green', title: 'registered in the last 24 hours' },
     team: { n: data.accounts.filter((a) => a.id.startsWith('engp-')).length, tone: 'red', title: 'engineers waiting for your approval' },
@@ -142,7 +134,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
     cn('relative flex items-center gap-3 rounded-xl px-3.5 py-[clamp(5px,0.9vh,11px)] text-[0.9375rem] font-medium transition', active ? 'bg-white/[0.16] text-white shadow-[inset_3px_0_0_0_#fff]' : 'text-white/80 hover:bg-white/[0.08] hover:text-white');
 
   return (
-    <AdminNavProvider active={tab} panes={panes} fallback={sales ? 'orders' : 'overview'} exact={Object.keys(params).some((k) => k !== 'tab')}>
+    <AdminNavProvider active={tab} panes={panes} fallback={sales ? 'products' : 'overview'} exact={Object.keys(params).some((k) => k !== 'tab')}>
     <div className="min-h-svh bg-[#f5f7fb] pt-[var(--banner)] text-ink">
       <div className="flex">
         {/* Sidebar: a deep emerald gradient, darker and richer than the dashboards' flat green, with the console's navy
@@ -260,7 +252,6 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             {/* Every tab reads the latest every 30 seconds (not while an engineer is being added, so the form is left alone) */}
             {params.add !== 'engineer' && <LiveRefresh seconds={30} />}
             {demo && <DemoGuide area="admin" />}
-            {allowed('orders') && <AdminPane id="orders">{tab === 'orders' ? <Orders data={data} q={params.q} open={params.order} stage={params.stage} now={now} /> : <Orders data={data} now={now} />}</AdminPane>}
             {allowed('accounts') && <AdminPane id="accounts">{tab !== 'accounts' ? <Accounts data={data} adding={false} /> : params.account ? <AccountDetail data={data} id={params.account} now={now} /> : <Accounts data={data} q={params.q} role={roles.some((r) => r.id && r.id === params.role) ? params.role : undefined} adding={params.add === 'engineer'} />}</AdminPane>}
             {allowed('team') && <AdminPane id="team"><Team data={data} now={now} demo={demo} /></AdminPane>}
             {allowed('hospitals') && <AdminPane id="hospitals">{tab === 'hospitals' ? <Hospitals data={data} q={params.q} code={params.code} adding={params.add === 'hospital' && !demo} demo={demo} /> : <Hospitals data={data} adding={false} demo={demo} />}</AdminPane>}
@@ -421,7 +412,6 @@ const Badge = ({ children, tone = 'neutral' }: { children: React.ReactNode; tone
     {children}
   </span>
 );
-const orderTone = (s: OrderStatus) => (s === 'delivered' ? 'good' : s === 'awaiting-payment' ? 'bad' : s === 'lost' ? 'neutral' : 'warn');
 
 function SearchBox({ tab, q, placeholder, extra }: { tab: Tab; q?: string; placeholder: string; extra?: Record<string, string | undefined> }) {
   return (
@@ -450,13 +440,13 @@ function Overview({ data, now }: { data: AdminData; now: number }) {
 
   return (
     <>
-      <Heading title="Dashboard" lead="Who registers, who buys and what the service desk is doing. Figures update on every visit." />
+      <Heading title="Dashboard" lead="Who registers, who asks for quotes and what the service desk is doing. Figures update on every visit." />
       <WebsiteRequestsNotice data={data} />
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Stat tone="green" href="/admin?tab=orders" label="Orders" value={data.orders.length} note={`${data.orders.filter((o) => o.placedAt > since(30)).length} in the last 30 days`} />
+        <Stat tone="green" href="/admin#quotes" label="Quote requests" value={data.orders.length} note={`${data.orders.filter((o) => o.placedAt > since(30)).length} in the last 30 days`} />
         <Stat tone="blue" href="/admin?tab=accounts" label="Hospital accounts" value={clients.length} note={`${clients.filter((a) => a.createdAt > since(30)).length} new in the last 30 days`} />
-        <Stat tone="teal" href="/admin?tab=accounts" label="Hospitals that bought" value={buyers.size} note={clients.length ? `${Math.round((buyers.size / clients.length) * 100)}% of accounts` : 'No accounts yet'} />
-        <Stat tone="violet" href="/admin?tab=products" label="Items ordered" value={data.orders.reduce((n, o) => n + units(o), 0)} note={`${data.orders.filter((o) => o.status === 'awaiting-payment').length} new orders to call`} />
+        <Stat tone="teal" href="/admin?tab=accounts" label="Hospitals that asked for a quote" value={buyers.size} note={clients.length ? `${Math.round((buyers.size / clients.length) * 100)}% of accounts` : 'No accounts yet'} />
+        <Stat tone="violet" href="/admin?tab=products" label="Items asked for" value={data.orders.reduce((n, o) => n + units(o), 0)} note="In all quote requests" />
       </div>
       <div className="mt-4 grid grid-cols-2 gap-4 xl:grid-cols-4">
         <Mini tone="red" label="Open service requests" value={open.length} note={`${open.filter((t) => t.priority === 'critical').length} critical`} />
@@ -470,25 +460,25 @@ function Overview({ data, now }: { data: AdminData; now: number }) {
       </div>
 
       <div className="mt-4 grid gap-4 xl:grid-cols-12">
-        <Panel title="Orders per week" className="xl:col-span-7" action={<span className="text-[0.875rem] text-ink-3">Last 12 weeks</span>}>
-          <Columns label="Orders per week" data={weekly(data.orders.map((o) => o.placedAt), 12, now)} />
+        <Panel title="Quote requests per week" className="xl:col-span-7" action={<span className="text-[0.875rem] text-ink-3">Last 12 weeks</span>}>
+          <Columns label="Quote requests per week" data={weekly(data.orders.map((o) => o.placedAt), 12, now)} />
         </Panel>
-        <Panel title="Recent orders" className="xl:col-span-5" action={<Link href="/admin?tab=orders" className="rounded-lg border border-ink px-3 py-1.5 text-[0.875rem] font-medium hover:bg-ink hover:text-white">View all</Link>}>
+        <Panel title="Recent quote requests" className="xl:col-span-5" action={<span className="text-[0.875rem] text-ink-3">Emailed to info@flokefama.com</span>}>
           {data.orders.length ? (
-            <ul className="space-y-4">
-              {data.orders.slice(0, 5).map((o) => (
-                <li key={o.reference} className="flex items-center gap-3">
-                  <UserAvatar className="size-11 rounded-full bg-[#eaf5ef] text-base text-brand-800 ring-2 ring-white" />
+            <ul id="quotes" className="scroll-mt-28 space-y-4">
+              {data.orders.slice(0, 8).map((o) => (
+                <li key={o.reference} className="flex items-start gap-3">
+                  <UserAvatar className="size-11 shrink-0 rounded-full bg-[#eaf5ef] text-base text-brand-800 ring-2 ring-white" />
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate font-medium">{orgOf(o.account)}</span>
-                    <span className="block truncate text-[0.8125rem] text-ink-3">{o.reference} · {units(o)} item{units(o) === 1 ? '' : 's'} · {timeFmt.format(new Date(o.placedAt))}</span>
+                    <span className="block truncate font-medium">{o.contact?.organisation || orgOf(o.account)}</span>
+                    <span className="block text-[0.8125rem] text-ink-3">{o.contact?.name ? `${o.contact.name} · ` : ''}{units(o)} item{units(o) === 1 ? '' : 's'} · {timeFmt.format(new Date(o.placedAt))}</span>
+                    <span className="mt-0.5 block truncate text-[0.8125rem] text-ink-2">{o.items.map((i) => `${i.qty} × ${tidy(i.name)}`).join(', ')}</span>
                   </span>
-                  <Badge tone={orderTone(o.status)}>{orderStatusLabel[o.status]}</Badge>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="text-ink-3">No orders yet.</p>
+            <p className="text-ink-3">No quote requests yet.</p>
           )}
         </Panel>
       </div>
@@ -497,20 +487,14 @@ function Overview({ data, now }: { data: AdminData; now: number }) {
         <Panel title="New accounts per week" className="xl:col-span-7" action={<span className="text-[0.875rem] text-ink-3">Last 12 weeks</span>}>
           <Columns label="New accounts per week" data={weekly(data.accounts.map((a) => a.createdAt), 12, now)} />
         </Panel>
-        <Panel title="Most ordered products" className="xl:col-span-5" action={<Link href="/admin?tab=products" className="rounded-lg border border-ink px-3 py-1.5 text-[0.875rem] font-medium hover:bg-ink hover:text-white">View all</Link>}>
+        <Panel title="Most requested products" className="xl:col-span-5" action={<Link href="/admin?tab=products" className="rounded-lg border border-ink px-3 py-1.5 text-[0.875rem] font-medium hover:bg-ink hover:text-white">View all</Link>}>
           <Bars data={tally(data.orders.flatMap((o) => o.items), (i) => tidy(i.name), (i) => i.qty).slice(0, 6)} />
         </Panel>
       </div>
 
-      <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <Panel title="Order status">
-          <Bars data={(Object.keys(orderStatusLabel) as OrderStatus[]).map((s) => ({ label: orderStatusLabel[s], value: data.orders.filter((o) => o.status === s).length }))} />
-        </Panel>
-        <Panel title="Orders by region">
+      <div className="mt-4 grid gap-4 md:grid-cols-2">
+        <Panel title="Quote requests by region">
           <Bars data={tally(data.orders, (o) => o.region || 'Not given').slice(0, 5)} />
-        </Panel>
-        <Panel title="Payment methods">
-          <Bars data={tally(data.orders, (o) => methodLabel[o.method] ?? o.method)} />
         </Panel>
         <Panel title="Service requests">
           <Bars data={Object.keys(ticketLabel).map((s) => ({ label: ticketLabel[s], value: data.desk.tickets.filter((t) => t.status === s).length }))} />
@@ -519,8 +503,7 @@ function Overview({ data, now }: { data: AdminData; now: number }) {
 
       <p className="mt-6 text-[0.9375rem] text-ink-3">
         Website visits, page views and button clicks (quotes, WhatsApp, calls, brochure downloads) are in{' '}
-        <a href="https://vercel.com/dashboard" target="_blank" rel="noreferrer" className="font-semibold text-brand-700 underline">Vercel Analytics</a>. Orders are followed up on the{' '}
-        <Link href="/admin?tab=orders" className="font-semibold text-brand-700 underline">sales board</Link>.
+        <a href="https://vercel.com/dashboard" target="_blank" rel="noreferrer" className="font-semibold text-brand-700 underline">Vercel Analytics</a>. Quote requests are emailed to info@flokefama.com and texted to the company line; Support page requests are emailed to support@flokefama.com.
       </p>
     </>
   );
@@ -543,230 +526,6 @@ function Mini({ label, value, note, tone = 'green' }: { label: string; value: st
         <span className={cn('font-mono text-[1.75rem] font-medium tracking-[-0.02em]', t.fig)}>{typeof value === 'number' ? value.toLocaleString() : value}</span>
         <span className="text-[0.8125rem] text-ink-3">{note}</span>
       </p>
-    </div>
-  );
-}
-
-const cedis = (n: number) => `GHS ${n.toLocaleString('en-GB')}`;
-/** The stages sales works on: everything before Delivered (and not Lost). */
-const openStages: OrderStatus[] = ['awaiting-payment', 'called', 'priced', 'paid', 'processing'];
-/** What the next step is called on an order's button, by its stage. */
-const nextStep: Partial<Record<OrderStatus, { to: OrderStatus; label: string }>> = {
-  'awaiting-payment': { to: 'called', label: 'Mark as called' },
-  called: { to: 'priced', label: 'Quote sent' },
-  priced: { to: 'paid', label: 'Mark as paid' },
-  paid: { to: 'processing', label: 'Start preparing' },
-  processing: { to: 'delivered', label: 'Mark as delivered' },
-};
-const stageDot: Record<OrderStatus, string> = {
-  'awaiting-payment': 'bg-signal',
-  called: 'bg-[#e8ab00]',
-  priced: 'bg-[#e8ab00]',
-  paid: 'bg-brand-500',
-  processing: 'bg-brand-500',
-  delivered: 'bg-brand-800',
-  lost: 'bg-ink-3/50',
-};
-
-/**
- * The sales board: a line of the stages (how many orders and how much at each), then one list of orders to work
- * through, most urgent and longest-waiting first. A row has the hospital, the order, the phone to tap and one button
- * for the next step; it opens in place for the details, the price, notes and its history.
- */
-function Orders({ data, q, open, stage, now }: { data: AdminData; q?: string; open?: string; stage?: string; now: number }) {
-  const needle = q?.trim().toLowerCase();
-  const account = (email: string) => data.accounts.find((a) => a.email === email);
-  const who = (o: SavedOrder) => ({
-    name: o.contact?.name || account(o.account)?.name || o.account,
-    facility: o.contact?.organisation || account(o.account)?.organisation || '—',
-    phone: o.contact?.phone || account(o.account)?.phone || '',
-  });
-  const matches = (o: SavedOrder) => !needle || [o.reference, o.account, who(o).facility, who(o).name, o.region, ...o.items.map((i) => i.name)].join(' ').toLowerCase().includes(needle);
-  const orders = data.orders.filter(matches);
-  const live = data.source === 'live';
-  const chosen = salesStages.find((x) => x.id === stage)?.id;
-  const urgent = (o: SavedOrder) => (o.needs?.timeline === 'urgent' ? 0 : 1);
-  const list = orders
-    .filter((o) => (chosen ? o.status === chosen : openStages.includes(o.status)))
-    .sort((x, y) =>
-      chosen === 'delivered' || chosen === 'lost'
-        ? y.placedAt.localeCompare(x.placedAt)
-        : openStages.indexOf(x.status) - openStages.indexOf(y.status) || urgent(x) - urgent(y) || x.placedAt.localeCompare(y.placedAt),
-    );
-  const link = (extra: Record<string, string | undefined>) => {
-    const p = new URLSearchParams({ tab: 'orders' });
-    for (const [k, v] of Object.entries({ q, stage: chosen, ...extra })) if (v) p.set(k, v);
-    return `/admin?${p}`;
-  };
-  const total = (os: SavedOrder[]) => os.reduce((n, o) => n + (o.amount ?? 0), 0);
-
-  const move = (o: SavedOrder, to: OrderStatus, label: string, primary = false) =>
-    live ? (
-      <form action={setOrderStatus}>
-        <input type="hidden" name="reference" value={o.reference} />
-        <input type="hidden" name="status" value={to} />
-        {/* The stage this page showed: a move from an out-of-date page doesn't undo a colleague's newer one */}
-        <input type="hidden" name="from" value={o.status} />
-        <button className={cn('h-9 whitespace-nowrap rounded-lg px-3.5 text-[0.875rem] font-semibold transition', primary ? 'bg-brand-700 text-white hover:bg-brand-800' : 'border border-line bg-white hover:border-brand-600')}>{label}</button>
-      </form>
-    ) : null;
-
-  const openCount = orders.filter((o) => openStages.includes(o.status)).length;
-  return (
-    <>
-      <Heading
-        hint={<>Every quote request from the shop. Call each new one, send the quote, then press the next step: <b>Mark as called</b> → <b>Quote sent</b> → <b>Mark as paid</b> → <b>Start preparing</b> → <b>Mark as delivered</b>. The hospital sees each stage in its dashboard, and its equipment is added when you mark it as paid. Open a request to record the quoted price and notes, or move it to any stage (Lost if it did not go ahead).</>}
-        title="Sales board"
-        lead="Call each new quote request, send the quote, then press the next step. The hospital follows Quote sent, Paid, Being prepared and Delivered in its dashboard."
-        action={<div className="flex flex-wrap items-center gap-2"><SearchBox tab="orders" q={q} placeholder="Reference, hospital, product…" extra={{ stage: chosen }} /><Csv table="orders" /></div>}
-      />
-
-      {/* The stages as a line with dots: how many orders and how much at each; pick one to see only those */}
-      <nav aria-label="Stages" className={cn(card, 'mb-5 overflow-x-auto p-2')}>
-        <ol className="flex min-w-max items-stretch">
-          <li>
-            <Link href={link({ stage: undefined })} aria-current={!chosen ? 'page' : undefined} className={cn('flex h-full flex-col justify-center rounded-xl px-4 py-3 transition', !chosen ? 'bg-brand-700 text-white' : 'hover:bg-[#f1f4f2]')}>
-              <span className="text-[0.8125rem] font-medium opacity-80">To work on</span>
-              <span className="text-2xl font-semibold tabular-nums">{openCount}</span>
-            </Link>
-          </li>
-          {salesStages.filter((x) => x.id !== 'lost').map((st, i, all) => {
-            const at = orders.filter((o) => o.status === st.id);
-            const on = chosen === st.id;
-            return (
-              <li key={st.id} className="relative flex-1">
-                <Link href={link({ stage: st.id })} aria-current={on ? 'page' : undefined} className={cn('group relative flex h-full min-w-[9.5rem] flex-col items-center rounded-xl px-3 pb-3 pt-4 text-center transition', on ? 'bg-brand-50' : 'hover:bg-[#f1f4f2]')}>
-                  {/* the line joining the dots */}
-                  {i > 0 && <span aria-hidden className="absolute left-0 right-1/2 top-[1.375rem] h-0.5 bg-[#dbe5df]" />}
-                  {i < all.length - 1 && <span aria-hidden className="absolute left-1/2 right-0 top-[1.375rem] h-0.5 bg-[#dbe5df]" />}
-                  <span className={cn('relative z-10 size-3.5 rounded-full ring-4 ring-white', stageDot[st.id], on && 'ring-brand-50')} />
-                  <span className={cn('mt-2 text-[0.9375rem] font-semibold', on ? 'text-brand-800' : 'text-ink')}>{st.label}</span>
-                  <span className="text-[0.875rem] tabular-nums text-ink-3">
-                    {at.length} {at.length === 1 ? 'order' : 'orders'}
-                    {total(at) > 0 && <span className="block text-[0.8125rem]">{cedis(total(at))}</span>}
-                  </span>
-                </Link>
-              </li>
-            );
-          })}
-          <li>
-            <Link href={link({ stage: 'lost' })} aria-current={chosen === 'lost' ? 'page' : undefined} className={cn('flex h-full flex-col justify-center rounded-xl px-4 py-3 text-ink-3 transition', chosen === 'lost' ? 'bg-[#f1f4f2] text-ink' : 'hover:bg-[#f1f4f2]')}>
-              <span className="text-[0.8125rem] font-medium">Lost</span>
-              <span className="text-lg font-semibold tabular-nums">{orders.filter((o) => o.status === 'lost').length}</span>
-            </Link>
-          </li>
-        </ol>
-      </nav>
-
-      {/* The orders as one list to work down */}
-      <ul className={cn(card, 'divide-y divide-[#edf1ef] overflow-hidden')}>
-        {list.map((o) => {
-          const w = who(o);
-          const isOpen = open === o.reference;
-          const next = nextStep[o.status];
-          return (
-            <li key={o.reference} className={cn(isOpen && 'bg-[#fafcfb]')}>
-              <div className="flex flex-wrap items-center gap-x-5 gap-y-3 px-5 py-4">
-                <Link href={isOpen ? link({}) : link({ order: o.reference })} aria-expanded={isOpen} className="flex min-w-0 flex-1 basis-80 items-start gap-3.5">
-                  <span className={cn('mt-1.5 size-2.5 shrink-0 rounded-full', stageDot[o.status])} aria-hidden />
-                  <span className="min-w-0">
-                    <span className="flex flex-wrap items-baseline gap-x-2.5">
-                      <span className="font-semibold text-ink">{w.facility}</span>
-                      {o.needs?.timeline === 'urgent' && <span className="text-[0.8125rem] font-semibold uppercase tracking-wide text-signal-700">Urgent</span>}
-                    </span>
-                    <span className="mt-0.5 block truncate text-[0.9375rem] text-ink-2">
-                      {o.items.map((i) => `${i.qty} × ${tidy(i.name)}`).join(', ')}
-                    </span>
-                    <span className="mt-0.5 block text-[0.8125rem] text-ink-3">
-                      <span className="font-mono">{o.reference}</span> · {orderStatusLabel[o.status]} · {ago(o.placedAt, now)} ago{o.log?.length ? ` · ${o.log.length} ${o.log.length === 1 ? 'note' : 'notes'}` : ''}
-                    </span>
-                  </span>
-                </Link>
-                <span className="w-28 text-right font-semibold tabular-nums text-brand-800">{o.amount !== undefined ? cedis(o.amount) : <span className="font-normal text-ink-3">No price yet</span>}</span>
-                {w.phone ? (
-                  <a href={`tel:${telOf(w.phone)}`} className="inline-flex h-9 items-center gap-2 rounded-lg border border-line px-3 text-[0.875rem] font-medium text-brand-700 hover:border-brand-600">
-                    <Icon name="fi-rr-phone-call" /> {showPhone(w.phone)}
-                  </a>
-                ) : null}
-                {next && move(o, next.to, next.label, true)}
-              </div>
-              {isOpen && (
-                <div className="border-t border-[#edf1ef] px-5 pb-6 pt-5">
-                  <OrderDetail o={o} who={w} live={live} now={now} move={move} />
-                </div>
-              )}
-            </li>
-          );
-        })}
-        {!list.length && <li className="px-5 py-12 text-center text-ink-3">{chosen ? 'No orders at this stage.' : 'Nothing to work on. New orders appear here.'}</li>}
-      </ul>
-    </>
-  );
-}
-
-/** One order opened from the board: everything sales needs to call, the price, notes and what happened when. */
-function OrderDetail({ o, who, live, now, move }: { o: SavedOrder; who: { name: string; facility: string; phone: string }; live: boolean; now: number; move: (o: SavedOrder, to: OrderStatus, label: string, primary?: boolean) => React.ReactNode }) {
-  const department = o.needs?.department && departments.find((d) => d.id === o.needs!.department)?.label;
-  const needed = o.needs?.timeline && timelines.find((t) => t.id === o.needs!.timeline);
-  const rows: [string, React.ReactNode][] = [
-    ['Hospital', who.facility],
-    ['Contact', <>{who.name}{who.phone && <> · <a href={`tel:${telOf(who.phone)}`} className="font-medium text-brand-700 underline">{showPhone(who.phone)}</a></>} · <a href={`mailto:${o.account}`} className="text-brand-700 underline">{o.account}</a></>],
-    ['Items', <span key="i">{o.items.map((i) => <span key={i.slug} className="block">{i.qty} × {tidy(i.name)}</span>)}</span>],
-    ...(department ? [['Department', department] as [string, React.ReactNode]] : []),
-    ...(needed ? [['Needed', `${needed.label} (${needed.detail.toLowerCase()})`] as [string, React.ReactNode]] : []),
-    ...(o.needs?.notes ? [['Their notes', o.needs.notes] as [string, React.ReactNode]] : []),
-    ['Payment', methodLabel[o.method] ?? o.method],
-    ['Deliver to', [o.address, o.region].filter(Boolean).join(', ') || '—'],
-    ['Placed', `${fmt(o.placedAt)} (${ago(o.placedAt, now)} ago)`],
-  ];
-  return (
-    <div className="grid gap-6 lg:grid-cols-[1.1fr_1fr]">
-      <div>
-        <dl className="grid grid-cols-[8rem_1fr] gap-x-4 gap-y-2.5 text-[0.9375rem]">
-          {rows.map(([k, v]) => (
-            <div key={k} className="contents">
-              <dt className="text-ink-3">{k}</dt>
-              <dd>{v}</dd>
-            </div>
-          ))}
-        </dl>
-        <p className="mt-6 text-[0.875rem] font-medium text-ink-3">Move to any stage</p>
-        <div className="mt-2 flex flex-wrap gap-2">
-          {salesStages.map((st) =>
-            st.id === o.status ? (
-              <span key={st.id} className="inline-flex h-9 items-center rounded-lg bg-brand-700 px-3 text-[0.875rem] font-semibold text-white">{st.label}</span>
-            ) : live ? (
-              <div key={st.id}>{move(o, st.id, st.label)}</div>
-            ) : null,
-          )}
-        </div>
-      </div>
-      <div>
-        {live && (
-          <form action={saveOrderNote} className="space-y-3 rounded-xl border border-line p-4">
-            <input type="hidden" name="reference" value={o.reference} />
-            <label className="block">
-              <span className="text-[0.875rem] font-medium text-ink-3">Quoted price (GHS)</span>
-              <input name="amount" inputMode="decimal" defaultValue={o.amount ?? ''} placeholder="e.g. 85000" className="mt-1 h-10 w-full rounded-lg border border-line px-3" />
-            </label>
-            <label className="block">
-              <span className="text-[0.875rem] font-medium text-ink-3">Add a note</span>
-              <textarea name="note" rows={2} maxLength={1000} placeholder="e.g. Called, sending pro-forma today" className="mt-1 w-full resize-none rounded-lg border border-line px-3 py-2" />
-            </label>
-            <button className="h-10 rounded-lg bg-brand-700 px-4 text-[0.9375rem] font-semibold text-white hover:bg-brand-800">Save</button>
-          </form>
-        )}
-        <p className="mt-5 text-[0.875rem] font-medium text-ink-3">History</p>
-        <ol className="mt-2 space-y-2 text-[0.9375rem]">
-          {[...(o.log ?? [])].reverse().map((l, i) => (
-            <li key={i} className="border-l-2 border-[#bfd9c9] pl-3">
-              {l.text}
-              <span className="block text-[0.8125rem] text-ink-3">{l.by} · {timeFmt.format(new Date(l.at))}</span>
-            </li>
-          ))}
-          <li className="border-l-2 border-[#e3e9e6] pl-3 text-ink-3">Order placed on the website · {timeFmt.format(new Date(o.placedAt))}</li>
-        </ol>
-      </div>
     </div>
   );
 }
@@ -1069,22 +828,20 @@ function AccountDetail({ data, id, now }: { data: AdminData; id: string; now: nu
         </Panel>
       </div>
       <div className="mt-4 grid grid-cols-2 gap-4 xl:grid-cols-4">
-        <Mini tone="blue" label="Orders" value={orders.length} note={`last ${fmt(orders[0]?.placedAt)}`} />
-        <Mini tone="violet" label="Items ordered" value={items} note={`${orders.filter((o) => o.status === 'awaiting-payment').length} new`} />
+        <Mini tone="blue" label="Quote requests" value={orders.length} note={`last ${fmt(orders[0]?.placedAt)}`} />
+        <Mini tone="violet" label="Items asked for" value={items} note="In their quote requests" />
         <Mini tone="green" label="Equipment under care" value={assets.length} note={`${assets.filter((x) => x.nextCalibration && x.nextCalibration < new Date(now + 30 * DAY).toISOString()).length} due for calibration`} />
         <Mini tone="amber" label="Service requests" value={tickets.length} note={`${tickets.filter((t) => t.status !== 'resolved').length} open`} />
       </div>
 
-      <h2 className="mb-3 mt-8 text-lg font-semibold">Orders</h2>
-      <Table head={['Reference', 'Placed', 'Items', 'Payment', 'Region', 'Status']} empty={!orders.length}>
+      <h2 className="mb-3 mt-8 text-lg font-semibold">Quote requests</h2>
+      <Table head={['Reference', 'Sent', 'Items', 'Region']} empty={!orders.length}>
         {orders.map((o) => (
           <tr key={o.reference}>
             <td className="font-mono text-[0.875rem] font-semibold">{o.reference}</td>
             <td className="whitespace-nowrap">{timeFmt.format(new Date(o.placedAt))}</td>
             <td>{o.items.map((i) => <span key={i.slug} className="block">{i.qty} × {tidy(i.name)}</span>)}</td>
-            <td>{methodLabel[o.method] ?? o.method}</td>
             <td>{o.region || '—'}</td>
-            <td><Badge tone={orderTone(o.status)}>{orderStatusLabel[o.status]}</Badge></td>
           </tr>
         ))}
       </Table>
