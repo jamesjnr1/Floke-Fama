@@ -10,7 +10,7 @@ import { fmtDate } from '@/lib/service/store';
 
 /**
  * The facility's quote requests: what was asked for and when. No stages: our team replies by phone and email. When the
- * equipment arrives, "We've received it" puts it on the facility's equipment list (installation booked where needed).
+ * equipment has arrived (delivered and installed), "We've received it" puts it on the facility's equipment list.
  */
 export function OrdersView({ orders }: { orders: SavedOrder[] }) {
   const { contact } = useSite();
@@ -58,12 +58,12 @@ export function OrdersView({ orders }: { orders: SavedOrder[] }) {
 
 /** "We've received it": the request's equipment goes on the facility's list. Shows that it's there once done. */
 function Received({ order }: { order: SavedOrder }) {
-  const [state, setState] = useState<{ busy?: boolean; error?: string; done?: { added?: number; installs?: number } }>({});
+  const [state, setState] = useState<{ busy?: boolean; error?: string; done?: { added?: number } }>({});
   if (order.equipmentAdded || state.done)
     return (
       <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-lg bg-brand-50 px-4 py-3 text-sm">
         <p className="flex items-center gap-2 font-medium text-brand-800">
-          <Icon name="fi-rr-check-circle" /> Received. {state.done?.installs ? `On your equipment list; our engineers will contact you to install ${state.done.installs === 1 ? 'it' : 'them'}.` : 'On your equipment list.'}
+          <Icon name="fi-rr-check-circle" /> Received and installed. On your equipment list.
         </p>
         <a href="/portal?view=equipment" className="font-semibold text-brand-700 hover:underline">See my equipment</a>
       </div>
@@ -71,11 +71,11 @@ function Received({ order }: { order: SavedOrder }) {
   const receive = async () => {
     setState({ busy: true });
     const r = await markReceived(order.reference);
-    setState(r.ok ? { done: { added: r.added, installs: r.installs } } : { error: r.error });
+    setState(r.ok ? { done: { added: r.added } } : { error: r.error });
   };
   return (
     <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-line px-4 py-3 text-sm">
-      <p className="text-ink-2">Has this equipment arrived? Add it to your equipment list, so we can look after it.</p>
+      <p className="text-ink-2">Received and installed? Tap the button and it goes on your equipment list, so we can look after it.</p>
       <button type="button" onClick={receive} disabled={state.busy} className="inline-flex h-10 items-center gap-2 rounded-lg bg-brand-600 px-4 font-semibold text-white hover:bg-brand-700 disabled:opacity-60">
         <Icon name="fi-rr-box-open" /> {state.busy ? 'Adding…' : 'We’ve received it'}
       </button>

@@ -115,7 +115,7 @@ export async function POST(req: NextRequest) {
     });
 
   // A hospital's purchase becomes its equipment; consumables are skipped. A quote request is not a purchase yet: its
-  // equipment is added when the hospital says it has received it (its portal → api/orders/received)
+  // equipment is added when the hospital says it has received it, i.e. it is installed (its portal → api/orders/received)
   if (onBoard && s.role === 'client' && order.method !== 'quote') {
     const equipment = items
       .filter(({ p }) => p.category !== CONSUMABLES)
