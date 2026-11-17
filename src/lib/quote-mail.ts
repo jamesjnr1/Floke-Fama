@@ -5,7 +5,8 @@ import { withTable } from '@/lib/appwrite-tables';
 import { tidyName } from '@/lib/installation';
 import { departmentLabel, timelineLabel } from '@/lib/order-needs';
 import type { SavedOrder } from '@/lib/orders';
-import { textQuote } from '@/lib/sms';
+import { textPerson, textQuote } from '@/lib/sms';
+import { siteUrl } from '@/lib/utils';
 import { emailSales, quoteInbox, supportEmailConfigured } from '@/lib/support-email';
 
 /**
@@ -121,4 +122,12 @@ export function catchUpQuotes(force = false): Promise<number> {
     return sent;
   })();
   return running;
+}
+
+/** A visitor who asked for a quote without an account: thanks, and an invitation to register their hospital. */
+export async function textGuest(reference: string, who: Who) {
+  const first = who.name.trim().split(/\s+/)[0] || 'there';
+  const site = siteUrl.replace(/^https?:\/\//, '').replace(/\/$/, '');
+  const text = `Hello ${first}, Flokefama has your quote request ${reference} and will call you with the price. Register ${who.facility.slice(0, 40)} free at ${site}/login?mode=register to follow your quotes, add your equipment and request service. Use this email: ${who.email.slice(0, 60)}`;
+  await Promise.race([textPerson('quote-guest', reference, who.phone, text), new Promise((ok) => setTimeout(ok, 6000))]);
 }

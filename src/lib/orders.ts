@@ -99,7 +99,7 @@ export function saveOrder(order: CheckoutOrder, account: string): Promise<boolea
       method: order.method,
       region: order.customer.region,
       address: order.customer.address,
-      customer: { name: order.customer.name, organisation: order.customer.organisation, phone: order.customer.phone },
+      customer: { name: order.customer.name, organisation: order.customer.organisation, phone: order.customer.phone, email: order.customer.email },
       momo: order.momo ? { network: order.momo.network } : undefined,
       needs: order.needs,
     }),
