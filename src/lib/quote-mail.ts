@@ -10,7 +10,7 @@ import { emailSales, supportEmailConfigured } from '@/lib/support-email';
 import { siteUrl } from '@/lib/utils';
 
 /**
- * Every quote request reaches Flokefama by itself: an email to support@flokefama.com and a text to the company line,
+ * Every quote request reaches Flokefama by itself: an email to info@flokefama.com and a text to the company line,
  * the moment it is sent, with nobody needing to open the admin console. A quote that couldn't be sent then (email
  * down, or sent before this was in place) is sent by the catch-up below, which runs while people use the site and in
  * the daily job. Each quote is sent once: a claim row (in `rate_limits`, id qs_<reference>) is written first, so two
@@ -47,7 +47,7 @@ async function markSent(reference: string, at: string) {
   }
 }
 
-/** Emails the quote to support@flokefama.com and texts the company line. True when the email went. Never throws. */
+/** Emails the quote to info@flokefama.com and texts the company line. True when the email went. Never throws. */
 export async function deliverQuote(o: SavedOrder, who: Who, opts: { late?: boolean; onBoard?: boolean; payment?: string } = {}) {
   try {
     if (!(await claim(o.reference))) return true; // already sent by another server
@@ -87,7 +87,7 @@ let lastRun = 0;
 let running: Promise<number> | null = null;
 
 /**
- * Sends every quote of the last 14 days that hasn't reached support@flokefama.com yet. Runs at most every 10 minutes
+ * Sends every quote of the last 14 days that hasn't reached info@flokefama.com yet. Runs at most every 10 minutes
  * per server (or when `force`, from the daily job). Returns how many it sent.
  */
 export function catchUpQuotes(force = false): Promise<number> {

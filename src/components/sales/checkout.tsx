@@ -264,7 +264,7 @@ function SendToSales({ order }: { order: CheckoutOrder }) {
   const { contact } = useSite();
   const c = order.customer;
   const links = composeLinks({
-    to: contact.support,
+    to: contact.info,
     whatsapp: contact.whatsapp,
     subject: `Quote request ${order.reference}: ${c.organisation}`,
     body: [

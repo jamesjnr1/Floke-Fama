@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
   // Preventive maintenance jobs open whether or not texts are switched on
   const scheduled = appwrite ? await scheduleMaintenance().catch((e) => (console.error('[cron] maintenance schedule:', e), 0)) : 0;
   if (appwrite) await clearSaveLocks().catch((e) => console.error('[cron] save marks:', e));
-  // Any quote request that hasn't reached support@flokefama.com yet
+  // Any quote request that hasn't reached info@flokefama.com yet
   if (appwrite) await catchUpQuotes(true).catch((e) => console.error('[cron] quotes:', e));
   // The site monitor: yesterday is added up, and visits older than 30 days are deleted
   if (appwrite) await pruneVisits().catch((e) => console.error('[cron] site monitor:', e));
