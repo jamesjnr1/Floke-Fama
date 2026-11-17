@@ -83,7 +83,8 @@ export function Checkout({ adding = [] }: { adding?: QuoteItem[] }) {
       setBusy(true);
       track('quote_list_request', { items: units });
       setWithSales(null);
-      const sent = user ? await saveOrder(order, user.email).catch(() => false) : false;
+      // Signed in or not: a visitor's request goes to Flokefama the same way (a guest is then texted an invitation to register)
+      const sent = await saveOrder(order, user?.email ?? details.email).catch(() => false);
       setWithSales(sent);
       setBusy(false);
       setPlaced(order);
@@ -208,7 +209,14 @@ export function Checkout({ adding = [] }: { adding?: QuoteItem[] }) {
                 <div className="mx-auto mt-6 grid max-w-sm gap-2">
                   {withSales === false && <SendToSales order={placed} />}
                   <a href={contact.phoneHref} className="flex h-12 items-center justify-center rounded-lg border border-line font-semibold text-ink hover:border-ink/30">Call {contact.phone}</a>
-                  <Link href="/portal?view=orders" className="mt-2 text-sm font-medium text-brand-700 hover:underline">View your quotes in the dashboard</Link>
+                  {user ? (
+                    <Link href="/portal?view=orders" className="mt-2 text-sm font-medium text-brand-700 hover:underline">View your quotes in the dashboard</Link>
+                  ) : (
+                    <div className="mt-4 rounded-xl bg-brand-50 p-4 text-sm text-ink-2">
+                      <p>Register your hospital to see this quote in your own dashboard, mark equipment received and request service.</p>
+                      <Link href="/login?mode=register" className="mt-3 inline-flex h-10 items-center justify-center rounded-lg bg-brand-600 px-4 font-semibold text-white hover:bg-brand-700">Register your hospital</Link>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
