@@ -164,9 +164,9 @@ export function SupportChat({ open, onClose }: { open: boolean; onClose: () => v
     if (has(t, 'hour', 'open', 'time', 'weekend', 'night', '24'))
       return { from: 'bot', text: `Our support line answers 24/7: ${contact.phone}. Requests sent here reach the support desk straight away, day or night.`, links: [{ label: `Call ${contact.phone}`, href: contact.phoneHref }] };
     if (has(t, 'phone', 'call', 'email', 'contact', 'number', 'reach', 'whatsapp'))
-      return { from: 'bot', text: `Call or WhatsApp ${contact.phone}. Email: support ${contact.support}, sales ${contact.sales}, general ${contact.info}.`, links: [{ label: `Call ${contact.phone}`, href: contact.phoneHref }, { label: 'WhatsApp us', href: whatsapp('Hello Flokefama, ') }] };
+      return { from: 'bot', text: `Call or WhatsApp ${contact.phone}. Email ${contact.support}.`, links: [{ label: `Call ${contact.phone}`, href: contact.phoneHref }, { label: 'WhatsApp us', href: whatsapp('Hello Flokefama, ') }] };
     if (has(t, 'job', 'career', 'vacanc', 'intern', 'cv', 'employ'))
-      return { from: 'bot', text: `For careers and internships, send your CV to ${contact.info}.`, links: [{ label: `Email ${contact.info}`, href: `mailto:${contact.info}` }] };
+      return { from: 'bot', text: `For careers and internships, send your CV to ${contact.support}.`, links: [{ label: `Email ${contact.support}`, href: `mailto:${contact.support}` }] };
     if (has(t, 'person', 'human', 'agent', 'someone', 'staff')) return 'menu';
     // The buying FAQ: the question sharing the most words with what was asked
     const words = t.toLowerCase().match(/[a-z]{4,}/g) ?? [];
