@@ -4,14 +4,15 @@ import { catalogue } from '@/data/catalogue';
 import { appwrite, DATABASE_ID, isNotFound, TABLES } from '@/lib/appwrite';
 import { getClientSession } from '@/lib/auth/server';
 import { CONSUMABLES } from '@/lib/categories';
-import { needsInstallation, tidyName } from '@/lib/installation';
+import { tidyName } from '@/lib/installation';
 import type { SavedOrder } from '@/lib/orders';
 import { registerPurchase } from '@/lib/service/server';
 
 /**
  * A hospital tells us it has received the equipment from one of its quote requests (its portal, Quotes → "We've
- * received it"): the equipment goes on its list, with installation booked where the machine needs it, the same as a
- * purchase. Consumables are skipped. Once per request, and only the hospital's own request.
+ * received it"). Received means delivered and installed by our engineers: the equipment goes on its list, in service
+ * from today, with its warranty and service schedule. No installation job follows. Consumables are skipped. Once per
+ * request, and only the hospital's own request.
  */
 export const dynamic = 'force-dynamic';
 type OrderRow = Models.Row & { data: string };
@@ -38,13 +39,13 @@ export async function POST(req: NextRequest) {
   if (o.equipmentAdded) return NextResponse.json({ ok: true, already: true });
 
   // Marked first, so a second tap (or a second tab) never adds the equipment twice
-  const marked: SavedOrder = { ...o, equipmentAdded: true, status: 'delivered', log: [...(o.log ?? []), { at: new Date().toISOString(), by: s.name, text: 'Received by the hospital: equipment added to its list' }].slice(-100) };
+  const marked: SavedOrder = { ...o, equipmentAdded: true, status: 'delivered', log: [...(o.log ?? []), { at: new Date().toISOString(), by: s.name, text: 'Received (installed) by the hospital: equipment added to its list' }].slice(-100) };
   if ((await appwrite.tables.getRow(args) as OrderRow).$updatedAt !== row.$updatedAt) return NextResponse.json({ ok: true, already: true });
   await appwrite.tables.updateRow({ ...args, data: { data: JSON.stringify(marked) } });
 
   const equipment = o.items.flatMap((x) => {
     const p = catalogue.find((c) => c.slug === x.slug);
-    return p && p.category !== CONSUMABLES ? [{ slug: p.slug, name: tidyName(p.name), brand: p.brand, image: p.image, qty: x.qty, install: needsInstallation(p) }] : [];
+    return p && p.category !== CONSUMABLES ? [{ slug: p.slug, name: tidyName(p.name), brand: p.brand, image: p.image, qty: x.qty, install: false }] : [];
   });
   try {
     await registerPurchase(s, o.reference, equipment);
@@ -54,5 +55,5 @@ export async function POST(req: NextRequest) {
     await appwrite.tables.updateRow({ ...args, data: { data: JSON.stringify({ ...o }) } }).catch(() => {});
     return NextResponse.json({ error: 'The equipment could not be added just now. Please try again.' }, { status: 503 });
   }
-  return NextResponse.json({ ok: true, added: equipment.reduce((n, i) => n + i.qty, 0), installs: equipment.filter((i) => i.install).length });
+  return NextResponse.json({ ok: true, added: equipment.reduce((n, i) => n + i.qty, 0) });
 }

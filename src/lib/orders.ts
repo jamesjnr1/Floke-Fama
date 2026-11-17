@@ -132,13 +132,13 @@ export function saveOrder(order: CheckoutOrder, account: string): Promise<boolea
 }
 
 /** The hospital has received a quote request's equipment: it goes on its equipment list (api/orders/received). */
-export async function markReceived(reference: string): Promise<{ ok: boolean; added?: number; installs?: number; error?: string }> {
+export async function markReceived(reference: string): Promise<{ ok: boolean; added?: number; error?: string }> {
   const r = await fetch('/api/orders/received', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ reference }) }).catch(() => null);
-  const out = ((await r?.json().catch(() => ({}))) ?? {}) as { ok?: boolean; added?: number; installs?: number; error?: string };
+  const out = ((await r?.json().catch(() => ({}))) ?? {}) as { ok?: boolean; added?: number; error?: string };
   if (r?.ok && out.ok) {
     await askServer(true);
     listeners.forEach((l) => l());
-    return { ok: true, added: out.added, installs: out.installs };
+    return { ok: true, added: out.added };
   }
   return { ok: false, error: out.error ?? 'Not saved. Check your connection and try again.' };
 }
