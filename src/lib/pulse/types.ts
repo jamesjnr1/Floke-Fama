@@ -157,6 +157,7 @@ export function summarise(day: string, visits: Visit[]): DaySummary {
     bump(d.browsers, v.browser);
     bump(d.systems, v.os);
     for (const e of v.events) {
+      if (e.n === 'js_error' && isNoiseError(e.v)) continue;
       bump(d.events, e.n);
       if (e.n === 'search' && e.v) bump(d.searches, e.v.toLowerCase());
     }
@@ -238,3 +239,18 @@ export interface PulseBatch {
   p: string;
   items: PulseItem[];
 }
+
+/**
+ * Errors that aren't the site's: browser extensions (crypto wallets, password managers, translators, ad blockers),
+ * in-app browsers (Facebook, Instagram, TikTok) and the browser itself, which run their own code on the page. They
+ * are left out of the monitor; only the site's own errors count.
+ */
+const NOISE = [
+  /ethereum|web3|metamask|tronweb|solana|phantom|coinbase|trustwallet|wallet/i,
+  /@context/,
+  /ResizeObserver|Script error|Non-Error promise rejection|Load failed|Failed to fetch|NetworkError|AbortError|The operation was aborted/i,
+  /__gCrWeb|__firefox__|webkit\.messageHandlers|instantSearchSDKJSBridge|fbq|_AutofillCallbackHandler|getReadModeConfig|getReadModeRender|getReadModeExtract/i,
+  /extension|chrome-extension|moz-extension|safari-extension/i,
+  /Can't find variable: (gmo|zaloJSV2|setIOSParameters)/i,
+];
+export const isNoiseError = (message: string | undefined) => !message || NOISE.some((re) => re.test(message));

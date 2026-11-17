@@ -3,7 +3,7 @@
 import { usePathname } from 'next/navigation';
 import { useReportWebVitals } from 'next/web-vitals';
 import { useEffect } from 'react';
-import type { PulseItem } from '@/lib/pulse/types';
+import { isNoiseError, type PulseItem } from '@/lib/pulse/types';
 
 /**
  * The site monitor's script: tells /api/pulse which pages a visitor opens, how long they stay, what they do (quote
@@ -159,10 +159,15 @@ export function Pulse() {
         }
       }
     };
+    // Only the site's own errors: thrown from its scripts (/_next/ on this site). Extensions, in-app browsers and
+    // the browser run their own code on the page; their errors aren't the site's and are left out
+    const ours = (where: string) => where.includes(`${location.origin}/_next/`);
     const failed = (e: ErrorEvent | PromiseRejectionEvent) => {
-      if (errors++ >= 3) return;
-      const message = 'message' in e ? e.message : String((e.reason as Error | undefined)?.message ?? e.reason ?? '');
-      if (message && !/ResizeObserver|Script error/i.test(message)) pulseEvent('js_error', message);
+      const reason = 'reason' in e ? (e.reason as Error | undefined) : undefined;
+      const message = 'message' in e ? e.message : String(reason?.message ?? reason ?? '');
+      const where = 'filename' in e ? `${e.filename ?? ''} ${(e.error as Error | undefined)?.stack ?? ''}` : String(reason?.stack ?? '');
+      if (!ours(where) || isNoiseError(message) || errors++ >= 3) return;
+      pulseEvent('js_error', message);
     };
     const timer = setInterval(() => {
       // Still here and not walked away: say so (this is what keeps them in "on the site now")
