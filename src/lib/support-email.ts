@@ -15,6 +15,8 @@ const list = (v: string | undefined) => (v ?? '').split(',').map((e) => e.trim()
 export const QUOTE_EMAIL = 'info@flokefama.com';
 const salesRecipients = () => list(process.env.QUOTE_EMAIL_TO?.trim() || QUOTE_EMAIL);
 const recipients = salesRecipients;
+/** The inbox quotes go to now, as one address (the first, when several are set). */
+export const quoteInbox = () => salesRecipients()[0]?.toLowerCase() ?? QUOTE_EMAIL;
 
 export const supportEmailConfigured = () => Boolean(key() && sender());
 
