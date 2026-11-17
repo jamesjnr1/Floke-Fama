@@ -6,7 +6,7 @@ import { tidyName } from '@/lib/installation';
 import { departmentLabel, timelineLabel } from '@/lib/order-needs';
 import type { SavedOrder } from '@/lib/orders';
 import { textQuote } from '@/lib/sms';
-import { emailSales, supportEmailConfigured } from '@/lib/support-email';
+import { emailSales, quoteInbox, supportEmailConfigured } from '@/lib/support-email';
 import { siteUrl } from '@/lib/utils';
 
 /**
@@ -20,7 +20,8 @@ const CATCH_UP_DAYS = 14;
 type OrderRow = Models.Row & { data: string };
 export type Who = { name: string; facility: string; phone: string; email: string };
 
-const claimId = (reference: string) => `qs_${reference.toLowerCase().replace(/[^a-z0-9]/g, '')}`;
+/** One claim per quote and inbox: a quote that went to an earlier address (support@) is sent once more to the new one. */
+const claimId = (reference: string) => `qs_${quoteInbox().replace(/@.*/, '').replace(/[^a-z0-9]/gi, '').slice(0, 8).toLowerCase()}_${reference.toLowerCase().replace(/[^a-z0-9]/g, '')}`;
 
 /** True when this server may send the quote (nobody has yet). */
 async function claim(reference: string) {
@@ -41,14 +42,14 @@ async function markSent(reference: string, at: string) {
   try {
     const row = (await appwrite.tables.getRow({ databaseId: DATABASE_ID, tableId: TABLES.orders, rowId: reference })) as OrderRow;
     const o = JSON.parse(String(row.data)) as SavedOrder;
-    await appwrite.tables.updateRow({ databaseId: DATABASE_ID, tableId: TABLES.orders, rowId: reference, data: { data: JSON.stringify({ ...o, supportSentAt: at }) } });
+    await appwrite.tables.updateRow({ databaseId: DATABASE_ID, tableId: TABLES.orders, rowId: reference, data: { data: JSON.stringify({ ...o, supportSentAt: at, sentTo: quoteInbox() }) } });
   } catch (e) {
     console.error('[quotes] not marked as sent', reference, e);
   }
 }
 
 /** Emails the quote to info@flokefama.com and texts the company line. True when the email went. Never throws. */
-export async function deliverQuote(o: SavedOrder, who: Who, opts: { late?: boolean; onBoard?: boolean; payment?: string } = {}) {
+export async function deliverQuote(o: SavedOrder, who: Who, opts: { late?: boolean; onBoard?: boolean; payment?: string; text?: boolean } = {}) {
   try {
     if (!(await claim(o.reference))) return true; // already sent by another server
   } catch (e) {
@@ -58,7 +59,8 @@ export async function deliverQuote(o: SavedOrder, who: Who, opts: { late?: boole
   const urgent = o.needs?.timeline === 'urgent';
   const department = departmentLabel(o.needs?.department);
   const count = lines.reduce((n, i) => n + i.qty, 0);
-  const texted = textQuote({ reference: o.reference, facility: who.facility, name: who.name, phone: who.phone, items: lines, urgent });
+  // The company line is texted once per quote: not again when it is only being sent to a new inbox
+  const texted = opts.text === false ? Promise.resolve() : textQuote({ reference: o.reference, facility: who.facility, name: who.name, phone: who.phone, items: lines, urgent });
   const emailed = await emailSales(
     `${urgent ? 'URGENT quote request' : 'New quote request'} ${o.reference}: ${who.facility} (${count} item${count === 1 ? '' : 's'})`,
     {
@@ -101,15 +103,16 @@ export function catchUpQuotes(force = false): Promise<number> {
       const since = new Date(Date.now() - CATCH_UP_DAYS * 864e5).toISOString();
       const { rows } = await appwrite!.tables.listRows<OrderRow>({ databaseId: DATABASE_ID, tableId: TABLES.orders, queries: [Query.greaterThan('$createdAt', since), Query.orderDesc('$createdAt'), Query.limit(100)] });
       for (const r of rows) {
-        let o: SavedOrder & { supportSentAt?: string };
+        let o: SavedOrder;
         try {
           o = JSON.parse(String(r.data));
         } catch {
           continue;
         }
-        if (o.supportSentAt || o.method !== 'quote' || Date.parse(o.placedAt) < Date.parse(since)) continue;
+        // Sent already, to the inbox in use now (a quote sent only to an earlier address goes again)
+        if ((o.supportSentAt && o.sentTo === quoteInbox()) || o.method !== 'quote' || Date.parse(o.placedAt) < Date.parse(since)) continue;
         const who = { name: o.contact?.name ?? '', facility: o.contact?.organisation ?? o.account, phone: o.contact?.phone ?? '', email: o.account };
-        if (await deliverQuote(o, who, { late: true })) sent++;
+        if (await deliverQuote(o, who, { late: true, text: !o.supportSentAt })) sent++;
       }
     } catch (e) {
       console.error('[quotes] catch-up failed', e);
