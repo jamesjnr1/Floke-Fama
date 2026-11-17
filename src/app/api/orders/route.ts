@@ -123,7 +123,7 @@ export async function POST(req: NextRequest) {
     await registerPurchase(s, order.reference, equipment);
   }
 
-  // Straight to Flokefama: an email to support@flokefama.com and a text to the company line (lib/quote-mail.ts)
+  // Straight to Flokefama: an email to info@flokefama.com and a text to the company line (lib/quote-mail.ts)
   const momo = (o as { momo?: { network?: unknown } }).momo;
   const payment = (order.method === 'momo' && text(momo?.network, 30)) || { quote: 'Agreed with sales after the quote', momo: 'Mobile money', card: 'Card', bank: 'Bank transfer' }[order.method];
   const emailed = await deliverQuote(order, who, { onBoard, payment });

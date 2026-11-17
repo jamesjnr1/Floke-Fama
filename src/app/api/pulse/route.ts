@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
   }
   const batch = parseBatch(raw);
   if (!batch || !batch.items.length) return new NextResponse(null, { status: 400 });
-  // While people use the site, any quote that hasn't reached support@flokefama.com yet is sent (at most every 10 minutes)
+  // While people use the site, any quote that hasn't reached info@flokefama.com yet is sent (at most every 10 minutes)
   after(() => catchUpQuotes().then(() => undefined));
   await ingest(batch, { ua, country: header(req, 'x-vercel-ip-country'), region: header(req, 'x-vercel-ip-country-region'), city: header(req, 'x-vercel-ip-city'), who: await whoIs(req) });
   return new NextResponse(null, { status: 204 });

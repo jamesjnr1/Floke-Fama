@@ -214,7 +214,7 @@ export async function textQuote(q: { reference: string; facility: string; name: 
   try {
     const count = q.items.reduce((n, i) => n + i.qty, 0);
     const first = q.items.slice(0, 2).map((i) => `${plain(i.name, 28)} x${i.qty}`).join(', ') + (q.items.length > 2 ? ` +${q.items.length - 2} more` : '');
-    const text = `${q.urgent ? 'URGENT quote' : 'New quote'} ${q.reference} from ${plain(q.facility, 40)}: ${count} item${count === 1 ? '' : 's'} (${first}). Call ${plain(q.name, 30)} on ${plain(q.phone, 20)}. Details in support@flokefama.com.`;
+    const text = `${q.urgent ? 'URGENT quote' : 'New quote'} ${q.reference} from ${plain(q.facility, 40)}: ${count} item${count === 1 ? '' : 's'} (${first}). Call ${plain(q.name, 30)} on ${plain(q.phone, 20)}. Details in info@flokefama.com.`;
     await Promise.race([send('quote', q.reference, companyLine(), text), new Promise((ok) => setTimeout(ok, 6000))]);
   } catch (e) {
     console.error('sms: quote not texted', e);

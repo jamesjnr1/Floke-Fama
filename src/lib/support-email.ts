@@ -4,15 +4,15 @@ import 'server-only';
  * Support requests by email, through Brevo (brevo.com, free for up to 300 emails a day). Set BREVO_API_KEY
  * (Brevo → SMTP & API → API keys) and the sender, BREVO_SENDER_EMAIL: an address confirmed in Brevo → Senders
  * (one click in a confirmation email, no website or DNS changes). Everything the website emails Flokefama (quote
- * requests, demonstrations, support requests) goes to support@flokefama.com (QUOTE_EMAIL_TO only to change it).
+ * requests, demonstrations, support requests) goes to info@flokefama.com (QUOTE_EMAIL_TO only to change it).
  * Without the key this does nothing and returns false.
  */
 const key = () => process.env.BREVO_API_KEY?.trim();
 const api = () => (process.env.BREVO_API_URL?.trim() || 'https://api.brevo.com/v3').replace(/\/$/, '');
 const sender = () => process.env.BREVO_SENDER_EMAIL?.trim();
 const list = (v: string | undefined) => (v ?? '').split(',').map((e) => e.trim()).filter(Boolean);
-/** Flokefama's one inbox for the website: support@flokefama.com. */
-export const QUOTE_EMAIL = 'support@flokefama.com';
+/** Flokefama's one inbox for the website: info@flokefama.com. */
+export const QUOTE_EMAIL = 'info@flokefama.com';
 const salesRecipients = () => list(process.env.QUOTE_EMAIL_TO?.trim() || QUOTE_EMAIL);
 const recipients = salesRecipients;
 
