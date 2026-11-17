@@ -68,7 +68,6 @@ export async function deliverQuote(o: SavedOrder, who: Who, opts: { late?: boole
       ...(department ? { Department: department } : {}),
       Needed: timelineLabel(o.needs?.timeline) ?? '',
       ...(o.needs?.notes ? { Notes: o.needs.notes } : {}),
-      ...(opts.payment ? { Payment: opts.payment } : {}),
       'Deliver to': [o.address, o.region].filter(Boolean).join(', '),
       Name: who.name,
       'Hospital or lab': who.facility,
