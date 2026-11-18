@@ -112,7 +112,6 @@ function Figure({ icon, label, value, now, before, lowerIsBetter, hint, tone }: 
   const good = change === null || change === 0 ? null : change > 0 !== Boolean(lowerIsBetter);
   return (
     <div className="relative isolate overflow-hidden rounded-3xl bg-paper p-5 shadow-[0_1px_2px_rgb(22_35_42/0.04),0_18px_40px_-24px_rgb(22_35_42/0.22)] ring-1 ring-line/60">
-      <span aria-hidden className="absolute -right-10 -top-10 -z-10 size-32 rounded-full opacity-[0.09] blur-xl" style={{ background: TONES[tone].hex }} />
       <span className={cn('grid size-10 place-items-center rounded-2xl bg-gradient-to-br text-white shadow-[0_8px_16px_-8px_rgb(22_35_42/0.45)]', TONES[tone].chip)}>{icon}</span>
       <p className="mt-4 text-[0.8125rem] font-semibold text-ink-3">{label}</p>
       <p className="mt-1 text-[2rem] font-bold leading-none tracking-[-0.03em] tabular-nums text-ink">{value}</p>
@@ -439,13 +438,9 @@ export function Dashboard({ name }: { name: string }) {
   ];
 
   return (
-    <div className="min-h-svh bg-[linear-gradient(180deg,#eef5f3_0%,#f4f8f9_40%)] text-ink">
-      {/* The top of the page: a deep green band with the bar, the live count and the site's health */}
-      <div className="relative isolate overflow-hidden bg-[linear-gradient(120deg,#04402a_0%,#075056_50%,#16232a_100%)] pb-32 text-white">
-        <div aria-hidden className="absolute -left-40 -top-48 -z-10 size-[38rem] rounded-full bg-[radial-gradient(circle,rgb(127_209_165/0.30),transparent_65%)]" />
-        <div aria-hidden className="absolute -bottom-40 right-[18%] -z-10 size-[30rem] rounded-full bg-[radial-gradient(circle,rgb(18_168_113/0.26),transparent_65%)]" />
-        <div aria-hidden className="absolute -right-32 -top-32 -z-10 size-[26rem] rounded-full border border-white/10" />
-        <div aria-hidden className="absolute -right-52 -top-52 -z-10 size-[40rem] rounded-full border border-white/[0.06]" />
+    <div className="min-h-svh bg-[#eef2f0] text-ink">
+      {/* The top of the page: the admin console's deep green, with the bar, the live count and the site's health */}
+      <div className="relative isolate overflow-hidden bg-[radial-gradient(140%_120%_at_0%_0%,#0f8a55_0%,#06482a_55%,#032a19_100%)] pb-32 text-white">
 
         <header className="mx-auto flex max-w-[1500px] items-center gap-6 px-8 py-5">
           <div className="flex items-center gap-2.5">
@@ -483,7 +478,7 @@ export function Dashboard({ name }: { name: string }) {
           <div>
             <p className="text-sm font-semibold text-brand-300">{greeting}, {name}. This is flokefama.com right now.</p>
             <div className="mt-5 flex items-end gap-6">
-              <p className="bg-[linear-gradient(180deg,#ffffff_30%,#9fe0bf)] bg-clip-text text-[7rem] font-extrabold leading-[0.8] tracking-[-0.05em] tabular-nums text-transparent">{live ? publicOnline.length : '–'}</p>
+              <p className="text-[7rem] font-extrabold leading-[0.8] tracking-[-0.05em] tabular-nums text-white">{live ? publicOnline.length : '–'}</p>
               <div className="pb-1">
                 <p className="text-2xl font-bold tracking-[-0.02em]">{publicOnline.length === 1 ? 'person' : 'people'} on the site</p>
                 <p className="mt-1.5 text-sm text-white/70">
