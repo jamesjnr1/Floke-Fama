@@ -1,6 +1,6 @@
 'use client';
 
-import { Activity, AlertTriangle, ArrowDownRight, ArrowUpRight, Check, ChevronDown, Clock, Copy, Database, Eye, Gauge, Globe, LogOut, Mail, MessageSquare, Monitor, MousePointerClick, RefreshCw, Smartphone, Tablet, Users } from 'lucide-react';
+import { Activity, AlertTriangle, ArrowDownRight, ArrowUpRight, Check, ChevronDown, Clock, Copy, Database, Eye, Gauge, Globe, LogOut, Mail, MessageSquare, Monitor, MousePointerClick, RefreshCw, Smartphone, Tablet, Users, Volume2, VolumeX } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { LogoMark, LogoWordmark } from '@/components/layout/logo';
 import { clearError, lock } from '@/lib/owner/actions';
@@ -310,6 +310,41 @@ const vitalNames: Record<Vital, { name: string; what: string }> = {
 };
 const vitalValue = (k: Vital, v: number) => (k === 'CLS' ? v.toFixed(2) : v >= 1000 ? `${(v / 1000).toFixed(1)}s` : `${Math.round(v)}ms`);
 
+/* ---------- the arrival chime ---------- */
+/**
+ * A soft two-note chime, made in the browser (no sound file). Browsers only allow sound after a click on the page, so
+ * the sound starts working with the first click anywhere on the monitor (or on the sound button).
+ */
+let audio: AudioContext | null = null;
+const audioCtx = () => {
+  if (typeof window === 'undefined') return null;
+  try {
+    audio ??= new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+  } catch {
+    return null;
+  }
+  return audio;
+};
+function chime() {
+  const ctx = audioCtx();
+  if (!ctx || ctx.state !== 'running') return false;
+  const t = ctx.currentTime;
+  [659.25, 987.77].forEach((f, i) => {
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.type = 'sine';
+    o.frequency.value = f;
+    const start = t + i * 0.16;
+    g.gain.setValueAtTime(0, start);
+    g.gain.linearRampToValueAtTime(0.14, start + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, start + 0.9);
+    o.connect(g).connect(ctx.destination);
+    o.start(start);
+    o.stop(start + 0.95);
+  });
+  return true;
+}
+
 /* ---------- the dashboard ---------- */
 export function Dashboard({ name }: { name: string }) {
   const [days, setDays] = useState(1);
@@ -321,6 +356,41 @@ export function Dashboard({ name }: { name: string }) {
   const [copied, setCopied] = useState('');
   const daysRef = useRef(days);
   daysRef.current = days;
+
+  // The chime when someone arrives on the site (on by default; the choice is kept in this browser)
+  const [sound, setSound] = useState(true);
+  const [soundReady, setSoundReady] = useState(false);
+  const seen = useRef<Set<string> | null>(null);
+  const soundRef = useRef(sound);
+  soundRef.current = sound;
+  useEffect(() => {
+    try {
+      if (localStorage.getItem('ff-monitor-sound') === 'off') setSound(false);
+    } catch {
+      /* storage unavailable */
+    }
+    // The browser lets sound play only after a click: the first click anywhere switches it on
+    const unlock = () => {
+      const ctx = audioCtx();
+      void ctx?.resume().then(() => setSoundReady(ctx.state === 'running'));
+    };
+    addEventListener('pointerdown', unlock);
+    addEventListener('keydown', unlock);
+    return () => {
+      removeEventListener('pointerdown', unlock);
+      removeEventListener('keydown', unlock);
+    };
+  }, []);
+  const toggleSound = () => {
+    const next = !sound;
+    setSound(next);
+    try {
+      localStorage.setItem('ff-monitor-sound', next ? 'on' : 'off');
+    } catch {
+      /* storage unavailable */
+    }
+    if (next) setTimeout(() => chime(), 50); // a sample, so it's clear what it sounds like
+  };
 
   const read = useCallback(async <T,>(query: string): Promise<T | null> => {
     const res = await fetch(`/api/monitor/data?${query}`, { cache: 'no-store', credentials: 'same-origin' });
@@ -335,7 +405,16 @@ export function Dashboard({ name }: { name: string }) {
   const loadLive = useCallback(async () => {
     try {
       const d = await read<Live>('view=live');
-      if (d) setLive(d);
+      if (d) {
+        // A visitor not seen before (staff aside): the chime. The visitors already there when the page opens don't count
+        const ids = [...d.live, ...d.recent].filter((v) => !v.who || v.who.role === 'client').map((v) => v.id);
+        if (seen.current) {
+          const arrived = d.live.some((v) => (!v.who || v.who.role === 'client') && !seen.current!.has(v.id));
+          if (arrived && soundRef.current) chime();
+          ids.forEach((id) => seen.current!.add(id));
+        } else seen.current = new Set(ids);
+        setLive(d);
+      }
       setProblem('');
     } catch {
       setProblem('The live feed could not be read just now. Trying again.');
@@ -463,6 +542,15 @@ export function Dashboard({ name }: { name: string }) {
                 </button>
               ))}
             </div>
+            <button
+              type="button"
+              onClick={toggleSound}
+              aria-pressed={sound}
+              title={!sound ? 'Sound is off: turn on the chime for each new visitor' : soundReady ? 'A chime plays for each new visitor. Click to turn it off' : 'Sound is on: it starts after your first click on the page'}
+              className={cn('grid size-9 place-items-center rounded-full ring-1 transition', sound ? 'bg-white text-[#06482a] ring-white' : 'bg-white/10 text-white/80 ring-white/10 hover:bg-white/20 hover:text-white')}
+            >
+              {sound ? <Volume2 className="size-4" /> : <VolumeX className="size-4" />}
+            </button>
             <button type="button" onClick={() => void Promise.all([loadLive(), loadStats()])} title="Read again now" className="grid size-9 place-items-center rounded-full bg-white/10 text-white/80 ring-1 ring-white/10 transition hover:bg-white/20 hover:text-white">
               <RefreshCw className={cn('size-4', busy && 'animate-spin')} />
             </button>
