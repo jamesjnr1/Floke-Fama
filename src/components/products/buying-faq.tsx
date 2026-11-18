@@ -36,8 +36,8 @@ export async function BuyingFaq() {
                 </a>
               </li>
               <li>
-                <a href={`mailto:${contact.sales}`} className="flex items-center gap-3 px-5 py-3.5 transition hover:bg-white/5">
-                  <Icon name="fi-rr-envelope" className="text-lg text-brand-300" /> <span className="min-w-0 flex-1 truncate">{contact.sales}</span>
+                <a href={`mailto:${contact.info}`} className="flex items-center gap-3 px-5 py-3.5 transition hover:bg-white/5">
+                  <Icon name="fi-rr-envelope" className="text-lg text-brand-300" /> <span className="min-w-0 flex-1 truncate">{contact.info}</span>
                 </a>
               </li>
             </ul>

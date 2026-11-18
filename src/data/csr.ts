@@ -15,8 +15,10 @@ export type CsrPhoto = { src: string; alt: string; caption?: string; text?: stri
  * Kpone Hospital: the renovated Laboratory Department. More photos and a video are added in the Studio (Site content →
  * ESG → CSR: Kpone Hospital refurbishment); they come after these.
  */
-export const kpone: { title: string; text: string; photos: CsrPhoto[] } = {
+export const kpone: { title: string; text: string; handedOver: string; press: { outlet: string; href: string }; photos: CsrPhoto[] } = {
   title: 'Kpone Hospital refurbishment',
+  handedOver: '9 November 2026',
+  press: { outlet: 'Citi Newsroom', href: 'https://www.citinewsroom.com/2026/11/flokefama-renovates-hands-over-laboratory-department-at-kpone-hospital/' },
   text: 'Comprehensive infrastructure modernisation and diagnostic centre enhancement, carried out to expand access to healthcare and improve the facility for the surrounding community.',
   photos: [
     { src: '/images/csr/kpone-1.webp', alt: 'The renovated Kpone Hospital Laboratory Department, decorated for its opening' },
@@ -90,7 +92,7 @@ export const csrProjects: { id: string; label: string; title: string; text?: str
     href: '/news/flokefama-partners-with-university-of-ghana-to-shape-the-next-generation-of-biomedical-engineers',
     groups: [
       { caption: 'Female in Engineering initiative', text: 'Partnering with academic institutions to empower women and promote excellence in engineering.', photos: [{ src: '/images/csr/female-engineering-partnership.webp', alt: 'Flokefama and academic partners outside the Flokefama office' }] },
-      { caption: 'Industry collaboration', text: 'Our leadership and engineering teams working with partners and healthcare facilities across the country.', photos: [{ src: '/images/csr/engineering-team.webp', alt: 'Flokefama team members at the Flokefama sign' }, { src: '/images/csr/engineering-industry-tour.webp', alt: 'Biomedical engineering students on an industry tour at Floke Pharmaceuticals' }] },
+      { caption: 'Industry collaboration', text: 'Our leadership and engineering teams working with partners and healthcare facilities across the country.', photos: [] },
       { caption: 'Educational outreach', text: 'Our ongoing sponsorship, industrial tours and academic awards for biomedical and engineering students, featured in the University of Ghana engineering newsletter.', photos: [{ src: '/images/csr/engineering-newsletter.webp', alt: 'University of Ghana engineering newsletter featuring the Flokefama industry tour' }] },
     ],
   },

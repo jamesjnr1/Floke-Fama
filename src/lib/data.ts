@@ -4,6 +4,7 @@ import { articles as seedArticles, type Article } from '@/data/articles';
 import * as seed from '@/data/seed';
 import { queries, sanity } from '@/lib/sanity';
 import type { Category, EventItem, Metric, Milestone, Product } from '@/lib/types';
+import { leadRank } from '@/data/shop-lead';
 import { categoryOf, newCategorySlugs, retiredCategorySlugs } from '@/lib/categories';
 import { tidyProduct } from '@/lib/product-names';
 
@@ -34,7 +35,7 @@ export const getCategories = cache(async () => {
 const recategorise = (p: Product): Product => tidyProduct({ ...p, category: categoryOf(p.slug, p.category) });
 // Featured first, then A to Z by the name as shown (the Studio sorts by its own names, some still in the old style)
 export const getProducts = cache(async () =>
-  (await fromCms<Product[]>(queries.products, seed.products)).map(recategorise).sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured)) || a.name.localeCompare(b.name, 'en', { numeric: true })),
+  (await fromCms<Product[]>(queries.products, seed.products)).map(recategorise).sort((a, b) => leadRank(a.slug) - leadRank(b.slug) || Number(Boolean(b.featured)) - Number(Boolean(a.featured)) || a.name.localeCompare(b.name, 'en', { numeric: true })),
 );
 export const getMetrics = cache(() => fromCms<Metric[]>(queries.metrics, seed.metrics));
 /** News, Blog & Press, newest first. */

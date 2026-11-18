@@ -11,7 +11,7 @@ function Runs({ runs }: { runs: Run[] }) {
         let node: React.ReactNode = r.t;
         if (r.i) node = <em>{node}</em>;
         if (r.b) node = <strong className="font-semibold text-ink">{node}</strong>;
-        if (r.href) node = <a href={r.href} target="_blank" rel="noopener noreferrer" className="font-medium text-brand-700 underline decoration-brand-300 underline-offset-4 hover:decoration-brand-600">{node}</a>;
+        if (r.href) node = <a href={r.href} {...(/^https?:/.test(r.href) ? { target: '_blank', rel: 'noopener noreferrer' } : {})} className="font-medium text-brand-700 underline decoration-brand-300 underline-offset-4 hover:decoration-brand-600">{node}</a>;
         return <span key={i}>{node}</span>;
       })}
     </>
@@ -69,8 +69,8 @@ export function ArticleBody({ blocks }: { blocks: Block[] }) {
           case 'img':
             return (
               <figure key={i} className="!my-10 overflow-hidden rounded-lg last:!mb-0 border border-line bg-paper">
-                <Image src={b.src} alt={b.alt} width={b.width} height={b.height} sizes="(min-width: 1024px) 800px, 100vw" className="h-auto w-full" />
-                {b.alt && <figcaption className="border-t border-line px-5 py-3 text-sm text-ink-3">{b.alt}</figcaption>}
+                <Image src={b.src} alt={b.alt} width={b.width} height={b.height} sizes="(min-width: 1024px) 1040px, 100vw" className="h-auto w-full" />
+                {b.alt && b.caption !== false && <figcaption className="border-t border-line px-5 py-3 text-sm text-ink-3">{b.alt}</figcaption>}
               </figure>
             );
         }

@@ -23,6 +23,6 @@ export const structure: StructureResolver = (S) =>
       ),
       S.documentTypeListItem('article').title('News, Blog & Press'),
       S.divider(),
-      S.documentTypeListItem('metric').title('Figures'),
-      S.documentTypeListItem('milestone').title('Milestones'),
+      // The first two figures are the home page's big numbers. (Milestones aren't shown on the site, so they're not listed.)
+      S.documentTypeListItem('metric').title('Figures (home page numbers)'),
     ]);

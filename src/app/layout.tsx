@@ -10,6 +10,7 @@ import { bootScript, revealNowScript } from '@/lib/a11y';
 import { introOn, introPlayer } from '@/lib/intro';
 import { SiteProvider } from '@/components/site-provider';
 import { GoogleTags } from '@/components/google-analytics';
+import { Pulse } from '@/components/pulse';
 import { getSite } from '@/lib/site';
 import { socials } from '@/data/socials';
 import type { Contact } from '@/lib/site-content';
@@ -22,7 +23,12 @@ import './globals.css';
  * Latin, from Google Fonts, SIL Open Font License), so a build never depends on Google Fonts answering and visitors'
  * browsers never contact Google for it.
  */
+// Plus Jakarta Sans: the site's text and the menu bar
 const jakarta = localFont({ src: './fonts/jakarta.woff2', weight: '400 800', variable: '--font-jakarta', display: 'swap' });
+// Two exceptions kept by request: Inter Black for the big FLOKE FAMA lettering (hero and footer), and the italic serif
+// for the accent words in page headers
+const inter = localFont({ src: './fonts/inter.woff2', weight: '900', variable: '--font-inter', display: 'swap' });
+const serif = localFont({ src: './fonts/serif.woff2', weight: '400', style: 'italic', variable: '--font-instrument', display: 'swap' });
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -80,7 +86,7 @@ const websiteLd = () => ({
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const site = await getSite();
   return (
-    <html lang="en-GH" data-banner={site.maintenance.show ? undefined : 'off'} data-patterns={process.env.NEXT_PUBLIC_PATTERNS === 'off' ? 'off' : undefined} className={jakarta.variable} suppressHydrationWarning>
+    <html lang="en-GH" data-banner={site.maintenance.show ? undefined : 'off'} data-patterns={process.env.NEXT_PUBLIC_PATTERNS === 'off' ? 'off' : undefined} className={`${jakarta.variable} ${inter.variable} ${serif.variable}`} suppressHydrationWarning>
       <head>
         <GoogleTags />
         <script dangerouslySetInnerHTML={{ __html: bootScript }} />
@@ -106,6 +112,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           }}
         />
         <ServiceWorkerRegister />
+        {/* The site monitor (the site monitor, /monitor): on the live site only, so tests and previews aren't counted */}
+        {(process.env.VERCEL_ENV === 'production' || process.env.PULSE_TEST === 'on') && process.env.PULSE !== 'off' && <Pulse />}
         {/* Vercel Web Analytics: only on Vercel, where its script is served */}
         {process.env.VERCEL && <Analytics />}
         {/* Vercel Speed Insights: track Core Web Vitals */}

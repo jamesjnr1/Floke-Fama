@@ -39,7 +39,23 @@ function normalizeUrl(value: string | undefined, fallback: string): string {
 
 /** JSON for a <script type="application/ld+json">: `<` escaped so text from the CMS can never close the script tag. */
 export function jsonLdHtml(data: unknown) {
-  return JSON.stringify(data).replace(/</g, '\\u003c');
+  // Always one object with its @context: several items become one @graph. Search engines read both ways, but some
+  // browsers and in-app browsers (and their extensions) read only `data['@context']`, and failed on a plain list
+  // (Nov 2026: "r['@context'].toLowerCase" on a visitor's screen)
+  const strip = (x: unknown) => {
+    if (!x || typeof x !== 'object' || Array.isArray(x)) return x;
+    const { '@context': _c, ...rest } = x as Record<string, unknown>;
+    void _c;
+    return rest;
+  };
+  const one = Array.isArray(data)
+    ? data.length === 1
+      ? { '@context': 'https://schema.org', ...(strip(data[0]) as object) }
+      : { '@context': 'https://schema.org', '@graph': data.map(strip) }
+    : data && typeof data === 'object'
+      ? { '@context': 'https://schema.org', ...(strip(data) as object) }
+      : data;
+  return JSON.stringify(one).replace(/</g, '\\u003c');
 }
 
 /** A Ghana number as written locally (020 025 0127) as a tel: link (tel:+233200250127). */

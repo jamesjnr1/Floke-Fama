@@ -3,9 +3,11 @@ import { Query, type Models } from 'node-appwrite';
 import { catalogue } from '@/data/catalogue';
 import { appwrite, DATABASE_ID, isNotFound, TABLES } from '@/lib/appwrite';
 import { getClientSession } from '@/lib/auth/server';
-import { emailSales } from '@/lib/support-email';
-import { siteUrl } from '@/lib/utils';
-import { departmentLabel, timelineLabel, timelines } from '@/lib/order-needs';
+import { deliverQuote, textGuest } from '@/lib/quote-mail';
+import { normalisePhone } from '@/lib/phone';
+import { clientIp } from '@/lib/rate-limit';
+import { sharedLimited } from '@/lib/shared-limit';
+import { departmentLabel, timelines } from '@/lib/order-needs';
 import { needsInstallation, tidyName } from '@/lib/installation';
 import type { SavedOrder } from '@/lib/orders';
 import { registerPurchase } from '@/lib/service/server';
@@ -52,8 +54,9 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   if (!appwrite) return NextResponse.json({ error: 'Orders are not set up.' }, { status: 503 });
   if (!sameOrigin(req)) return NextResponse.json({ error: 'Not allowed.' }, { status: 403 });
+  // Signed in (a hospital) or not (a guest): anyone can request a quote. A guest is limited to a few requests an hour
   const s = await getClientSession();
-  if (!s) return NextResponse.json({ error: 'Please sign in again.' }, { status: 401 });
+  if (!s && (await sharedLimited(`quote:${clientIp(req)}`, 5, 60 * 60_000).catch(() => false))) return NextResponse.json({ error: 'Too many requests. Please call us instead.' }, { status: 429 });
 
   const raw = await req.text();
   if (raw.length > 32 * 1024) return NextResponse.json({ error: 'That order is too large.' }, { status: 413 });
@@ -74,16 +77,17 @@ export async function POST(req: NextRequest) {
   });
   const c = (o as { customer?: Record<string, unknown> }).customer ?? {};
   const text = (v: unknown, max: number) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
-  const who = {
-    name: text(c.name, 120) || s.name,
-    email: s.email,
-    phone: text(c.phone, 40) || s.phone || '',
-    facility: text(c.organisation, 160) || s.facility || s.name,
-  };
+  const who = s
+    ? { name: text(c.name, 120) || s.name, email: s.email, phone: text(c.phone, 40) || s.phone || '', facility: text(c.organisation, 160) || s.facility || s.name }
+    : { name: text(c.name, 120), email: text(c.email, 200).toLowerCase(), phone: text(c.phone, 40), facility: text(c.organisation, 160) };
+  // A guest's request is a quote, with who to call: name, hospital, a phone and an email
+  if (!s && (o.method !== 'quote' || who.name.length < 2 || who.facility.length < 2 || !normalisePhone(who.phone) || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(who.email)))
+    return NextResponse.json({ error: 'Please fill in your name, hospital, phone and email.' }, { status: 400 });
   const order: SavedOrder = {
     reference: o.reference,
     placedAt: new Date().toISOString(),
-    account: s.email.toLowerCase(),
+    // A guest's request is filed under their email: it shows in their dashboard if they register with it
+    account: who.email.toLowerCase(),
     items: items.map(({ p, qty }) => ({ slug: p.slug, name: p.name, qty })),
     method: o.method,
     region: String(o.region ?? '').slice(0, 80),
@@ -116,39 +120,18 @@ export async function POST(req: NextRequest) {
     });
 
   // A hospital's purchase becomes its equipment; consumables are skipped. A quote request is not a purchase yet: its
-  // equipment is added when sales marks it as paid (lib/admin/actions.ts)
-  if (onBoard && s.role === 'client' && order.method !== 'quote') {
+  // equipment is added when the hospital says it has received it, i.e. it is installed (its portal → api/orders/received)
+  if (onBoard && s?.role === 'client' && order.method !== 'quote') {
     const equipment = items
       .filter(({ p }) => p.category !== CONSUMABLES)
       .map(({ p, qty }) => ({ slug: p.slug, name: tidyName(p.name), brand: p.brand, image: p.image, qty, install: needsInstallation(p) }));
     await registerPurchase(s, order.reference, equipment);
   }
 
-  // It is on the admin console's sales board now; sales also gets an email (Brevo) so they know to look
-  const momo = (o as { momo?: { network?: unknown } }).momo;
-  const lines = order.items.map((i) => ({ name: tidyName(i.name), qty: i.qty }));
-  const payment = (order.method === 'momo' && text(momo?.network, 30)) || { quote: 'Agreed with sales after the quote', momo: 'Mobile money', card: 'Card', bank: 'Bank transfer' }[order.method];
-  const timeline = timelines.find((t) => t.id === order.needs?.timeline);
-  const department = departmentLabel(order.needs?.department);
-  const emailed = await emailSales(
-    `${timeline?.id === 'urgent' ? 'URGENT quote request' : 'New quote request'} ${order.reference}: ${who.facility}`,
-    {
-      Reference: order.reference,
-      Items: lines.map((i) => `• ${i.name} × ${i.qty}`).join('\n'),
-      ...(department ? { Department: department } : {}),
-      Needed: timelineLabel(order.needs?.timeline) ?? '',
-      ...(order.needs?.notes ? { Notes: order.needs.notes } : {}),
-      Payment: payment,
-      'Deliver to': [order.address, order.region].filter(Boolean).join(', '),
-      Name: who.name,
-      'Hospital or lab': who.facility,
-      Phone: who.phone,
-      Email: who.email,
-    },
-    onBoard
-      ? { phone: who.phone, replyTo: who.email, link: { href: `${siteUrl}/admin?tab=orders&order=${order.reference}`, label: 'Open it on the sales board' } }
-      : { phone: who.phone, replyTo: who.email },
-  ).then((sent) => Boolean(sent), (e) => (console.error('[orders] sales email not sent', e), false));
+  // Straight to Flokefama: an email to info@flokefama.com and a text to the company line (lib/quote-mail.ts)
+  const emailed = await deliverQuote(order, who, { onBoard });
+  // A guest is texted a thank-you and an invitation to register their hospital
+  if (!s) await textGuest(order.reference, who).catch((e) => console.error('[orders] guest not texted', e));
   // Sales has it when it's on the sales board, or at least in their inbox; otherwise the checkout asks the hospital to send it
   const sales = onBoard || Boolean(emailed);
   return NextResponse.json({ order, sales }, { headers: noStore });

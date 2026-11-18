@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { recordError } from '@/lib/monitor';
+import { isNoiseError } from '@/lib/pulse/types';
 import { sharedLimited } from '@/lib/shared-limit';
 
 /**
@@ -11,6 +12,8 @@ export async function POST(req: NextRequest) {
   const message = typeof body?.message === 'string' ? body.message.slice(0, 500) : '';
   const path = typeof body?.path === 'string' && body.path.startsWith('/') ? body.path.slice(0, 200) : '';
   if (!message || !path) return NextResponse.json({ ok: false }, { status: 400 });
+  // Not the site's (a browser extension or an in-app browser): not recorded
+  if (isNoiseError(message)) return NextResponse.json({ ok: true });
   const ip = (req.headers.get('x-forwarded-for') ?? '').split(',')[0].trim() || 'unknown';
   if (await sharedLimited(`site-error:${ip}`, 20, 10 * 60_000).catch(() => false)) return NextResponse.json({ ok: false }, { status: 429 });
   await recordError({ message, path, source: 'browser' });

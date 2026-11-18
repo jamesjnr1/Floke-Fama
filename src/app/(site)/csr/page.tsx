@@ -2,10 +2,12 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { SitePageHero } from '@/components/layout/site-page-hero';
+import { CsrAreaNav } from '@/components/csr/area-nav';
 import { KponeGallery } from '@/components/csr/kpone-gallery';
 import { Reveal } from '@/components/motion/reveal';
 import { Icon } from '@/components/ui/icon';
 import { csrCommitments, csrProjects, forbes, kpone, type CsrPhoto } from '@/data/csr';
+import { kponeStory } from '@/data/site-stories';
 import { getSite } from '@/lib/site';
 import { cn } from '@/lib/utils';
 
@@ -25,7 +27,6 @@ function Shot({ p, sizes, className }: { p: CsrPhoto; sizes: string; className?:
 }
 
 type Project = (typeof csrProjects)[number];
-const byId = (id: string) => csrProjects.find((p) => p.id === id)!;
 
 /** The label and title every project starts with; `light` on dark backgrounds. */
 function Head({ p, light, className }: { p: Project; light?: boolean; className?: string }) {
@@ -61,6 +62,7 @@ const Points = ({ points }: { points?: string[] }) =>
 /**
  * A large photo with the story over it and the next part in a card overlapping its corner (Korle Bu). `flip` puts the
  * story and the card on the other side (UGMC); extra parts follow as cards in a row under the card (women in engineering).
+ * The Trust Hospital uses it too.
  */
 function Feature({ p, flip }: { p: Project; flip?: boolean }) {
   const [main, second, ...rest] = p.groups;
@@ -88,10 +90,13 @@ function Feature({ p, flip }: { p: Project; flip?: boolean }) {
         // The next parts as cards overlapping the photo's lower edge: one card on the far side, or a row of cards
         <div className={cn('mt-8 grid gap-6 md:mt-4 md:-translate-y-20', rest.length ? 'md:grid-cols-2' : cn('md:w-[60%]', flip ? 'md:mr-auto' : 'md:ml-auto'))}>
           {[...rest, second].map((g) => (
-            <figure key={g.caption} className="grid items-center gap-5 border border-line bg-paper p-4 md:grid-cols-[1fr_1.1fr] md:p-5 md:shadow-[0_24px_48px_-24px_rgb(10_16_20/0.35)]">
-              <div className={cn('grid gap-2', g.photos.length > 1 && 'grid-cols-2')}>
-                {g.photos.map((ph) => <Shot key={ph.src} p={ph} sizes="(min-width: 768px) 360px, 100vw" className={g.photos.length > 1 ? 'aspect-square' : 'aspect-[4/3]'} />)}
-              </div>
+            // A part without photos (Industry collaboration) is a text card
+            <figure key={g.caption} className={cn('grid items-center gap-5 border border-line bg-paper p-4 md:p-5 md:shadow-[0_24px_48px_-24px_rgb(10_16_20/0.35)]', g.photos.length ? 'md:grid-cols-[1fr_1.1fr]' : 'md:px-8')}>
+              {g.photos.length > 0 && (
+                <div className={cn('grid gap-2', g.photos.length > 1 && 'grid-cols-2')}>
+                  {g.photos.map((ph) => <Shot key={ph.src} p={ph} sizes="(min-width: 768px) 360px, 100vw" className={g.photos.length > 1 ? 'aspect-square' : 'aspect-[4/3]'} />)}
+                </div>
+              )}
               <figcaption>
                 <p className="text-[0.9375rem] font-semibold uppercase tracking-[0.08em] text-brand-700">{g.caption}</p>
                 <p className="no-justify mt-2 text-[1.0625rem] leading-relaxed text-ink-3">{g.text}</p>
@@ -129,62 +134,18 @@ function Phases({ p }: { p: Project }) {
   );
 }
 
-/** The Trust Hospital: the story on the left, the two photos overlapping on the right. */
-function Overlap({ p }: { p: Project }) {
-  const [a, b] = p.groups;
-  return (
-    <div className="grid gap-12 lg:grid-cols-12 lg:items-center lg:gap-16">
-      <Reveal className="lg:col-span-5">
-        <Head p={p} />
-        {[a, b].map((g) => (
-          <div key={g.caption} className="mt-7">
-            <h3 className="text-xl font-bold tracking-[-0.01em] text-ink">{g.caption}</h3>
-            <p className="no-justify mt-1.5 text-lg leading-relaxed text-ink-3">{g.text}</p>
-          </div>
-        ))}
-      </Reveal>
-      <Reveal delay={0.06} className="relative lg:col-span-7 lg:pb-24">
-        <Shot p={a.photos[0]} sizes="(min-width: 1024px) 560px, 100vw" className="aspect-[4/3] lg:w-[78%]" />
-        <Shot p={b.photos[0]} sizes="(min-width: 1024px) 380px, 100vw" className="mt-4 aspect-[4/3] border-[6px] border-paper lg:absolute lg:bottom-0 lg:right-0 lg:mt-0 lg:w-[52%] lg:shadow-[0_24px_48px_-24px_rgb(10_16_20/0.4)]" />
-      </Reveal>
-    </div>
-  );
-}
-
-/** The three areas the CSR projects are grouped in, in page order. */
+/** The three areas the CSR projects are grouped in, in page order, each with a photo for its card. */
 const areas = [
-  { id: 'building-innovation', n: '01', title: 'Building innovation', lead: 'Renovating and building hospital facilities: laboratories, sterile services and blood banks.', projects: ['Kpone Hospital', 'Pentecost Hospital', 'Korle Bu Teaching Hospital'] },
-  { id: 'equipment-donation', n: '02', title: 'Equipment donation', lead: 'Medical equipment donated to hospitals, from neonatal incubators to specialised equipment.', projects: ['University of Ghana Medical Centre', 'The Trust Hospital'] },
-  { id: 'news-and-other-areas', n: '03', title: 'News & other areas', lead: 'Recognition for our work, and programmes beyond the hospital walls.', projects: ['Forbes Africa', 'Women in engineering'] },
+  { id: 'building-renovation', n: '01', title: 'Building renovation', lead: 'Renovating and building hospital facilities: laboratories, sterile services and blood banks.', projects: ['Kpone Hospital', 'Pentecost Hospital', 'Korle Bu Teaching Hospital'], image: '/images/csr/kpone-1.webp', position: '50% 55%' },
+  { id: 'equipment-donation', n: '02', title: 'Equipment donation', lead: 'Medical equipment donated to hospitals, from neonatal incubators to specialised equipment.', projects: ['University of Ghana Medical Centre', 'The Trust Hospital'], image: '/images/csr/ugmc-incubator-donation.webp' },
+  { id: 'news-and-other-areas', n: '03', title: 'News & other areas', lead: 'Recognition for our work, and programmes beyond the hospital walls.', projects: ['Forbes Africa', 'Women in engineering'], image: '/images/forbes-africa-2026.webp', position: '50% 30%' },
 ];
 type Area = (typeof areas)[number];
-
-/** Under the opening section: the three areas as links to their place on the page. */
-function CsrAreas() {
-  return (
-    <nav aria-label="Our CSR areas" className="border-t border-line bg-paper py-10 md:py-14">
-      <ul className="mx-auto grid max-w-[1280px] gap-3 px-5 md:grid-cols-3 md:gap-4 md:px-10">
-        {areas.map((a) => (
-          <li key={a.id}>
-            <a href={`#${a.id}`} className="group flex h-full flex-col border border-line bg-canvas p-6 transition-colors hover:border-brand-600 md:p-7">
-              <span className="text-[0.9375rem] font-semibold tabular-nums text-brand-700">{a.n}</span>
-              <span className="mt-2 text-xl font-bold tracking-[-0.01em] text-ink group-hover:text-brand-700 md:text-2xl">{a.title}</span>
-              <span className="no-justify mt-2 text-[0.9375rem] leading-relaxed text-ink-3">{a.projects.join(' · ')}</span>
-              <span className="mt-auto inline-flex items-center gap-1 pt-4 text-[0.9375rem] font-semibold text-brand-700">
-                See projects <Icon name="fi-rr-arrow-small-down" />
-              </span>
-            </a>
-          </li>
-        ))}
-      </ul>
-    </nav>
-  );
-}
 
 /** The band that opens an area: its number, name and what it covers. */
 function AreaHead({ area }: { area: Area }) {
   return (
-    <section id={area.id} aria-labelledby={`${area.id}-title`} className="scroll-mt-24 bg-brand-700 py-12 text-white md:py-16">
+    <section id={area.id} aria-labelledby={`${area.id}-title`} className="scroll-mt-[calc(var(--banner)+4.5rem)] bg-brand-700 py-12 text-white md:py-16">
       <div className="mx-auto flex max-w-[1280px] flex-col gap-3 px-5 md:flex-row md:items-end md:justify-between md:gap-10 md:px-10">
         <div>
           <p className="text-[0.9375rem] font-semibold uppercase tracking-[0.08em] text-white/70">{area.n} · Our CSR</p>
@@ -197,8 +158,16 @@ function AreaHead({ area }: { area: Area }) {
 }
 
 export default async function EsgPage() {
+  const site = await getSite();
   // Kpone Hospital: the built-in photos, then the photos and video added in the Studio
-  const studio = (await getSite()).kpone;
+  const studio = site.kpone;
+  // The wording: the Studio's where it set something (Site content → CSR), the page's own otherwise
+  const t = site.text.csr;
+  const projects = csrProjects.map((p) => ({ ...p, ...t.projects[p.id] }));
+  const byId = (id: string) => projects.find((p) => p.id === id)!;
+  const kponeText = { label: 'Facility renovation', title: kpone.title, text: kpone.text, ...t.projects.kpone };
+  const commitments = t.commitments ?? csrCommitments;
+  const forbesText = { label: t.forbes?.label ?? forbes.label, title: t.forbes?.title ?? forbes.title, points: t.forbes?.points ?? forbes.points };
   const kponePhotos: CsrPhoto[] = [...kpone.photos, ...studio.photos];
   const kponeVideo = studio.video;
   return (
@@ -209,11 +178,11 @@ export default async function EsgPage() {
       <section className="pattern-cross pattern-tr bg-canvas section-y">
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
           <Reveal className="grid gap-5 lg:grid-cols-12 lg:items-end lg:gap-10">
-            <h2 className="display text-[clamp(2rem,1.2rem+2.8vw,3.25rem)] lg:col-span-7">Giving back to the people behind Ghana’s healthcare</h2>
-            <p className="no-justify text-lg leading-relaxed text-ink-3 lg:col-span-5">Our work does not end with supplying equipment. We invest in hospitals, in the next generation of professionals and in communities.</p>
+            <h2 className="display text-[clamp(2rem,1.2rem+2.8vw,3.25rem)] lg:col-span-7">{t.introTitle}</h2>
+            <p className="no-justify text-lg leading-relaxed text-ink-3 lg:col-span-5">{t.introLead}</p>
           </Reveal>
           <ul className="mt-12 grid gap-px border border-line bg-line md:grid-cols-3">
-            {csrCommitments.map((c) => (
+            {commitments.map((c) => (
               <li key={c.label} className="bg-paper p-7 lg:p-9">
                 <Icon name={c.icon} className="text-3xl text-brand-600" />
                 <p className="mt-5 text-[0.9375rem] font-semibold uppercase tracking-[0.08em] text-brand-700">{c.label}</p>
@@ -226,7 +195,7 @@ export default async function EsgPage() {
       </section>
 
       {/* The three areas of our CSR (the IT team's review, Nov 2026), each a heading band with its projects under it */}
-      <CsrAreas />
+      <CsrAreaNav areas={areas} />
 
       <AreaHead area={areas[0]} />
       {/* Kpone Hospital: the renovated laboratory (a video first when there is one, then a large photo and rows of three) */}
@@ -234,13 +203,26 @@ export default async function EsgPage() {
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
           <Reveal className="grid gap-5 lg:grid-cols-12 lg:items-end lg:gap-10">
             <div className="lg:col-span-7">
-              <p className="text-[0.9375rem] font-semibold uppercase tracking-[0.08em] text-brand-700">Facility renovation</p>
-              <h2 id="kpone" className="display mt-2 text-[clamp(2rem,1.2rem+2.4vw,3rem)]">{kpone.title}</h2>
+              <p className="text-[0.9375rem] font-semibold uppercase tracking-[0.08em] text-brand-700">{kponeText.label}</p>
+              {/* Featured news on the home page opens the page here (#kpone), clear of the menu bar */}
+              <h2 id="kpone" className="display mt-2 scroll-mt-[calc(var(--banner)+9.5rem)] text-[clamp(2rem,1.2rem+2.4vw,3rem)]">{kponeText.title}</h2>
             </div>
-            <p className="no-justify text-lg leading-relaxed text-ink-3 lg:col-span-5">{kpone.text}</p>
+            <p className="no-justify text-lg leading-relaxed text-ink-3 lg:col-span-5">{kponeText.text}</p>
           </Reveal>
           <div className="mt-10">
-            <KponeGallery photos={kponePhotos} video={kponeVideo} title={kpone.title} />
+            <KponeGallery photos={kponePhotos} video={kponeVideo} title={kponeText.title} />
+          </div>
+          {/* Under the photos: when it was handed over, and the press story */}
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-t border-line pt-6">
+            <p className="text-[0.9375rem] font-semibold uppercase tracking-[0.08em] text-ink-3">Handed over {kpone.handedOver}</p>
+            <span className="flex flex-wrap items-center gap-x-6 gap-y-2">
+              <Link href={`/news/${kponeStory.slug}`} className="inline-flex items-center gap-1.5 text-lg font-semibold text-brand-700 hover:text-brand-800">
+                Read the full story <Icon name="fi-rr-arrow-small-right" />
+              </Link>
+              <a href={kpone.press.href} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-lg font-semibold text-brand-700 hover:text-brand-800">
+                On {kpone.press.outlet} <Icon name="fi-rr-arrow-small-right" className="-rotate-45" />
+              </a>
+            </span>
           </div>
         </div>
       </section>
@@ -256,8 +238,8 @@ export default async function EsgPage() {
       <section aria-label={byId('ugmc').title} className="pattern-grid pattern-tr border-t border-line bg-canvas pt-16 md:pt-24 lg:pt-28">
         <div className="mx-auto max-w-[1280px] px-5 pb-16 md:px-10 md:pb-4"><Feature p={byId('ugmc')} flip /></div>
       </section>
-      <section aria-label={byId('trust-hospital').title} className="pattern-cross border-t border-line bg-paper section-y">
-        <div className="mx-auto max-w-[1280px] px-5 md:px-10"><Overlap p={byId('trust-hospital')} /></div>
+      <section aria-label={byId('trust-hospital').title} className="pattern-dots pattern-br border-t border-line bg-paper pt-16 md:pt-24 lg:pt-28">
+        <div className="mx-auto max-w-[1280px] px-5 pb-16 md:px-10 md:pb-4"><Feature p={byId('trust-hospital')} /></div>
       </section>
 
       <AreaHead area={areas[2]} />
@@ -267,8 +249,8 @@ export default async function EsgPage() {
             right, running from the top of the cover to its foot */}
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
           <Reveal className="max-w-4xl">
-            <p className="text-[0.9375rem] font-semibold uppercase tracking-[0.08em] text-brand-300">{forbes.label}</p>
-            <h2 id="forbes" className="mt-3 text-[clamp(1.875rem,1.2rem+2vw,2.75rem)] font-bold leading-[1.12] tracking-[-0.03em] text-white">{forbes.title}</h2>
+            <p className="text-[0.9375rem] font-semibold uppercase tracking-[0.08em] text-brand-300">{forbesText.label}</p>
+            <h2 id="forbes" className="mt-3 text-[clamp(1.875rem,1.2rem+2vw,2.75rem)] font-bold leading-[1.12] tracking-[-0.03em] text-white">{forbesText.title}</h2>
           </Reveal>
           <div className="mt-10 grid gap-6 lg:grid-cols-[0.8fr_1.2fr] lg:gap-10">
             <Reveal>
@@ -279,7 +261,7 @@ export default async function EsgPage() {
             {/* On large screens the cover sets the row's height and the three points share it exactly */}
             <div className="relative">
             <ul className="grid gap-4 lg:absolute lg:inset-0 lg:grid-rows-3">
-              {forbes.points.map((p) => (
+              {forbesText.points.map((p) => (
                 <li key={p.title} className="flex flex-col justify-center bg-white/[0.06] p-6 md:px-8">
                   <h3 className="text-xl font-semibold text-white md:text-2xl">{p.title}</h3>
                   <p className="no-justify mt-2 text-lg leading-relaxed text-white/75">{p.text}</p>

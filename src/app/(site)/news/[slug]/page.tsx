@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
+import { NewsPhoto } from '@/components/media/news-photo';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ReadingProgress, ShareButtons } from '@/components/media/article-chrome';
@@ -8,7 +9,11 @@ import { formatDate } from '@/components/media/news-grid';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import type { Article } from '@/data/articles';
-import { getArticles } from '@/lib/data';
+import { getArticles as getStudioArticles } from '@/lib/data';
+import { withSiteStories } from '@/data/site-stories';
+
+/** Every news article: the Studio's, with the site's own stories (Kpone Hospital) first. */
+const getArticles = async () => withSiteStories(await getStudioArticles());
 import { siteUrl, jsonLdHtml } from '@/lib/utils';
 
 // New posts published in Sanity get a page on first visit; existing ones are built ahead of time.
@@ -101,33 +106,17 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
 
       {/* Body */}
       <article className="bg-canvas pb-20 pt-14 md:pb-28 md:pt-20">
-        <div className="mx-auto grid max-w-[1200px] gap-12 px-5 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-14">
-          <aside className="hidden lg:block">
-            <div className="sticky top-36 space-y-8">
-              {toc.length > 1 && (
-                <nav aria-label="In this article">
-                  <p className="label">In this article</p>
-                  <ol className="mt-4 space-y-2.5 border-l border-line">
-                    {toc.map((h) => (
-                      <li key={h.text}>
-                        <a href={`#${headingId(h.text)}`} className="-ml-px block border-l-2 border-transparent pl-4 text-sm leading-snug text-ink-3 transition hover:border-brand-500 hover:text-ink">{h.text}</a>
-                      </li>
-                    ))}
-                  </ol>
-                </nav>
-              )}
-              <div>
-                <p className="label">Share</p>
-                <div className="mt-4"><ShareButtons title={a.title} /></div>
-              </div>
-              <div className="rounded-3xl bg-midnight p-5 text-white">
-                <p className="text-sm font-semibold leading-snug">Need equipment or support?</p>
-                <p className="mt-1.5 text-xs leading-relaxed text-white/75">Our sales engineers reply within one business day.</p>
-                <Link href="/products" className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-brand-300 hover:text-white">Request a quote</Link>
-              </div>
-            </div>
-          </aside>
+        {/* As wide as the cover photo above it; the article's sections as links along its top */}
+        <div className="mx-auto max-w-[1200px] px-5">
           <div className="-mx-5 min-w-0 bg-paper px-5 py-8 shadow-[0_30px_60px_-50px_rgb(11_21_16/0.4)] ring-1 ring-line sm:mx-0 sm:rounded-4xl sm:p-10 md:px-16 md:py-14">
+            {toc.length > 1 && (
+              <nav aria-label="In this article" className="mb-10 hidden flex-wrap items-center gap-x-6 gap-y-2 border-b border-line pb-6 lg:flex">
+                <p className="label">In this article</p>
+                {toc.map((h) => (
+                  <a key={h.text} href={`#${headingId(h.text)}`} className="text-sm text-ink-3 transition hover:text-brand-700">{h.text}</a>
+                ))}
+              </nav>
+            )}
             <ArticleBody blocks={a.blocks} />
           </div>
         </div>
@@ -163,7 +152,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                 <Link href={`/news/${r.slug}`} className="group flex h-full flex-col overflow-hidden border border-line bg-paper transition duration-500 hover:-translate-y-1 hover:shadow-[0_30px_60px_-30px_rgb(11_21_16/0.35)]">
                   {r.image && (
                     <div className="relative aspect-[16/10] overflow-hidden bg-mist">
-                      <Image src={r.image.src} alt="" fill sizes="(min-width: 768px) 33vw, 100vw" className="object-cover object-top transition-transform duration-1000 ease-out-expo group-hover:scale-105" />
+                      <NewsPhoto image={r.image} sizes="(min-width: 768px) 33vw, 100vw" className="object-top" />
                     </div>
                   )}
                   <div className="flex flex-1 flex-col p-5">

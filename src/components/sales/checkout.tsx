@@ -28,8 +28,8 @@ const emptyDetails: Details = { name: '', organisation: '', phone: '', email: ''
 /**
  * The shop works on quotes: a hospital lists what it needs, gives its details and sends a quote request (three steps,
  * with the summary alongside). "Request a quote" anywhere on the site lands here with the product on the list
- * (`adding`). Nothing is paid here: sales sends a quote with the price, and payment is agreed with them after. The
- * request goes on the sales board (admin console) and the hospital's dashboard.
+ * (`adding`). Nothing is paid here: the request is emailed to info@flokefama.com (and texted to the company line), and
+ * Flokefama replies with a quote. It also shows in the hospital's dashboard.
  */
 export function Checkout({ adding = [] }: { adding?: QuoteItem[] }) {
   const { contact } = useSite();
@@ -83,7 +83,8 @@ export function Checkout({ adding = [] }: { adding?: QuoteItem[] }) {
       setBusy(true);
       track('quote_list_request', { items: units });
       setWithSales(null);
-      const sent = user ? await saveOrder(order, user.email).catch(() => false) : false;
+      // Signed in or not: a visitor's request goes to Flokefama the same way (a guest is then texted an invitation to register)
+      const sent = await saveOrder(order, user?.email ?? details.email).catch(() => false);
       setWithSales(sent);
       setBusy(false);
       setPlaced(order);
@@ -189,7 +190,7 @@ export function Checkout({ adding = [] }: { adding?: QuoteItem[] }) {
                       {timelines.map((t) => <option key={t.id} value={t.id}>{t.label}: {t.detail.toLowerCase()}</option>)}
                     </select>
                   </label>
-                  <label className="sm:col-span-2"><span className={labelCls}>Notes for our sales team <span className="text-ink-3/70">(optional)</span></span>
+                  <label className="sm:col-span-2"><span className={labelCls}>Notes for our team <span className="text-ink-3/70">(optional)</span></span>
                     <textarea value={details.notes} onChange={set('notes')} rows={3} maxLength={1000} placeholder="e.g. Configuration, a tender deadline, installation needs" className={cn(field, 'h-auto resize-none py-2.5')} />
                   </label>
                 </div>
@@ -202,13 +203,20 @@ export function Checkout({ adding = [] }: { adding?: QuoteItem[] }) {
                 <h2 className="mt-5 text-2xl font-bold text-ink">Quote request {placed.reference} sent</h2>
                 <p className="mx-auto mt-2 max-w-md text-ink-2">
                   {withSales
-                    ? 'Our sales team has your request. They will call you and send a quote with the price. How to pay is agreed with them after you accept it.'
-                    : 'Please send your request to our sales team below, or call them. They will send you a quote with the price.'}
+                    ? 'Flokefama has your request. We will call you and send your quote with the price and delivery.'
+                    : 'Please send your request to us below, or call us. We will send you a quote with the price.'}
                 </p>
                 <div className="mx-auto mt-6 grid max-w-sm gap-2">
                   {withSales === false && <SendToSales order={placed} />}
                   <a href={contact.phoneHref} className="flex h-12 items-center justify-center rounded-lg border border-line font-semibold text-ink hover:border-ink/30">Call {contact.phone}</a>
-                  <Link href="/portal?view=orders" className="mt-2 text-sm font-medium text-brand-700 hover:underline">View your quotes in the dashboard</Link>
+                  {user ? (
+                    <Link href="/portal?view=orders" className="mt-2 text-sm font-medium text-brand-700 hover:underline">View your quotes in the dashboard</Link>
+                  ) : (
+                    <div className="mt-4 rounded-xl bg-brand-50 p-4 text-sm text-ink-2">
+                      <p>Register your hospital to see this quote in your own dashboard, mark equipment received and request service.</p>
+                      <Link href="/login?mode=register" className="mt-3 inline-flex h-10 items-center justify-center rounded-lg bg-brand-600 px-4 font-semibold text-white hover:bg-brand-700">Register your hospital</Link>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -235,7 +243,6 @@ export function Checkout({ adding = [] }: { adding?: QuoteItem[] }) {
         <dl className="space-y-2 border-t border-dashed border-white/30 py-5 text-sm">
           <div className="flex justify-between gap-4"><dt className="text-white/75">Items</dt><dd>{placed ? placed.items.reduce((n, x) => n + x.qty, 0) : units}</dd></div>
           <div className="flex justify-between gap-4"><dt className="text-white/75">Deliver to</dt><dd className="text-right">{details.address ? `${details.region}` : '—'}</dd></div>
-          <div className="flex justify-between gap-4"><dt className="text-white/75">Payment</dt><dd>Agreed with sales</dd></div>
           <div className="flex justify-between gap-4"><dt className="text-white/75">Installation & training</dt><dd>Included</dd></div>
         </dl>
         <div className="flex items-baseline justify-between gap-4 border-t-2 border-white/80 pt-5">
@@ -259,12 +266,12 @@ export function Checkout({ adding = [] }: { adding?: QuoteItem[] }) {
   );
 }
 
-/** When sales couldn't be told automatically: the whole request, pre-filled, by email or WhatsApp. */
+/** When the request couldn't be sent automatically: the whole request, pre-filled, by email or WhatsApp. */
 function SendToSales({ order }: { order: CheckoutOrder }) {
   const { contact } = useSite();
   const c = order.customer;
   const links = composeLinks({
-    to: contact.sales,
+    to: contact.info,
     whatsapp: contact.whatsapp,
     subject: `Quote request ${order.reference}: ${c.organisation}`,
     body: [
@@ -279,7 +286,7 @@ function SendToSales({ order }: { order: CheckoutOrder }) {
   });
   return (
     <div className="grid grid-cols-2 gap-2">
-      <a href={links.email} className="flex h-12 items-center justify-center rounded-lg bg-brand-600 font-semibold text-white hover:bg-brand-700">Email it to sales</a>
+      <a href={links.email} className="flex h-12 items-center justify-center rounded-lg bg-brand-600 font-semibold text-white hover:bg-brand-700">Email it to us</a>
       <a href={links.whatsapp} target="_blank" rel="noopener noreferrer" className="flex h-12 items-center justify-center rounded-lg border border-line font-semibold text-ink hover:border-ink/30">WhatsApp</a>
     </div>
   );
