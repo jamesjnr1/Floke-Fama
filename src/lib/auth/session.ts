@@ -44,7 +44,7 @@ export const ttlFor = (user: { keep?: boolean }) => (user.keep ? KEEP_TTL_SECOND
 export const roleLogin: Record<Role, string> = { client: '/login', engineer: '/engineer/login', admin: '/admin/login', sales: '/admin/login' };
 
 /** Where each role lands after signing in. */
-export const roleHome: Record<Role, string> = { client: '/portal', engineer: '/engineer', admin: '/admin', sales: '/admin?tab=orders' };
+export const roleHome: Record<Role, string> = { client: '/portal', engineer: '/engineer', admin: '/admin', sales: '/admin?tab=products' };
 
 /** Areas only one role may open. Everything else (shop, checkout, quotes) is open to any signed-in user. */
 export const roleAreas: { prefix: string; role: Role }[] = [
@@ -53,8 +53,8 @@ export const roleAreas: { prefix: string; role: Role }[] = [
   { prefix: '/admin', role: 'admin' },
 ];
 
-/** Pages that need a signed-in user of any role. */
-export const signedInAreas = ['/checkout'];
+/** Pages that need a signed-in user of any role (none now: anyone can request a quote, signed in or not). */
+export const signedInAreas: string[] = [];
 
 /** Where a role may be sent after signing in: anywhere on the site except another role's area. */
 export function nextFor(role: Role, next: string | null) {

@@ -1,4 +1,5 @@
 import 'server-only';
+import { pageText, type RawPageText } from '@/lib/page-text';
 import { cache } from 'react';
 import { sanity } from '@/lib/sanity';
 import { visibleBrands } from '@/data/seed';
@@ -26,6 +27,7 @@ const query = `*[_id == "siteContent"][0]{
   awards[]{ _key, title, year, body, alt, "image": image.asset->url },
   faqs[]{ q, a, linkLabel, linkHref },
   esgPillars[]{ label, icon, title, body, alt, "image": image.asset->url },
+  "pageText": { "home": homeText, "about": aboutText, "support": supportText, "csr": csrText, "footer": footerText },
   "headers": { ${(['about', 'services', 'shop', 'events', 'awards', 'esg', 'contact'] as const).map(header).join(', ')} }
 }`;
 
@@ -55,6 +57,7 @@ type Raw = Partial<{
   faqs: { q: string; a: string; linkLabel?: string; linkHref?: string }[];
   esgPillars: Partial<EsgPillar>[];
   headers: Partial<Record<PageKey, Partial<PageHeader> | null>>;
+  pageText: RawPageText;
 }>;
 
 /** A list from Sanity when it has items, otherwise the built-in one. */
@@ -122,6 +125,8 @@ function merge(raw: Raw | null): SiteContent {
     },
     engineering: { ...d.engineering, ...clean({ title: raw.engineering?.title, lead: raw.engineering?.lead }), photos: photos(raw.engineering?.photos) },
     // The Kpone Hospital section's extra photos and video, after the built-in photos (data/csr.ts)
+    // The pages' wording: the Studio's where it set something (Site content → Home, About, Support, CSR, Footer)
+    text: pageText(raw.pageText),
     kpone: { photos: photos(raw.kpone?.photos), video: raw.kpone?.video ? { src: raw.kpone.video, poster: raw.kpone.poster } : undefined },
     eventAlbums: (raw.eventAlbums ?? []).map((a): EventAlbum => ({ title: a.title ?? '', date: a.date, photos: photos(a.photos) })).filter((a) => a.title && a.photos.length),
     // Exactly what the Studio holds: removing every testimonial there removes the section (no built-in examples)

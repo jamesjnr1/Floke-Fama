@@ -30,6 +30,10 @@ export interface SavedOrder {
   amount?: number;
   /** A quote request's equipment has been added to the hospital's list (done when it is first marked as paid). */
   equipmentAdded?: boolean;
+  /** When it was emailed to info@flokefama.com (lib/quote-mail.ts). */
+  supportSentAt?: string;
+  /** The inbox it was emailed to then (a quote that went to an earlier address is sent once more to the new one). */
+  sentTo?: string;
   /** Sales' notes and moves, oldest first. */
   log?: { at: string; by: string; text: string }[];
 }
@@ -95,7 +99,7 @@ export function saveOrder(order: CheckoutOrder, account: string): Promise<boolea
       method: order.method,
       region: order.customer.region,
       address: order.customer.address,
-      customer: { name: order.customer.name, organisation: order.customer.organisation, phone: order.customer.phone },
+      customer: { name: order.customer.name, organisation: order.customer.organisation, phone: order.customer.phone, email: order.customer.email },
       momo: order.momo ? { network: order.momo.network } : undefined,
       needs: order.needs,
     }),
@@ -125,6 +129,18 @@ export function saveOrder(order: CheckoutOrder, account: string): Promise<boolea
   }
   listeners.forEach((l) => l());
   return sent;
+}
+
+/** The hospital has received a quote request's equipment: it goes on its equipment list (api/orders/received). */
+export async function markReceived(reference: string): Promise<{ ok: boolean; added?: number; error?: string }> {
+  const r = await fetch('/api/orders/received', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ reference }) }).catch(() => null);
+  const out = ((await r?.json().catch(() => ({}))) ?? {}) as { ok?: boolean; added?: number; error?: string };
+  if (r?.ok && out.ok) {
+    await askServer(true);
+    listeners.forEach((l) => l());
+    return { ok: true, added: out.added };
+  }
+  return { ok: false, error: out.error ?? 'Not saved. Check your connection and try again.' };
 }
 
 /** This account's orders, newest first: from the server when it keeps them, else from this browser. */

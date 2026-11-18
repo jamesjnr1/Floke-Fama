@@ -9,13 +9,13 @@ import { cn } from '@/lib/utils';
  * Core values as an expanding panel: one value opens wide with its full statement, the others stay as tall
  * labels. Hover, focus or tap to switch. On large screens the panel has a fixed height and every statement
  * stays in the page (only faded), so switching never changes the page height: nothing below it jumps.
- * Phones stack all four, open.
+ * Tall enough for the longest statement (Innovation) to have clear space under it. Phones stack all four, open.
  */
 export function CoreValues() {
   const { coreValues } = useSite();
   const [active, setActive] = useState(0);
   return (
-    <div className="mt-12 flex flex-col gap-3 lg:h-[360px] lg:flex-row xl:h-[330px]" role="tablist" aria-label="Core values">
+    <div className="mt-12 flex flex-col gap-3 lg:h-[392px] lg:flex-row xl:h-[382px]" role="tablist" aria-label="Core values">
       {coreValues.map((v, i) => {
         const on = i === active;
         return (

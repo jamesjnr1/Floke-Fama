@@ -3,16 +3,22 @@ import 'server-only';
 /**
  * Support requests by email, through Brevo (brevo.com, free for up to 300 emails a day). Set BREVO_API_KEY
  * (Brevo → SMTP & API → API keys) and the sender, BREVO_SENDER_EMAIL: an address confirmed in Brevo → Senders
- * (one click in a confirmation email, no website or DNS changes). Requests go to SUPPORT_EMAIL_TO, and shop
- * orders to SALES_EMAIL_TO (comma-separated; default: SUPPORT_EMAIL_TO, then the sender). Without the key this does
- * nothing and returns false.
+ * (one click in a confirmation email, no website or DNS changes). Two inboxes, nothing else: quote requests from
+ * the shop go to info@flokefama.com, and service requests from the Support page to support@flokefama.com
+ * (QUOTE_EMAIL_TO / SERVICE_EMAIL_TO only to change them). Without the key this does nothing and returns false.
  */
 const key = () => process.env.BREVO_API_KEY?.trim();
 const api = () => (process.env.BREVO_API_URL?.trim() || 'https://api.brevo.com/v3').replace(/\/$/, '');
 const sender = () => process.env.BREVO_SENDER_EMAIL?.trim();
 const list = (v: string | undefined) => (v ?? '').split(',').map((e) => e.trim()).filter(Boolean);
-const recipients = () => list(process.env.SUPPORT_EMAIL_TO?.trim() || sender());
-const salesRecipients = () => list(process.env.SALES_EMAIL_TO?.trim() || process.env.SUPPORT_EMAIL_TO?.trim() || sender());
+/** Quote requests from the shop: info@flokefama.com. */
+export const QUOTE_EMAIL = 'info@flokefama.com';
+const salesRecipients = () => list(process.env.QUOTE_EMAIL_TO?.trim() || QUOTE_EMAIL);
+/** Service requests (the Support page: faults, maintenance, installation, documents, demonstrations): support@flokefama.com. */
+export const SUPPORT_EMAIL = 'support@flokefama.com';
+const recipients = () => list(process.env.SERVICE_EMAIL_TO?.trim() || SUPPORT_EMAIL);
+/** The inbox quotes go to now, as one address (the first, when several are set). */
+export const quoteInbox = () => salesRecipients()[0]?.toLowerCase() ?? QUOTE_EMAIL;
 
 export const supportEmailConfigured = () => Boolean(key() && sender());
 
@@ -50,9 +56,22 @@ export async function emailSupport(subject: string, fields: Record<string, strin
   return true;
 }
 
+/** Sends a ready-made HTML email (the site's manager's site monitor emails, lib/owner/email.ts). False when email isn't set up. */
+export async function sendHtmlEmail(mail: { to: string[]; subject: string; html: string; text: string; senderName?: string }) {
+  if (!supportEmailConfigured() || !mail.to.length) return false;
+  const res = await fetch(`${api()}/smtp/email`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'api-key': key()! },
+    body: JSON.stringify({ sender: { name: mail.senderName ?? 'Flokefama website', email: sender() }, to: mail.to.map((email) => ({ email })), subject: mail.subject, htmlContent: mail.html, textContent: mail.text }),
+    signal: AbortSignal.timeout(10_000),
+  });
+  if (!res.ok) throw new Error(`Brevo responded ${res.status}: ${(await res.text().catch(() => '')).slice(0, 200)}`);
+  return true;
+}
+
 /** A new shop order for the sales team; replies go to the hospital's contact. */
 export const emailSales = (subject: string, fields: Record<string, string>, opts: { phone?: string; replyTo?: string; link?: Extra['link'] }) =>
-  emailSupport(subject, fields, opts.phone, { to: salesRecipients(), replyTo: opts.replyTo, link: opts.link, footer: 'A quote request from the shop on the Flokefama website. Sales sends the hospital a quote with the price.' });
+  emailSupport(subject, fields, opts.phone, { to: salesRecipients(), replyTo: opts.replyTo, link: opts.link, footer: 'A quote request from the shop on the Flokefama website. Reply to this email to reach the hospital directly.' });
 
 /**
  * A live check for the admin console (no email is sent): is the key accepted from this server, and is the sender

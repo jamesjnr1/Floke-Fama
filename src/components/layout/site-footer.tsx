@@ -37,7 +37,7 @@ const columns = [
 ];
 
 export async function SiteFooter() {
-  const { contact, maps } = await getSite();
+  const { contact, maps, text } = await getSite();
   return (
     <footer className="border-t border-white/10 bg-[#10191e] text-white/70">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
@@ -46,10 +46,9 @@ export async function SiteFooter() {
           <div className="col-span-2 flex flex-col gap-4 md:col-span-4 lg:col-span-3">
             <Logo tone="dark" />
             <p className="max-w-[46ch] text-sm leading-relaxed text-white/75">
-              Revolutionizing healthcare practices in Ghana by introducing cutting-edge technologies and solutions that set new standards in medical
-              care and patient safety.
+              {text.footer.statement}
             </p>
-            <p className="text-sm font-semibold text-white/90">Ghana’s No.1 healthcare company.</p>
+            <p className="text-sm font-semibold text-white/90">{text.footer.tagline}</p>
             <SocialLinks buttonClassName="text-white/75 hover:text-white" />
           </div>
 
@@ -105,7 +104,7 @@ export async function SiteFooter() {
         <div className="flex flex-col gap-4 border-t border-white/10 pb-24 pt-4 text-xs text-white/55 lg:flex-row lg:items-center lg:justify-between lg:pb-4">
           <div className="flex flex-col gap-2 lg:flex-row lg:gap-6">
             <p>© {new Date().getFullYear()} Flokefama Company Limited</p>
-            <p>Ghana Club 100 · Forbes Africa · Mindray Best in IVD</p>
+            <p>{text.footer.honours}</p>
           </div>
           <p>Saving lives since 2008</p>
         </div>

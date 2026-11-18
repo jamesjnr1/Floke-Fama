@@ -17,7 +17,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
     <div className="bg-canvas pb-20 pt-32 md:pb-28 md:pt-36">
       <div className="mx-auto max-w-[1180px] px-5 md:px-10">
         <h1 className="text-[clamp(2rem,1.4rem+2vw,3rem)] font-bold tracking-[-0.03em] text-ink">Request a quote</h1>
-        <p className="mb-8 mt-2 text-ink-3">List what you need and send the request. Our sales team sends you a quote with the price and delivery within one business day. Installation and training are included.</p>
+        <p className="mb-8 mt-2 text-ink-3">List what you need and send the request. We send you a quote with the price and delivery within one business day. Installation and training are included.</p>
         <Checkout adding={adding} />
       </div>
     </div>

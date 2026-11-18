@@ -9,10 +9,12 @@ import { useEffect, useMemo, useState } from 'react';
 import { ProductVisual } from '@/components/products/product-visual';
 import { AddToQuote } from '@/components/sales/add-to-quote';
 import { Icon } from '@/components/ui/icon';
+import { isNewSince } from '@/lib/new-label';
 import { localSearch, searchProducts, searchProvider } from '@/lib/search';
 import type { Category, Product } from '@/lib/types';
 import { legacyCategoryLink } from '@/lib/categories';
 import { cn } from '@/lib/utils';
+import { shopLead } from '@/data/shop-lead';
 
 /**
  * Interactive B2B catalogue: category switching and keystroke search morph the grid in place
@@ -108,7 +110,7 @@ export function Catalog({ products, categories, typeList }: {
 
   return (
     <LayoutGroup>
-      <div className="sticky top-28 z-30 -mx-5 border-b border-line bg-canvas px-5 py-4 md:-mx-10 md:px-10">
+      <div className="sticky top-[calc(var(--banner)+72px)] z-30 -mx-5 border-b border-line bg-canvas px-5 py-4 md:-mx-10 md:px-10">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center xl:block">
           <label className="relative block sm:w-72 sm:shrink-0 xl:hidden">
             <span className="sr-only">Category</span>
@@ -173,9 +175,9 @@ export function Catalog({ products, categories, typeList }: {
               transition={{ duration: 0.5, delay: Math.min(i, 8) * 0.03, ease: [0.16, 1, 0.3, 1] }}
               // Off-screen cards skip rendering until they near the viewport (smoother scrolling through ~90 products);
               // the clip margin leaves room for the hover lift and shadow.
-              className={cn('[content-visibility:auto] [contain-intrinsic-size:auto_380px] [overflow-clip-margin:48px]', p.featured && !category && !query && i === 0 && 'col-span-2')}
+              className={cn('[content-visibility:auto] [contain-intrinsic-size:auto_380px] [overflow-clip-margin:48px]', i === 0 && !category && !query && (p.slug === shopLead[0] || p.featured) && 'col-span-2')}
             >
-              <ProductCard product={p} category={catBySlug.get(p.category)} wide={Boolean(p.featured && !category && !query && i === 0)} />
+              <ProductCard product={p} category={catBySlug.get(p.category)} wide={Boolean(i === 0 && !category && !query && (p.slug === shopLead[0] || p.featured))} />
             </motion.li>
           ))}
         </AnimatePresence>
@@ -230,7 +232,7 @@ function ProductCard({ product, category, wide }: { product: Product; category?:
       <div className="px-2.5 pb-3 pt-3 sm:px-3.5 sm:pb-4">
         <p className="flex items-center gap-2 text-xs font-medium text-ink-3">
           {product.brand}
-          {product.newArrival && <span className="rounded-[4px] bg-signal px-2 py-0.5 text-xs font-semibold uppercase tracking-[0.06em] text-white">New</span>}
+          {isNewSince(product.createdAt) && <span className="rounded-[4px] bg-signal px-2 py-0.5 text-xs font-semibold uppercase tracking-[0.06em] text-white">New</span>}
         </p>
         <h2 className="mt-1 line-clamp-2 text-sm font-semibold leading-snug tracking-tight text-ink [overflow-wrap:anywhere] sm:text-base">{product.name}</h2>
       </div>
