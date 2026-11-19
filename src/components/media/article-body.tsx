@@ -1,3 +1,4 @@
+import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import type { Block, Run } from '@/data/articles';
 
@@ -68,14 +69,15 @@ export function ArticleBody({ blocks }: { blocks: Block[] }) {
             );
           case 'img':
             return (
-              <figure key={i} className="!my-10 overflow-hidden rounded-lg last:!mb-0 border border-line bg-paper">
-                <Image src={b.src} alt={b.alt} width={b.width} height={b.height} sizes="(min-width: 1024px) 1040px, 100vw" className="h-auto w-full" />
+              // Sized to read comfortably: upright photos narrower than wide ones, both centred
+              <figure key={i} className={cn('!mx-auto !my-10 overflow-hidden rounded-lg last:!mb-0 border border-line bg-paper', b.height > b.width ? 'max-w-[400px]' : 'max-w-[680px]')}>
+                <Image src={b.src} alt={b.alt} width={b.width} height={b.height} sizes="(min-width: 768px) 680px, 100vw" className="h-auto w-full" />
                 {b.alt && b.caption !== false && <figcaption className="border-t border-line px-5 py-3 text-sm text-ink-3">{b.alt}</figcaption>}
               </figure>
             );
           case 'video':
             return (
-              <figure key={i} className="!my-10 overflow-hidden rounded-lg last:!mb-0 border border-line bg-ink">
+              <figure key={i} className="!mx-auto !my-10 max-w-[680px] overflow-hidden rounded-lg last:!mb-0 border border-line bg-ink">
                 <video controls preload="none" playsInline poster={b.poster} title={b.title} width={b.width} height={b.height} controlsList="nodownload" className="h-auto w-full bg-ink" style={{ aspectRatio: `${b.width} / ${b.height}` }}>
                   <source src={b.src} type="video/mp4" />
                 </video>
