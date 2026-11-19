@@ -15,7 +15,7 @@ export async function NewsGrid() {
   // The Kpone Hospital renovation (Nov 2026) first: it opens its section on the CSR page
   const articles = withSiteStories(await getArticles());
   return (
-    <section id="news" className="pattern-dots pattern-tr scroll-mt-28 bg-paper section-y">
+    <section id="news" className="scroll-mt-28 bg-paper section-y">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <h2 className="text-2xl font-semibold tracking-[-0.01em] text-ink">News, Blog &amp; Press</h2>
         <NewsMore initial={3}>
