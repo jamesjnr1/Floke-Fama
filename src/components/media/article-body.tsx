@@ -20,12 +20,43 @@ function Runs({ runs }: { runs: Run[] }) {
 }
 
 /** Renders an article from flokefama.com (text verbatim) with editorial typography. */
+type Img = Extract<Block, { type: 'img' }>;
+type Item = Block | { type: 'gallery'; imgs: Img[] };
+
+/** Photos that follow one another become one gallery (a grid), so they read as a set rather than one by one. */
+const group = (blocks: Block[]): Item[] =>
+  blocks.reduce<Item[]>((out, b) => {
+    const last = out[out.length - 1];
+    if (b.type === 'img' && last?.type === 'gallery') last.imgs.push(b);
+    else if (b.type === 'img' && last?.type === 'img') out[out.length - 1] = { type: 'gallery', imgs: [last, b] };
+    else out.push(b);
+    return out;
+  }, []);
+
+/** A grid of photos, all cut to one shape: upright when they all are, wide when they all are, square when mixed. */
+function Gallery({ imgs }: { imgs: Img[] }) {
+  const upright = imgs.every((m) => m.height > m.width);
+  const wide = imgs.every((m) => m.width >= m.height);
+  const cols = imgs.length === 2 ? 'grid-cols-2 !mx-auto max-w-[680px]' : imgs.length === 4 ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-2 md:grid-cols-3';
+  return (
+    <div className={cn('!my-10 grid gap-3 last:!mb-0', cols)}>
+      {imgs.map((m) => (
+        <figure key={m.src} className={cn('relative overflow-hidden rounded-lg border border-line bg-mist', upright ? 'aspect-[3/4]' : wide ? 'aspect-[4/3]' : 'aspect-square')}>
+          <Image src={m.src} alt={m.alt} fill sizes="(min-width: 768px) 340px, 50vw" className="object-cover object-[50%_30%]" />
+        </figure>
+      ))}
+    </div>
+  );
+}
+
 export function ArticleBody({ blocks }: { blocks: Block[] }) {
   const firstP = blocks.findIndex((b) => b.type === 'p');
   return (
     <div className="text-[1.0625rem] leading-[1.85] text-ink-2 md:text-lg [&>*+*]:mt-6">
-      {blocks.map((b, i) => {
+      {group(blocks).map((b, i) => {
         switch (b.type) {
+          case 'gallery':
+            return <Gallery key={i} imgs={b.imgs} />;
           case 'h':
             return (
               <h2 key={i} id={headingId(b.text)} className="!mt-14 scroll-mt-28 text-[1.65rem] font-bold leading-snug tracking-[-0.02em] text-ink">
