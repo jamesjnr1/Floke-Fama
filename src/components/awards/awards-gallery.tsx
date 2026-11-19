@@ -72,8 +72,8 @@ export async function AwardsGallery() {
           })}
           {/* The closing words fill the space left in the last row (or take a row of their own when it is full), so the grid stays tidy as awards are added */}
           <li className={cn('hidden md:flex', mdSpan[awards.length % 2], lgSpan[awards.length % 3])}>
-            <Reveal className="flex h-full w-full items-center">
-              <Closing className={awards.length % 3 === 0 ? 'lg:mt-4 lg:max-w-3xl' : 'lg:px-4'} />
+            <Reveal className="w-full">
+              <Closing className={awards.length % 3 === 0 ? 'lg:mt-4 lg:max-w-3xl' : 'lg:max-w-none lg:px-6'} />
             </Reveal>
           </li>
         </ol>
