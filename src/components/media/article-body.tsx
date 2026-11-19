@@ -108,8 +108,8 @@ export function ArticleBody({ blocks }: { blocks: Block[] }) {
             );
           case 'video':
             return (
-              <figure key={i} className="!mx-auto !my-10 max-w-[680px] overflow-hidden rounded-lg last:!mb-0 border border-line bg-ink">
-                <video controls preload="none" playsInline poster={b.poster} title={b.title} width={b.width} height={b.height} controlsList="nodownload" className="h-auto w-full bg-ink" style={{ aspectRatio: `${b.width} / ${b.height}` }}>
+              <figure key={i} className="!my-10 overflow-hidden rounded-lg last:!mb-0 border border-line bg-ink">
+                <video controls preload="none" playsInline poster={b.poster} aria-label={b.title} width={b.width} height={b.height} controlsList="nodownload" className="h-auto w-full bg-ink" style={{ aspectRatio: `${b.width} / ${b.height}` }}>
                   <source src={b.src} type="video/mp4" />
                 </video>
               </figure>
