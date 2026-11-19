@@ -6,7 +6,8 @@ export type Block =
   | { type: 'h'; text: string }
   | { type: 'p' | 'quote'; runs: Run[] }
   | { type: 'ul' | 'ol'; items: Run[][] }
-  | { type: 'img'; src: string; alt: string; width: number; height: number; /** false: no caption under the photo */ caption?: boolean };
+  | { type: 'img'; src: string; alt: string; width: number; height: number; /** false: no caption under the photo */ caption?: boolean }
+  | { type: 'video'; src: string; poster?: string; title: string; width: number; height: number };
 export type Article = { slug: string; title: string; date: string; categories: string[]; excerpt: string; image?: { src: string; alt: string; width: number; height: number }; blocks: Block[]; source: string };
 
 export const articles: Article[] = [

@@ -73,6 +73,14 @@ export function ArticleBody({ blocks }: { blocks: Block[] }) {
                 {b.alt && b.caption !== false && <figcaption className="border-t border-line px-5 py-3 text-sm text-ink-3">{b.alt}</figcaption>}
               </figure>
             );
+          case 'video':
+            return (
+              <figure key={i} className="!my-10 overflow-hidden rounded-lg last:!mb-0 border border-line bg-ink">
+                <video controls preload="none" playsInline poster={b.poster} title={b.title} width={b.width} height={b.height} controlsList="nodownload" className="h-auto w-full bg-ink" style={{ aspectRatio: `${b.width} / ${b.height}` }}>
+                  <source src={b.src} type="video/mp4" />
+                </video>
+              </figure>
+            );
         }
       })}
     </div>

@@ -214,9 +214,17 @@ export const whyChoose = [
 /** Awards shown on the current Awards page (photos of the actual awards) and in the Media Centre. */
 export const awards = [
   {
+    id: 'gc100-2026-healthcare',
+    title: 'Sector lead: Healthcare and Pharmaceuticals',
+    body: 'No. 1 in the Healthcare and Pharmaceuticals sector at the 22nd edition of the Ghana Club 100 Awards, Ghana Investment Promotion Authority.',
+    year: '2026',
+    image: '/images/awards/ghana-club-100-2026-sector.webp',
+    alt: 'The Ghana Club 100 22nd edition trophy awarded to Flokefama Company Limited',
+  },
+  {
     id: 'gc100-2026',
-    title: 'Ghana Club 100, 22nd edition',
-    body: 'Named again among Ghana’s top companies at the 22nd edition of the Ghana Club 100 Awards, Ghana Investment Promotion Authority.',
+    title: 'Ghana Club 100: No. 27',
+    body: 'Ranked No. 27 among Ghana’s top companies, 22nd edition of the Ghana Club 100.',
     year: '2026',
     image: '/images/awards/ghana-club-100-2026.webp',
     alt: 'Flokefama’s CEO, Emmanuel Kenney, with the Ghana Club 100 22nd edition trophy',
