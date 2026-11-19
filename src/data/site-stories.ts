@@ -99,7 +99,7 @@ export const gc100Story: Story = {
   date: '2026-11-18',
   categories: ['News'],
   excerpt:
-    'Flokefama has once again been named among Ghana’s top companies at the 22nd edition of the Ghana Club 100 Awards, organised by the Ghana Investment Promotion Authority.',
+    'Flokefama has been ranked No. 27 among Ghana’s top companies and named sector lead for Healthcare and Pharmaceuticals at the 22nd edition of the Ghana Club 100 Awards.',
   image: { src: '/images/news/ghana-club-100-2026-team.webp', alt: 'The Flokefama team with the Ghana Club 100 2026 trophy', width: 1280, height: 853 },
   blocks: [
     {
@@ -113,14 +113,26 @@ export const gc100Story: Story = {
     },
     {
       type: 'p',
-      runs: [{ t: 'The Ghana Club 100 recognises the country’s top-performing companies each year. Flokefama was also recognised at the 21st edition, where it was ranked first in the Healthcare sector.' }],
+      runs: [
+        { t: 'The company was ranked ' },
+        { t: 'No. 27', b: true },
+        { t: ' in the Ghana Club 100 rankings for 2026 and named ' },
+        { t: 'sector lead, No. 1 in Healthcare and Pharmaceuticals', b: true },
+        { t: '.' },
+      ],
     },
-    gcPhoto('ceo-trophy', 'Flokefama’s CEO, Emmanuel Kenney, with the Ghana Club 100 2026 trophy'),
+    {
+      type: 'p',
+      runs: [{ t: 'The Ghana Club 100 recognises the country’s top-performing companies each year. This follows the 21st edition, where Flokefama was also ranked first in the Healthcare sector.' }],
+    },
+    gcPhoto('ceo-portrait', 'Flokefama’s CEO, Emmanuel Kenney, with the Ghana Club 100 2026 trophy', 1280, 1516),
     { type: 'h', text: 'Received by our CEO' },
     {
       type: 'p',
       runs: [{ t: 'The award was received on behalf of the company by Flokefama’s CEO, ' }, { t: 'Emmanuel Kenney', b: true }, { t: '.' }],
     },
+    { type: 'video', src: '/videos/ghana-club-100-2026.mp4', poster: '/videos/ghana-club-100-2026-poster.webp', title: 'Flokefama receives its award at the 22nd Ghana Club 100 Awards', width: 688, height: 384 },
+    gcPhoto('ceo-trophy', 'Emmanuel Kenney with the Ghana Club 100 2026 trophy'),
     gcPhoto('ceo-guest', 'Emmanuel Kenney with a guest and the Ghana Club 100 2026 trophy'),
     gcPhoto('ceo-trophy-close', 'The Ghana Club 100 22nd edition trophy awarded to Flokefama Company Limited'),
     { type: 'h', text: 'Thank you' },
