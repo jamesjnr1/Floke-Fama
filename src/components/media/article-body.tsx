@@ -37,12 +37,12 @@ const group = (blocks: Block[]): Item[] =>
 function Gallery({ imgs }: { imgs: Img[] }) {
   const upright = imgs.every((m) => m.height > m.width);
   const wide = imgs.every((m) => m.width >= m.height);
-  const cols = imgs.length === 2 ? 'grid-cols-2 !mx-auto max-w-[680px]' : imgs.length === 4 ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-2 md:grid-cols-3';
+  const cols = imgs.length === 2 || imgs.length === 4 ? 'grid-cols-2' : 'grid-cols-2 md:grid-cols-3';
   return (
     <div className={cn('!my-10 grid gap-3 last:!mb-0', cols)}>
       {imgs.map((m) => (
         <figure key={m.src} className={cn('relative overflow-hidden rounded-lg border border-line bg-mist', upright ? 'aspect-[3/4]' : wide ? 'aspect-[4/3]' : 'aspect-square')}>
-          <Image src={m.src} alt={m.alt} fill sizes="(min-width: 768px) 340px, 50vw" className="object-cover object-[50%_30%]" />
+          <Image src={m.src} alt={m.alt} fill sizes="(min-width: 768px) 520px, 50vw" className="object-cover object-[50%_30%]" />
         </figure>
       ))}
     </div>
