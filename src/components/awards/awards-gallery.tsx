@@ -13,8 +13,7 @@ const lgSpan = ['lg:col-span-3', 'lg:col-span-2', 'lg:col-span-1'];
 
 const Closing = ({ className }: { className?: string }) => (
   <div className={cn('max-w-2xl', className)}>
-    <span aria-hidden className="block h-1 w-12 bg-brand-600" />
-    <p className="no-justify mt-6 text-left text-xl leading-relaxed text-ink-3 md:text-2xl">
+    <p className="no-justify text-left text-xl leading-relaxed text-ink-3 md:text-2xl">
       These accolades serve as a testament to the <span className="font-medium text-ink">hard work of our team</span>, the{' '}
       <span className="font-medium text-ink">quality of our solutions</span>, and the <span className="font-medium text-brand-700">positive impact we’ve made in transforming healthcare delivery across Ghana and the West African region</span>.
     </p>
