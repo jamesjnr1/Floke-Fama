@@ -7,6 +7,20 @@ import { cn } from '@/lib/utils';
 /** The pillars' accents, in turn, so the award cards read as a set like the pillars. */
 const tones = ['green', 'teal', 'blue', 'slate', 'red', 'amber'] as const;
 
+/** Columns the closing words take: the cells left in the last row, or the whole row when it is full. */
+const mdSpan = ['md:col-span-2', 'md:col-span-1'];
+const lgSpan = ['lg:col-span-3', 'lg:col-span-2', 'lg:col-span-1'];
+
+const Closing = ({ className }: { className?: string }) => (
+  <div className={cn('max-w-2xl', className)}>
+    <span aria-hidden className="block h-1 w-12 bg-brand-600" />
+    <p className="no-justify mt-6 text-left text-xl leading-relaxed text-ink-3 md:text-2xl">
+      These accolades serve as a testament to the <span className="font-medium text-ink">hard work of our team</span>, the{' '}
+      <span className="font-medium text-ink">quality of our solutions</span>, and the <span className="font-medium text-brand-700">positive impact we’ve made in transforming healthcare delivery across Ghana and the West African region</span>.
+    </p>
+  </div>
+);
+
 /**
  * The actual awards, photographed, laid out like the six pillars on the home page: a short label and the heading on
  * white, then equal cards three to a row, large, each with the photo, the year, a coloured rule, the
@@ -57,14 +71,16 @@ export async function AwardsGallery() {
               </li>
             );
           })}
+          {/* The closing words fill the space left in the last row (or take a row of their own when it is full), so the grid stays tidy as awards are added */}
+          <li className={cn('hidden md:flex', mdSpan[awards.length % 2], lgSpan[awards.length % 3])}>
+            <Reveal className="flex h-full w-full items-center">
+              <Closing className={awards.length % 3 === 0 ? 'lg:mt-4 lg:max-w-3xl' : 'lg:px-4'} />
+            </Reveal>
+          </li>
         </ol>
 
-        <Reveal>
-          <p className="mx-auto mt-14 max-w-3xl text-center !text-center text-xl leading-relaxed text-ink-3 [text-align-last:center] md:text-2xl">
-            These accolades serve as a testament to the <span className="font-medium text-ink">hard work of our team</span>, the{' '}
-            <span className="font-medium text-ink">quality of our solutions</span>, and the <span className="font-medium text-brand-700">positive impact we’ve made in transforming healthcare delivery across Ghana and the West African region</span>.
-          </p>
-        </Reveal>
+        {/* On phones the cards swipe, so the closing words sit under them */}
+        <Closing className="mt-10 md:hidden" />
       </div>
     </section>
   );
