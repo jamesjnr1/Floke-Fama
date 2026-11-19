@@ -87,7 +87,7 @@ export default async function AboutPage() {
       )}
 
       {/* Mission, vision and aim: three bold blocks after the leadership section */}
-      <section id="mission" className="scroll-mt-28 bg-paper pt-16 md:pt-24">
+      <section id="mission" className="scroll-mt-28 bg-paper py-16 md:py-24">
         <div className="mx-auto max-w-[1280px] px-5 md:px-10">
           <PurposeBlocks />
         </div>
