@@ -6,7 +6,7 @@ import { Icon } from '@/components/ui/icon';
 import { getArticles } from '@/lib/data';
 import type { Article } from '@/data/articles';
 import { NewBadge } from '@/components/media/new-badge';
-import { kponeStory as kpone, storyHref as hrefOf, type Story } from '@/data/site-stories';
+import { siteStories, storyHref as hrefOf, type Story } from '@/data/site-stories';
 
 /** The stories after it: the Forbes Africa feature, the Mindray IVD awards and the University of Ghana partnership. */
 const featured = [
@@ -53,7 +53,7 @@ const Heading = () => (
 export async function FeaturedNews({ layout = chosen }: { layout?: NewsLayout }) {
   const articles = await getArticles();
   const picked = featured.map((s) => articles.find((a) => a.slug === s)).filter((a): a is Article => Boolean(a));
-  const stories: Story[] = [kpone, ...picked, ...articles.filter((a) => !picked.includes(a))].slice(0, 3);
+  const stories: Story[] = [...siteStories, ...picked, ...articles.filter((a) => !picked.includes(a))].slice(0, 3);
   if (!stories.length) return null;
   const [lead, ...rest] = stories;
 

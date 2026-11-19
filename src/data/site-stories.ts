@@ -86,5 +86,59 @@ export const kponeStory: Story = {
   source: CITI,
 };
 
+/** A photo from the Ghana Club 100 awards night, without a caption under it. */
+const gcPhoto = (name: string, alt: string, width = 853, height = 1280) => ({ type: 'img' as const, src: `/images/news/ghana-club-100-2026-${name}.webp`, alt, width, height, caption: false });
+
+/**
+ * The 22nd edition of the Ghana Club 100 Awards, held on 18 November 2026: a news article of its own (/news/…), first
+ * in Featured news (home) and in News, Blog & Press (Events & News). The video of the night is still to come.
+ */
+export const gc100Story: Story = {
+  slug: 'flokefama-honoured-at-the-22nd-ghana-club-100-awards',
+  title: 'Flokefama honoured at the 22nd Ghana Club 100 Awards',
+  date: '2026-11-18',
+  categories: ['News'],
+  excerpt:
+    'Flokefama has once again been named among Ghana’s top companies at the 22nd edition of the Ghana Club 100 Awards, organised by the Ghana Investment Promotion Authority.',
+  image: { src: '/images/news/ghana-club-100-2026-team.webp', alt: 'The Flokefama team with the Ghana Club 100 2026 trophy', width: 1280, height: 853 },
+  blocks: [
+    {
+      type: 'p',
+      runs: [
+        { t: 'Flokefama Company Limited', b: true },
+        { t: ' has been honoured at the ' },
+        { t: '22nd edition of the Ghana Club 100 Awards', b: true },
+        { t: ', held on 18 November 2026 and organised by the Ghana Investment Promotion Authority (GIPA).' },
+      ],
+    },
+    {
+      type: 'p',
+      runs: [{ t: 'The Ghana Club 100 recognises the country’s top-performing companies each year. Flokefama was also recognised at the 21st edition, where it was ranked first in the Healthcare sector.' }],
+    },
+    gcPhoto('ceo-trophy', 'Flokefama’s CEO, Emmanuel Kenney, with the Ghana Club 100 2026 trophy'),
+    { type: 'h', text: 'Received by our CEO' },
+    {
+      type: 'p',
+      runs: [{ t: 'The award was received on behalf of the company by Flokefama’s CEO, ' }, { t: 'Emmanuel Kenney', b: true }, { t: '.' }],
+    },
+    gcPhoto('ceo-guest', 'Emmanuel Kenney with a guest and the Ghana Club 100 2026 trophy'),
+    gcPhoto('ceo-trophy-close', 'The Ghana Club 100 22nd edition trophy awarded to Flokefama Company Limited'),
+    { type: 'h', text: 'Thank you' },
+    {
+      type: 'p',
+      runs: [
+        { t: 'Flokefama thanks GIPA, its customers, partners and every member of staff for this recognition. See all our awards on the ' },
+        { t: 'Awards page', href: '/awards' },
+        { t: '.' },
+      ],
+    },
+    gcPhoto('team', 'The Flokefama team at the 22nd Ghana Club 100 Awards', 1280, 853),
+  ],
+  source: '',
+};
+
+/** The site's own stories, newest first: first in Featured news and in News, Blog & Press. */
+export const siteStories: Story[] = [gc100Story, kponeStory];
+
 /** The news list with the site's own stories first (each only once, should it also come from the Studio). */
-export const withSiteStories = <T extends { slug: string }>(list: T[]): (T | Story)[] => [kponeStory, ...list.filter((a) => a.slug !== kponeStory.slug)];
+export const withSiteStories = <T extends { slug: string }>(list: T[]): (T | Story)[] => [...siteStories, ...list.filter((a) => !siteStories.some((s) => s.slug === a.slug))];
