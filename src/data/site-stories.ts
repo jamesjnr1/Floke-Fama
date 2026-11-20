@@ -100,7 +100,7 @@ export const gc100Story: Story = {
   categories: ['News'],
   excerpt:
     'Flokefama has been ranked No. 27 among Ghana’s top companies and named sector lead for Healthcare and Pharmaceuticals at the 22nd edition of the Ghana Club 100 Awards.',
-  image: { src: '/images/news/ghana-club-100-2026-team.webp', alt: 'The Flokefama team with the Ghana Club 100 2026 trophy', width: 1280, height: 853 },
+  image: { src: '/images/news/ghana-club-100-2026-team.webp', alt: 'The Flokefama team with the Ghana Club 100 2026 trophy', width: 1080, height: 720 },
   blocks: [
     {
       type: 'p',
@@ -131,10 +131,10 @@ export const gc100Story: Story = {
       runs: [{ t: 'The award was received on behalf of the company by Flokefama’s CEO, ' }, { t: 'Emmanuel Kenney', b: true }, { t: '.' }],
     },
     { type: 'video', src: '/videos/ghana-club-100-2026.mp4', poster: '/videos/ghana-club-100-2026-poster.webp', title: 'Flokefama receives its award at the 22nd Ghana Club 100 Awards', width: 688, height: 384 },
-    gcPhoto('ceo-portrait', 'Flokefama’s CEO, Emmanuel Kenney, with the Ghana Club 100 2026 trophy', 1280, 1516),
-    gcPhoto('ceo-trophy', 'Emmanuel Kenney with the Ghana Club 100 2026 trophy'),
-    gcPhoto('ceo-guest', 'Emmanuel Kenney with a guest and the Ghana Club 100 2026 trophy'),
-    gcPhoto('ceo-trophy-close', 'The Ghana Club 100 22nd edition trophy awarded to Flokefama Company Limited'),
+    gcPhoto('ceo', 'Flokefama’s CEO, Emmanuel Kenney, with the Ghana Club 100 2026 trophy', 720, 1080),
+    gcPhoto('trio', 'Members of the Flokefama team with the Ghana Club 100 2026 trophy', 720, 1080),
+    gcPhoto('red-carpet', 'A member of the Flokefama team at the 22nd Ghana Club 100 Awards', 720, 1080),
+    gcPhoto('red-carpet-2', 'A member of the Flokefama team on the red carpet at the 22nd Ghana Club 100 Awards', 720, 1080),
     { type: 'h', text: 'Thank you' },
     {
       type: 'p',
@@ -144,7 +144,7 @@ export const gc100Story: Story = {
         { t: '.' },
       ],
     },
-    gcPhoto('team', 'The Flokefama team at the 22nd Ghana Club 100 Awards', 1280, 853),
+    gcPhoto('team', 'The Flokefama team at the 22nd Ghana Club 100 Awards', 1080, 720),
   ],
   source: '',
 };
