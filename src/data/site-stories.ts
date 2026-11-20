@@ -132,9 +132,10 @@ export const gc100Story: Story = {
     },
     { type: 'video', src: '/videos/ghana-club-100-2026.mp4', poster: '/videos/ghana-club-100-2026-poster.webp', title: 'Flokefama receives its award at the 22nd Ghana Club 100 Awards', width: 688, height: 384 },
     gcPhoto('ceo', 'Flokefama’s CEO, Emmanuel Kenney, with the Ghana Club 100 2026 trophy', 720, 1080),
+    gcPhoto('ceo-2', 'Emmanuel Kenney with the Ghana Club 100 22nd edition trophy', 720, 1080),
+    gcPhoto('duo', 'Emmanuel Kenney and a member of the Flokefama team with the Ghana Club 100 2026 trophy', 720, 1080),
     gcPhoto('trio', 'Members of the Flokefama team with the Ghana Club 100 2026 trophy', 720, 1080),
     gcPhoto('red-carpet', 'A member of the Flokefama team at the 22nd Ghana Club 100 Awards', 720, 1080),
-    gcPhoto('red-carpet-2', 'A member of the Flokefama team on the red carpet at the 22nd Ghana Club 100 Awards', 720, 1080),
     { type: 'h', text: 'Thank you' },
     {
       type: 'p',
