@@ -5,6 +5,7 @@ import { recentErrors } from '@/lib/monitor';
 import { hasMonitorToken, isOwner } from '@/lib/owner/auth';
 import { gaConfigured } from '@/lib/pulse/ga';
 import { daySummaries, isLive, latestVisits } from '@/lib/pulse/server';
+import { monitorSample, sampleDays, sampleVisits } from '@/lib/pulse/sample';
 import { merge } from '@/lib/pulse/types';
 import { smsEnabled } from '@/lib/sms';
 import { supportEmailConfigured } from '@/lib/support-email';
@@ -37,11 +38,11 @@ export async function GET(req: NextRequest) {
   const now = Date.now();
   try {
     if (view === 'live') {
-      const visits = await latestVisits(80);
+      const visits = monitorSample() ? sampleVisits(new Date(now).toISOString().slice(0, 10), now).slice(0, 80) : await latestVisits(80);
       return NextResponse.json({ at: now, live: visits.filter((v) => isLive(v, now)), recent: visits.filter((v) => !isLive(v, now)).slice(0, 50) }, { headers: noStore });
     }
     const days = Math.max(1, Math.min(90, Number(req.nextUrl.searchParams.get('days')) || 7));
-    const [all, errors, status] = await Promise.all([daySummaries(view === 'report' ? days : days * 2, now), recentErrors(14), health()]);
+    const [all, errors, status] = await Promise.all([monitorSample() ? Promise.resolve(sampleDays(view === 'report' ? days : days * 2, now)) : daySummaries(view === 'report' ? days : days * 2, now), recentErrors(14), health()]);
     const current = all.slice(-days);
     const summary = merge(current);
     if (view === 'report') {
@@ -53,7 +54,7 @@ export async function GET(req: NextRequest) {
       {
         at: now, days, health: status, errors, summary,
         previous: { visits: before.visits, visitors: before.visitors, views: before.views, secs: before.secs, bounces: before.bounces, enquiries: before.enquiries },
-        series: current.map((d) => ({ day: d.day, visits: d.visits, visitors: d.visitors, views: d.views, enquiries: d.enquiries })),
+        series: current.map((d) => ({ day: d.day, visits: d.visits, visitors: d.visitors, newVisitors: d.newVisitors, views: d.views, enquiries: d.enquiries, bounces: d.bounces, secs: d.secs })),
         // The earliest day in the period that is the monitor's own (days before it are Google Analytics')
         google: { connected: gaConfigured(), days: current.filter((d) => d.from === 'ga' && d.visits > 0).length },
       },

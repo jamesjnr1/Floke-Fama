@@ -40,7 +40,21 @@ export function sampleData(): AdminData {
       return { slug: p.slug, name: p.name, qty: 1 + Math.floor(rnd() * rnd() * 4) };
     });
     const placedAt = daysAgo(age);
-    return { reference: `FF-${(0x5a3f1 + i * 977).toString(36).toUpperCase()}`, placedAt, createdAt: placedAt, account: a.email, items, method: pick(['momo', 'momo', 'bank', 'card'] as const), region: pick(regions), address: `${a.organisation}, ${pick(regions)}`, status: age < 3 ? 'awaiting-payment' : pick(statuses) };
+    // About one in five from someone who hasn't registered (a guest), filed under their email
+    const guest = rnd() < 0.2;
+    const person = guest ? pick(people) : a.name;
+    const organisation = guest ? pick(['Bethel Clinic', 'Hope Maternity Home', 'Unity Diagnostic Lab', 'Sunrise Medical Centre']) : a.organisation;
+    const region = pick(regions);
+    const status: OrderStatus = age < 3 ? 'awaiting-payment' : pick(statuses);
+    return {
+      reference: `FF-${(0x5a3f1 + i * 977).toString(36).toUpperCase()}`, placedAt, createdAt: placedAt,
+      account: guest ? `${person.split(' ')[0].toLowerCase()}.${i}@${organisation.split(' ')[0].toLowerCase()}.com` : a.email,
+      items, method: pick(['momo', 'momo', 'bank', 'card'] as const), region, address: `${organisation}, ${region}`, status,
+      contact: { name: person, organisation, phone: `+233 24 ${String(2000000 + i * 4111).slice(-7)}` },
+      needs: { department: pick(['laboratory', 'laboratory', 'icu', 'theatre', 'maternity', 'opd', 'cssd']), timeline: pick(['urgent', 'quarter', 'quarter', 'planning']), notes: rnd() < 0.35 ? pick(['Please include installation and training.', 'We need a quote for the board meeting on Friday.', 'Replacing an old analyser that has broken down.', 'Is there a service contract option?']) : '' },
+      supportSentAt: placedAt, sentTo: 'info@flokefama.com',
+      equipmentAdded: status === 'delivered' && rnd() < 0.7,
+    };
   }).sort((a, b) => b.placedAt.localeCompare(a.placedAt));
 
   const assets: Asset[] = Array.from({ length: 38 }, (_, i) => {

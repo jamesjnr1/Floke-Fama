@@ -1,3 +1,4 @@
+import { departmentLabel, timelineLabel } from '@/lib/order-needs';
 import { NextResponse, type NextRequest } from 'next/server';
 import { loadAdminData } from '@/lib/admin/data';
 import { sampleData } from '@/lib/admin/sample';
@@ -26,7 +27,13 @@ export async function GET(req: NextRequest) {
   const codeOf = (name?: string) => (name ? d.facilities.find((f) => facilityKey(f.name) === facilityKey(name))?.code ?? '' : '');
   const nameOf = (name?: string) => (codesOnly ? '' : name);
   let body: string;
-  if (table === 'orders') body = csv(['Reference', 'Placed', 'Account', 'Items', 'Units', 'Payment', 'Region', 'Address', 'Status'], d.orders.map((o) => [o.reference, o.placedAt, o.account, o.items.map((i) => `${i.qty} x ${i.name}`).join('; '), o.items.reduce((n, i) => n + i.qty, 0), o.method, o.region, o.address, o.status]));
+  if (table === 'orders') {
+    const registered = new Set(d.accounts.map((a) => a.email.toLowerCase()));
+    body = csv(
+      ['Reference', 'Sent', 'Hospital', 'Contact person', 'Phone', 'Email', 'Registered', 'Region', 'Address', 'Department', 'Needed', 'Notes', 'Items', 'Units', 'Emailed to', 'Emailed at', 'Received by hospital'],
+      d.orders.map((o) => [o.reference, o.placedAt, o.contact?.organisation || d.accounts.find((a) => a.email === o.account)?.organisation, o.contact?.name, o.contact?.phone, o.account, registered.has(o.account.toLowerCase()) ? 'Yes' : 'No (guest)', o.region, o.address, departmentLabel(o.needs?.department), timelineLabel(o.needs?.timeline), o.needs?.notes, o.items.map((i) => `${i.qty} x ${i.name}`).join('; '), o.items.reduce((n, i) => n + i.qty, 0), o.sentTo, o.supportSentAt, o.equipmentAdded ? 'Yes' : 'No']),
+    );
+  }
   else if (table === 'accounts') body = csv(['Name', 'Organisation', 'Email', 'Phone', 'Role', 'Registered'], d.accounts.map((a) => [a.name, a.organisation, a.email, a.phone, a.role, a.createdAt]));
   else if (table === 'hospitals') body = csv(['Code', 'Hospital', 'Kind', 'Region', 'Town', 'Address and directions', 'GhanaPost address', 'Contact person', 'Phone', 'Email', 'Status', 'Registered', 'Profile updated'], d.facilities.map((f) => [f.code, f.name, f.type, f.region, f.town, f.address, f.gps, f.contactName, f.phone, f.email, f.status, f.createdAt, f.updatedAt]));
   else if (table === 'tickets') body = csv(['Request', 'Type', 'Opened', 'Resolved', 'Title', 'Equipment', 'Serial', 'Hospital code', 'Facility', 'Priority', 'Status', 'Engineer', 'Distance (km)', 'Work carried out', 'Times reopened', 'Rating', 'Feedback'], d.desk.tickets.map((t) => { const a = d.desk.assets.find((x) => x.id === t.assetId); return [t.id, jobKind(t), t.openedAt, t.resolvedAt, t.title, a?.name, a?.serial, codeOf(a?.facility), nameOf(a?.facility), t.priority, t.status, t.engineer, t.km, t.resolution, t.reopened ?? 0, t.rating, t.feedback]; }));
