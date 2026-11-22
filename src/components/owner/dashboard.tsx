@@ -1,22 +1,34 @@
 'use client';
 
-import { Activity, AlertTriangle, ArrowDownRight, ArrowUpRight, Check, ChevronDown, Clock, Copy, Database, Eye, Gauge, Globe, LogOut, Mail, MessageSquare, Monitor, MousePointerClick, RefreshCw, Smartphone, Tablet, Users, Volume2, VolumeX } from 'lucide-react';
+import {
+  Activity, AlertTriangle, ArrowDownRight, ArrowUpRight, Check, ChevronDown, Clock, Copy, Database, Eye, FileText, Gauge, Globe, HeartPulse, History, Layers,
+  LayoutDashboard, Lock, Mail, MapPin, MessageSquare, Monitor, MousePointerClick, Percent, Radio, RefreshCw, Search, Server, ShoppingCart, Smartphone, Tablet,
+  UserPlus, Users, Volume2, VolumeX, Zap,
+} from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { LogoMark, LogoWordmark } from '@/components/layout/logo';
 import { clearError, lock } from '@/lib/owner/actions';
 import type { SiteError } from '@/lib/monitor';
-import { isNoiseError, sourceOf, vitalLimits, type DaySummary, type PageHit, type Visit, type VisitEvent, type Vital } from '@/lib/pulse/types';
+import { ENQUIRIES, isNoiseError, sourceOf, vitalLimits, type DaySummary, type PageHit, type Visit, type VisitEvent, type Vital } from '@/lib/pulse/types';
 import { cn } from '@/lib/utils';
 
 /**
- * The site monitor: who is on the site now and what they are doing, the period's figures against the period
- * before, where visitors come from and what they look at, page speed, the site's health and its errors.
- * The live part is read again every 8 seconds, the figures every 2 minutes, both only while this tab is in front.
+ * The site monitor, in sections chosen from the menu on the left:
+ *   Live              who is on the site now, what they are doing, and today so far
+ *   Overview          the period's figures against the period before, the trend, the busiest hours and days
+ *   Visitors          new and returning, where they come from, where they are, their devices
+ *   Pages             every page with its views, time spent, where visits start and end, pages not found
+ *   Shop & enquiries  from looking at products to sending a request; what people search for and do
+ *   Speed             how fast the site feels in visitors' own browsers
+ *   Health & errors   the site's services and everything that went wrong
+ *   Visit log         every recent visit, page by page
+ * The live part is read again every 8 seconds and the figures every 2 minutes, only while this tab is in front.
  */
 type Live = { at: number; live: Visit[]; recent: Visit[] };
 type Health = { database: 'ok' | 'down' | 'not set up'; databaseMs: number; texts: boolean; email: boolean; version: string; deployedMessage: string; region: string };
 type Totals = Pick<DaySummary, 'visits' | 'visitors' | 'views' | 'secs' | 'bounces' | 'enquiries'>;
-type Stats = { at: number; days: number; health: Health; errors: SiteError[]; summary: DaySummary; previous: Totals; series: { day: string; visits: number; visitors: number; views: number; enquiries: number }[]; google?: { connected: boolean; days: number } };
+type Point = { day: string; visits: number; visitors: number; newVisitors?: number; views: number; enquiries: number; bounces?: number; secs?: number };
+type Stats = { at: number; days: number; health: Health; errors: SiteError[]; summary: DaySummary; previous: Totals; series: Point[]; google?: { connected: boolean; days: number } };
 
 const RANGES = [
   { days: 1, label: 'Today' },
@@ -25,8 +37,20 @@ const RANGES = [
   { days: 90, label: '90 days' },
 ];
 
+const SECTIONS = [
+  { id: 'live', label: 'Live', icon: Radio, lead: 'Who is on flokefama.com right now, and today so far' },
+  { id: 'overview', label: 'Overview', icon: LayoutDashboard, lead: 'The period’s figures against the period before' },
+  { id: 'visitors', label: 'Visitors', icon: Users, lead: 'Who they are, where they come from and what they use' },
+  { id: 'pages', label: 'Pages', icon: FileText, lead: 'What people read, how long they stay, where they start and leave' },
+  { id: 'shop', label: 'Shop & enquiries', icon: ShoppingCart, lead: 'From looking at products to asking Flokefama for a quote' },
+  { id: 'speed', label: 'Speed', icon: Gauge, lead: 'How fast the site feels, measured in visitors’ own browsers' },
+  { id: 'health', label: 'Health & errors', icon: HeartPulse, lead: 'The site’s services, and everything that went wrong' },
+  { id: 'log', label: 'Visit log', icon: History, lead: 'Every recent visit, page by page' },
+] as const;
+type Section = (typeof SECTIONS)[number]['id'];
+
 /* ---------- words and numbers ---------- */
-const n = (x: number) => x.toLocaleString('en-GB');
+const n = (x: number) => Math.round(x).toLocaleString('en-GB');
 const duration = (secs: number) => {
   const s = Math.round(secs);
   if (s < 60) return `${s}s`;
@@ -43,6 +67,8 @@ const ago = (ms: number, now: number) => {
 };
 const clock = (ms: number) => new Date(ms).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Africa/Accra' });
 const dayLabel = (day: string) => new Date(`${day}T12:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+const rate = (part: number, whole: number) => (whole ? Math.round((part / whole) * 100) : 0);
+const ranked = (m: Record<string, number> | undefined) => Object.entries(m ?? {}).sort((a, b) => b[1] - a[1]);
 
 let regionNames: Intl.DisplayNames | null = null;
 const country = (code?: string) => {
@@ -66,6 +92,7 @@ const eventNames: Record<string, string> = {
   chat_request_start: 'Started a chat request', chat_request_sent: 'Sent a chat request', search: 'Searched the shop', download: 'Downloaded a file', outbound: 'Left to another site', js_error: 'Hit an error on the page',
 };
 const eventName = (name: string) => eventNames[name] ?? name.replace(/_/g, ' ');
+const CONTACT = ['whatsapp_click', 'call_click', 'email_click', 'chat_open', 'brochure_download', 'download'];
 
 const person = (v: Visit) => {
   if (!v.who) return `Visitor ${v.vid.slice(0, 4).toUpperCase()}`;
@@ -73,17 +100,29 @@ const person = (v: Visit) => {
   return v.who.name;
 };
 const personTag = (v: Visit) => (!v.who ? (v.isNew ? 'New' : 'Returning') : v.who.role === 'client' ? 'Hospital' : v.who.role === 'engineer' ? 'Engineer' : 'Staff');
+const isPublic = (v: Visit) => !v.who || v.who.role === 'client';
 const DeviceIcon = ({ device, className }: { device: Visit['device']; className?: string }) => (device === 'Phone' ? <Smartphone className={className} /> : device === 'Tablet' ? <Tablet className={className} /> : <Monitor className={className} />);
+
+/** The accent colours: the company green first, then its neighbours. */
+const TONES = {
+  green: { chip: 'from-[#12a871] to-[#007a4d]', hex: '#0b8a57', soft: 'bg-[#e6f4ec] text-[#06603c]' },
+  teal: { chip: 'from-[#149aa3] to-[#075056]', hex: '#0d7f88', soft: 'bg-[#e3f2f3] text-[#075056]' },
+  blue: { chip: 'from-[#4a90d2] to-[#1f5585]', hex: '#2f6fae', soft: 'bg-[#e8f0f9] text-[#1f5585]' },
+  violet: { chip: 'from-[#8474e0] to-[#4f3f9a]', hex: '#6554c0', soft: 'bg-[#eeebfa] text-[#4f3f9a]' },
+  amber: { chip: 'from-[#f3bd4a] to-[#d18a12]', hex: '#d9961c', soft: 'bg-[#fdf3e0] text-[#8a5c00]' },
+  red: { chip: 'from-[#f0646c] to-[#dc2430]', hex: '#dc2430', soft: 'bg-[#fdecee] text-[#a3162a]' },
+} as const;
+type Tone = keyof typeof TONES;
 
 /* ---------- small pieces ---------- */
 function Card({ title, hint, action, children, className }: { title?: string; hint?: string; action?: ReactNode; children: ReactNode; className?: string }) {
   return (
-    <section className={cn('min-w-0 rounded-3xl bg-paper p-6 shadow-[0_1px_2px_rgb(22_35_42/0.04),0_18px_40px_-24px_rgb(22_35_42/0.22)] ring-1 ring-line/60', className)}>
+    <section className={cn('min-w-0 rounded-2xl bg-white p-6 shadow-[0_1px_2px_rgb(22_35_42/0.05),0_12px_32px_-20px_rgb(22_35_42/0.2)] ring-1 ring-[#e3e9e6]', className)}>
       {title && (
         <header className="mb-5 flex items-start justify-between gap-3">
           <div>
             <h2 className="text-[1.0625rem] font-bold tracking-[-0.01em] text-ink">{title}</h2>
-            {hint && <p className="mt-1 text-[0.8125rem] text-ink-3">{hint}</p>}
+            {hint && <p className="mt-1 text-[0.8125rem] leading-snug text-ink-3">{hint}</p>}
           </div>
           {action}
         </header>
@@ -93,38 +132,29 @@ function Card({ title, hint, action, children, className }: { title?: string; hi
   );
 }
 
-const Empty = ({ children }: { children: ReactNode }) => <p className="py-6 text-center text-sm text-ink-3">{children}</p>;
-
-/** The dashboard's accent colours: the company green first, then its neighbours. */
-const TONES = {
-  green: { chip: 'from-[#12a871] to-[#007a4d]', hex: '#007a4d' },
-  teal: { chip: 'from-[#149aa3] to-[#075056]', hex: '#0d7f88' },
-  blue: { chip: 'from-[#4a90d2] to-[#1f5585]', hex: '#2f6fae' },
-  violet: { chip: 'from-[#8474e0] to-[#4f3f9a]', hex: '#6554c0' },
-  amber: { chip: 'from-[#f3bd4a] to-[#d18a12]', hex: '#d9961c' },
-  red: { chip: 'from-[#f0646c] to-[#dc2430]', hex: '#dc2430' },
-} as const;
-type Tone = keyof typeof TONES;
+const Empty = ({ children }: { children: ReactNode }) => <p className="py-8 text-center text-sm text-ink-3">{children}</p>;
 
 /** A figure with its change against the period before. `lowerIsBetter` turns the colours round (bounce rate). */
 function Figure({ icon, label, value, now, before, lowerIsBetter, hint, tone }: { icon: ReactNode; label: string; value: string; now?: number; before?: number; lowerIsBetter?: boolean; hint?: string; tone: Tone }) {
   const change = now !== undefined && before ? Math.round(((now - before) / before) * 100) : null;
   const good = change === null || change === 0 ? null : change > 0 !== Boolean(lowerIsBetter);
   return (
-    <div className="relative isolate overflow-hidden rounded-3xl bg-paper p-5 shadow-[0_1px_2px_rgb(22_35_42/0.04),0_18px_40px_-24px_rgb(22_35_42/0.22)] ring-1 ring-line/60">
-      <span className={cn('grid size-10 place-items-center rounded-2xl bg-gradient-to-br text-white shadow-[0_8px_16px_-8px_rgb(22_35_42/0.45)]', TONES[tone].chip)}>{icon}</span>
-      <p className="mt-4 text-[0.8125rem] font-semibold text-ink-3">{label}</p>
-      <p className="mt-1 text-[2rem] font-bold leading-none tracking-[-0.03em] tabular-nums text-ink">{value}</p>
+    <div className="relative min-w-0 rounded-2xl bg-white p-5 shadow-[0_1px_2px_rgb(22_35_42/0.05),0_12px_32px_-20px_rgb(22_35_42/0.2)] ring-1 ring-[#e3e9e6]">
+      <div className="flex items-center justify-between">
+        <p className="text-[0.8125rem] font-semibold text-ink-3">{label}</p>
+        <span className={cn('grid size-8 place-items-center rounded-xl bg-gradient-to-br text-white', TONES[tone].chip)}>{icon}</span>
+      </div>
+      <p className="mt-3 text-[1.875rem] font-bold leading-none tracking-[-0.03em] tabular-nums text-ink">{value}</p>
       <p className="mt-3 flex items-center gap-1.5 text-[0.8125rem] text-ink-3">
         {change === null ? (
           hint ?? 'No earlier figure yet'
         ) : (
           <>
-            <span className={cn('inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-xs font-bold', good === null ? 'bg-mist text-ink-3' : good ? 'bg-brand-50 text-ok' : 'bg-signal/10 text-bad')}>
+            <span className={cn('inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-xs font-bold', good === null ? 'bg-mist text-ink-3' : good ? 'bg-[#e6f4ec] text-ok' : 'bg-[#fdecee] text-bad')}>
               {change > 0 ? <ArrowUpRight className="size-3.5" /> : change < 0 ? <ArrowDownRight className="size-3.5" /> : null}
               {Math.abs(change)}%
             </span>
-            vs before
+            <span>{hint ?? 'vs the period before'}</span>
           </>
         )}
       </p>
@@ -133,17 +163,17 @@ function Figure({ icon, label, value, now, before, lowerIsBetter, hint, tone }: 
 }
 
 /** A ranked list with a bar behind each line. */
-function Bars({ rows, empty, limit = 8, tone = 'green' }: { rows: { label: string; sub?: string; value: number; right?: string }[]; empty: string; limit?: number; tone?: Tone }) {
+function Bars({ rows, empty, limit = 8, tone = 'green' }: { rows: { label: ReactNode; key?: string; sub?: string; value: number; right?: string }[]; empty: string; limit?: number; tone?: Tone }) {
   const [all, setAll] = useState(false);
   const shown = all ? rows : rows.slice(0, limit);
   const max = Math.max(1, ...rows.map((r) => r.value));
   if (!rows.length) return <Empty>{empty}</Empty>;
   return (
     <>
-      <ul className="space-y-1.5">
-        {shown.map((r) => (
-          <li key={r.label + (r.sub ?? '')} className="relative isolate flex items-center justify-between gap-3 overflow-hidden rounded-lg px-3 py-2">
-            <span aria-hidden className="absolute inset-y-0 left-0 -z-10 rounded-lg" style={{ width: `${Math.max(2, (r.value / max) * 100)}%`, background: `linear-gradient(90deg, ${TONES[tone].hex}30, ${TONES[tone].hex}0f)` }} />
+      <ul className="space-y-1">
+        {shown.map((r, i) => (
+          <li key={r.key ?? `${String(r.label)}${r.sub ?? ''}${i}`} className="relative isolate flex items-center justify-between gap-3 overflow-hidden rounded-lg px-3 py-2">
+            <span aria-hidden className="absolute inset-y-0 left-0 -z-10 rounded-lg" style={{ width: `${Math.max(2, (r.value / max) * 100)}%`, background: `linear-gradient(90deg, ${TONES[tone].hex}2b, ${TONES[tone].hex}0d)` }} />
             <span className="min-w-0">
               <span className="block truncate text-sm font-medium text-ink">{r.label}</span>
               {r.sub && <span className="block truncate text-xs text-ink-3">{r.sub}</span>}
@@ -161,40 +191,60 @@ function Bars({ rows, empty, limit = 8, tone = 'green' }: { rows: { label: strin
   );
 }
 
-const ranked = (m: Record<string, number> | undefined) => Object.entries(m ?? {}).sort((a, b) => b[1] - a[1]);
+/** A bar split into coloured parts, with a legend: new against returning, phones against computers. */
+function Split({ parts }: { parts: { label: string; value: number; hex: string; icon?: ReactNode }[] }) {
+  const total = parts.reduce((s, p) => s + p.value, 0);
+  if (!total) return <Empty>Nothing in this period yet.</Empty>;
+  return (
+    <div>
+      <div className="flex h-3 overflow-hidden rounded-full bg-mist">
+        {parts.map((p) => <span key={p.label} style={{ width: `${(p.value / total) * 100}%`, background: p.hex }} />)}
+      </div>
+      <ul className="mt-5 grid gap-3" style={{ gridTemplateColumns: `repeat(${Math.min(parts.length, 3)}, minmax(0, 1fr))` }}>
+        {parts.map((p) => (
+          <li key={p.label} className="min-w-0">
+            <p className="flex items-center gap-2 text-[0.8125rem] font-semibold text-ink-3">
+              <span className="size-2.5 shrink-0 rounded-full" style={{ background: p.hex }} /> {p.icon} <span className="truncate">{p.label}</span>
+            </p>
+            <p className="mt-1 text-2xl font-bold tabular-nums tracking-[-0.02em] text-ink">{rate(p.value, total)}%</p>
+            <p className="text-xs tabular-nums text-ink-3">{n(p.value)}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
 
-/** Visits and pages opened over the period, as two soft curves: per hour for today, per day otherwise. */
-function Trend({ points }: { points: { label: string; visits: number; views: number }[] }) {
+/** Two figures over the period as soft curves: per hour for today, per day otherwise. */
+function Trend({ points, a, b }: { points: { label: string; a: number; b: number }[]; a: { name: string; hex: string }; b?: { name: string; hex: string } }) {
   const [hover, setHover] = useState<number | null>(null);
-  const max = Math.max(4, ...points.map((p) => p.views), ...points.map((p) => p.visits));
+  const max = Math.max(4, ...points.map((p) => p.a), ...(b ? points.map((p) => p.b) : []));
   const top = Math.ceil(max / 4) * 4;
   const W = 1000;
-  const H = 260;
-  const pad = { l: 36, r: 12, t: 14, b: 28 };
+  const H = 280;
+  const pad = { l: 40, r: 12, t: 14, b: 28 };
   const step = (W - pad.l - pad.r) / Math.max(1, points.length - 1);
   const x = (i: number) => pad.l + i * step;
   const y = (v: number) => pad.t + (H - pad.t - pad.b) * (1 - v / top);
-  const curve = (key: 'visits' | 'views') => points.map((pt, i) => (i === 0 ? `M ${x(0)} ${y(pt[key])}` : `C ${x(i) - step / 2} ${y(points[i - 1][key])}, ${x(i) - step / 2} ${y(pt[key])}, ${x(i)} ${y(pt[key])}`)).join(' ');
-  const area = (key: 'visits' | 'views') => `${curve(key)} L ${x(points.length - 1)} ${y(0)} L ${x(0)} ${y(0)} Z`;
+  const curve = (key: 'a' | 'b') => points.map((pt, i) => (i === 0 ? `M ${x(0)} ${y(pt[key])}` : `C ${x(i) - step / 2} ${y(points[i - 1][key])}, ${x(i) - step / 2} ${y(pt[key])}, ${x(i)} ${y(pt[key])}`)).join(' ');
+  const area = (key: 'a' | 'b') => `${curve(key)} L ${x(points.length - 1)} ${y(0)} L ${x(0)} ${y(0)} Z`;
   const every = Math.max(1, Math.ceil(points.length / 12));
   const p = hover === null ? null : points[hover];
+  const series = [{ key: 'a' as const, ...a }, ...(b ? [{ key: 'b' as const, ...b }] : [])];
   return (
     <div>
-      <div className="mb-3 flex items-center gap-5 text-[0.8125rem] text-ink-3">
-        <span className="flex items-center gap-1.5"><span className="size-2.5 rounded-full bg-[#12a871]" /> Pages opened</span>
-        <span className="flex items-center gap-1.5"><span className="size-2.5 rounded-full bg-[#075056]" /> Visits</span>
-        <span className="num ml-auto rounded-full bg-mist px-3 py-1 font-semibold text-ink-2">{p ? `${p.label} · ${n(p.visits)} visits · ${n(p.views)} pages` : 'Move over the chart for a day’s figures'}</span>
+      <div className="mb-3 flex flex-wrap items-center gap-5 text-[0.8125rem] text-ink-3">
+        {series.map((s) => <span key={s.key} className="flex items-center gap-1.5"><span className="size-2.5 rounded-full" style={{ background: s.hex }} /> {s.name}</span>)}
+        <span className="ml-auto rounded-full bg-mist px-3 py-1 font-semibold tabular-nums text-ink-2">{p ? `${p.label} · ${series.map((s) => `${n(p[s.key])} ${s.name.toLowerCase()}`).join(' · ')}` : 'Move over the chart for the figures'}</span>
       </div>
-      <svg viewBox={`0 0 ${W} ${H}`} className="h-64 w-full" role="img" aria-label="Visits and pages opened over the period" onMouseLeave={() => setHover(null)}>
+      <svg viewBox={`0 0 ${W} ${H}`} className="h-72 w-full" role="img" aria-label={`${series.map((s) => s.name).join(' and ')} over the period`} onMouseLeave={() => setHover(null)}>
         <defs>
-          <linearGradient id="trend-views" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0%" stopColor="#12a871" stopOpacity="0.38" />
-            <stop offset="100%" stopColor="#12a871" stopOpacity="0" />
-          </linearGradient>
-          <linearGradient id="trend-visits" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0%" stopColor="#075056" stopOpacity="0.3" />
-            <stop offset="100%" stopColor="#075056" stopOpacity="0" />
-          </linearGradient>
+          {series.map((s) => (
+            <linearGradient key={s.key} id={`trend-${s.key}`} x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0%" stopColor={s.hex} stopOpacity="0.32" />
+              <stop offset="100%" stopColor={s.hex} stopOpacity="0" />
+            </linearGradient>
+          ))}
         </defs>
         {[0, 0.25, 0.5, 0.75, 1].map((f) => (
           <g key={f}>
@@ -202,22 +252,20 @@ function Trend({ points }: { points: { label: string; visits: number; views: num
             <text x={pad.l - 8} y={y(top * f) + 4} textAnchor="end" className="fill-ink-3 text-[11px] tabular-nums">{Math.round(top * f)}</text>
           </g>
         ))}
-        {points.length > 1 && (
-          <>
-            <path d={area('views')} fill="url(#trend-views)" />
-            <path d={curve('views')} fill="none" stroke="#12a871" strokeWidth={2.5} strokeLinecap="round" />
-            <path d={area('visits')} fill="url(#trend-visits)" />
-            <path d={curve('visits')} fill="none" stroke="#075056" strokeWidth={2.5} strokeLinecap="round" />
-          </>
-        )}
+        {points.length > 1 &&
+          series.map((s) => (
+            <g key={s.key}>
+              <path d={area(s.key)} fill={`url(#trend-${s.key})`} />
+              <path d={curve(s.key)} fill="none" stroke={s.hex} strokeWidth={2.5} strokeLinecap="round" />
+            </g>
+          ))}
         {points.map((pt, i) => (
           <g key={pt.label + i} onMouseEnter={() => setHover(i)}>
             <rect x={x(i) - step / 2} y={pad.t} width={step} height={H - pad.t - pad.b} fill="transparent" />
             {hover === i && (
               <>
                 <line x1={x(i)} x2={x(i)} y1={pad.t} y2={y(0)} className="stroke-ink-3/40" strokeWidth={1} />
-                <circle cx={x(i)} cy={y(pt.views)} r={5} fill="#12a871" stroke="#fff" strokeWidth={2} />
-                <circle cx={x(i)} cy={y(pt.visits)} r={5} fill="#075056" stroke="#fff" strokeWidth={2} />
+                {series.map((s) => <circle key={s.key} cx={x(i)} cy={y(pt[s.key])} r={5} fill={s.hex} stroke="#fff" strokeWidth={2} />)}
               </>
             )}
             {i % every === 0 && <text x={x(i)} y={H - 8} textAnchor={i === 0 ? 'start' : i === points.length - 1 ? 'end' : 'middle'} className="fill-ink-3 text-[11px]">{pt.label}</text>}
@@ -228,12 +276,34 @@ function Trend({ points }: { points: { label: string; visits: number; views: num
   );
 }
 
+/** Columns for a set of buckets (hours of the day, days of the week), the busiest one marked. */
+function Columns({ data, tone = 'green', unit }: { data: { label: string; value: number }[]; tone?: Tone; unit: string }) {
+  const max = Math.max(1, ...data.map((d) => d.value));
+  const best = data.findIndex((d) => d.value === max && max > 0);
+  const every = data.length > 12 ? 3 : 1;
+  return (
+    <div>
+      <div className="flex h-40 items-end gap-[3px]">
+        {data.map((d, i) => (
+          <div key={d.label} className="group relative flex h-full flex-1 items-end" title={`${d.label}: ${n(d.value)} ${unit}`}>
+            <span className="w-full rounded-t-md transition group-hover:brightness-110" style={{ height: `${Math.max(2, (d.value / max) * 100)}%`, background: i === best ? TONES[tone].hex : `${TONES[tone].hex}55` }} />
+          </div>
+        ))}
+      </div>
+      <div className="mt-2 flex gap-[3px] text-[11px] text-ink-3">
+        {data.map((d, i) => <span key={d.label} className="flex-1 text-center">{i % every === 0 ? d.label : ''}</span>)}
+      </div>
+      {best >= 0 && <p className="mt-3 text-[0.8125rem] text-ink-3">Busiest: <span className="font-semibold text-ink">{data[best].label}</span> · {n(data[best].value)} {unit}</p>}
+    </div>
+  );
+}
+
 /** A visit's pages and actions in the order they happened. */
 function Journey({ v }: { v: Visit }) {
   const start = Date.parse(v.startedAt);
   const steps: { at: number; page?: PageHit; event?: VisitEvent }[] = [...v.pages.map((p) => ({ at: p.at, page: p })), ...v.events.filter((e) => !(e.n === 'js_error' && isNoiseError(e.v))).map((e) => ({ at: e.at, event: e }))].sort((a, b) => a.at - b.at);
   return (
-    <div className="mt-1 rounded-2xl bg-[linear-gradient(180deg,#f4f8f9,#eef5f3)] p-5 ring-1 ring-line/60">
+    <div className="mt-1 rounded-xl bg-[#f4f8f6] p-5 ring-1 ring-[#e3e9e6]">
       <dl className="mb-4 grid grid-cols-2 gap-x-6 gap-y-2 text-[0.8125rem] sm:grid-cols-4">
         {[
           ['Came from', sourceOf(v)],
@@ -250,7 +320,7 @@ function Journey({ v }: { v: Visit }) {
       <ol className="space-y-2 border-l-2 border-line pl-4">
         {steps.map((s, i) => (
           <li key={i} className="relative break-words text-sm">
-            <span aria-hidden className={cn('absolute -left-[1.4rem] top-1.5 size-2.5 rounded-full ring-2 ring-canvas', s.event ? 'bg-signal' : 'bg-brand-600')} />
+            <span aria-hidden className={cn('absolute -left-[1.4rem] top-1.5 size-2.5 rounded-full ring-2 ring-[#f4f8f6]', s.event ? 'bg-signal' : 'bg-brand-600')} />
             <span className="mr-2 text-xs tabular-nums text-ink-3">{clock(start + s.at * 1000)}</span>
             {s.page ? (
               <>
@@ -274,25 +344,27 @@ function VisitRow({ v, now, live }: { v: Visit; now: number; live?: boolean }) {
   const [open, setOpen] = useState(false);
   const page = v.pages[v.pages.length - 1];
   const tag = personTag(v);
+  const enquired = v.events.some((e) => ENQUIRIES.includes(e.n));
   return (
-    <li className="border-b border-line last:border-0">
+    <li className="border-b border-[#edf1ef] last:border-0">
       <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} className="flex w-full items-center gap-3 py-3 text-left">
-        <span className="relative grid size-11 shrink-0 place-items-center rounded-full bg-[linear-gradient(135deg,#e8f5ee,#e4eef0)] text-lg ring-1 ring-line" title={country(v.country)}>
+        <span className="relative grid size-10 shrink-0 place-items-center rounded-full bg-[#eef4f1] text-lg ring-1 ring-[#e3e9e6]" title={country(v.country)}>
           {flag(v.country)}
-          {live && <span className="absolute -right-0.5 -top-0.5 size-3 rounded-full bg-brand-500 ring-2 ring-paper" />}
+          {live && <span className="absolute -right-0.5 -top-0.5 size-3 rounded-full bg-brand-500 ring-2 ring-white" />}
         </span>
         <span className="min-w-0 flex-1">
           <span className="flex items-center gap-2">
             <span className="truncate text-sm font-semibold text-ink">{person(v)}</span>
-            <span className={cn('shrink-0 rounded-full px-2 py-0.5 text-[0.6875rem] font-semibold', tag === 'New' ? 'bg-brand-50 text-brand-700' : tag === 'Returning' ? 'bg-mist text-ink-2' : 'bg-midnight text-white')}>{tag}</span>
+            <span className={cn('shrink-0 rounded-full px-2 py-0.5 text-[0.6875rem] font-semibold', tag === 'New' ? 'bg-[#e6f4ec] text-brand-700' : tag === 'Returning' ? 'bg-mist text-ink-2' : 'bg-midnight text-white')}>{tag}</span>
+            {enquired && <span className="shrink-0 rounded-full bg-[#fdecee] px-2 py-0.5 text-[0.6875rem] font-semibold text-[#a3162a]">Enquired</span>}
           </span>
           <span className="mt-0.5 block truncate text-[0.8125rem] text-ink-3">
             {live ? 'On' : 'Last on'} <span className="font-medium text-ink-2">{page ? pageName(page.p, page.t) : 'the site'}</span> · {place(v)}
           </span>
         </span>
         <span className="hidden shrink-0 text-right text-[0.8125rem] text-ink-3 sm:block">
-          <span className="num flex items-center justify-end gap-1.5 font-medium text-ink-2"><DeviceIcon device={v.device} className="size-3.5" /> {v.pages.length} {v.pages.length === 1 ? 'page' : 'pages'} · {duration(v.secs)}</span>
-          <span>{live ? sourceOf(v) : ago(Date.parse(v.lastAt), now)}</span>
+          <span className="flex items-center justify-end gap-1.5 font-medium tabular-nums text-ink-2"><DeviceIcon device={v.device} className="size-3.5" /> {v.pages.length} {v.pages.length === 1 ? 'page' : 'pages'} · {duration(v.secs)}</span>
+          <span>{live ? sourceOf(v) : `${sourceOf(v)} · ${ago(Date.parse(v.lastAt), now)}`}</span>
         </span>
         <ChevronDown className={cn('size-4 shrink-0 text-ink-3 transition-transform', open && 'rotate-180')} />
       </button>
@@ -302,11 +374,11 @@ function VisitRow({ v, now, live }: { v: Visit; now: number; live?: boolean }) {
 }
 
 const vitalNames: Record<Vital, { name: string; what: string }> = {
-  LCP: { name: 'Main content appears', what: 'How long until the biggest part of the page shows' },
-  INP: { name: 'Answers a tap', what: 'How quickly the page reacts to a tap or click' },
-  CLS: { name: 'Stays still', what: 'How much the page jumps about while it loads' },
-  TTFB: { name: 'Server answers', what: 'How long the server takes to start sending the page' },
-  FCP: { name: 'First thing appears', what: 'How long until anything shows' },
+  LCP: { name: 'Main content appears', what: 'How long until the biggest part of the page shows. Good: under 2.5 seconds.' },
+  FCP: { name: 'First thing appears', what: 'How long until anything shows at all. Good: under 1.8 seconds.' },
+  INP: { name: 'Answers a tap', what: 'How quickly the page reacts to a tap or a click. Good: under 0.2 seconds.' },
+  CLS: { name: 'Stays still', what: 'How much the page jumps about while it loads. Good: under 0.1.' },
+  TTFB: { name: 'Server answers', what: 'How long the server takes to start sending the page. Good: under 0.8 seconds.' },
 };
 const vitalValue = (k: Vital, v: number) => (k === 'CLS' ? v.toFixed(2) : v >= 1000 ? `${(v / 1000).toFixed(1)}s` : `${Math.round(v)}ms`);
 
@@ -347,15 +419,35 @@ function chime() {
 
 /* ---------- the dashboard ---------- */
 export function Dashboard({ name }: { name: string }) {
-  const [days, setDays] = useState(1);
+  const [section, setSection] = useState<Section>('live');
+  const [days, setDays] = useState(7);
   const [live, setLive] = useState<Live | null>(null);
   const [stats, setStats] = useState<Stats | null>(null);
+  const [today, setToday] = useState<Stats | null>(null);
   const [problem, setProblem] = useState('');
   const [busy, setBusy] = useState(false);
   const [now, setNow] = useState(() => Date.now());
   const [copied, setCopied] = useState('');
+  const [trendOf, setTrendOf] = useState<'visits' | 'visitors' | 'enquiries'>('visits');
+  const [filter, setFilter] = useState('');
   const daysRef = useRef(days);
   daysRef.current = days;
+
+  // The section is kept in the address (#pages), so a reload or a bookmark opens the same one
+  useEffect(() => {
+    const fromHash = () => {
+      const h = location.hash.slice(1) as Section;
+      if (SECTIONS.some((s) => s.id === h)) setSection(h);
+    };
+    fromHash();
+    addEventListener('hashchange', fromHash);
+    return () => removeEventListener('hashchange', fromHash);
+  }, []);
+  const open = (id: Section) => {
+    setSection(id);
+    history.replaceState(null, '', `#${id}`);
+    scrollTo({ top: 0 });
+  };
 
   // The chime when someone arrives on the site (on by default; the choice is kept in this browser)
   const [sound, setSound] = useState(true);
@@ -407,9 +499,9 @@ export function Dashboard({ name }: { name: string }) {
       const d = await read<Live>('view=live');
       if (d) {
         // A visitor not seen before (staff aside): the chime. The visitors already there when the page opens don't count
-        const ids = [...d.live, ...d.recent].filter((v) => !v.who || v.who.role === 'client').map((v) => v.id);
+        const ids = [...d.live, ...d.recent].filter(isPublic).map((v) => v.id);
         if (seen.current) {
-          const arrived = d.live.some((v) => (!v.who || v.who.role === 'client') && !seen.current!.has(v.id));
+          const arrived = d.live.some((v) => isPublic(v) && !seen.current!.has(v.id));
           if (arrived && soundRef.current) chime();
           ids.forEach((id) => seen.current!.add(id));
         } else seen.current = new Set(ids);
@@ -424,8 +516,9 @@ export function Dashboard({ name }: { name: string }) {
   const loadStats = useCallback(async () => {
     setBusy(true);
     try {
-      const d = await read<Stats>(`view=stats&days=${daysRef.current}`);
+      const [d, t] = await Promise.all([read<Stats>(`view=stats&days=${daysRef.current}`), read<Stats>('view=stats&days=1')]);
       if (d && d.days === daysRef.current) setStats(d);
+      if (t) setToday(t);
     } catch {
       setProblem('The figures could not be read just now. Trying again.');
     } finally {
@@ -453,8 +546,10 @@ export function Dashboard({ name }: { name: string }) {
   }, [days, loadStats]);
 
   const s = stats?.summary;
+  const prev = stats?.previous;
+  const t = today?.summary;
   const online = useMemo(() => live?.live ?? [], [live]);
-  const publicOnline = online.filter((v) => !v.who || v.who.role === 'client');
+  const publicOnline = online.filter(isPublic);
 
   /** What just happened across everyone on the site, newest first. */
   const feed = useMemo(() => {
@@ -464,9 +559,14 @@ export function Dashboard({ name }: { name: string }) {
       for (const p of v.pages) items.push({ at: start + p.at * 1000, v, text: `opened ${pageName(p.p, p.t)}`, action: false });
       for (const e of v.events) if (!(e.n === 'js_error' && isNoiseError(e.v))) items.push({ at: start + e.at * 1000, v, text: eventName(e.n).toLowerCase(), detail: e.v, action: true });
     }
-    return items.sort((a, b) => b.at - a.at).slice(0, 30);
+    return items.sort((a, b) => b.at - a.at).slice(0, 40);
   }, [live]);
 
+  const countBy = (vs: Visit[], key: (v: Visit) => string) => {
+    const m = new Map<string, number>();
+    for (const v of vs) m.set(key(v), (m.get(key(v)) ?? 0) + 1);
+    return [...m.entries()].sort((a, b) => b[1] - a[1]);
+  };
   const nowOn = useMemo(() => {
     const m = new Map<string, { label: string; value: number }>();
     for (const v of online) {
@@ -476,14 +576,23 @@ export function Dashboard({ name }: { name: string }) {
       row.value++;
       m.set(p.p, row);
     }
-    return [...m.entries()].map(([path, r]) => ({ label: r.label, sub: path, value: r.value })).sort((a, b) => b.value - a.value);
+    return [...m.entries()].map(([path, r]) => ({ label: r.label, key: path, sub: path, value: r.value })).sort((a, b) => b.value - a.value);
   }, [online]);
 
-  const points = useMemo(() => {
+  const trend = useMemo(() => {
     if (!stats || !s) return [];
-    if (stats.days === 1) return s.hours.map((visits, h) => ({ label: `${String(h).padStart(2, '0')}:00`, visits, views: s.viewHours[h] ?? 0 }));
-    return stats.series.map((d) => ({ label: dayLabel(d.day), visits: d.visits, views: d.views }));
-  }, [stats, s]);
+    if (stats.days === 1) return s.hours.map((visits, h) => ({ label: `${String(h).padStart(2, '0')}:00`, a: trendOf === 'enquiries' ? 0 : visits, b: s.viewHours[h] ?? 0 }));
+    return stats.series.map((d) => ({ label: dayLabel(d.day), a: d[trendOf], b: trendOf === 'visits' ? d.views : trendOf === 'visitors' ? (d.newVisitors ?? 0) : 0 }));
+  }, [stats, s, trendOf]);
+  const trendSeries =
+    trendOf === 'visits' ? { a: { name: 'Visits', hex: '#075056' }, b: { name: 'Pages opened', hex: '#12a871' } } : trendOf === 'visitors' ? { a: { name: 'Visitors', hex: '#2f6fae' }, b: stats?.days === 1 ? undefined : { name: 'New visitors', hex: '#8474e0' } } : { a: { name: 'Enquiries', hex: '#dc2430' }, b: undefined };
+
+  const weekdays = useMemo(() => {
+    const names = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const out = names.map((label) => ({ label, value: 0 }));
+    for (const d of stats?.series ?? []) out[(new Date(`${d.day}T12:00:00Z`).getUTCDay() + 6) % 7].value += d.visits;
+    return out;
+  }, [stats]);
 
   const errors = stats?.errors ?? [];
   const errors24 = errors.filter((e) => now - Date.parse(e.lastAt) < 864e5).length;
@@ -502,248 +611,550 @@ export function Dashboard({ name }: { name: string }) {
     await clearError(id).catch(() => {});
   };
 
-  const rate = (part: number, whole: number) => (whole ? Math.round((part / whole) * 100) : 0);
-  const prev = stats?.previous;
   const rangeLabel = RANGES.find((r) => r.days === days)?.label ?? '';
-
+  const periodWords = days === 1 ? 'today' : `in the last ${rangeLabel}`;
   const hour = Number(new Date(now).toLocaleTimeString('en-GB', { hour: '2-digit', hour12: false, timeZone: 'Africa/Accra' }));
   const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  const meta = SECTIONS.find((x) => x.id === section)!;
+  const usesPeriod = section !== 'live' && section !== 'log';
+
   const health = [
-    { icon: <Globe className="size-4" />, label: 'Website', ok: Boolean(stats) && !problem, text: stats ? 'Up' : '…', sub: stats ? `Version ${stats.health.version}` : 'Checking' },
-    { icon: <Database className="size-4" />, label: 'Database', ok: stats?.health.database === 'ok', text: !stats ? '…' : stats.health.database === 'ok' ? 'Answering' : stats.health.database === 'down' ? 'Not answering' : 'Not set up', sub: stats ? `${stats.health.databaseMs} ms` : 'Checking' },
-    { icon: <Mail className="size-4" />, label: 'Email', ok: Boolean(stats?.health.email), text: !stats ? '…' : stats.health.email ? 'On' : 'Off', sub: 'Requests, alerts' },
-    { icon: <MessageSquare className="size-4" />, label: 'Texts', ok: Boolean(stats?.health.texts), text: !stats ? '…' : stats.health.texts ? 'On' : 'Off', sub: 'SMS' },
-    { icon: <AlertTriangle className="size-4" />, label: 'Errors', ok: errors24 === 0, text: !stats ? '…' : errors24 ? `${errors24} today` : 'None today', sub: `${errors.length} in 14 days` },
+    { icon: <Globe className="size-5" />, label: 'Website', ok: Boolean(stats) && !problem, text: stats ? 'Up and answering' : 'Checking…', sub: stats ? `Version ${stats.health.version}${stats.health.region ? ` · server ${stats.health.region}` : ''}` : '' },
+    { icon: <Database className="size-5" />, label: 'Database', ok: stats?.health.database === 'ok', text: !stats ? 'Checking…' : stats.health.database === 'ok' ? 'Answering' : stats.health.database === 'down' ? 'Not answering' : 'Not set up', sub: stats ? `Answered in ${stats.health.databaseMs} ms` : '' },
+    { icon: <Mail className="size-5" />, label: 'Email', ok: Boolean(stats?.health.email), text: !stats ? 'Checking…' : stats.health.email ? 'On' : 'Off', sub: 'Quote requests, support requests and alerts' },
+    { icon: <MessageSquare className="size-5" />, label: 'Text messages', ok: Boolean(stats?.health.texts), text: !stats ? 'Checking…' : stats.health.texts ? 'On' : 'Off', sub: 'Quotes to the company line, engineers’ jobs' },
+    { icon: <AlertTriangle className="size-5" />, label: 'Errors', ok: errors24 === 0, text: !stats ? 'Checking…' : errors24 ? `${errors24} in the last 24 hours` : 'None in the last 24 hours', sub: `${errors.length} kind${errors.length === 1 ? '' : 's'} in the last 14 days` },
+  ];
+  const healthyAll = Boolean(stats) && health.every((h) => h.ok);
+
+  /* ---------- the figures of a period (Overview) ---------- */
+  const perVisit = (x?: Totals) => (x && x.visits ? x.secs / x.visits : undefined);
+  const pagesPer = (x?: Totals) => (x && x.visits ? x.views / x.visits : undefined);
+  const convert = (x?: Totals) => (x && x.visits ? (x.enquiries / x.visits) * 100 : undefined);
+
+  const contactRows = ranked(s?.events).filter(([k]) => CONTACT.includes(k));
+  const enquiryRows = ranked(s?.events).filter(([k]) => ENQUIRIES.includes(k));
+  const productViews = Object.values(s?.products ?? {}).reduce((sum, r) => sum + r.v, 0);
+  const funnel = [
+    { label: 'Visits', value: s?.visits ?? 0, hex: '#075056' },
+    { label: 'Product pages opened', value: productViews, hex: '#0d7f88' },
+    { label: 'Added to the quote list', value: s?.events.quote_list_add ?? 0, hex: '#2f6fae' },
+    { label: 'Sent an enquiry', value: s?.enquiries ?? 0, hex: '#dc2430' },
   ];
 
-  return (
-    <div className="min-h-svh bg-[#eef2f0] text-ink">
-      {/* The top of the page: the admin console's deep green, with the bar, the live count and the site's health */}
-      <div className="relative isolate overflow-hidden bg-[radial-gradient(140%_120%_at_0%_0%,#0f8a55_0%,#06482a_55%,#032a19_100%)] pb-32 text-white">
+  const pageTable = useMemo(() => {
+    const total = s?.views ?? 0;
+    return Object.entries(s?.pages ?? {})
+      .sort((a, b) => b[1].v - a[1].v)
+      .map(([p, r]) => ({ p, name: pageName(p, r.t), views: r.v, share: rate(r.v, total), avg: r.v ? r.s / r.v : 0, starts: s?.entries[p] ?? 0, ends: s?.exits[p] ?? 0 }));
+  }, [s]);
+  const [allPages, setAllPages] = useState(false);
 
-        <header className="mx-auto flex max-w-[1500px] items-center gap-6 px-8 py-5">
-          <div className="flex items-center gap-2.5">
-            <LogoMark className="size-9" />
-            <LogoWordmark className="h-4 text-white" />
-            <span className="ml-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold tracking-wide text-white/90 ring-1 ring-white/15">Site monitor</span>
-          </div>
-          <p className="flex items-center gap-2 text-[0.8125rem] text-white/75">
-            <span className="relative flex size-2.5">
-              <span className={cn('absolute inline-flex size-full rounded-full opacity-70', problem ? 'bg-signal' : 'animate-ping bg-brand-300')} />
-              <span className={cn('relative inline-flex size-2.5 rounded-full', problem ? 'bg-signal' : 'bg-brand-300')} />
+  const logVisits = useMemo(() => {
+    const all = [...(live?.live ?? []).map((v) => ({ v, live: true })), ...(live?.recent ?? []).map((v) => ({ v, live: false }))];
+    const q = filter.trim().toLowerCase();
+    if (!q) return all;
+    return all.filter(({ v }) => [person(v), place(v), sourceOf(v), v.device, v.browser, ...v.pages.map((p) => `${p.p} ${p.t ?? ''}`), ...v.events.map((e) => `${eventName(e.n)} ${e.v ?? ''}`)].join(' ').toLowerCase().includes(q));
+  }, [live, filter]);
+
+  return (
+    <div className="flex min-h-svh bg-[#f1f4f2] text-ink">
+      {/* The menu: the admin console's deep green */}
+      <aside className="fixed inset-y-0 left-0 z-30 flex w-[260px] flex-col overflow-y-auto bg-[radial-gradient(140%_70%_at_0%_0%,#0f8a55_0%,#06482a_55%,#032a19_100%)] px-4 pb-5 text-white">
+        <div className="-mx-4 flex h-[76px] items-center gap-2.5 border-b border-white/15 px-6">
+          <LogoMark className="size-8" />
+          <span>
+            <LogoWordmark className="h-[15px] text-white" />
+            <span className="mt-1 block text-[0.75rem] font-medium leading-none text-white/70">Site monitor</span>
+          </span>
+        </div>
+
+        <button type="button" onClick={() => open('live')} className="mt-6 rounded-2xl bg-white/[0.08] p-4 text-left ring-1 ring-white/15 transition hover:bg-white/[0.12]">
+          <span className="flex items-center gap-2 text-[0.75rem] font-semibold uppercase tracking-[0.1em] text-white/70">
+            <span className="relative flex size-2">
+              <span className={cn('absolute inline-flex size-full rounded-full opacity-70', problem ? 'bg-signal' : 'animate-ping bg-[#5fe0a3]')} />
+              <span className={cn('relative inline-flex size-2 rounded-full', problem ? 'bg-signal' : 'bg-[#5fe0a3]')} />
             </span>
-            {problem || (live ? `Live · updated ${ago(live.at, now)}` : 'Connecting…')}
-          </p>
-          <div className="ml-auto flex items-center gap-2">
-            <div className="flex rounded-full bg-white/10 p-1 ring-1 ring-white/10" role="tablist" aria-label="Period">
-              {RANGES.map((r) => (
-                <button key={r.days} type="button" role="tab" aria-selected={days === r.days} onClick={() => setDays(r.days)} className={cn('whitespace-nowrap rounded-full px-4 py-1.5 text-[0.8125rem] font-semibold transition', days === r.days ? 'bg-white text-midnight shadow' : 'text-white/75 hover:text-white')}>
-                  {r.label}
-                </button>
-              ))}
-            </div>
-            <button
-              type="button"
-              onClick={toggleSound}
-              aria-pressed={sound}
-              title={!sound ? 'Sound is off: turn on the chime for each new visitor' : soundReady ? 'A chime plays for each new visitor. Click to turn it off' : 'Sound is on: it starts after your first click on the page'}
-              className={cn('grid size-9 place-items-center rounded-full ring-1 transition', sound ? 'bg-white text-[#06482a] ring-white' : 'bg-white/10 text-white/80 ring-white/10 hover:bg-white/20 hover:text-white')}
-            >
-              {sound ? <Volume2 className="size-4" /> : <VolumeX className="size-4" />}
+            On the site now
+          </span>
+          <span className="mt-2 flex items-baseline gap-2">
+            <span className="text-[2.5rem] font-bold leading-none tracking-[-0.04em] tabular-nums">{live ? publicOnline.length : '–'}</span>
+            <span className="text-sm text-white/75">{publicOnline.length === 1 ? 'person' : 'people'}</span>
+          </span>
+          <span className="mt-2 block text-[0.75rem] text-white/60">{problem ? 'Reconnecting…' : live ? `Updated ${ago(live.at, now)}` : 'Connecting…'}</span>
+        </button>
+
+        <p className="mt-6 px-3.5 pb-1.5 text-[0.75rem] font-semibold uppercase tracking-[0.14em] text-white/55">Sections</p>
+        <nav aria-label="Monitor sections" className="space-y-0.5">
+          {SECTIONS.map((x) => {
+            const on = section === x.id;
+            const badge = x.id === 'health' ? errors24 : 0;
+            return (
+              <button key={x.id} type="button" onClick={() => open(x.id)} aria-current={on ? 'page' : undefined} className={cn('flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-[0.9375rem] font-medium transition-colors', on ? 'bg-white/[0.16] text-white shadow-[inset_3px_0_0_0_#fff]' : 'text-white/80 hover:bg-white/[0.08] hover:text-white')}>
+                <x.icon className={cn('size-[18px]', on ? 'text-white' : 'text-white/65')} /> {x.label}
+                {badge > 0 && <span className="ml-auto rounded-full bg-signal px-2 py-0.5 text-[0.75rem] font-bold tabular-nums">{badge}</span>}
+              </button>
+            );
+          })}
+        </nav>
+
+        <div className="mt-auto space-y-0.5">
+          <button type="button" onClick={toggleSound} aria-pressed={sound} title={!sound ? 'Turn on the chime for each new visitor' : soundReady ? 'A chime plays for each new visitor' : 'The chime starts after your first click on the page'} className="flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-[0.9375rem] font-medium text-white/80 transition hover:bg-white/[0.08] hover:text-white">
+            {sound ? <Volume2 className="size-[18px] text-white/65" /> : <VolumeX className="size-[18px] text-white/65" />} Chime for new visitors
+            <span className={cn('ml-auto rounded-full px-2 py-0.5 text-[0.6875rem] font-bold', sound ? 'bg-white text-[#06482a]' : 'bg-white/15 text-white/75')}>{sound ? 'On' : 'Off'}</span>
+          </button>
+          <form action={lock}>
+            <button type="submit" className="flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-[0.9375rem] font-medium text-white/80 transition hover:bg-white/[0.08] hover:text-white">
+              <Lock className="size-[18px] text-white/65" /> Lock the monitor
             </button>
-            <button type="button" onClick={() => void Promise.all([loadLive(), loadStats()])} title="Read again now" className="grid size-9 place-items-center rounded-full bg-white/10 text-white/80 ring-1 ring-white/10 transition hover:bg-white/20 hover:text-white">
+          </form>
+        </div>
+      </aside>
+
+      <div className="min-w-0 flex-1 pl-[260px]">
+        {/* The bar: the section, the period and the refresh */}
+        <header className="sticky top-0 z-20 flex h-[76px] items-center gap-5 border-b border-[#e3e9e6] bg-white/95 px-8 backdrop-blur">
+          <div className="min-w-0">
+            <h1 className="truncate text-xl font-bold tracking-[-0.02em]">{meta.label}</h1>
+            <p className="truncate text-[0.8125rem] text-ink-3">{section === 'live' ? `${greeting}, ${name}. ${meta.lead}.` : meta.lead}</p>
+          </div>
+          <div className="ml-auto flex items-center gap-2">
+            {usesPeriod && (
+              <div className="flex rounded-full bg-[#eef2f0] p-1" role="tablist" aria-label="Period">
+                {RANGES.map((r) => (
+                  <button key={r.days} type="button" role="tab" aria-selected={days === r.days} onClick={() => setDays(r.days)} className={cn('whitespace-nowrap rounded-full px-4 py-1.5 text-[0.8125rem] font-semibold transition', days === r.days ? 'bg-white text-ink shadow-[0_1px_3px_rgb(22_35_42/0.15)]' : 'text-ink-3 hover:text-ink')}>
+                    {r.label}
+                  </button>
+                ))}
+              </div>
+            )}
+            <span className={cn('hidden items-center gap-2 rounded-full px-3 py-1.5 text-[0.8125rem] font-semibold xl:inline-flex', healthyAll ? 'bg-[#e6f4ec] text-[#06603c]' : stats ? 'bg-[#fdecee] text-[#a3162a]' : 'bg-mist text-ink-3')}>
+              <span className={cn('size-2 rounded-full', healthyAll ? 'bg-ok' : stats ? 'bg-bad' : 'bg-ink-3')} />
+              {!stats ? 'Checking the site…' : healthyAll ? 'All systems working' : 'Something needs a look'}
+            </span>
+            <button type="button" onClick={() => void Promise.all([loadLive(), loadStats()])} title="Read again now" className="grid size-10 place-items-center rounded-full bg-[#eef2f0] text-ink-2 transition hover:bg-[#e2e9e5]">
               <RefreshCw className={cn('size-4', busy && 'animate-spin')} />
             </button>
-            <form action={lock}>
-              <button type="submit" title="Lock the dashboard" className="grid size-9 place-items-center rounded-full bg-white/10 text-white/80 ring-1 ring-white/10 transition hover:bg-white/20 hover:text-white">
-                <LogOut className="size-4" />
-              </button>
-            </form>
           </div>
         </header>
 
-        <div className="mx-auto flex max-w-[1500px] items-end justify-between gap-10 px-8 pt-10">
-          <div>
-            <p className="text-sm font-semibold text-brand-300">{greeting}, {name}. This is flokefama.com right now.</p>
-            <div className="mt-5 flex items-end gap-6">
-              <p className="text-[7rem] font-extrabold leading-[0.8] tracking-[-0.05em] tabular-nums text-white">{live ? publicOnline.length : '–'}</p>
-              <div className="pb-1">
-                <p className="text-2xl font-bold tracking-[-0.02em]">{publicOnline.length === 1 ? 'person' : 'people'} on the site</p>
-                <p className="mt-1.5 text-sm text-white/70">
-                  {online.filter((v) => v.who?.role === 'client').length} hospitals signed in · {online.length - publicOnline.length} staff · {online.filter((v) => v.device === 'Phone').length} on phones
-                </p>
-              </div>
-            </div>
-          </div>
-          <ul className="grid shrink-0 grid-cols-5 gap-3">
-            {health.map((h) => (
-              <li key={h.label} className="w-[8.75rem] rounded-2xl bg-white/[0.08] p-4 ring-1 ring-white/15 backdrop-blur-md">
-                <span className="flex items-center justify-between text-white/70">
-                  {h.icon}
-                  <span className={cn('size-2.5 rounded-full', !stats ? 'bg-white/40' : h.ok ? 'bg-[#5fe0a3] shadow-[0_0_0_4px_rgb(95_224_163/0.2)]' : 'bg-[#ff6b75] shadow-[0_0_0_4px_rgb(255_107_117/0.25)]')} />
-                </span>
-                <span className="mt-3 block text-xs font-semibold text-white/65">{h.label}</span>
-                <span className="block truncate text-[0.9375rem] font-bold">{h.text}</span>
-                <span className="block truncate text-xs text-white/55">{h.sub}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-
-      <main id="main" className="relative mx-auto -mt-20 max-w-[1500px] space-y-6 px-8 pb-10">
-        {/* Live */}
-        <div className="grid grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)] gap-6">
-          <Card title="On the site now" hint="Open a visitor to see every page and action, in order">
-            {!live ? <Empty>Connecting to the site…</Empty> : online.length ? <ul>{online.map((v) => <VisitRow key={v.id} v={v} now={now} live />)}</ul> : <Empty>Nobody is on the site at this moment. This list fills by itself when someone arrives.</Empty>}
-          </Card>
-
-          <div className="min-w-0 space-y-6">
-            <Card title="Happening now" hint="What visitors just did, newest first">
-              {feed.length ? (
-                <ol className="max-h-[22rem] space-y-3.5 overflow-y-auto pr-1">
-                  {feed.map((f, i) => (
-                    <li key={i} className="flex gap-3 text-sm">
-                      <span className={cn('mt-1.5 size-2 shrink-0 rounded-full', f.action ? 'bg-signal shadow-[0_0_0_4px_rgb(220_36_48/0.12)]' : 'bg-brand-500 shadow-[0_0_0_4px_rgb(0_138_87/0.12)]')} />
-                      <span className="min-w-0 flex-1">
-                        <span className="font-semibold text-ink">{person(f.v)}</span> <span className={f.action ? 'font-medium text-signal-700' : 'text-ink-2'}>{f.text}</span>
-                        {f.detail && <span className="text-ink-3"> · {f.detail}</span>}
-                        <span className="block text-xs text-ink-3">{flag(f.v.country)} {place(f.v)} · {ago(f.at, now)}</span>
-                      </span>
-                    </li>
-                  ))}
-                </ol>
-              ) : (
-                <Empty>Nothing yet. Pages opened and actions taken appear here as they happen.</Empty>
-              )}
-            </Card>
-            <Card title="Pages open right now">
-              <Bars rows={nowOn} empty="No page is open at this moment." limit={6} tone="teal" />
-            </Card>
-          </div>
-        </div>
-
-        {/* Figures */}
-        <div className="flex items-baseline justify-between pt-4">
-          <h2 className="text-xl font-bold tracking-[-0.02em]">{rangeLabel === 'Today' ? 'Today' : `The last ${rangeLabel}`}</h2>
-          <p className="text-[0.8125rem] text-ink-3">
-            {stats?.google?.days ? `${stats.google.days} ${stats.google.days === 1 ? 'day is' : 'days are'} from Google Analytics (before the monitor started) · ` : stats && !stats.google?.connected && days > 1 ? 'Google Analytics is not connected, so days before the monitor started are empty · ' : ''}
-            Staff visits are left out · Ghana time
-          </p>
-        </div>
-        <div className="grid grid-cols-3 gap-4 xl:grid-cols-6">
-          <Figure icon={<Activity className="size-4" />} tone="green" label="Visits" value={s ? n(s.visits) : '–'} now={s?.visits} before={prev?.visits} />
-          <Figure icon={<Users className="size-4" />} tone="teal" label="Visitors" value={s ? n(s.visitors) : '–'} now={s?.visitors} before={prev?.visitors} hint={s ? `${n(s.newVisitors)} new` : undefined} />
-          <Figure icon={<Eye className="size-4" />} tone="blue" label="Pages opened" value={s ? n(s.views) : '–'} now={s?.views} before={prev?.views} />
-          <Figure icon={<Clock className="size-4" />} tone="violet" label="Time per visit" value={s ? duration(s.visits ? s.secs / s.visits : 0) : '–'} now={s && s.visits ? s.secs / s.visits : undefined} before={prev?.visits ? prev.secs / prev.visits : undefined} />
-          <Figure icon={<ArrowDownRight className="size-4" />} tone="amber" label="Left after one page" value={s ? `${rate(s.bounces, s.visits)}%` : '–'} now={s ? rate(s.bounces, s.visits) : undefined} before={prev ? rate(prev.bounces, prev.visits) : undefined} lowerIsBetter />
-          <Figure icon={<MousePointerClick className="size-4" />} tone="red" label="Enquiries" value={s ? n(s.enquiries) : '–'} now={s?.enquiries} before={prev?.enquiries} hint="Quotes, demos, chat requests" />
-        </div>
-
-        <Card title={days === 1 ? 'Through the day' : 'Day by day'} hint={days === 1 ? 'Visits and pages opened in each hour today' : 'Visits and pages opened each day'}>
-          {points.length ? <Trend points={points} /> : <Empty>Reading the figures…</Empty>}
-        </Card>
-
-        <div className="grid grid-cols-2 gap-6 xl:grid-cols-3">
-          <Card title="Most opened pages" hint="With the time spent on each">
-            <Bars empty="No pages opened in this period yet." rows={Object.entries(s?.pages ?? {}).sort((a, b) => b[1].v - a[1].v).map(([p, r]) => ({ label: pageName(p, r.t), sub: `${p} · ${duration(r.v ? r.s / r.v : 0)} each`, value: r.v }))} />
-          </Card>
-          <Card title="Products looked at" hint="Product pages opened in the shop">
-            <Bars tone="teal" empty="No product pages opened in this period yet." rows={Object.entries(s?.products ?? {}).sort((a, b) => b[1].v - a[1].v).map(([slug, r]) => ({ label: r.t ?? slug, sub: `/products/${slug}`, value: r.v }))} />
-          </Card>
-          <Card title="What visitors did" hint="Actions taken on the site">
-            <Bars tone="red" empty="No actions in this period yet." rows={ranked(s?.events).map(([k, v]) => ({ label: eventName(k), value: v }))} />
-          </Card>
-          <Card title="Where visitors came from">
-            <Bars tone="blue" empty="No visits in this period yet." rows={ranked(s?.sources).map(([k, v]) => ({ label: k, value: v, right: `${n(v)} · ${rate(v, s?.visits ?? 0)}%` }))} />
-          </Card>
-          <Card title="Countries">
-            <Bars tone="violet" empty="No visits in this period yet." rows={ranked(s?.countries).map(([k, v]) => ({ label: `${flag(k)}  ${country(k)}`, value: v, right: `${n(v)} · ${rate(v, s?.visits ?? 0)}%` }))} />
-          </Card>
-          <Card title="Towns and cities">
-            <Bars tone="violet" empty="No visits in this period yet." rows={ranked(s?.cities).map(([k, v]) => ({ label: `${flag(k.split(', ').pop())}  ${k.split(', ')[0]}`, sub: country(k.split(', ').pop()), value: v }))} />
-          </Card>
-          <Card title="Searches in the shop" hint="What people typed into the shop's search">
-            <Bars tone="amber" empty="No searches in this period yet." rows={ranked(s?.searches).map(([k, v]) => ({ label: k, value: v }))} />
-          </Card>
-          <Card title="Devices and browsers">
-            <Bars tone="blue" empty="No visits in this period yet." limit={9} rows={[...ranked(s?.devices).map(([k, v]) => ({ label: k, sub: 'Device', value: v, right: `${rate(v, s?.visits ?? 0)}%` })), ...ranked(s?.browsers).map(([k, v]) => ({ label: k, sub: 'Browser', value: v, right: `${rate(v, s?.visits ?? 0)}%` })), ...ranked(s?.systems).map(([k, v]) => ({ label: k, sub: 'System', value: v, right: `${rate(v, s?.visits ?? 0)}%` }))]} />
-          </Card>
-          <Card title="First and last pages" hint="Where visits start, and where they end">
-            <Bars tone="teal" empty="No visits in this period yet." rows={[...ranked(s?.entries).slice(0, 5).map(([k, v]) => ({ label: pageName(k), sub: `Starts here · ${k}`, value: v })), ...ranked(s?.exits).slice(0, 5).map(([k, v]) => ({ label: pageName(k), sub: `Ends here · ${k}`, value: v }))]} limit={10} />
-          </Card>
-        </div>
-
-        {/* Speed */}
-        <Card title="How fast the site feels" hint="Measured in visitors' own browsers, on the first page of each visit. Green is good by Google's limits.">
-          {s && Object.keys(s.vitals).length ? (
-            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-              {(['LCP', 'INP', 'CLS', 'TTFB', 'FCP'] as Vital[]).map((k) => {
-                const row = s.vitals[k];
-                if (!row) return null;
-                const avg = row.sum / row.n;
-                const tone = avg <= vitalLimits[k].good ? 'good' : avg > vitalLimits[k].poor ? 'poor' : 'fair';
-                return (
-                  <div key={k} className="rounded-2xl bg-[linear-gradient(180deg,#f7faf9,#ffffff)] p-4 ring-1 ring-line/70" title={vitalNames[k].what}>
-                    <p className="flex items-center gap-2 text-[0.8125rem] font-semibold text-ink-3"><Gauge className="size-4 text-brand-600" /> {vitalNames[k].name}</p>
-                    <p className={cn('mt-2 text-2xl font-bold tabular-nums tracking-[-0.02em]', tone === 'good' ? 'text-ok' : tone === 'poor' ? 'text-bad' : 'text-warn')}>{vitalValue(k, avg)}</p>
-                    <div className="mt-3 flex h-1.5 overflow-hidden rounded-full bg-mist">
-                      <span className="bg-brand-500" style={{ width: `${rate(row.good, row.n)}%` }} />
-                      <span className="bg-[#e0a52b]" style={{ width: `${rate(row.n - row.good - row.poor, row.n)}%` }} />
-                      <span className="bg-signal" style={{ width: `${rate(row.poor, row.n)}%` }} />
-                    </div>
-                    <p className="num mt-2 text-xs text-ink-3">{rate(row.good, row.n)}% good · {n(row.n)} visits · {k}</p>
-                  </div>
-                );
-              })}
-            </div>
-          ) : (
-            <Empty>No speed readings in this period yet.</Empty>
+        <main id="main" className="mx-auto max-w-[1440px] space-y-6 px-8 py-7">
+          {usesPeriod && (
+            <p className="text-[0.8125rem] text-ink-3">
+              Figures {periodWords}
+              {stats?.google?.days ? ` · ${stats.google.days} ${stats.google.days === 1 ? 'day is' : 'days are'} from Google Analytics (before the monitor started)` : stats && !stats.google?.connected && days > 1 ? ' · Google Analytics is not connected, so days before the monitor started are empty' : ''}
+              {' · '}Staff visits are left out · Ghana time
+            </p>
           )}
-        </Card>
 
-        {/* Errors */}
-        <Card title="Errors" hint="Everything that went wrong on the site and the portals in the last 14 days. Copy one and paste it to Claude to have it fixed.">
-          {errors.length ? (
-            <ul className="divide-y divide-line">
-              {errors.map((e) => (
-                <li key={e.id} className="flex flex-wrap items-start gap-x-4 gap-y-2 py-3.5">
-                  <span className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-full bg-signal/10 text-signal-700"><AlertTriangle className="size-4" /></span>
-                  <div className="min-w-0 flex-1 basis-64">
-                    <p className="break-words text-sm font-semibold text-ink">{e.message}</p>
-                    <p className="mt-0.5 text-[0.8125rem] text-ink-3">{e.area} · {e.path} · {e.source === 'browser' ? 'on a visitor’s screen' : 'on the server'}</p>
+          {/* ---------- Live ---------- */}
+          {section === 'live' && (
+            <>
+              <div className="grid grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] gap-6">
+                <section className="relative isolate overflow-hidden rounded-2xl bg-[radial-gradient(140%_120%_at_0%_0%,#0f8a55_0%,#06482a_55%,#032a19_100%)] p-7 text-white shadow-[0_24px_48px_-28px_rgb(4_56_34/0.8)]">
+                  <div aria-hidden className="absolute -right-16 -top-16 size-64 rounded-full border border-white/10" />
+                  <div aria-hidden className="absolute -right-4 top-10 size-40 rounded-full border border-white/10" />
+                  <p className="text-sm font-semibold text-[#9be8c2]">Right now on flokefama.com</p>
+                  <div className="mt-4 flex items-end gap-5">
+                    <p className="text-[6.5rem] font-bold leading-[0.8] tracking-[-0.05em] tabular-nums">{live ? publicOnline.length : '–'}</p>
+                    <p className="pb-1 text-2xl font-bold tracking-[-0.02em]">{publicOnline.length === 1 ? 'person' : 'people'} on the site</p>
                   </div>
-                  <p className="shrink-0 text-right text-[0.8125rem] text-ink-3">
-                    <span className="num block font-semibold text-ink-2">{n(e.count)} {e.count === 1 ? 'time' : 'times'}</span>
-                    last {ago(Date.parse(e.lastAt), now)}
+                  <ul className="mt-7 grid grid-cols-4 gap-3">
+                    {[
+                      ['New', publicOnline.filter((v) => !v.who && v.isNew).length],
+                      ['Returning', publicOnline.filter((v) => !v.who && !v.isNew).length],
+                      ['Hospitals', online.filter((v) => v.who?.role === 'client').length],
+                      ['Staff', online.length - publicOnline.length],
+                    ].map(([k, v]) => (
+                      <li key={k} className="rounded-xl bg-white/[0.08] px-3.5 py-3 ring-1 ring-white/15">
+                        <span className="block text-xs font-semibold text-white/65">{k}</span>
+                        <span className="block text-xl font-bold tabular-nums">{v}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="mt-4 flex items-center gap-4 text-[0.8125rem] text-white/70">
+                    <span className="flex items-center gap-1.5"><Smartphone className="size-3.5" /> {online.filter((v) => v.device === 'Phone').length} on phones</span>
+                    <span className="flex items-center gap-1.5"><Monitor className="size-3.5" /> {online.filter((v) => v.device === 'Computer').length} on computers</span>
+                    <span className="flex items-center gap-1.5"><Tablet className="size-3.5" /> {online.filter((v) => v.device === 'Tablet').length} on tablets</span>
                   </p>
-                  <div className="flex shrink-0 gap-2">
-                    <button type="button" onClick={() => void copy(e.id, errorText(e))} className="inline-flex items-center gap-1.5 rounded-lg border border-line px-3 py-1.5 text-[0.8125rem] font-semibold text-ink-2 transition hover:border-ink/30">
-                      {copied === e.id ? <Check className="size-3.5 text-ok" /> : <Copy className="size-3.5" />} {copied === e.id ? 'Copied' : 'Copy'}
-                    </button>
-                    <button type="button" onClick={() => void dismiss(e.id)} className="rounded-lg bg-mist px-3 py-1.5 text-[0.8125rem] font-semibold text-ink-2 transition hover:bg-line">Clear</button>
+                </section>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <Figure tone="green" icon={<Activity className="size-4" />} label="Visits today" value={t ? n(t.visits) : '–'} now={t?.visits} before={today?.previous.visits} hint="vs yesterday" />
+                  <Figure tone="teal" icon={<Users className="size-4" />} label="Visitors today" value={t ? n(t.visitors) : '–'} hint={t ? `${n(t.newVisitors)} new today` : undefined} />
+                  <Figure tone="blue" icon={<Eye className="size-4" />} label="Pages opened today" value={t ? n(t.views) : '–'} now={t?.views} before={today?.previous.views} hint="vs yesterday" />
+                  <Figure tone="red" icon={<MousePointerClick className="size-4" />} label="Enquiries today" value={t ? n(t.enquiries) : '–'} hint="Quotes, demos and chat requests" />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] gap-6">
+                <Card title="On the site now" hint="Open a visitor to see every page and action, in order">
+                  {!live ? <Empty>Connecting to the site…</Empty> : online.length ? <ul>{online.map((v) => <VisitRow key={v.id} v={v} now={now} live />)}</ul> : <Empty>Nobody is on the site at this moment. This list fills by itself when someone arrives.</Empty>}
+                </Card>
+                <Card title="Happening now" hint="Pages opened and actions taken, newest first">
+                  {feed.length ? (
+                    <ol className="max-h-[30rem] space-y-3.5 overflow-y-auto pr-1">
+                      {feed.map((f, i) => (
+                        <li key={i} className="flex gap-3 text-sm">
+                          <span className={cn('mt-1.5 size-2 shrink-0 rounded-full', f.action ? 'bg-signal shadow-[0_0_0_4px_rgb(220_36_48/0.12)]' : 'bg-brand-500 shadow-[0_0_0_4px_rgb(0_138_87/0.12)]')} />
+                          <span className="min-w-0 flex-1">
+                            <span className="font-semibold text-ink">{person(f.v)}</span> <span className={f.action ? 'font-medium text-signal-700' : 'text-ink-2'}>{f.text}</span>
+                            {f.detail && <span className="text-ink-3"> · {f.detail}</span>}
+                            <span className="block text-xs text-ink-3">{flag(f.v.country)} {place(f.v)} · {ago(f.at, now)}</span>
+                          </span>
+                        </li>
+                      ))}
+                    </ol>
+                  ) : (
+                    <Empty>Nothing yet. Pages opened and actions taken appear here as they happen.</Empty>
+                  )}
+                </Card>
+              </div>
+
+              <div className="grid grid-cols-3 gap-6">
+                <Card title="Pages open right now">
+                  <Bars rows={nowOn} empty="No page is open at this moment." limit={6} tone="teal" />
+                </Card>
+                <Card title="Where they are">
+                  <Bars tone="violet" limit={6} empty="Nobody on the site right now." rows={countBy(online, (v) => v.city ? `${v.city}|${v.country ?? ''}` : `|${v.country ?? ''}`).map(([k, v]) => ({ key: k, label: `${flag(k.split('|')[1])}  ${k.split('|')[0] || country(k.split('|')[1])}`, sub: k.split('|')[0] ? country(k.split('|')[1]) : undefined, value: v }))} />
+                </Card>
+                <Card title="How they found the site">
+                  <Bars tone="blue" limit={6} empty="Nobody on the site right now." rows={countBy(online, (v) => sourceOf(v)).map(([k, v]) => ({ label: k, value: v }))} />
+                </Card>
+              </div>
+            </>
+          )}
+
+          {/* ---------- Overview ---------- */}
+          {section === 'overview' && (
+            <>
+              <div className="grid grid-cols-4 gap-4">
+                <Figure icon={<Activity className="size-4" />} tone="green" label="Visits" value={s ? n(s.visits) : '–'} now={s?.visits} before={prev?.visits} />
+                <Figure icon={<Users className="size-4" />} tone="teal" label="Visitors" value={s ? n(s.visitors) : '–'} now={s?.visitors} before={prev?.visitors} />
+                <Figure icon={<UserPlus className="size-4" />} tone="violet" label="New visitors" value={s ? n(s.newVisitors) : '–'} hint={s ? `${rate(s.newVisitors, s.visits)}% of visits were someone new` : undefined} />
+                <Figure icon={<Eye className="size-4" />} tone="blue" label="Pages opened" value={s ? n(s.views) : '–'} now={s?.views} before={prev?.views} />
+                <Figure icon={<Layers className="size-4" />} tone="teal" label="Pages per visit" value={s ? (pagesPer(s) ?? 0).toFixed(1) : '–'} now={pagesPer(s)} before={pagesPer(prev)} />
+                <Figure icon={<Clock className="size-4" />} tone="violet" label="Time per visit" value={s ? duration(perVisit(s) ?? 0) : '–'} now={perVisit(s)} before={perVisit(prev)} />
+                <Figure icon={<ArrowDownRight className="size-4" />} tone="amber" label="Left after one page" value={s ? `${rate(s.bounces, s.visits)}%` : '–'} now={s ? rate(s.bounces, s.visits) : undefined} before={prev ? rate(prev.bounces, prev.visits) : undefined} lowerIsBetter />
+                <Figure icon={<Percent className="size-4" />} tone="red" label="Enquiries" value={s ? n(s.enquiries) : '–'} now={s?.enquiries} before={prev?.enquiries} hint={s ? `${(convert(s) ?? 0).toFixed(1)}% of visits ended in an enquiry` : undefined} />
+              </div>
+
+              <Card
+                title={days === 1 ? 'Through the day' : 'Day by day'}
+                hint={days === 1 ? 'Each hour today' : 'Each day of the period'}
+                action={
+                  <div className="flex rounded-full bg-[#eef2f0] p-1">
+                    {(['visits', 'visitors', 'enquiries'] as const).map((k) => (
+                      <button key={k} type="button" onClick={() => setTrendOf(k)} className={cn('rounded-full px-3.5 py-1 text-[0.8125rem] font-semibold capitalize transition', trendOf === k ? 'bg-white text-ink shadow-[0_1px_3px_rgb(22_35_42/0.15)]' : 'text-ink-3 hover:text-ink')}>
+                        {k}
+                      </button>
+                    ))}
                   </div>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <Empty>{stats ? 'No errors in the last 14 days.' : 'Reading…'}</Empty>
-          )}
-          {s && Object.keys(s.notFound).length > 0 && (
-            <div className="mt-5 border-t border-line pt-5">
-              <h3 className="mb-3 text-sm font-bold text-ink">Addresses that showed “Page not found”</h3>
-              <Bars rows={ranked(s.notFound).map(([k, v]) => ({ label: k, value: v }))} empty="" limit={6} />
-            </div>
-          )}
-        </Card>
+                }
+              >
+                {trend.length ? <Trend points={trend} a={trendSeries.a} b={trendSeries.b} /> : <Empty>Reading the figures…</Empty>}
+              </Card>
 
-        {/* Recent visits */}
-        <Card title="Recent visits" hint="The latest visitors who have left. Open one to see every page and action, in order.">
-          {live?.recent.length ? <ul>{live.recent.map((v) => <VisitRow key={v.id} v={v} now={now} />)}</ul> : <Empty>{live ? 'No finished visits yet.' : 'Reading…'}</Empty>}
-        </Card>
+              <div className="grid grid-cols-2 gap-6">
+                <Card title="Busiest hours" hint={`Visits started in each hour ${periodWords}, Ghana time`}>
+                  {s ? <Columns data={s.hours.map((v, h) => ({ label: String(h).padStart(2, '0'), value: v }))} unit="visits" /> : <Empty>Reading…</Empty>}
+                </Card>
+                <Card title="Busiest days of the week" hint={days === 1 ? 'Choose 7 days or more to compare the days of the week' : `Visits on each day of the week ${periodWords}`}>
+                  {days > 1 && s ? <Columns data={weekdays} tone="teal" unit="visits" /> : <Empty>Choose 7, 30 or 90 days above.</Empty>}
+                </Card>
+              </div>
 
-        <p className="pb-4 text-center text-xs text-ink-3">Visitors are shown as a random code with their country and town: no names, emails or addresses of the public are kept. Visits are kept 30 days, the daily totals for good.</p>
-      </main>
+              <div className="grid grid-cols-5 gap-4">
+                {[
+                  { icon: <FileText className="size-4" />, label: 'Most opened page', top: ranked(Object.fromEntries(Object.entries(s?.pages ?? {}).map(([k, r]) => [k, r.v])))[0], show: (k: string) => pageName(k, s?.pages[k]?.t) },
+                  { icon: <Globe className="size-4" />, label: 'Top source', top: ranked(s?.sources)[0], show: (k: string) => k },
+                  { icon: <ShoppingCart className="size-4" />, label: 'Most viewed product', top: ranked(Object.fromEntries(Object.entries(s?.products ?? {}).map(([k, r]) => [k, r.v])))[0], show: (k: string) => s?.products[k]?.t ?? k },
+                  { icon: <MapPin className="size-4" />, label: 'Top town', top: ranked(s?.cities)[0], show: (k: string) => `${flag(k.split(', ').pop())} ${k.split(', ')[0]}` },
+                  { icon: <Search className="size-4" />, label: 'Top search', top: ranked(s?.searches)[0], show: (k: string) => `“${k}”` },
+                ].map((h) => (
+                  <div key={h.label} className="min-w-0 rounded-2xl bg-white p-5 ring-1 ring-[#e3e9e6]">
+                    <p className="flex items-center gap-2 text-[0.8125rem] font-semibold text-ink-3">{h.icon} {h.label}</p>
+                    <p className="mt-2 truncate font-bold text-ink" title={h.top ? h.show(h.top[0]) : undefined}>{h.top ? h.show(h.top[0]) : '—'}</p>
+                    <p className="text-[0.8125rem] tabular-nums text-ink-3">{h.top ? `${n(h.top[1])} ${periodWords}` : 'Nothing yet'}</p>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
+          {/* ---------- Visitors ---------- */}
+          {section === 'visitors' && (
+            <>
+              <div className="grid grid-cols-3 gap-6">
+                <Card title="New and returning" hint="Visits by someone on the site for the first time, and by someone who has been before">
+                  <Split parts={[{ label: 'New', value: s?.newVisitors ?? 0, hex: '#12a871' }, { label: 'Returning', value: Math.max(0, (s?.visits ?? 0) - (s?.newVisitors ?? 0)), hex: '#075056' }]} />
+                </Card>
+                <Card title="Devices" hint="What they used to open the site">
+                  <Split parts={['Phone', 'Computer', 'Tablet'].map((d, i) => ({ label: d === 'Phone' ? 'Phones' : d === 'Computer' ? 'Computers' : 'Tablets', value: s?.devices[d] ?? 0, hex: ['#2f6fae', '#0d7f88', '#8474e0'][i] }))} />
+                </Card>
+                <Card title="Staff visits" hint="Admins, sales and engineers using the site">
+                  <div className="flex h-full flex-col justify-center pb-6">
+                    <p className="text-[2.5rem] font-bold leading-none tracking-[-0.03em] tabular-nums">{s ? n(s.staff) : '–'}</p>
+                    <p className="mt-2 text-sm text-ink-3">visits by staff {periodWords}, left out of every other figure here. Hospitals signed in to their portal are counted with the public.</p>
+                  </div>
+                </Card>
+              </div>
+              <div className="grid grid-cols-3 gap-6">
+                <Card title="Where visitors came from" hint="The website or app that sent them">
+                  <Bars tone="blue" limit={10} empty="No visits in this period yet." rows={ranked(s?.sources).map(([k, v]) => ({ label: k, value: v, right: `${n(v)} · ${rate(v, s?.visits ?? 0)}%` }))} />
+                </Card>
+                <Card title="Countries">
+                  <Bars tone="violet" limit={10} empty="No visits in this period yet." rows={ranked(s?.countries).map(([k, v]) => ({ key: k, label: `${flag(k)}  ${country(k)}`, value: v, right: `${n(v)} · ${rate(v, s?.visits ?? 0)}%` }))} />
+                </Card>
+                <Card title="Towns and cities">
+                  <Bars tone="violet" limit={10} empty="No visits in this period yet." rows={ranked(s?.cities).map(([k, v]) => ({ key: k, label: `${flag(k.split(', ').pop())}  ${k.split(', ')[0]}`, sub: country(k.split(', ').pop()), value: v }))} />
+                </Card>
+                <Card title="Browsers">
+                  <Bars tone="teal" empty="No visits in this period yet." rows={ranked(s?.browsers).map(([k, v]) => ({ label: k, value: v, right: `${rate(v, s?.visits ?? 0)}%` }))} />
+                </Card>
+                <Card title="Systems">
+                  <Bars tone="teal" empty="No visits in this period yet." rows={ranked(s?.systems).map(([k, v]) => ({ label: k, value: v, right: `${rate(v, s?.visits ?? 0)}%` }))} />
+                </Card>
+                <Card title="Campaigns" hint="Visits from links tagged with a campaign name">
+                  <Bars tone="amber" empty="No campaign links used in this period." rows={ranked(s?.sources).filter(([k]) => k.startsWith('Campaign: ')).map(([k, v]) => ({ label: k.replace('Campaign: ', ''), value: v }))} />
+                </Card>
+              </div>
+            </>
+          )}
+
+          {/* ---------- Pages ---------- */}
+          {section === 'pages' && (
+            <>
+              <Card title="Every page" hint="How often each page was opened, its share of all pages opened, the time spent on it, and how many visits started or ended there">
+                {pageTable.length ? (
+                  <>
+                    <table className="w-full table-fixed text-left text-sm">
+                      <thead className="text-[0.8125rem] text-ink-3">
+                        <tr className="border-b border-[#e3e9e6]">
+                          <th className="w-[34%] py-2.5 pr-4 font-semibold">Page</th>
+                          <th className="py-2.5 pr-4 text-right font-semibold">Opened</th>
+                          <th className="w-[18%] py-2.5 pr-4 font-semibold">Share</th>
+                          <th className="py-2.5 pr-4 text-right font-semibold">Time on page</th>
+                          <th className="py-2.5 pr-4 text-right font-semibold">Visits started</th>
+                          <th className="py-2.5 text-right font-semibold">Visits ended</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-[#edf1ef]">
+                        {(allPages ? pageTable : pageTable.slice(0, 15)).map((r) => (
+                          <tr key={r.p} className="hover:bg-[#f7faf8]">
+                            <td className="py-3 pr-4">
+                              <span className="block truncate font-medium text-ink">{r.name}</span>
+                              <span className="block truncate text-xs text-ink-3">{r.p}</span>
+                            </td>
+                            <td className="py-3 pr-4 text-right font-semibold tabular-nums">{n(r.views)}</td>
+                            <td className="py-3 pr-4">
+                              <span className="flex items-center gap-2">
+                                <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-mist"><span className="block h-full rounded-full bg-[#12a871]" style={{ width: `${Math.max(2, r.share)}%` }} /></span>
+                                <span className="w-9 text-right text-xs tabular-nums text-ink-3">{r.share}%</span>
+                              </span>
+                            </td>
+                            <td className="py-3 pr-4 text-right tabular-nums">{duration(r.avg)}</td>
+                            <td className="py-3 pr-4 text-right tabular-nums">{n(r.starts)}</td>
+                            <td className="py-3 text-right tabular-nums">{n(r.ends)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    {pageTable.length > 15 && (
+                      <button type="button" onClick={() => setAllPages((a) => !a)} className="mt-4 text-[0.8125rem] font-semibold text-brand-700 hover:text-brand-800">
+                        {allPages ? 'Show fewer' : `Show all ${pageTable.length} pages`}
+                      </button>
+                    )}
+                  </>
+                ) : (
+                  <Empty>No pages opened in this period yet.</Empty>
+                )}
+              </Card>
+              <div className="grid grid-cols-3 gap-6">
+                <Card title="Where visits start" hint="The first page people land on">
+                  <Bars tone="teal" empty="No visits in this period yet." rows={ranked(s?.entries).map(([k, v]) => ({ key: k, label: pageName(k, s?.pages[k]?.t), sub: k, value: v }))} />
+                </Card>
+                <Card title="Where visits end" hint="The last page before people leave">
+                  <Bars tone="amber" empty="No visits in this period yet." rows={ranked(s?.exits).map(([k, v]) => ({ key: k, label: pageName(k, s?.pages[k]?.t), sub: k, value: v }))} />
+                </Card>
+                <Card title="“Page not found”" hint="Addresses people tried that don’t exist: old links or typing mistakes">
+                  <Bars tone="red" empty="No missing pages in this period." rows={ranked(s?.notFound).map(([k, v]) => ({ label: k, value: v }))} />
+                </Card>
+              </div>
+            </>
+          )}
+
+          {/* ---------- Shop & enquiries ---------- */}
+          {section === 'shop' && (
+            <>
+              <div className="grid grid-cols-4 gap-4">
+                <Figure icon={<MousePointerClick className="size-4" />} tone="red" label="Enquiries" value={s ? n(s.enquiries) : '–'} now={s?.enquiries} before={prev?.enquiries} />
+                <Figure icon={<Percent className="size-4" />} tone="amber" label="Visits that enquired" value={s ? `${(convert(s) ?? 0).toFixed(1)}%` : '–'} now={convert(s)} before={convert(prev)} />
+                <Figure icon={<Eye className="size-4" />} tone="teal" label="Product pages opened" value={s ? n(productViews) : '–'} hint={s ? `${Object.keys(s.products).length} different products` : undefined} />
+                <Figure icon={<Search className="size-4" />} tone="blue" label="Shop searches" value={s ? n(s.events.search ?? 0) : '–'} hint={s ? `${Object.keys(s.searches).length} different searches` : undefined} />
+              </div>
+
+              <Card title="From visit to enquiry" hint={`How many got to each step ${periodWords}`}>
+                {s && s.visits ? (
+                  <ol className="grid grid-cols-4 gap-4">
+                    {funnel.map((f, i) => (
+                      <li key={f.label} className="min-w-0">
+                        <div className="flex h-36 items-end rounded-xl bg-[#f4f8f6] p-2">
+                          <span className="w-full rounded-lg" style={{ height: `${Math.max(3, (f.value / Math.max(1, funnel[0].value)) * 100)}%`, background: f.hex }} />
+                        </div>
+                        <p className="mt-3 text-[0.8125rem] font-semibold text-ink-3">{i + 1}. {f.label}</p>
+                        <p className="text-2xl font-bold tabular-nums tracking-[-0.02em]">{n(f.value)}</p>
+                        <p className="text-xs text-ink-3">{i === 0 ? 'Everyone' : `${rate(f.value, funnel[0].value)}% of visits`}</p>
+                      </li>
+                    ))}
+                  </ol>
+                ) : (
+                  <Empty>No visits in this period yet.</Empty>
+                )}
+              </Card>
+
+              <div className="grid grid-cols-3 gap-6">
+                <Card title="Products looked at" hint="Product pages opened in the shop">
+                  <Bars tone="teal" limit={10} empty="No product pages opened in this period yet." rows={Object.entries(s?.products ?? {}).sort((a, b) => b[1].v - a[1].v).map(([slug, r]) => ({ key: slug, label: r.t ?? slug, sub: `/products/${slug}`, value: r.v }))} />
+                </Card>
+                <Card title="What people searched for" hint="Words typed into the shop’s search">
+                  <Bars tone="blue" limit={10} empty="No searches in this period yet." rows={ranked(s?.searches).map(([k, v]) => ({ label: `“${k}”`, key: k, value: v }))} />
+                </Card>
+                <div className="space-y-6">
+                  <Card title="Enquiries by kind">
+                    <Bars tone="red" empty="No enquiries in this period yet." rows={enquiryRows.map(([k, v]) => ({ label: eventName(k), value: v }))} />
+                  </Card>
+                  <Card title="Getting in touch" hint="WhatsApp, calls, emails, the chat and downloads">
+                    <Bars tone="amber" empty="Nothing in this period yet." rows={contactRows.map(([k, v]) => ({ label: eventName(k), value: v }))} />
+                  </Card>
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* ---------- Speed ---------- */}
+          {section === 'speed' && (
+            <>
+              {s && Object.keys(s.vitals).length ? (
+                <div className="grid grid-cols-5 gap-4">
+                  {(['LCP', 'FCP', 'INP', 'CLS', 'TTFB'] as Vital[]).map((k) => {
+                    const row = s.vitals[k];
+                    if (!row) return null;
+                    const avg = row.sum / row.n;
+                    const tone = avg <= vitalLimits[k].good ? 'good' : avg > vitalLimits[k].poor ? 'poor' : 'fair';
+                    return (
+                      <div key={k} className="min-w-0 rounded-2xl bg-white p-5 ring-1 ring-[#e3e9e6]">
+                        <p className="flex items-center gap-2 text-[0.8125rem] font-semibold text-ink-3"><Zap className="size-4 text-brand-600" /> {vitalNames[k].name}</p>
+                        <p className={cn('mt-3 text-[2rem] font-bold leading-none tabular-nums tracking-[-0.03em]', tone === 'good' ? 'text-ok' : tone === 'poor' ? 'text-bad' : 'text-warn')}>{vitalValue(k, avg)}</p>
+                        <p className={cn('mt-2 inline-block rounded-full px-2 py-0.5 text-xs font-bold', tone === 'good' ? 'bg-[#e6f4ec] text-ok' : tone === 'poor' ? 'bg-[#fdecee] text-bad' : 'bg-[#fdf3e0] text-warn')}>{tone === 'good' ? 'Good' : tone === 'poor' ? 'Slow' : 'Could be better'}</p>
+                        <div className="mt-4 flex h-2 overflow-hidden rounded-full bg-mist">
+                          <span className="bg-brand-500" style={{ width: `${rate(row.good, row.n)}%` }} />
+                          <span className="bg-[#e0a52b]" style={{ width: `${rate(row.n - row.good - row.poor, row.n)}%` }} />
+                          <span className="bg-signal" style={{ width: `${rate(row.poor, row.n)}%` }} />
+                        </div>
+                        <p className="mt-2 text-xs tabular-nums text-ink-3">{rate(row.good, row.n)}% good · {rate(row.n - row.good - row.poor, row.n)}% fair · {rate(row.poor, row.n)}% slow</p>
+                        <p className="mt-3 text-[0.8125rem] leading-snug text-ink-3">{vitalNames[k].what}</p>
+                        <p className="mt-2 text-xs tabular-nums text-ink-3">{n(row.n)} visits measured · {k}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <Card><Empty>{s ? 'No speed readings in this period yet.' : 'Reading…'}</Empty></Card>
+              )}
+              <Card title="What this means">
+                <p className="max-w-3xl text-sm leading-relaxed text-ink-2">
+                  Each figure is the average over the first page of every visit, measured in visitors’ own browsers on their own phones and networks. Green is within Google’s limit for a good site, amber is close, red is slow. The bar under each figure shows how many visits were good, fair and slow, so one slow phone does not hide a fast site. Google uses these same measures when it ranks sites in search.
+                </p>
+              </Card>
+            </>
+          )}
+
+          {/* ---------- Health & errors ---------- */}
+          {section === 'health' && (
+            <>
+              <div className="grid grid-cols-5 gap-4">
+                {health.map((h) => (
+                  <div key={h.label} className={cn('min-w-0 rounded-2xl bg-white p-5 ring-1', !stats ? 'ring-[#e3e9e6]' : h.ok ? 'ring-[#cfe9db]' : 'ring-[#f5c4ca]')}>
+                    <span className="flex items-center justify-between">
+                      <span className={cn('grid size-10 place-items-center rounded-xl', !stats ? 'bg-mist text-ink-3' : h.ok ? 'bg-[#e6f4ec] text-ok' : 'bg-[#fdecee] text-bad')}>{h.icon}</span>
+                      <span className={cn('size-2.5 rounded-full', !stats ? 'bg-ink-3/40' : h.ok ? 'bg-ok shadow-[0_0_0_4px_rgb(11_138_87/0.15)]' : 'bg-bad shadow-[0_0_0_4px_rgb(220_36_48/0.15)]')} />
+                    </span>
+                    <p className="mt-4 text-[0.8125rem] font-semibold text-ink-3">{h.label}</p>
+                    <p className="font-bold text-ink">{h.text}</p>
+                    <p className="mt-1 text-xs leading-snug text-ink-3">{h.sub}</p>
+                  </div>
+                ))}
+              </div>
+              {stats?.health.deployedMessage && (
+                <p className="flex items-center gap-2 text-[0.8125rem] text-ink-3"><Server className="size-4" /> Latest update to the site: <span className="font-medium text-ink-2">{stats.health.deployedMessage}</span></p>
+              )}
+
+              <Card title="Errors" hint="Everything that went wrong on the site and the portals in the last 14 days, the most recent first. Copy one and paste it to Claude to have it fixed.">
+                {errors.length ? (
+                  <ul className="divide-y divide-[#edf1ef]">
+                    {errors.map((e) => (
+                      <li key={e.id} className="flex flex-wrap items-start gap-x-4 gap-y-2 py-3.5">
+                        <span className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-full bg-[#fdecee] text-signal-700"><AlertTriangle className="size-4" /></span>
+                        <div className="min-w-0 flex-1 basis-64">
+                          <p className="break-words text-sm font-semibold text-ink">{e.message}</p>
+                          <p className="mt-0.5 text-[0.8125rem] text-ink-3">{e.area} · {e.path} · {e.source === 'browser' ? 'on a visitor’s screen' : 'on the server'} · first seen {ago(Date.parse(e.firstAt), now)}</p>
+                        </div>
+                        <p className="shrink-0 text-right text-[0.8125rem] text-ink-3">
+                          <span className="block font-semibold tabular-nums text-ink-2">{n(e.count)} {e.count === 1 ? 'time' : 'times'}</span>
+                          last {ago(Date.parse(e.lastAt), now)}
+                        </p>
+                        <div className="flex shrink-0 gap-2">
+                          <button type="button" onClick={() => void copy(e.id, errorText(e))} className="inline-flex items-center gap-1.5 rounded-lg border border-line px-3 py-1.5 text-[0.8125rem] font-semibold text-ink-2 transition hover:border-ink/30">
+                            {copied === e.id ? <Check className="size-3.5 text-ok" /> : <Copy className="size-3.5" />} {copied === e.id ? 'Copied' : 'Copy'}
+                          </button>
+                          <button type="button" onClick={() => void dismiss(e.id)} className="rounded-lg bg-mist px-3 py-1.5 text-[0.8125rem] font-semibold text-ink-2 transition hover:bg-line">Clear</button>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <div className="flex flex-col items-center py-8 text-center">
+                    <span className="grid size-12 place-items-center rounded-full bg-[#e6f4ec] text-ok"><Check className="size-6" /></span>
+                    <p className="mt-3 font-semibold">{stats ? 'No errors in the last 14 days' : 'Reading…'}</p>
+                    {stats && <p className="mt-1 text-sm text-ink-3">Errors on the site or the portals appear here with what to copy to have them fixed.</p>}
+                  </div>
+                )}
+              </Card>
+              <div className="grid grid-cols-2 gap-6">
+                <Card title="“Page not found”" hint={`Addresses people tried ${periodWords} that don’t exist`}>
+                  <Bars tone="red" empty="No missing pages in this period." rows={ranked(s?.notFound).map(([k, v]) => ({ label: k, value: v }))} />
+                </Card>
+                <Card title="Errors visitors hit on the page" hint={`Visits where the page showed an error ${periodWords}`}>
+                  <div className="flex items-end gap-3 pb-4">
+                    <p className="text-[2.5rem] font-bold leading-none tracking-[-0.03em] tabular-nums">{s ? n(s.events.js_error ?? 0) : '–'}</p>
+                    <p className="pb-1 text-sm text-ink-3">{s && s.visits ? `${rate(s.events.js_error ?? 0, s.visits)}% of visits` : ''}</p>
+                  </div>
+                  <p className="text-sm text-ink-3">Errors from browser add-ons and in-app browsers (Facebook, Instagram, TikTok) are left out: only the site’s own errors count.</p>
+                </Card>
+              </div>
+            </>
+          )}
+
+          {/* ---------- Visit log ---------- */}
+          {section === 'log' && (
+            <Card
+              title={`${logVisits.length} visit${logVisits.length === 1 ? '' : 's'}`}
+              hint="Who is on the site now and the latest who have left. Open one to see every page and action, in order."
+              action={
+                <span className="relative">
+                  <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-ink-3" />
+                  <input value={filter} onChange={(e) => setFilter(e.target.value)} placeholder="Town, page, product, source…" className="h-10 w-72 rounded-xl border border-line bg-white pl-9 pr-3 text-sm outline-none focus:border-brand-600" />
+                </span>
+              }
+            >
+              {!live ? <Empty>Reading…</Empty> : logVisits.length ? <ul>{logVisits.map(({ v, live: on }) => <VisitRow key={v.id} v={v} now={now} live={on} />)}</ul> : <Empty>{filter ? 'No visit matches that.' : 'No visits yet.'}</Empty>}
+            </Card>
+          )}
+
+          <p className="pb-2 pt-2 text-center text-xs text-ink-3">Visitors are shown as a random code with their country and town: no names, emails or addresses of the public are kept. Visits are kept 30 days, the daily totals for good.</p>
+        </main>
+      </div>
     </div>
   );
 }
