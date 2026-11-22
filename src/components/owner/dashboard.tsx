@@ -117,7 +117,7 @@ type Tone = keyof typeof TONES;
 /* ---------- small pieces ---------- */
 function Card({ title, hint, action, children, className }: { title?: string; hint?: string; action?: ReactNode; children: ReactNode; className?: string }) {
   return (
-    <section className={cn('min-w-0 rounded-2xl bg-white p-6 shadow-[0_1px_2px_rgb(22_35_42/0.05),0_12px_32px_-20px_rgb(22_35_42/0.2)] ring-1 ring-[#e3e9e6]', className)}>
+    <section className={cn('min-w-0 rounded-3xl bg-paper p-6 shadow-[0_1px_2px_rgb(22_35_42/0.04),0_18px_40px_-24px_rgb(22_35_42/0.22)] ring-1 ring-line/60', className)}>
       {title && (
         <header className="mb-5 flex items-start justify-between gap-3">
           <div>
@@ -139,7 +139,7 @@ function Figure({ icon, label, value, now, before, lowerIsBetter, hint, tone }: 
   const change = now !== undefined && before ? Math.round(((now - before) / before) * 100) : null;
   const good = change === null || change === 0 ? null : change > 0 !== Boolean(lowerIsBetter);
   return (
-    <div className="relative min-w-0 rounded-2xl bg-white p-5 shadow-[0_1px_2px_rgb(22_35_42/0.05),0_12px_32px_-20px_rgb(22_35_42/0.2)] ring-1 ring-[#e3e9e6]">
+    <div className="relative min-w-0 rounded-3xl bg-paper p-5 shadow-[0_1px_2px_rgb(22_35_42/0.04),0_18px_40px_-24px_rgb(22_35_42/0.22)] ring-1 ring-line/60">
       <div className="flex items-center justify-between">
         <p className="text-[0.8125rem] font-semibold text-ink-3">{label}</p>
         <span className={cn('grid size-8 place-items-center rounded-xl bg-gradient-to-br text-white', TONES[tone].chip)}>{icon}</span>
@@ -619,13 +619,12 @@ export function Dashboard({ name }: { name: string }) {
   const usesPeriod = section !== 'live' && section !== 'log';
 
   const health = [
-    { icon: <Globe className="size-5" />, label: 'Website', ok: Boolean(stats) && !problem, text: stats ? 'Up and answering' : 'Checking…', sub: stats ? `Version ${stats.health.version}${stats.health.region ? ` · server ${stats.health.region}` : ''}` : '' },
-    { icon: <Database className="size-5" />, label: 'Database', ok: stats?.health.database === 'ok', text: !stats ? 'Checking…' : stats.health.database === 'ok' ? 'Answering' : stats.health.database === 'down' ? 'Not answering' : 'Not set up', sub: stats ? `Answered in ${stats.health.databaseMs} ms` : '' },
-    { icon: <Mail className="size-5" />, label: 'Email', ok: Boolean(stats?.health.email), text: !stats ? 'Checking…' : stats.health.email ? 'On' : 'Off', sub: 'Quote requests, support requests and alerts' },
-    { icon: <MessageSquare className="size-5" />, label: 'Text messages', ok: Boolean(stats?.health.texts), text: !stats ? 'Checking…' : stats.health.texts ? 'On' : 'Off', sub: 'Quotes to the company line, engineers’ jobs' },
-    { icon: <AlertTriangle className="size-5" />, label: 'Errors', ok: errors24 === 0, text: !stats ? 'Checking…' : errors24 ? `${errors24} in the last 24 hours` : 'None in the last 24 hours', sub: `${errors.length} kind${errors.length === 1 ? '' : 's'} in the last 14 days` },
+    { icon: <Globe className="size-5" />, label: 'Website', ok: Boolean(stats) && !problem, short: stats ? 'Up' : '…', tiny: stats ? `Version ${stats.health.version}` : 'Checking', text: stats ? 'Up and answering' : 'Checking…', sub: stats ? `Version ${stats.health.version}${stats.health.region ? ` · server ${stats.health.region}` : ''}` : '' },
+    { icon: <Database className="size-5" />, label: 'Database', ok: stats?.health.database === 'ok', short: !stats ? '…' : stats.health.database === 'ok' ? 'Answering' : stats.health.database === 'down' ? 'Not answering' : 'Not set up', tiny: stats ? `${stats.health.databaseMs} ms` : 'Checking', text: !stats ? 'Checking…' : stats.health.database === 'ok' ? 'Answering' : stats.health.database === 'down' ? 'Not answering' : 'Not set up', sub: stats ? `Answered in ${stats.health.databaseMs} ms` : '' },
+    { icon: <Mail className="size-5" />, label: 'Email', ok: Boolean(stats?.health.email), short: !stats ? '…' : stats.health.email ? 'On' : 'Off', tiny: 'Requests, alerts', text: !stats ? 'Checking…' : stats.health.email ? 'On' : 'Off', sub: 'Quote requests, support requests and alerts' },
+    { icon: <MessageSquare className="size-5" />, label: 'Texts', ok: Boolean(stats?.health.texts), short: !stats ? '…' : stats.health.texts ? 'On' : 'Off', tiny: 'SMS', text: !stats ? 'Checking…' : stats.health.texts ? 'On' : 'Off', sub: 'Quotes to the company line, engineers’ jobs' },
+    { icon: <AlertTriangle className="size-5" />, label: 'Errors', ok: errors24 === 0, short: !stats ? '…' : errors24 ? `${errors24} today` : 'None today', tiny: `${errors.length} in 14 days`, text: !stats ? 'Checking…' : errors24 ? `${errors24} in the last 24 hours` : 'None in the last 24 hours', sub: `${errors.length} kind${errors.length === 1 ? '' : 's'} in the last 14 days` },
   ];
-  const healthyAll = Boolean(stats) && health.every((h) => h.ok);
 
   /* ---------- the figures of a period (Overview) ---------- */
   const perVisit = (x?: Totals) => (x && x.visits ? x.secs / x.visits : undefined);
@@ -658,134 +657,116 @@ export function Dashboard({ name }: { name: string }) {
   }, [live, filter]);
 
   return (
-    <div className="flex min-h-svh bg-[#f1f4f2] text-ink">
-      {/* The menu: the admin console's deep green */}
-      <aside className="fixed inset-y-0 left-0 z-30 flex w-[260px] flex-col overflow-y-auto bg-[radial-gradient(140%_70%_at_0%_0%,#0f8a55_0%,#06482a_55%,#032a19_100%)] px-4 pb-5 text-white">
-        <div className="-mx-4 flex h-[76px] items-center gap-2.5 border-b border-white/15 px-6">
-          <LogoMark className="size-8" />
-          <span>
-            <LogoWordmark className="h-[15px] text-white" />
-            <span className="mt-1 block text-[0.75rem] font-medium leading-none text-white/70">Site monitor</span>
-          </span>
-        </div>
-
-        <button type="button" onClick={() => open('live')} className="mt-6 rounded-2xl bg-white/[0.08] p-4 text-left ring-1 ring-white/15 transition hover:bg-white/[0.12]">
-          <span className="flex items-center gap-2 text-[0.75rem] font-semibold uppercase tracking-[0.1em] text-white/70">
-            <span className="relative flex size-2">
-              <span className={cn('absolute inline-flex size-full rounded-full opacity-70', problem ? 'bg-signal' : 'animate-ping bg-[#5fe0a3]')} />
-              <span className={cn('relative inline-flex size-2 rounded-full', problem ? 'bg-signal' : 'bg-[#5fe0a3]')} />
-            </span>
-            On the site now
-          </span>
-          <span className="mt-2 flex items-baseline gap-2">
-            <span className="text-[2.5rem] font-bold leading-none tracking-[-0.04em] tabular-nums">{live ? publicOnline.length : '–'}</span>
-            <span className="text-sm text-white/75">{publicOnline.length === 1 ? 'person' : 'people'}</span>
-          </span>
-          <span className="mt-2 block text-[0.75rem] text-white/60">{problem ? 'Reconnecting…' : live ? `Updated ${ago(live.at, now)}` : 'Connecting…'}</span>
-        </button>
-
-        <p className="mt-6 px-3.5 pb-1.5 text-[0.75rem] font-semibold uppercase tracking-[0.14em] text-white/55">Sections</p>
-        <nav aria-label="Monitor sections" className="space-y-0.5">
-          {SECTIONS.map((x) => {
-            const on = section === x.id;
-            const badge = x.id === 'health' ? errors24 : 0;
-            return (
-              <button key={x.id} type="button" onClick={() => open(x.id)} aria-current={on ? 'page' : undefined} className={cn('flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-[0.9375rem] font-medium transition-colors', on ? 'bg-white/[0.16] text-white shadow-[inset_3px_0_0_0_#fff]' : 'text-white/80 hover:bg-white/[0.08] hover:text-white')}>
-                <x.icon className={cn('size-[18px]', on ? 'text-white' : 'text-white/65')} /> {x.label}
-                {badge > 0 && <span className="ml-auto rounded-full bg-signal px-2 py-0.5 text-[0.75rem] font-bold tabular-nums">{badge}</span>}
-              </button>
-            );
-          })}
-        </nav>
-
-        <div className="mt-auto space-y-0.5">
-          <button type="button" onClick={toggleSound} aria-pressed={sound} title={!sound ? 'Turn on the chime for each new visitor' : soundReady ? 'A chime plays for each new visitor' : 'The chime starts after your first click on the page'} className="flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-[0.9375rem] font-medium text-white/80 transition hover:bg-white/[0.08] hover:text-white">
-            {sound ? <Volume2 className="size-[18px] text-white/65" /> : <VolumeX className="size-[18px] text-white/65" />} Chime for new visitors
-            <span className={cn('ml-auto rounded-full px-2 py-0.5 text-[0.6875rem] font-bold', sound ? 'bg-white text-[#06482a]' : 'bg-white/15 text-white/75')}>{sound ? 'On' : 'Off'}</span>
-          </button>
-          <form action={lock}>
-            <button type="submit" className="flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-[0.9375rem] font-medium text-white/80 transition hover:bg-white/[0.08] hover:text-white">
-              <Lock className="size-[18px] text-white/65" /> Lock the monitor
-            </button>
-          </form>
-        </div>
-      </aside>
-
-      <div className="min-w-0 flex-1 pl-[260px]">
-        {/* The bar: the section, the period and the refresh */}
-        <header className="sticky top-0 z-20 flex h-[76px] items-center gap-5 border-b border-[#e3e9e6] bg-white/95 px-8 backdrop-blur">
-          <div className="min-w-0">
-            <h1 className="truncate text-xl font-bold tracking-[-0.02em]">{meta.label}</h1>
-            <p className="truncate text-[0.8125rem] text-ink-3">{section === 'live' ? `${greeting}, ${name}. ${meta.lead}.` : meta.lead}</p>
+    <div className="min-h-svh bg-[#eef2f0] text-ink">
+      {/* The top of the page: the deep green band, with the bar, the live count and the site's health */}
+      <div className="relative isolate overflow-hidden bg-[radial-gradient(140%_120%_at_0%_0%,#0f8a55_0%,#06482a_55%,#032a19_100%)] pb-28 text-white">
+        <div aria-hidden className="absolute -right-24 -top-24 -z-10 size-[26rem] rounded-full border border-white/10" />
+        <div aria-hidden className="absolute -right-6 top-16 -z-10 size-64 rounded-full border border-white/10" />
+        <header className="mx-auto flex max-w-[1500px] items-center gap-6 px-8 py-5">
+          <div className="flex items-center gap-2.5">
+            <LogoMark className="size-9" />
+            <LogoWordmark className="h-4 text-white" />
+            <span className="ml-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold tracking-wide text-white/90 ring-1 ring-white/15">Site monitor</span>
           </div>
-          <div className="ml-auto flex items-center gap-2">
-            {usesPeriod && (
-              <div className="flex rounded-full bg-[#eef2f0] p-1" role="tablist" aria-label="Period">
-                {RANGES.map((r) => (
-                  <button key={r.days} type="button" role="tab" aria-selected={days === r.days} onClick={() => setDays(r.days)} className={cn('whitespace-nowrap rounded-full px-4 py-1.5 text-[0.8125rem] font-semibold transition', days === r.days ? 'bg-white text-ink shadow-[0_1px_3px_rgb(22_35_42/0.15)]' : 'text-ink-3 hover:text-ink')}>
-                    {r.label}
-                  </button>
-                ))}
-              </div>
-            )}
-            <span className={cn('hidden items-center gap-2 rounded-full px-3 py-1.5 text-[0.8125rem] font-semibold xl:inline-flex', healthyAll ? 'bg-[#e6f4ec] text-[#06603c]' : stats ? 'bg-[#fdecee] text-[#a3162a]' : 'bg-mist text-ink-3')}>
-              <span className={cn('size-2 rounded-full', healthyAll ? 'bg-ok' : stats ? 'bg-bad' : 'bg-ink-3')} />
-              {!stats ? 'Checking the site…' : healthyAll ? 'All systems working' : 'Something needs a look'}
+          <p className="flex items-center gap-2 text-[0.8125rem] text-white/75">
+            <span className="relative flex size-2.5">
+              <span className={cn('absolute inline-flex size-full rounded-full opacity-70', problem ? 'bg-signal' : 'animate-ping bg-brand-300')} />
+              <span className={cn('relative inline-flex size-2.5 rounded-full', problem ? 'bg-signal' : 'bg-brand-300')} />
             </span>
-            <button type="button" onClick={() => void Promise.all([loadLive(), loadStats()])} title="Read again now" className="grid size-10 place-items-center rounded-full bg-[#eef2f0] text-ink-2 transition hover:bg-[#e2e9e5]">
+            {problem || (live ? `Live · updated ${ago(live.at, now)}` : 'Connecting…')}
+          </p>
+          <div className="ml-auto flex items-center gap-2">
+            <div className={cn('flex rounded-full bg-white/10 p-1 ring-1 ring-white/10 transition', !usesPeriod && 'opacity-50')} role="tablist" aria-label="Period" title={usesPeriod ? undefined : 'The period applies to the other sections'}>
+              {RANGES.map((r) => (
+                <button key={r.days} type="button" role="tab" aria-selected={days === r.days} onClick={() => setDays(r.days)} className={cn('whitespace-nowrap rounded-full px-4 py-1.5 text-[0.8125rem] font-semibold transition', days === r.days ? 'bg-white text-midnight shadow' : 'text-white/75 hover:text-white')}>
+                  {r.label}
+                </button>
+              ))}
+            </div>
+            <button type="button" onClick={toggleSound} aria-pressed={sound} title={!sound ? 'Sound is off: turn on the chime for each new visitor' : soundReady ? 'A chime plays for each new visitor. Click to turn it off' : 'Sound is on: it starts after your first click on the page'} className={cn('grid size-9 place-items-center rounded-full ring-1 transition', sound ? 'bg-white text-[#06482a] ring-white' : 'bg-white/10 text-white/80 ring-white/10 hover:bg-white/20 hover:text-white')}>
+              {sound ? <Volume2 className="size-4" /> : <VolumeX className="size-4" />}
+            </button>
+            <button type="button" onClick={() => void Promise.all([loadLive(), loadStats()])} title="Read again now" className="grid size-9 place-items-center rounded-full bg-white/10 text-white/80 ring-1 ring-white/10 transition hover:bg-white/20 hover:text-white">
               <RefreshCw className={cn('size-4', busy && 'animate-spin')} />
             </button>
+            <form action={lock}>
+              <button type="submit" title="Lock the monitor" className="grid size-9 place-items-center rounded-full bg-white/10 text-white/80 ring-1 ring-white/10 transition hover:bg-white/20 hover:text-white">
+                <Lock className="size-4" />
+              </button>
+            </form>
           </div>
         </header>
 
-        <main id="main" className="mx-auto max-w-[1440px] space-y-6 px-8 py-7">
+        <div className="mx-auto flex max-w-[1500px] items-end justify-between gap-10 px-8 pt-8">
+          <div>
+            <p className="text-sm font-semibold text-brand-300">{greeting}, {name}. This is flokefama.com right now.</p>
+            <div className="mt-5 flex items-end gap-6">
+              <p className="text-[7rem] font-extrabold leading-[0.8] tracking-[-0.05em] tabular-nums text-white">{live ? publicOnline.length : '–'}</p>
+              <div className="pb-1">
+                <p className="text-2xl font-bold tracking-[-0.02em]">{publicOnline.length === 1 ? 'person' : 'people'} on the site</p>
+                <p className="mt-1.5 text-sm text-white/70">
+                  {publicOnline.filter((v) => !v.who && v.isNew).length} new · {publicOnline.filter((v) => !v.who && !v.isNew).length} returning · {online.filter((v) => v.who?.role === 'client').length} hospitals signed in · {online.length - publicOnline.length} staff · {online.filter((v) => v.device === 'Phone').length} on phones
+                </p>
+              </div>
+            </div>
+          </div>
+          <ul className="grid shrink-0 grid-cols-5 gap-3">
+            {health.map((h) => (
+              <li key={h.label}>
+                <button type="button" onClick={() => open('health')} className="block w-[8.75rem] rounded-2xl bg-white/[0.08] p-4 text-left ring-1 ring-white/15 backdrop-blur-md transition hover:bg-white/[0.14]">
+                  <span className="flex items-center justify-between text-white/70">
+                    {h.icon}
+                    <span className={cn('size-2.5 rounded-full', !stats ? 'bg-white/40' : h.ok ? 'bg-[#5fe0a3] shadow-[0_0_0_4px_rgb(95_224_163/0.2)]' : 'bg-[#ff6b75] shadow-[0_0_0_4px_rgb(255_107_117/0.25)]')} />
+                  </span>
+                  <span className="mt-3 block text-xs font-semibold text-white/65">{h.label}</span>
+                  <span className="block truncate text-[0.9375rem] font-bold">{h.short}</span>
+                  <span className="block truncate text-xs text-white/55">{h.tiny}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      {/* The sections, as tabs over the green band; they stay at the top while scrolling */}
+      <nav aria-label="Monitor sections" className="sticky top-0 z-20 mx-auto -mt-20 max-w-[1500px] px-8 pt-3">
+        <div className="flex gap-1 rounded-2xl bg-white/95 p-1.5 shadow-[0_18px_40px_-20px_rgb(4_56_34/0.45)] ring-1 ring-black/5 backdrop-blur">
+          {SECTIONS.map((x) => {
+            const on = section === x.id;
+            const badge = x.id === 'health' ? errors24 : x.id === 'live' ? publicOnline.length : 0;
+            return (
+              <button key={x.id} type="button" onClick={() => open(x.id)} aria-current={on ? 'page' : undefined} className={cn('flex flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-3 py-2.5 text-[0.875rem] font-semibold transition', on ? 'bg-[linear-gradient(135deg,#0f8a55,#06482a)] text-white shadow-[0_8px_18px_-10px_rgb(4_56_34/0.8)]' : 'text-ink-2 hover:bg-[#eef4f1] hover:text-ink')}>
+                <x.icon className={cn('size-4', on ? 'text-white' : 'text-brand-700')} /> {x.label}
+                {badge > 0 && <span className={cn('rounded-full px-1.5 py-px text-[0.6875rem] font-bold tabular-nums', x.id === 'health' ? 'bg-signal text-white' : on ? 'bg-white text-[#06482a]' : 'bg-[#e6f4ec] text-brand-700')}>{badge}</span>}
+              </button>
+            );
+          })}
+        </div>
+      </nav>
+
+      <main id="main" className="relative mx-auto max-w-[1500px] space-y-6 px-8 pb-10 pt-6">
+        <div className="flex items-end justify-between gap-6">
+          <div>
+            <h1 className="text-2xl font-bold tracking-[-0.02em]">{meta.label}</h1>
+            <p className="mt-1 text-sm text-ink-3">{meta.lead}{section === 'live' ? '' : usesPeriod ? `, ${periodWords}.` : '.'}</p>
+          </div>
           {usesPeriod && (
-            <p className="text-[0.8125rem] text-ink-3">
-              Figures {periodWords}
-              {stats?.google?.days ? ` · ${stats.google.days} ${stats.google.days === 1 ? 'day is' : 'days are'} from Google Analytics (before the monitor started)` : stats && !stats.google?.connected && days > 1 ? ' · Google Analytics is not connected, so days before the monitor started are empty' : ''}
-              {' · '}Staff visits are left out · Ghana time
+            <p className="max-w-xl text-right text-[0.8125rem] text-ink-3">
+              {stats?.google?.days ? `${stats.google.days} ${stats.google.days === 1 ? 'day is' : 'days are'} from Google Analytics (before the monitor started) · ` : stats && !stats.google?.connected && days > 1 ? 'Google Analytics is not connected, so days before the monitor started are empty · ' : ''}
+              Staff visits are left out · Ghana time
             </p>
           )}
+        </div>
 
           {/* ---------- Live ---------- */}
           {section === 'live' && (
             <>
-              <div className="grid grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] gap-6">
-                <section className="relative isolate overflow-hidden rounded-2xl bg-[radial-gradient(140%_120%_at_0%_0%,#0f8a55_0%,#06482a_55%,#032a19_100%)] p-7 text-white shadow-[0_24px_48px_-28px_rgb(4_56_34/0.8)]">
-                  <div aria-hidden className="absolute -right-16 -top-16 size-64 rounded-full border border-white/10" />
-                  <div aria-hidden className="absolute -right-4 top-10 size-40 rounded-full border border-white/10" />
-                  <p className="text-sm font-semibold text-[#9be8c2]">Right now on flokefama.com</p>
-                  <div className="mt-4 flex items-end gap-5">
-                    <p className="text-[6.5rem] font-bold leading-[0.8] tracking-[-0.05em] tabular-nums">{live ? publicOnline.length : '–'}</p>
-                    <p className="pb-1 text-2xl font-bold tracking-[-0.02em]">{publicOnline.length === 1 ? 'person' : 'people'} on the site</p>
-                  </div>
-                  <ul className="mt-7 grid grid-cols-4 gap-3">
-                    {[
-                      ['New', publicOnline.filter((v) => !v.who && v.isNew).length],
-                      ['Returning', publicOnline.filter((v) => !v.who && !v.isNew).length],
-                      ['Hospitals', online.filter((v) => v.who?.role === 'client').length],
-                      ['Staff', online.length - publicOnline.length],
-                    ].map(([k, v]) => (
-                      <li key={k} className="rounded-xl bg-white/[0.08] px-3.5 py-3 ring-1 ring-white/15">
-                        <span className="block text-xs font-semibold text-white/65">{k}</span>
-                        <span className="block text-xl font-bold tabular-nums">{v}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <p className="mt-4 flex items-center gap-4 text-[0.8125rem] text-white/70">
-                    <span className="flex items-center gap-1.5"><Smartphone className="size-3.5" /> {online.filter((v) => v.device === 'Phone').length} on phones</span>
-                    <span className="flex items-center gap-1.5"><Monitor className="size-3.5" /> {online.filter((v) => v.device === 'Computer').length} on computers</span>
-                    <span className="flex items-center gap-1.5"><Tablet className="size-3.5" /> {online.filter((v) => v.device === 'Tablet').length} on tablets</span>
-                  </p>
-                </section>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <Figure tone="green" icon={<Activity className="size-4" />} label="Visits today" value={t ? n(t.visits) : '–'} now={t?.visits} before={today?.previous.visits} hint="vs yesterday" />
-                  <Figure tone="teal" icon={<Users className="size-4" />} label="Visitors today" value={t ? n(t.visitors) : '–'} hint={t ? `${n(t.newVisitors)} new today` : undefined} />
-                  <Figure tone="blue" icon={<Eye className="size-4" />} label="Pages opened today" value={t ? n(t.views) : '–'} now={t?.views} before={today?.previous.views} hint="vs yesterday" />
-                  <Figure tone="red" icon={<MousePointerClick className="size-4" />} label="Enquiries today" value={t ? n(t.enquiries) : '–'} hint="Quotes, demos and chat requests" />
+              <div className="grid grid-cols-4 gap-4">
+                <Figure tone="green" icon={<Activity className="size-4" />} label="Visits today" value={t ? n(t.visits) : '–'} now={t?.visits} before={today?.previous.visits} hint="vs yesterday" />
+                <Figure tone="teal" icon={<Users className="size-4" />} label="Visitors today" value={t ? n(t.visitors) : '–'} hint={t ? `${n(t.newVisitors)} new today` : undefined} />
+                <Figure tone="blue" icon={<Eye className="size-4" />} label="Pages opened today" value={t ? n(t.views) : '–'} now={t?.views} before={today?.previous.views} hint="vs yesterday" />
+                <Figure tone="red" icon={<MousePointerClick className="size-4" />} label="Enquiries today" value={t ? n(t.enquiries) : '–'} hint="Quotes, demos and chat requests" />
                 </div>
-              </div>
 
               <div className="grid grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] gap-6">
                 <Card title="On the site now" hint="Open a visitor to see every page and action, in order">
@@ -872,7 +853,7 @@ export function Dashboard({ name }: { name: string }) {
                   { icon: <MapPin className="size-4" />, label: 'Top town', top: ranked(s?.cities)[0], show: (k: string) => `${flag(k.split(', ').pop())} ${k.split(', ')[0]}` },
                   { icon: <Search className="size-4" />, label: 'Top search', top: ranked(s?.searches)[0], show: (k: string) => `“${k}”` },
                 ].map((h) => (
-                  <div key={h.label} className="min-w-0 rounded-2xl bg-white p-5 ring-1 ring-[#e3e9e6]">
+                  <div key={h.label} className="min-w-0 rounded-3xl bg-paper p-5 shadow-[0_1px_2px_rgb(22_35_42/0.04),0_18px_40px_-24px_rgb(22_35_42/0.22)] ring-1 ring-line/60">
                     <p className="flex items-center gap-2 text-[0.8125rem] font-semibold text-ink-3">{h.icon} {h.label}</p>
                     <p className="mt-2 truncate font-bold text-ink" title={h.top ? h.show(h.top[0]) : undefined}>{h.top ? h.show(h.top[0]) : '—'}</p>
                     <p className="text-[0.8125rem] tabular-nums text-ink-3">{h.top ? `${n(h.top[1])} ${periodWords}` : 'Nothing yet'}</p>
@@ -1043,7 +1024,7 @@ export function Dashboard({ name }: { name: string }) {
                     const avg = row.sum / row.n;
                     const tone = avg <= vitalLimits[k].good ? 'good' : avg > vitalLimits[k].poor ? 'poor' : 'fair';
                     return (
-                      <div key={k} className="min-w-0 rounded-2xl bg-white p-5 ring-1 ring-[#e3e9e6]">
+                      <div key={k} className="min-w-0 rounded-3xl bg-paper p-5 shadow-[0_1px_2px_rgb(22_35_42/0.04),0_18px_40px_-24px_rgb(22_35_42/0.22)] ring-1 ring-line/60">
                         <p className="flex items-center gap-2 text-[0.8125rem] font-semibold text-ink-3"><Zap className="size-4 text-brand-600" /> {vitalNames[k].name}</p>
                         <p className={cn('mt-3 text-[2rem] font-bold leading-none tabular-nums tracking-[-0.03em]', tone === 'good' ? 'text-ok' : tone === 'poor' ? 'text-bad' : 'text-warn')}>{vitalValue(k, avg)}</p>
                         <p className={cn('mt-2 inline-block rounded-full px-2 py-0.5 text-xs font-bold', tone === 'good' ? 'bg-[#e6f4ec] text-ok' : tone === 'poor' ? 'bg-[#fdecee] text-bad' : 'bg-[#fdf3e0] text-warn')}>{tone === 'good' ? 'Good' : tone === 'poor' ? 'Slow' : 'Could be better'}</p>
@@ -1153,8 +1134,7 @@ export function Dashboard({ name }: { name: string }) {
           )}
 
           <p className="pb-2 pt-2 text-center text-xs text-ink-3">Visitors are shown as a random code with their country and town: no names, emails or addresses of the public are kept. Visits are kept 30 days, the daily totals for good.</p>
-        </main>
-      </div>
+      </main>
     </div>
   );
 }
