@@ -1,7 +1,7 @@
 'use client';
 
 import {
-  Activity, AlertTriangle, ArrowDownRight, ArrowUpRight, Check, ChevronDown, Clock, Copy, Database, Eye, FileText, Gauge, Globe, HeartPulse, History, Layers,
+  Activity, AlertTriangle, ArrowDownRight, ArrowUpRight, Check, ChevronDown, Clock, Copy, Database, Eye, FileText, Gauge, Globe, HeartPulse, Layers,
   LayoutDashboard, Lock, Mail, MapPin, MessageSquare, Monitor, MousePointerClick, Percent, Radio, RefreshCw, Search, Server, ShoppingCart, Smartphone, Tablet,
   UserPlus, Users, Volume2, VolumeX, Zap,
 } from 'lucide-react';
@@ -14,14 +14,13 @@ import { cn } from '@/lib/utils';
 
 /**
  * The site monitor, in sections chosen from the menu on the left:
- *   Live              who is on the site now, what they are doing, and today so far
+ *   Live              who is on the site now, what they are doing, today so far, and the log of recent visits
  *   Overview          the period's figures against the period before, the trend, the busiest hours and days
  *   Visitors          new and returning, where they come from, where they are, their devices
  *   Pages             every page with its views, time spent, where visits start and end, pages not found
  *   Shop & enquiries  from looking at products to sending a request; what people search for and do
  *   Speed             how fast the site feels in visitors' own browsers
  *   Health & errors   the site's services and everything that went wrong
- *   Visit log         every recent visit, page by page
  * The live part is read again every 8 seconds and the figures every 2 minutes, only while this tab is in front.
  */
 type Live = { at: number; live: Visit[]; recent: Visit[] };
@@ -38,14 +37,13 @@ const RANGES = [
 ];
 
 const SECTIONS = [
-  { id: 'live', label: 'Live', icon: Radio, lead: 'Who is on flokefama.com right now, and today so far' },
+  { id: 'live', label: 'Live', icon: Radio, lead: 'Who is on flokefama.com right now, today so far, and the latest visits' },
   { id: 'overview', label: 'Overview', icon: LayoutDashboard, lead: 'The period’s figures against the period before' },
   { id: 'visitors', label: 'Visitors', icon: Users, lead: 'Who they are, where they come from and what they use' },
   { id: 'pages', label: 'Pages', icon: FileText, lead: 'What people read, how long they stay, where they start and leave' },
   { id: 'shop', label: 'Shop & enquiries', icon: ShoppingCart, lead: 'From looking at products to asking Flokefama for a quote' },
   { id: 'speed', label: 'Speed', icon: Gauge, lead: 'How fast the site feels, measured in visitors’ own browsers' },
   { id: 'health', label: 'Health & errors', icon: HeartPulse, lead: 'The site’s services, and everything that went wrong' },
-  { id: 'log', label: 'Visit log', icon: History, lead: 'Every recent visit, page by page' },
 ] as const;
 type Section = (typeof SECTIONS)[number]['id'];
 
@@ -436,8 +434,11 @@ export function Dashboard({ name }: { name: string }) {
   // The section is kept in the address (#pages), so a reload or a bookmark opens the same one
   useEffect(() => {
     const fromHash = () => {
-      const h = location.hash.slice(1) as Section;
-      if (SECTIONS.some((s) => s.id === h)) setSection(h);
+      const h = location.hash.slice(1);
+      if (h === 'log') {
+        setSection('live');
+        setTimeout(() => document.getElementById('visit-log')?.scrollIntoView(), 300);
+      } else if (SECTIONS.some((s) => s.id === h)) setSection(h as Section);
     };
     fromHash();
     addEventListener('hashchange', fromHash);
@@ -616,7 +617,7 @@ export function Dashboard({ name }: { name: string }) {
   const hour = Number(new Date(now).toLocaleTimeString('en-GB', { hour: '2-digit', hour12: false, timeZone: 'Africa/Accra' }));
   const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
   const meta = SECTIONS.find((x) => x.id === section)!;
-  const usesPeriod = section !== 'live' && section !== 'log';
+  const usesPeriod = section !== 'live';
 
   const health = [
     { icon: <Globe className="size-5" />, label: 'Website', ok: Boolean(stats) && !problem, short: stats ? 'Up' : '…', tiny: stats ? `Version ${stats.health.version}` : 'Checking', text: stats ? 'Up and answering' : 'Checking…', sub: stats ? `Version ${stats.health.version}${stats.health.region ? ` · server ${stats.health.region}` : ''}` : '' },
@@ -650,7 +651,7 @@ export function Dashboard({ name }: { name: string }) {
   const [allPages, setAllPages] = useState(false);
 
   const logVisits = useMemo(() => {
-    const all = [...(live?.live ?? []).map((v) => ({ v, live: true })), ...(live?.recent ?? []).map((v) => ({ v, live: false }))];
+    const all = (live?.recent ?? []).map((v) => ({ v, live: false }));
     const q = filter.trim().toLowerCase();
     if (!q) return all;
     return all.filter(({ v }) => [person(v), place(v), sourceOf(v), v.device, v.browser, ...v.pages.map((p) => `${p.p} ${p.t ?? ''}`), ...v.events.map((e) => `${eventName(e.n)} ${e.v ?? ''}`)].join(' ').toLowerCase().includes(q));
@@ -802,6 +803,20 @@ export function Dashboard({ name }: { name: string }) {
                 <Card title="How they found the site">
                   <Bars tone="blue" limit={6} empty="Nobody on the site right now." rows={countBy(online, (v) => sourceOf(v)).map(([k, v]) => ({ label: k, value: v }))} />
                 </Card>
+              </div>
+              <div id="visit-log" className="scroll-mt-28">
+              <Card
+              title="Visit log"
+              hint={`The latest ${logVisits.length} visit${logVisits.length === 1 ? '' : 's'} by people who have left. Open one to see every page and action, in order.`}
+              action={
+                <span className="relative">
+                  <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-ink-3" />
+                  <input value={filter} onChange={(e) => setFilter(e.target.value)} placeholder="Town, page, product, source…" className="h-10 w-72 rounded-xl border border-line bg-white pl-9 pr-3 text-sm outline-none focus:border-brand-600" />
+                </span>
+              }
+            >
+              {!live ? <Empty>Reading…</Empty> : logVisits.length ? <ul>{logVisits.map(({ v, live: on }) => <VisitRow key={v.id} v={v} now={now} live={on} />)}</ul> : <Empty>{filter ? 'No visit matches that.' : 'No visits yet.'}</Empty>}
+            </Card>
               </div>
             </>
           )}
@@ -1115,22 +1130,6 @@ export function Dashboard({ name }: { name: string }) {
                 </Card>
               </div>
             </>
-          )}
-
-          {/* ---------- Visit log ---------- */}
-          {section === 'log' && (
-            <Card
-              title={`${logVisits.length} visit${logVisits.length === 1 ? '' : 's'}`}
-              hint="Who is on the site now and the latest who have left. Open one to see every page and action, in order."
-              action={
-                <span className="relative">
-                  <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-ink-3" />
-                  <input value={filter} onChange={(e) => setFilter(e.target.value)} placeholder="Town, page, product, source…" className="h-10 w-72 rounded-xl border border-line bg-white pl-9 pr-3 text-sm outline-none focus:border-brand-600" />
-                </span>
-              }
-            >
-              {!live ? <Empty>Reading…</Empty> : logVisits.length ? <ul>{logVisits.map(({ v, live: on }) => <VisitRow key={v.id} v={v} now={now} live={on} />)}</ul> : <Empty>{filter ? 'No visit matches that.' : 'No visits yet.'}</Empty>}
-            </Card>
           )}
 
           <p className="pb-2 pt-2 text-center text-xs text-ink-3">Visitors are shown as a random code with their country and town: no names, emails or addresses of the public are kept. Visits are kept 30 days, the daily totals for good.</p>
