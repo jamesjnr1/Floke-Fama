@@ -2,7 +2,8 @@ import type { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { Dashboard } from '@/components/owner/dashboard';
 import { ComputerOnly, KeyForm } from '@/components/owner/key-form';
-import { isOwner, ownerConfigured, ownerName } from '@/lib/owner/auth';
+import { isMine, isOwner, ownerConfigured, ownerName } from '@/lib/owner/auth';
+import { cookies } from 'next/headers';
 
 export const metadata: Metadata = { title: 'Site monitor', robots: { index: false, follow: false } };
 export const dynamic = 'force-dynamic';
@@ -15,12 +16,14 @@ export default async function OwnerPage() {
   // A computer or a tablet: a phone gets a short note instead (and so does a window narrower than a tablet).
   // Android phones say "Mobile" and Android tablets don't; iPads say "iPad" (or pass as a Mac).
   const ua = (await headers()).get('user-agent') ?? '';
+  const jar = await cookies();
+  const mine = Boolean(await isMine((name) => jar.get(name)?.value));
   const tablet = /ipad|tablet|playbook|silk|kindle/i.test(ua) || (/android/i.test(ua) && !/mobile/i.test(ua));
-  if (!tablet && /mobi|iphone|ipod|android|blackberry|windows phone/i.test(ua)) return <ComputerOnly />;
+  if (!tablet && /mobi|iphone|ipod|android|blackberry|windows phone/i.test(ua)) return <ComputerOnly mine={mine} />;
   return (
     <>
       <div className="min-[600px]:hidden">
-        <ComputerOnly />
+        <ComputerOnly mine={mine} />
       </div>
       <div className="hidden min-[600px]:block">{(await isOwner()) ? <Dashboard name={ownerName()} /> : <KeyForm ready={ownerConfigured()} />}</div>
     </>

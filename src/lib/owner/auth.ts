@@ -14,6 +14,30 @@ import { signPayload, verifyPayload } from '@/lib/auth/session';
 export const OWNER_COOKIE = 'ff_owner';
 const DAYS = 30;
 
+/**
+ * "This device is the manager's": its visits are left out of the site monitor altogether. Set whenever the monitor
+ * is opened with the key (and on a phone, with the key on the note shown instead of the dashboard), kept for two
+ * years and not removed by locking the monitor. Signed, so no one else can set it by hand.
+ */
+export const ME_COOKIE = 'ff_me';
+const ME_DAYS = 730;
+const meCookie = async () => ({ name: ME_COOKIE, value: await signPayload({ me: true }), options: { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' as const, path: '/', maxAge: ME_DAYS * 86400 } });
+
+/** Marks this browser as the manager's (see ME_COOKIE). */
+export async function markMine() {
+  const c = await meCookie();
+  (await cookies()).set(c.name, c.value, c.options);
+}
+/** The same, on a response (the site's own visit reports, /api/pulse). */
+export const mineCookie = meCookie;
+
+/** Is this request from one of the manager's devices: marked as theirs, or signed in to the monitor? */
+export async function isMine(read: (name: string) => string | undefined) {
+  if ((await verifyPayload<{ me?: boolean }>(read(ME_COOKIE)))?.me) return 'marked' as const;
+  const p = await verifyPayload<{ owner?: boolean; exp?: number }>(read(OWNER_COOKIE));
+  return p?.owner && typeof p.exp === 'number' && p.exp > Date.now() / 1000 ? ('owner' as const) : false;
+}
+
 const key = () => (process.env.MONITOR_KEY ?? process.env.OWNER_KEY)?.trim() ?? '';
 export const ownerConfigured = () => key().length >= 12;
 
@@ -37,6 +61,7 @@ export async function signInOwner() {
   const jar = await cookies();
   const exp = Math.floor(Date.now() / 1000) + DAYS * 86400;
   jar.set(OWNER_COOKIE, await signPayload({ owner: true, exp }), { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'strict', path: '/', maxAge: DAYS * 86400 });
+  await markMine();
 }
 
 export async function signOutOwner() {
