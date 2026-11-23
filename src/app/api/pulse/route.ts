@@ -4,6 +4,7 @@ import { ADMIN_COOKIE, ENGINEER_COOKIE, SESSION_COOKIE, verifySession } from '@/
 import { ingest, isBot, parseBatch } from '@/lib/pulse/server';
 import type { Who } from '@/lib/pulse/types';
 import { clientIp, limited } from '@/lib/rate-limit';
+import { isMine, mineCookie } from '@/lib/owner/auth';
 
 /**
  * Where the site's own script (components/pulse.tsx) reports what a visitor is doing, for the site monitor
@@ -34,6 +35,17 @@ async function whoIs(req: NextRequest): Promise<Who | undefined> {
 export async function POST(req: NextRequest) {
   const ua = req.headers.get('user-agent') ?? '';
   if (isBot(ua) && process.env.PULSE_TEST !== 'on') return new NextResponse(null, { status: 204 });
+  // The site's manager's own devices aren't counted (lib/owner/auth.ts): a browser signed in to the monitor is marked
+  // as theirs for good the first time it reports
+  const mine = await isMine((name) => req.cookies.get(name)?.value);
+  if (mine) {
+    const res = new NextResponse(null, { status: 204 });
+    if (mine === 'owner') {
+      const c = await mineCookie();
+      res.cookies.set(c.name, c.value, c.options);
+    }
+    return res;
+  }
   if (limited(`pulse:${clientIp(req)}`, 120, 60_000)) return new NextResponse(null, { status: 429 });
   const text = await req.text().catch(() => '');
   if (!text || text.length > 24_000) return new NextResponse(null, { status: 400 });

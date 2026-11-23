@@ -3,7 +3,7 @@
 import { Lock, Monitor } from 'lucide-react';
 import { useActionState, type ReactNode } from 'react';
 import { LogoMark, LogoWordmark } from '@/components/layout/logo';
-import { unlock, type UnlockState } from '@/lib/owner/actions';
+import { markPhone, unlock, type UnlockState } from '@/lib/owner/actions';
 
 /** The dashboard's backdrop when it is closed: the admin console's deep green, plain and calm. */
 function Backdrop({ children }: { children: ReactNode }) {
@@ -47,14 +47,29 @@ export function KeyForm({ ready }: { ready: boolean }) {
 }
 
 /** Shown instead of the dashboard on a phone or a narrow window: it is made for a computer's or a tablet's screen. */
-export function ComputerOnly() {
+export function ComputerOnly({ mine = false }: { mine?: boolean }) {
+  const [state, action, pending] = useActionState<UnlockState, FormData>(markPhone, {});
+  const done = mine || state.done;
   return (
     <Backdrop>
       <div className="rounded-3xl bg-white/[0.08] p-8 text-center text-white ring-1 ring-white/15 backdrop-blur-md">
         <span className="mx-auto grid size-12 place-items-center rounded-2xl bg-white/10 ring-1 ring-white/15"><Monitor className="size-6" /></span>
-        <h1 className="mt-5 text-xl font-bold tracking-[-0.02em]">Open this on a computer or tablet</h1>
+        <h1 className="mt-5 text-xl font-bold tracking-[-0.02em] text-white">Open this on a computer or tablet</h1>
         <p className="mt-2 text-[0.9375rem] leading-relaxed text-white/75">The site monitor is made for a bigger screen and does not open on phones.</p>
       </div>
+      <form action={action} className="mt-4 rounded-3xl bg-white/[0.06] p-6 text-white ring-1 ring-white/10">
+        {done ? (
+          <p className="text-[0.9375rem] leading-relaxed text-white/85">This phone is marked as yours: your visits from it don’t show in the site monitor.</p>
+        ) : (
+          <>
+            <p className="text-[0.9375rem] font-semibold">Is this your phone?</p>
+            <p className="mt-1 text-sm leading-relaxed text-white/70">Enter the monitor’s key and your own visits from this phone won’t show in the site monitor.</p>
+            <input name="key" type="password" required autoComplete="current-password" aria-label="Key" className="mt-4 w-full rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-white outline-none placeholder:text-white/50 focus:border-white/60" placeholder="Key" />
+            {state.error && <p role="alert" className="mt-2 text-sm font-medium text-[#ffb4b8]">{state.error}</p>}
+            <button type="submit" disabled={pending} className="mt-3 w-full rounded-xl bg-white px-4 py-3 font-semibold text-[#06482a] transition hover:bg-white/90 disabled:opacity-60">{pending ? 'Checking…' : 'Don’t count my visits'}</button>
+          </>
+        )}
+      </form>
     </Backdrop>
   );
 }
