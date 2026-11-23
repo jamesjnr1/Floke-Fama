@@ -12,15 +12,17 @@ export const dynamic = 'force-dynamic';
  * health and errors). For the site's manager alone, behind MONITOR_KEY: apart from the admin console and its accounts.
  */
 export default async function OwnerPage() {
-  // A computer's screen only: a phone or tablet gets a short note instead (and so does a narrow window)
+  // A computer or a tablet: a phone gets a short note instead (and so does a window narrower than a tablet).
+  // Android phones say "Mobile" and Android tablets don't; iPads say "iPad" (or pass as a Mac).
   const ua = (await headers()).get('user-agent') ?? '';
-  if (/mobi|iphone|ipod|ipad|android|tablet/i.test(ua)) return <ComputerOnly />;
+  const tablet = /ipad|tablet|playbook|silk|kindle/i.test(ua) || (/android/i.test(ua) && !/mobile/i.test(ua));
+  if (!tablet && /mobi|iphone|ipod|android|blackberry|windows phone/i.test(ua)) return <ComputerOnly />;
   return (
     <>
-      <div className="lg:hidden">
+      <div className="min-[600px]:hidden">
         <ComputerOnly />
       </div>
-      <div className="hidden lg:block">{(await isOwner()) ? <Dashboard name={ownerName()} /> : <KeyForm ready={ownerConfigured()} />}</div>
+      <div className="hidden min-[600px]:block">{(await isOwner()) ? <Dashboard name={ownerName()} /> : <KeyForm ready={ownerConfigured()} />}</div>
     </>
   );
 }

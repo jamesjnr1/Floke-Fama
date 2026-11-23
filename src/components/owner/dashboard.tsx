@@ -663,7 +663,7 @@ export function Dashboard({ name }: { name: string }) {
       <div className="relative isolate overflow-hidden bg-[radial-gradient(140%_120%_at_0%_0%,#0f8a55_0%,#06482a_55%,#032a19_100%)] pb-28 text-white">
         <div aria-hidden className="absolute -right-24 -top-24 -z-10 size-[26rem] rounded-full border border-white/10" />
         <div aria-hidden className="absolute -right-6 top-16 -z-10 size-64 rounded-full border border-white/10" />
-        <header className="mx-auto flex max-w-[1500px] items-center gap-6 px-8 py-5">
+        <header className="mx-auto flex max-w-[1500px] flex-wrap items-center gap-x-6 gap-y-3 px-6 py-5 lg:px-8">
           <div className="flex items-center gap-2.5">
             <LogoMark className="size-9" />
             <LogoWordmark className="h-4 text-white" />
@@ -698,11 +698,11 @@ export function Dashboard({ name }: { name: string }) {
           </div>
         </header>
 
-        <div className="mx-auto flex max-w-[1500px] items-end justify-between gap-10 px-8 pt-8">
+        <div className="mx-auto flex max-w-[1500px] flex-col gap-8 px-6 pt-8 lg:px-8 xl:flex-row xl:items-end xl:justify-between xl:gap-10">
           <div>
             <p className="text-sm font-semibold text-brand-300">{greeting}, {name}. This is flokefama.com right now.</p>
             <div className="mt-5 flex items-end gap-6">
-              <p className="text-[7rem] font-extrabold leading-[0.8] tracking-[-0.05em] tabular-nums text-white">{live ? publicOnline.length : '–'}</p>
+              <p className="text-[5.5rem] font-extrabold lg:text-[7rem] leading-[0.8] tracking-[-0.05em] tabular-nums text-white">{live ? publicOnline.length : '–'}</p>
               <div className="pb-1">
                 <p className="text-2xl font-bold tracking-[-0.02em]">{publicOnline.length === 1 ? 'person' : 'people'} on the site</p>
                 <p className="mt-1.5 text-sm text-white/70">
@@ -711,10 +711,10 @@ export function Dashboard({ name }: { name: string }) {
               </div>
             </div>
           </div>
-          <ul className="grid shrink-0 grid-cols-5 gap-3">
+          <ul className="grid shrink-0 grid-cols-5 gap-2 lg:gap-3">
             {health.map((h) => (
               <li key={h.label}>
-                <button type="button" onClick={() => open('health')} className="block w-[8.75rem] rounded-2xl bg-white/[0.08] p-4 text-left ring-1 ring-white/15 backdrop-blur-md transition hover:bg-white/[0.14]">
+                <button type="button" onClick={() => open('health')} className="block w-full rounded-2xl bg-white/[0.08] p-3 text-left lg:p-4 xl:w-[8.75rem] ring-1 ring-white/15 backdrop-blur-md transition hover:bg-white/[0.14]">
                   <span className="flex items-center justify-between text-white/70">
                     {h.icon}
                     <span className={cn('size-2.5 rounded-full', !stats ? 'bg-white/40' : h.ok ? 'bg-[#5fe0a3] shadow-[0_0_0_4px_rgb(95_224_163/0.2)]' : 'bg-[#ff6b75] shadow-[0_0_0_4px_rgb(255_107_117/0.25)]')} />
@@ -730,13 +730,13 @@ export function Dashboard({ name }: { name: string }) {
       </div>
 
       {/* The sections, as tabs over the green band; they stay at the top while scrolling */}
-      <nav aria-label="Monitor sections" className="sticky top-0 z-20 mx-auto -mt-20 max-w-[1500px] px-8 pt-3">
-        <div className="flex gap-1 rounded-2xl bg-white/95 p-1.5 shadow-[0_18px_40px_-20px_rgb(4_56_34/0.45)] ring-1 ring-black/5 backdrop-blur">
+      <nav aria-label="Monitor sections" className="sticky top-0 z-20 mx-auto -mt-20 max-w-[1500px] px-6 pt-3 lg:px-8">
+        <div className="flex gap-1 overflow-x-auto rounded-2xl bg-white/95 p-1.5 [scrollbar-width:none] shadow-[0_18px_40px_-20px_rgb(4_56_34/0.45)] ring-1 ring-black/5 backdrop-blur">
           {SECTIONS.map((x) => {
             const on = section === x.id;
             const badge = x.id === 'health' ? errors24 : x.id === 'live' ? publicOnline.length : 0;
             return (
-              <button key={x.id} type="button" onClick={() => open(x.id)} aria-current={on ? 'page' : undefined} className={cn('flex flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-3 py-2.5 text-[0.875rem] font-semibold transition', on ? 'bg-[linear-gradient(135deg,#0f8a55,#06482a)] text-white shadow-[0_8px_18px_-10px_rgb(4_56_34/0.8)]' : 'text-ink-2 hover:bg-[#eef4f1] hover:text-ink')}>
+              <button key={x.id} type="button" onClick={() => open(x.id)} aria-current={on ? 'page' : undefined} className={cn('flex shrink-0 grow items-center justify-center gap-2 whitespace-nowrap rounded-xl px-3 py-2.5 text-[0.875rem] font-semibold transition', on ? 'bg-[linear-gradient(135deg,#0f8a55,#06482a)] text-white shadow-[0_8px_18px_-10px_rgb(4_56_34/0.8)]' : 'text-ink-2 hover:bg-[#eef4f1] hover:text-ink')}>
                 <x.icon className={cn('size-4', on ? 'text-white' : 'text-brand-700')} /> {x.label}
                 {badge > 0 && <span className={cn('rounded-full px-1.5 py-px text-[0.6875rem] font-bold tabular-nums', x.id === 'health' ? 'bg-signal text-white' : on ? 'bg-white text-[#06482a]' : 'bg-[#e6f4ec] text-brand-700')}>{badge}</span>}
               </button>
@@ -745,14 +745,14 @@ export function Dashboard({ name }: { name: string }) {
         </div>
       </nav>
 
-      <main id="main" className="relative mx-auto max-w-[1500px] space-y-6 px-8 pb-10 pt-6">
-        <div className="flex items-end justify-between gap-6">
+      <main id="main" className="relative mx-auto max-w-[1500px] space-y-6 px-6 pb-10 pt-6 lg:px-8">
+        <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-2">
           <div>
             <h1 className="text-2xl font-bold tracking-[-0.02em]">{meta.label}</h1>
             <p className="mt-1 text-sm text-ink-3">{meta.lead}{section === 'live' ? '' : usesPeriod ? `, ${periodWords}.` : '.'}</p>
           </div>
           {usesPeriod && (
-            <p className="max-w-xl text-right text-[0.8125rem] text-ink-3">
+            <p className="max-w-xl text-[0.8125rem] text-ink-3 xl:text-right">
               {stats?.google?.days ? `${stats.google.days} ${stats.google.days === 1 ? 'day is' : 'days are'} from Google Analytics (before the monitor started) · ` : stats && !stats.google?.connected && days > 1 ? 'Google Analytics is not connected, so days before the monitor started are empty · ' : ''}
               Staff visits are left out · Ghana time
             </p>
@@ -762,14 +762,14 @@ export function Dashboard({ name }: { name: string }) {
           {/* ---------- Live ---------- */}
           {section === 'live' && (
             <>
-              <div className="grid grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
                 <Figure tone="green" icon={<Activity className="size-4" />} label="Visits today" value={t ? n(t.visits) : '–'} now={t?.visits} before={today?.previous.visits} hint="vs yesterday" />
                 <Figure tone="teal" icon={<Users className="size-4" />} label="Visitors today" value={t ? n(t.visitors) : '–'} hint={t ? `${n(t.newVisitors)} new today` : undefined} />
                 <Figure tone="blue" icon={<Eye className="size-4" />} label="Pages opened today" value={t ? n(t.views) : '–'} now={t?.views} before={today?.previous.views} hint="vs yesterday" />
                 <Figure tone="red" icon={<MousePointerClick className="size-4" />} label="Enquiries today" value={t ? n(t.enquiries) : '–'} hint="Quotes, demos and chat requests" />
                 </div>
 
-              <div className="grid grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] gap-6">
+              <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
                 <Card title="On the site now" hint="Open a visitor to see every page and action, in order">
                   {!live ? <Empty>Connecting to the site…</Empty> : online.length ? <ul>{online.map((v) => <VisitRow key={v.id} v={v} now={now} live />)}</ul> : <Empty>Nobody is on the site at this moment. This list fills by itself when someone arrives.</Empty>}
                 </Card>
@@ -793,7 +793,7 @@ export function Dashboard({ name }: { name: string }) {
                 </Card>
               </div>
 
-              <div className="grid grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
                 <Card title="Pages open right now">
                   <Bars rows={nowOn} empty="No page is open at this moment." limit={6} tone="teal" />
                 </Card>
@@ -824,7 +824,7 @@ export function Dashboard({ name }: { name: string }) {
           {/* ---------- Overview ---------- */}
           {section === 'overview' && (
             <>
-              <div className="grid grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
                 <Figure icon={<Activity className="size-4" />} tone="green" label="Visits" value={s ? n(s.visits) : '–'} now={s?.visits} before={prev?.visits} />
                 <Figure icon={<Users className="size-4" />} tone="teal" label="Visitors" value={s ? n(s.visitors) : '–'} now={s?.visitors} before={prev?.visitors} />
                 <Figure icon={<UserPlus className="size-4" />} tone="violet" label="New visitors" value={s ? n(s.newVisitors) : '–'} hint={s ? `${rate(s.newVisitors, s.visits)}% of visits were someone new` : undefined} />
@@ -851,7 +851,7 @@ export function Dashboard({ name }: { name: string }) {
                 {trend.length ? <Trend points={trend} a={trendSeries.a} b={trendSeries.b} /> : <Empty>Reading the figures…</Empty>}
               </Card>
 
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                 <Card title="Busiest hours" hint={`Visits started in each hour ${periodWords}, Ghana time`}>
                   {s ? <Columns data={s.hours.map((v, h) => ({ label: String(h).padStart(2, '0'), value: v }))} unit="visits" /> : <Empty>Reading…</Empty>}
                 </Card>
@@ -860,7 +860,7 @@ export function Dashboard({ name }: { name: string }) {
                 </Card>
               </div>
 
-              <div className="grid grid-cols-5 gap-4">
+              <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
                 {[
                   { icon: <FileText className="size-4" />, label: 'Most opened page', top: ranked(Object.fromEntries(Object.entries(s?.pages ?? {}).map(([k, r]) => [k, r.v])))[0], show: (k: string) => pageName(k, s?.pages[k]?.t) },
                   { icon: <Globe className="size-4" />, label: 'Top source', top: ranked(s?.sources)[0], show: (k: string) => k },
@@ -881,7 +881,7 @@ export function Dashboard({ name }: { name: string }) {
           {/* ---------- Visitors ---------- */}
           {section === 'visitors' && (
             <>
-              <div className="grid grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
                 <Card title="New and returning" hint="Visits by someone on the site for the first time, and by someone who has been before">
                   <Split parts={[{ label: 'New', value: s?.newVisitors ?? 0, hex: '#12a871' }, { label: 'Returning', value: Math.max(0, (s?.visits ?? 0) - (s?.newVisitors ?? 0)), hex: '#075056' }]} />
                 </Card>
@@ -895,7 +895,7 @@ export function Dashboard({ name }: { name: string }) {
                   </div>
                 </Card>
               </div>
-              <div className="grid grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
                 <Card title="Where visitors came from" hint="The website or app that sent them">
                   <Bars tone="blue" limit={10} empty="No visits in this period yet." rows={ranked(s?.sources).map(([k, v]) => ({ label: k, value: v, right: `${n(v)} · ${rate(v, s?.visits ?? 0)}%` }))} />
                 </Card>
@@ -966,7 +966,7 @@ export function Dashboard({ name }: { name: string }) {
                   <Empty>No pages opened in this period yet.</Empty>
                 )}
               </Card>
-              <div className="grid grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
                 <Card title="Where visits start" hint="The first page people land on">
                   <Bars tone="teal" empty="No visits in this period yet." rows={ranked(s?.entries).map(([k, v]) => ({ key: k, label: pageName(k, s?.pages[k]?.t), sub: k, value: v }))} />
                 </Card>
@@ -983,7 +983,7 @@ export function Dashboard({ name }: { name: string }) {
           {/* ---------- Shop & enquiries ---------- */}
           {section === 'shop' && (
             <>
-              <div className="grid grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
                 <Figure icon={<MousePointerClick className="size-4" />} tone="red" label="Enquiries" value={s ? n(s.enquiries) : '–'} now={s?.enquiries} before={prev?.enquiries} />
                 <Figure icon={<Percent className="size-4" />} tone="amber" label="Visits that enquired" value={s ? `${(convert(s) ?? 0).toFixed(1)}%` : '–'} now={convert(s)} before={convert(prev)} />
                 <Figure icon={<Eye className="size-4" />} tone="teal" label="Product pages opened" value={s ? n(productViews) : '–'} hint={s ? `${Object.keys(s.products).length} different products` : undefined} />
@@ -992,7 +992,7 @@ export function Dashboard({ name }: { name: string }) {
 
               <Card title="From visit to enquiry" hint={`How many got to each step ${periodWords}`}>
                 {s && s.visits ? (
-                  <ol className="grid grid-cols-4 gap-4">
+                  <ol className="grid grid-cols-2 gap-4 lg:grid-cols-4">
                     {funnel.map((f, i) => (
                       <li key={f.label} className="min-w-0">
                         <div className="flex h-36 items-end rounded-xl bg-[#f4f8f6] p-2">
@@ -1009,7 +1009,7 @@ export function Dashboard({ name }: { name: string }) {
                 )}
               </Card>
 
-              <div className="grid grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
                 <Card title="Products looked at" hint="Product pages opened in the shop">
                   <Bars tone="teal" limit={10} empty="No product pages opened in this period yet." rows={Object.entries(s?.products ?? {}).sort((a, b) => b[1].v - a[1].v).map(([slug, r]) => ({ key: slug, label: r.t ?? slug, sub: `/products/${slug}`, value: r.v }))} />
                 </Card>
@@ -1032,7 +1032,7 @@ export function Dashboard({ name }: { name: string }) {
           {section === 'speed' && (
             <>
               {s && Object.keys(s.vitals).length ? (
-                <div className="grid grid-cols-5 gap-4">
+                <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
                   {(['LCP', 'FCP', 'INP', 'CLS', 'TTFB'] as Vital[]).map((k) => {
                     const row = s.vitals[k];
                     if (!row) return null;
@@ -1069,7 +1069,7 @@ export function Dashboard({ name }: { name: string }) {
           {/* ---------- Health & errors ---------- */}
           {section === 'health' && (
             <>
-              <div className="grid grid-cols-5 gap-4">
+              <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
                 {health.map((h) => (
                   <div key={h.label} className={cn('min-w-0 rounded-2xl bg-white p-5 ring-1', !stats ? 'ring-[#e3e9e6]' : h.ok ? 'ring-[#cfe9db]' : 'ring-[#f5c4ca]')}>
                     <span className="flex items-center justify-between">
@@ -1117,7 +1117,7 @@ export function Dashboard({ name }: { name: string }) {
                   </div>
                 )}
               </Card>
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                 <Card title="“Page not found”" hint={`Addresses people tried ${periodWords} that don’t exist`}>
                   <Bars tone="red" empty="No missing pages in this period." rows={ranked(s?.notFound).map(([k, v]) => ({ label: k, value: v }))} />
                 </Card>

@@ -46,14 +46,14 @@ export function KeyForm({ ready }: { ready: boolean }) {
   );
 }
 
-/** Shown instead of the dashboard on a phone, a tablet or a narrow window: it is made for a computer's screen. */
+/** Shown instead of the dashboard on a phone or a narrow window: it is made for a computer's or a tablet's screen. */
 export function ComputerOnly() {
   return (
     <Backdrop>
       <div className="rounded-3xl bg-white/[0.08] p-8 text-center text-white ring-1 ring-white/15 backdrop-blur-md">
         <span className="mx-auto grid size-12 place-items-center rounded-2xl bg-white/10 ring-1 ring-white/15"><Monitor className="size-6" /></span>
-        <h1 className="mt-5 text-xl font-bold tracking-[-0.02em]">Open this on a computer</h1>
-        <p className="mt-2 text-[0.9375rem] leading-relaxed text-white/75">The site monitor is made for a computer’s screen and does not open on phones or tablets.</p>
+        <h1 className="mt-5 text-xl font-bold tracking-[-0.02em]">Open this on a computer or tablet</h1>
+        <p className="mt-2 text-[0.9375rem] leading-relaxed text-white/75">The site monitor is made for a bigger screen and does not open on phones.</p>
       </div>
     </Backdrop>
   );
