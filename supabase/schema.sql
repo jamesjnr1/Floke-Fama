@@ -160,6 +160,7 @@ begin
   foreach fn in array array['flk_table(text)', 'flk_row(text, timestamptz, timestamptz, jsonb)', 'flk_col(text)', 'flk_val(text, jsonb)', 'flk_list(text, jsonb, text, boolean, int, text)', 'flk_get(text, text)', 'flk_create(text, text, jsonb)', 'flk_update(text, text, jsonb)', 'flk_upsert(text, text, jsonb)', 'flk_delete(text, text)', 'flk_import(text, jsonb)'] loop
     execute format('revoke all on function public.%s from public, anon, authenticated', fn);
     execute format('grant execute on function public.%s to service_role', fn);
+    execute format('alter function public.%s set search_path = public', fn);
   end loop;
 end $$;
 
