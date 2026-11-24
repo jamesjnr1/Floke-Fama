@@ -1,5 +1,6 @@
 import 'server-only';
 import { Client, Storage, TablesDB } from 'node-appwrite';
+import { supabaseDb } from '@/lib/supabase-db';
 
 /**
  * Appwrite (database + file storage), used on the server only. The API key never reaches the browser.
@@ -37,8 +38,20 @@ export const TABLES = {
 } as const;
 export const BUCKETS = { hospitalLogos: 'hospital-logos' } as const;
 
-export const appwrite =
-  endpoint && projectId && apiKey
+const supabaseUrl = process.env.SUPABASE_URL?.trim();
+const supabaseKey = (process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY)?.trim();
+const supabase = supabaseUrl && supabaseKey ? supabaseDb(supabaseUrl, supabaseKey) : null;
+
+/** Which database the site uses: Supabase when it is set up (SUPABASE_URL and its secret key), otherwise Appwrite. */
+export const databaseName = supabase ? 'Supabase' : 'Appwrite';
+
+/**
+ * The database. Supabase when SUPABASE_URL and SUPABASE_SECRET_KEY are set (lib/supabase-db.ts answers the same
+ * calls as Appwrite, so nothing else in the site changes), otherwise Appwrite as before. Null when neither is set up.
+ */
+export const appwrite = supabase
+  ? ({ tables: supabase.tables, storage: supabase.storage, endpoint: supabaseUrl!, projectId: new URL(supabaseUrl!).hostname.split('.')[0] } as unknown as { tables: TablesDB; storage: Storage; endpoint: string; projectId: string })
+  : endpoint && projectId && apiKey
     ? (() => {
         const client = new Client().setEndpoint(endpoint).setProject(projectId).setKey(apiKey);
         return { tables: new TablesDB(client), storage: new Storage(client), endpoint, projectId };
@@ -47,7 +60,11 @@ export const appwrite =
 
 /** Public address of a stored file (the logos bucket can be read by anyone; only the server can write). */
 export const fileUrl = (bucketId: string, fileId: string, version?: string) =>
-  appwrite ? `${appwrite.endpoint}/storage/buckets/${bucketId}/files/${fileId}/view?project=${appwrite.projectId}${version ? `&v=${encodeURIComponent(version)}` : ''}` : null;
+  supabase
+    ? supabase.fileUrl(bucketId, fileId, version)
+    : appwrite
+      ? `${appwrite.endpoint}/storage/buckets/${bucketId}/files/${fileId}/view?project=${appwrite.projectId}${version ? `&v=${encodeURIComponent(version)}` : ''}`
+      : null;
 
 /** True when Appwrite answered "not found". */
 export const isNotFound = (e: unknown) => (e as { code?: number })?.code === 404;
