@@ -58,6 +58,19 @@ export const appwrite = supabase
       })()
     : null;
 
+/**
+ * Appwrite itself, even after the switch to Supabase: only for copying the old data across (lib/admin/copy-old-data.ts).
+ * Null when Appwrite's settings are not in Vercel.
+ */
+export const appwriteOld =
+  endpoint && projectId && apiKey
+    ? (() => {
+        const client = new Client().setEndpoint(endpoint).setProject(projectId).setKey(apiKey);
+        return { tables: new TablesDB(client), endpoint, projectId, apiKey };
+      })()
+    : null;
+export const usingSupabase = Boolean(supabase);
+
 /** Public address of a stored file (the logos bucket can be read by anyone; only the server can write). */
 export const fileUrl = (bucketId: string, fileId: string, version?: string) =>
   supabase

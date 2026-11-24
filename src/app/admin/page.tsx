@@ -21,6 +21,8 @@ import { siteUrl } from '@/lib/utils';
 import { AddEngineerForm } from '@/components/admin/add-engineer-form';
 import { ConfirmButton } from '@/components/admin/confirm-button';
 import { configChecks, loadAdminData, type AdminData } from '@/lib/admin/data';
+import { appwriteOld, databaseName, usingSupabase } from '@/lib/appwrite';
+import { CopyOldDataForm } from '@/components/admin/copy-old-data-form';
 import { sampleData } from '@/lib/admin/sample';
 import { demoLink } from '@/lib/demo-server';
 import { DemoGuide } from '@/components/demo-guide';
@@ -1948,8 +1950,16 @@ async function System({ data, phone, me }: { data: AdminData; phone?: string; me
           <p className="-mt-3 text-[0.9375rem] text-ink-3">The demo is off (DEMO=off or past DEMO_UNTIL), or it needs SESSION_SECRET or a DEMO_CODE of 12+ characters in Vercel.</p>
         )}
       </Panel>
+      {usingSupabase && appwriteOld && (
+        <Panel title="Old data from Appwrite" className="mb-4">
+          <p className="-mt-3 mb-4 text-[0.9375rem] text-ink-3">
+            The site now runs on Supabase. This copies the accounts, quote requests, equipment, service history, texts, hospitals, logos and photos from the old Appwrite database. Safe to run more than once: nothing added since the switch is lost. It works once Appwrite answers again (its free plan locks the database for the rest of the month when its read limit is reached).
+          </p>
+          <CopyOldDataForm />
+        </Panel>
+      )}
       <div className="grid gap-4 lg:grid-cols-2">
-        <Panel title="Database tables (Appwrite)">
+        <Panel title={`Database tables (${databaseName})`}>
           {data.tables.length ? (
             <ul className="divide-y divide-[#edf1ef]">
               {data.tables.map((t) => (
