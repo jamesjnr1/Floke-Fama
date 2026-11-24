@@ -14,7 +14,7 @@ const MAX_EVENTS = 100;
 /** Raw visits are kept this many days; the day summaries stay. */
 export const KEEP_DAYS = 30;
 /** A visitor counts as on the site now if their browser reported within this long. */
-export const LIVE_MS = 75_000;
+export const LIVE_MS = 150_000;
 
 type VisitRow = Models.Row & { day: string; lastAt: string; data: string };
 type DayRow = Models.Row & { day: string; data: string };

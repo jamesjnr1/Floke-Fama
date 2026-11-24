@@ -1,6 +1,6 @@
 import 'server-only';
 import { Query, type Models } from 'node-appwrite';
-import { appwrite, DATABASE_ID, TABLES } from '@/lib/appwrite';
+import { appwrite, DATABASE_ID, TABLES, databaseName } from '@/lib/appwrite';
 import { roleFor } from '@/lib/auth/users';
 import type { SavedOrder } from '@/lib/orders';
 import { loadDesk } from '@/lib/service/server';
@@ -178,7 +178,7 @@ export function configChecks() {
   const set = (v: string | undefined) => Boolean(v?.trim());
   const count = (v: string | undefined) => (v ?? '').split(',').map((s) => s.trim()).filter(Boolean).length;
   return [
-    { label: 'Database (Appwrite)', ok: Boolean(appwrite), detail: appwrite ? `Project ${appwrite.projectId}` : 'APPWRITE_ENDPOINT, APPWRITE_PROJECT_ID, APPWRITE_API_KEY not set: accounts fall back to a browser cookie and orders stay in the browser.' },
+    { label: `Database (${databaseName})`, ok: Boolean(appwrite), detail: appwrite ? `Project ${appwrite.projectId}` : 'No database set up (SUPABASE_URL and SUPABASE_SECRET_KEY): accounts fall back to a browser cookie and orders stay in the browser.' },
     { label: 'Session secret', ok: set(process.env.SESSION_SECRET), detail: set(process.env.SESSION_SECRET) ? 'SESSION_SECRET is set.' : 'Set SESSION_SECRET (openssl rand -base64 48) so sign-ins are signed with your own key.' },
     { label: 'Admins', ok: count(process.env.ADMIN_EMAILS) > 0, detail: `${count(process.env.ADMIN_EMAILS)} email(s) in ADMIN_EMAILS.` },
     { label: 'Engineers', ok: count(process.env.ENGINEER_EMAILS) > 0, detail: `${count(process.env.ENGINEER_EMAILS)} email(s) in ENGINEER_EMAILS.` },
