@@ -13,7 +13,7 @@ import { isNoiseError, type PulseItem } from '@/lib/pulse/types';
  */
 const IDLE_MS = 3 * 60_000; // no movement for this long: stop counting time (they walked away)
 const VISIT_GAP_MS = 30 * 60_000; // back after this long: a new visit
-const PING_MS = 25_000;
+const PING_MS = 60_000;
 
 const rand = () => Array.from(crypto.getRandomValues(new Uint8Array(12)), (b) => b.toString(36).padStart(2, '0')).join('').slice(0, 24);
 const store = (s: 'local' | 'session') => {

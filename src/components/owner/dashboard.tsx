@@ -21,7 +21,7 @@ import { cn } from '@/lib/utils';
  *   Shop & enquiries  from looking at products to sending a request; what people search for and do
  *   Speed             how fast the site feels in visitors' own browsers
  *   Health & errors   the site's services and everything that went wrong
- * The live part is read again every 8 seconds and the figures every 2 minutes, only while this tab is in front.
+ * The live part is read again every 20 seconds and the figures every 2 minutes, only while this tab is in front.
  */
 type Live = { at: number; live: Visit[]; recent: Visit[] };
 type Health = { database: 'ok' | 'down' | 'not set up'; databaseMs: number; texts: boolean; email: boolean; version: string; deployedMessage: string; region: string };
@@ -529,7 +529,7 @@ export function Dashboard({ name }: { name: string }) {
 
   useEffect(() => {
     void loadLive();
-    const fast = setInterval(() => document.visibilityState === 'visible' && void loadLive(), 8000);
+    const fast = setInterval(() => document.visibilityState === 'visible' && void loadLive(), 20_000);
     const tick = setInterval(() => setNow(Date.now()), 1000);
     const back = () => document.visibilityState === 'visible' && void loadLive();
     document.addEventListener('visibilitychange', back);
