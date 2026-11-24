@@ -21,6 +21,7 @@ import { sharedLimited } from '@/lib/shared-limit';
 import { textAllHospitals } from '@/lib/client-sms';
 import { normalisePhone, phoneHint, showPhone } from '@/lib/phone';
 import { dismissError } from '@/lib/monitor';
+import { copyOldData, type CopyReport } from '@/lib/admin/copy-old-data';
 
 /** Reads an order, changes it and writes it back, with a line in its log saying who did what. Admins and the sales team. */
 async function changeOrder(reference: string, change: (o: SavedOrder) => { order: SavedOrder; log?: string } | null) {
@@ -349,4 +350,14 @@ export async function dismissSiteError(form: FormData) {
   if (s?.role !== 'admin') return;
   await dismissError(String(form.get('id') ?? '')).catch((e) => console.error('dismiss site error failed', e));
   revalidatePath('/admin');
+}
+
+/** Database & settings: copies the old data from Appwrite into Supabase (lib/admin/copy-old-data.ts). Admins only. */
+export async function copyFromAppwrite(prev: CopyReport | null): Promise<CopyReport> {
+  void prev;
+  const s = await getAdminSession();
+  if (!s || s.demo) return { ok: false, message: 'Only an admin can do this.', tables: [], files: 0, filesFailed: 0 };
+  const report = await copyOldData();
+  revalidatePath('/admin');
+  return report;
 }
